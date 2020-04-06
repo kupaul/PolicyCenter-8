@@ -1,0 +1,462 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" xmlns="http://www.guidewire.com/entityModel/1.0" targetNamespace="http://www.guidewire.com/entityModel/1.0" elementFormDefault="qualified" attributeFormDefault="unqualified" version="1.0">
+	<!-- entity model root element -->
+	<xs:element name="entityModel" type="entityModelType">
+		<xs:annotation>
+			<xs:documentation>EntityModel documents all the entities and typelists in the application.
+        This file must be edited to reflect any changes to the datamodel (i.e. datamodel.xsd). It is not automatically generated.
+			</xs:documentation>
+		</xs:annotation>
+		<xs:key name="delegateID">
+			<xs:selector xpath="./delegate"/>
+			<xs:field xpath="@id"/>
+		</xs:key>
+		<xs:keyref name="delegateIDRef" refer="delegateID">
+			<xs:selector xpath="./delegate/delegateto|./entity/delegateto"/>
+			<xs:field xpath="@idref"/>
+		</xs:keyref>
+		<xs:key name="entityID">
+			<xs:selector xpath="./entity|./entity/subtype"/>
+			<xs:field xpath="@id"/>
+		</xs:key>
+		<xs:keyref name="entityIDRef" refer="entityID">
+			<xs:selector xpath="./entity/array/targetEntity|./entity/foreignKey/targetEntity"/>
+			<xs:field xpath="@idref"/>
+		</xs:keyref>
+		<xs:key name="typelistID">
+			<xs:selector xpath="./typelist"/>
+			<xs:field xpath="@id"/>
+		</xs:key>
+		<!-- Q: better to use ref on typefilter typelist & category code ? -->
+		<xs:keyref name="typelistIDRef" refer="typelistID">
+			<xs:selector xpath="./delegate/typekey/targetTypelist|./entity/typekey/targetTypelist|./delegate/typekey/keyFilter/targetTypelist|./entity/typekey/keyFilter/targetTypelist"/>
+			<xs:field xpath="@idref"/>
+		</xs:keyref>		
+	</xs:element>		
+	<!-- main types for entity model elements -->
+	<xs:complexType name="entityModelType">
+		<xs:sequence>
+			<xs:element name="delegate" type="delegateType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="entity" type="entityType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="typelist" type="typelistType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="entityModelAttribute"/>
+	</xs:complexType>
+	<!-- root entityModel element's element types and attributes -->
+	<xs:attributeGroup name="entityModelAttribute">
+		<xs:attribute name="appName" type="xs:string"/>
+		<xs:attribute name="appVersion" type="xs:string"/>
+		<xs:attribute name="modelVersion" type="xs:string"/>
+		<xs:attribute name="created" type="xs:dateTime"/>
+	</xs:attributeGroup>
+	<!-- DELEGATE: delegate related types -->
+	<xs:complexType name="delegateType">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0"/>
+			<xs:choice  minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="delegateto" type="delegateRefType"/>			
+				<xs:element name="column" type="columnType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="foreignKey" type="foreignKeyType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="typekey" type="typekeyType" minOccurs="0" maxOccurs="unbounded"/>
+				<xs:element name="derivedColumn" type="derivedColumnType" minOccurs="0" maxOccurs="unbounded"/>
+                <xs:element name="monetaryamount" type="monetaryamountType"/>
+			</xs:choice>
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:NCName" use="required"/>
+		<xs:attributeGroup ref="entityAttributes"/>
+		<xs:attributeGroup ref="entityTypeAttributes"/>
+	</xs:complexType>
+	<xs:complexType name="delegateRefType">
+		<xs:attribute name="idref" type="xs:NCName" use="required"/>
+	</xs:complexType>
+	<!-- ENTITY: main types -->
+	<xs:complexType name="entityType">
+		<xs:group ref="entityElements"/>
+		<xs:attribute name="id" type="xs:NCName" use="required"/>
+		<xs:attributeGroup ref="entityAttributes"/>
+		<xs:attributeGroup ref="entityPersistentAttributes"/>
+		<xs:attributeGroup ref="entityTypeAttributes"/>
+	</xs:complexType>
+	<xs:complexType name="entitySubtype">
+	    <xs:sequence>
+			<xs:group ref="entityElements"/>
+		   <xs:element name="superType" type="entityRefType"/>
+	    </xs:sequence>
+	    <xs:attribute name="id" type="xs:NCName" use="required"/>			
+		<xs:attributeGroup ref="entityTypeAttributes"/>
+	</xs:complexType>
+	<xs:group name="entityElements">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0"/>
+			<xs:choice  minOccurs="0" maxOccurs="unbounded">
+				<xs:element name="delegateto" type="delegateRefType"/>
+				<xs:element name="column" type="columnType"/>
+				<xs:element name="array" type="arrayType"/>
+				<xs:element name="foreignKey" type="foreignKeyType"/>
+				<xs:element name="typekey" type="typekeyType"/>
+				<xs:element name="derivedColumn" type="derivedColumnType"/>
+				<xs:element name="uniqkey" type="uniqueKeyType"/>
+				<xs:element name="event" type="xs:NMTOKEN"/>
+                <xs:element name="monetaryamount" type="monetaryamountType"/>
+				<xs:element name="subtype" type="entitySubtype"/>
+			</xs:choice>
+		</xs:sequence>
+	</xs:group>
+	<xs:attributeGroup name="entityPersistentAttributes">
+		<xs:attribute name="tableName" type="xs:NMTOKEN" use="optional"/>
+		<xs:attribute name="isVersionable" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Has a version number that increases every time the entity is changed. 
+				This allows the cache to identify when entities have been updated.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isTemporary" type="xs:boolean" use="optional"  default="false">
+			<xs:annotation>
+				<xs:documentation>A temporary entity created as part of an upgrade or staging table loading. 
+				The entity is deleted after the operation is complete.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isEditable" type="xs:boolean" use="optional"  default="false">
+			<xs:annotation>
+				<xs:documentation>The related database table contains rows that are editable by application users 
+				based on roles and permissions. An Editable table manages additional fields that represent an audit 
+				trail of an entity in the table (for example, who created it and when, who last edited it and when).
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+	<xs:attributeGroup name="entityTypeAttributes">
+		<xs:attribute name="isFinal" type="xs:boolean" use="optional"  default="false">
+			<xs:annotation>
+				<xs:documentation>A single table that represents multiple types of entities, called subtypes. 
+				Each subtype shares application logic and a majority of their fields. Each subtype may also 
+				define fields that are particular to it.
+				This entity cannot be subtyped.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>	
+		<xs:attribute name="isAbstract" type="xs:boolean" use="optional"  default="false">
+			<xs:annotation>
+				<xs:documentation>The entity is a supertype, but all instances of it must be one of its subtypes. That is, 
+				you cannot instantiate the supertype entity itself. An abstract entity is appropriate when the supertype 
+				serves only to collect logic or common fields, but does not make sense to exist on its own.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>	
+	</xs:attributeGroup>
+	<xs:attributeGroup name="entityAttributes">
+		<xs:attribute name="isExportable" type="xs:boolean" use="optional"  default="false">
+			<xs:annotation>
+				<xs:documentation>The entity is available to the SOAP APIs.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isExtendable" type="xs:boolean" use="optional"  default="false">
+			<xs:annotation>
+				<xs:documentation>Can be extended with additional custom fields added to it.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isKeyable" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Has a related database table that has a primary key. Each row in a Keyed
+				table has an integer primary key named ID. IDs are managed internally by the application, and 
+				the system ensures that no two rows in a keyed table have the same ID. In addition to the 
+				internal key, an external primary key can be associated with each row in a table.
+				Contains entities that are linked to an external source. Each row in a 
+				Sourceable entity\'s table has additional fields to identify the external system and store 
+				the ID of the Sourceable entity in the external system.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isLoadable" type="xs:boolean" use="optional"  default="false">
+			<xs:annotation>
+				<xs:documentation>Can be loaded via the staging tables.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isOverwrittenInStagingTable" type="xs:boolean" use="optional"  default="false">
+			<xs:annotation>
+				<xs:documentation>If also loadable, this attribute indicates the corresponding staging table contains a 
+				mapping that maps to this entity. When the system loads new data from the staging tables, the loader 
+				will overwrite any data you have supplied. As a result, you should not populate data into this entity.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>	
+	<xs:complexType name="entityRefType">
+		<xs:attribute name="idref" type="xs:NCName" use="required"/>
+	</xs:complexType>
+	<!-- ENTITY: related types -->
+	<xs:attributeGroup name="fieldBasicAttribute">
+		<xs:attribute name="name" type="xs:NMTOKEN" use="required"/>
+		<xs:attribute name="isVirtualProperty" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>The system creates no physical database column for this key.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isExtension" type="xs:boolean" use="optional" default="false"/>
+		<xs:attribute name="isDeprecated" type="xs:boolean" use="optional" default="false"/>
+		<xs:attribute name="description" type="xs:string"/>
+	</xs:attributeGroup>
+	<xs:attributeGroup name="fieldCommonAttribute">		
+		<xs:attribute name="columnName" type="xs:NMTOKEN" use="optional"/>
+		<xs:attribute name="isExportable" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>The entity is available to the SOAP APIs.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>	
+		<xs:attribute name="isWritable" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>The property can be written to via Gosu or the IDataObjectAPI.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isLocalized" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>The property is represented by a different localized table.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+	<xs:attributeGroup name="fieldColumnAttribute">		
+		<xs:attribute name="type" type="xs:string" use="required"/>
+	    <xs:attribute name="typeDescription" type="xs:string" use="optional"/>
+		<xs:attribute name="typeLength" type="xs:integer" use="optional"/>
+		<xs:attribute name="default" type="xs:string" use="optional"/>		
+		<xs:attribute name="isNonNull" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>The column cannot contain null values.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isLoadable" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>The column can be loaded via the staging tables.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isOverwrittenOnLoad" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>If also loadable, this attribute indicates the corresponding staging table
+				 contains a mapping that maps to this column. When the system loads new data from the 
+				 staging tables, the loader will overwrite any data you have supplied. As a result, you should
+				  not populate data into this column.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isInUniqueIndex" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>The column participates in one or more unique indexes.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+	</xs:attributeGroup>
+    <xs:attributeGroup name="fieldArrayAttribute">		
+		<xs:attribute name="isTriggersValidation" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Changes to the entity pointed to by this array trigger validation.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isLoadable" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>The array is loadable via the staging tables.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isOverwrittenOnLoad" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>If also loadable, this attribute indicates the corresponding staging 
+				table contains a mapping that maps to this array. When the system loads new data 
+				from the staging tables, the loader will overwrite any data you have supplied. As a result, 
+				you should not populate data into this array.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+    </xs:attributeGroup>	
+	<xs:attributeGroup name="fieldFKAttribute">	
+		<xs:attribute name="isTriggersValidation" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Changes to the entity pointed to by this foreign key trigger validation.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isLoadable" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>The foreign key is loadable via the staging tables.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isOverwrittenOnLoad" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>If also loadable, this attribute indicates the corresponding staging table 
+				contains a mapping that maps to this key. When the system loads new data from the staging 
+				tables, the loader will overwrite any data you have supplied. As a result, you should not 
+				populate data into this key.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isNonNull" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>The foreign key cannot contain null values.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isExportedAsID" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>Causes the system to create an appropriate identifier for the referenced 
+				entity: for example, ClaimIdentifier if the foreign key points to the claim table.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>	
+	</xs:attributeGroup>
+	<xs:attributeGroup name="fieldTypekeyAttribute">
+		<xs:attribute name="default" type="xs:string" use="optional"/>
+		<xs:attribute name="typeFilter" type="xs:string" use="optional"/>		
+		<xs:attribute name="isLoadable" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>The typekey is loadable via the staging tables.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isOverwrittenOnLoad" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>If also loadable, this attribute indicates the corresponding staging table 
+				contains a mapping that maps to this key. When the system loads new data from the staging 
+				tables, the loader will overwrite any data you have supplied. As a result, 
+				you should not populate data into this key.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isNonNull" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>The typekey cannot contain null values.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>	
+	</xs:attributeGroup>	
+	<xs:attributeGroup name="fieldDerivedColumnAttribute">	
+		<xs:attribute name="type" type="xs:string" use="required"/>
+		<xs:attribute name="typeDescription" type="xs:string" use="optional"/>	
+		<xs:attribute name="typeLink" type="xs:string" use="optional"/>	
+		<xs:attribute name="isArray" type="xs:boolean" use="optional" default="false"/>		
+		<xs:attribute name="isWritable" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>The property can be written to via Gosu or the IDataObjectAPI.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>
+		<xs:attribute name="isExportable" type="xs:boolean" use="optional" default="false">
+			<xs:annotation>
+				<xs:documentation>The entity is available to the SOAP APIs.
+				</xs:documentation>
+			</xs:annotation>
+		</xs:attribute>	
+	</xs:attributeGroup>	
+	<xs:complexType name="columnType">
+		<xs:attributeGroup ref="fieldBasicAttribute"/>
+		<xs:attributeGroup ref="fieldCommonAttribute"/>
+		<xs:attributeGroup ref="fieldColumnAttribute"/>		
+	</xs:complexType>
+	<xs:complexType name="arrayType">
+		<xs:sequence>
+			<xs:element name="targetEntity" type="entityRefType"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="fieldBasicAttribute"/>
+		<xs:attributeGroup ref="fieldCommonAttribute"/>		
+		<xs:attributeGroup ref="fieldArrayAttribute"/>				
+	</xs:complexType>
+	<xs:complexType name="foreignKeyType">
+		<xs:sequence>
+			<xs:element name="targetEntity" type="entityRefType"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="fieldBasicAttribute"/>
+		<xs:attributeGroup ref="fieldCommonAttribute"/>		
+		<xs:attributeGroup ref="fieldFKAttribute"/>
+	</xs:complexType>
+	<xs:complexType name="KeyFilterType">
+		<xs:sequence>
+			<xs:element name="targetTypelist" type="typelistRefType"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:NMTOKEN" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="typekeyType">
+		<xs:sequence>
+			<xs:element name="targetTypelist" type="typelistRefType"/>
+			<xs:element name="keyFilter" type="KeyFilterType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attributeGroup ref="fieldBasicAttribute"/>
+		<xs:attributeGroup ref="fieldCommonAttribute"/>		
+		<xs:attributeGroup ref="fieldTypekeyAttribute"/>						
+	</xs:complexType>
+	<xs:complexType name="derivedColumnType">
+		<xs:attributeGroup ref="fieldBasicAttribute"/>
+		<xs:attributeGroup ref="fieldDerivedColumnAttribute"/>
+	</xs:complexType>
+	<!-- unique key -->
+	<xs:complexType name="uniqueKeyType">
+		<xs:sequence>
+			<xs:element name="indexColumn" type="xs:NMTOKEN" minOccurs="1" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="indexName" type="xs:NMTOKEN" use="required"/>
+	</xs:complexType>
+	<!-- TYPELIST: main types -->
+	<xs:complexType name="typelistType">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string"/>
+			<xs:element name="typecode" type="typecodeType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="typefilter" type="typeFilterType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:NCName" use="required"/>
+		<xs:attribute name="tableName" type="xs:NMTOKEN" use="required"/>
+		<xs:attribute name="isFinal" type="xs:boolean" use="optional" default="false"/>
+	</xs:complexType>
+	<xs:complexType name="typelistRefType">
+		<xs:attribute name="idref" type="xs:NCName" use="required"/>
+	</xs:complexType>
+	<!-- TYPELIST: related types -->
+	<xs:complexType name="typecodeType">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string"/>
+			<xs:element name="category" type="typecodeCategoryType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="localization" type="typecodeLocalizationType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:string" use="required"/>
+		<xs:attribute name="code" type="xs:NMTOKEN" use="required"/>
+		<xs:attribute name="priority" type="xs:integer" use="optional" default="-1"/>
+		<xs:attribute name="isExtension" type="xs:boolean" use="optional" default="false"/>
+		<xs:attribute name="isRetired" type="xs:boolean" use="optional" default="false"/>
+	</xs:complexType>
+    <xs:complexType name="monetaryamountType">
+        <xs:attributeGroup ref="fieldBasicAttribute"/>
+        <xs:attributeGroup ref="fieldCommonAttribute"/>
+        <xs:attribute name="typeDescription" type="xs:string" use="optional"/>
+        <xs:attribute name="amountProperty" type="xs:string" use="optional"/>
+        <xs:attribute name="currencyProperty" type="xs:string" use="optional"/>
+    </xs:complexType>
+	<xs:complexType name="typecodeCategoryType">
+		<xs:attribute name="code" type="xs:NMTOKEN" use="optional"/>
+		<xs:attribute name="listName" type="xs:NMTOKEN" use="optional"/>
+	</xs:complexType>
+	<xs:complexType name="typeFilterType">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string"/>
+			<xs:element name="category" type="typecodeCategoryType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="include" type="typecodeCategoryType" minOccurs="0" maxOccurs="unbounded"/>
+			<xs:element name="exclude" type="typecodeCategoryType" minOccurs="0" maxOccurs="unbounded"/>
+		</xs:sequence>
+		<xs:attribute name="name" type="xs:NMTOKEN" use="required"/>
+	</xs:complexType>
+	<xs:complexType name="typecodeLocalizationType">
+		<xs:sequence>
+			<xs:element name="description" type="xs:string" minOccurs="0"/>
+		</xs:sequence>
+		<xs:attribute name="localeCode" type="xs:NMTOKEN" use="required"/>
+		<xs:attribute name="name" type="xs:string" use="optional"/>
+	</xs:complexType>	
+</xs:schema>

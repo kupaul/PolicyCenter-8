@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    id="ContactFile_Accounts"
+    title="displaykey.Web.ContactFile.Accounts.Title">
+    <LocationEntryPoint
+      signature="ContactFile_Accounts(contact : Contact)"/>
+    <Variable
+      name="contact"
+      type="Contact"/>
+    <Screen>
+      <Variable
+        initialValue="false"
+        name="revealAccountsIgnoringViewPermission"
+        type="Boolean"/>
+      <PanelRef>
+        <Toolbar/>
+        <ListViewPanel
+          id="AssociatedAccountsLV">
+          <RowIterator
+            editable="false"
+            elementName="item"
+            value="contact.AssociationFinder.findAccounts().where(\ account -&gt; perm.Account.view(account) or revealAccountsIgnoringViewPermission)">
+            <Variable
+              initialValue="item.AccountHolderContact"
+              name="accountHolderContact"/>
+            <Variable
+              initialValue="item.AccountContacts.where(\ a -&gt; a.Contact == contact)*.Roles.sortBy(\ acr -&gt; acr.DisplayName).join(&quot;, &quot;)"
+              name="roles"/>
+            <Row>
+              <Cell
+                action="AccountFileDoRetrievalForward.go(item.AccountNumber)"
+                actionAvailable="perm.Account.view(item)"
+                available="perm.Account.view(item)"
+                id="AccountNumber"
+                label="displaykey.Web.Contact.Associations.AccountNumber"
+                sortOrder="1"
+                value="item.AccountNumber"/>
+              <Cell
+                id="AccountHolder"
+                label="displaykey.Web.Contact.Associations.Name"
+                value="accountHolderContact.DisplayName"/>
+              <Cell
+                id="Address"
+                label="displaykey.Web.Contact.Associations.Address"
+                value="accountHolderContact.PrimaryAddress"/>
+              <Cell
+                id="Phone"
+                label="displaykey.Web.Contact.Associations.Phone"
+                value="accountHolderContact.PrimaryPhoneValue"/>
+              <Cell
+                id="Email"
+                label="displaykey.Web.Contact.Associations.Email"
+                value="accountHolderContact.EmailAddress1"/>
+              <Cell
+                id="Roles"
+                label="displaykey.Web.Contact.Associations.Roles"
+                value="roles"/>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+      </PanelRef>
+    </Screen>
+  </Page>
+</PCF>

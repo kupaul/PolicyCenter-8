@@ -1,0 +1,183 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Page
+    afterReturnFromPopup="uiHelper.refreshProductOffers(acct, selectionOfProducer)"
+    autosaveable="false"
+    beforeCommit="throw &quot;NewSubmission should never commit&quot;"
+    canEdit="true"
+    canVisit="true"
+    countsAsWork="false"
+    id="NewSubmission"
+    parent="AccountForward()"
+    startInEditMode="true"
+    title="displaykey.Web.NewSubmission.Title"
+    validateOnBundleCommit="false">
+    <LocationEntryPoint
+      signature="NewSubmission()"/>
+    <LocationEntryPoint
+      signature="NewSubmission(acct : Account)"/>
+    <Variable
+      initialValue="new gw.web.job.submission.NewSubmissionUIHelper(CurrentLocation)"
+      name="uiHelper"
+      type="gw.web.job.submission.NewSubmissionUIHelper"/>
+    <Variable
+      initialValue="null"
+      name="acct"
+      type="Account"/>
+    <Variable
+      initialValue="acct == null"
+      name="selectAccount"
+      type="boolean"/>
+    <Variable
+      initialValue="uiHelper.initializeProducerSelection(acct)"
+      name="selectionOfProducer"
+      type="ProducerSelection"/>
+    <Variable
+      initialValue="uiHelper.performNameClearance(acct, selectionOfProducer)"
+      name="productOffers"
+      recalculateOnRefresh="true"
+      type="ProductSelection[]"/>
+    <Variable
+      initialValue="true"
+      name="createSingle"
+      type="boolean"/>
+    <Variable
+      initialValue="typekey.QuoteType.TC_FULL"
+      name="typeOfQuote"
+      type="QuoteType"/>
+    <Screen
+      editable="true"
+      id="NewSubmissionScreen">
+      <DetailViewPanel
+        id="SelectAccountAndProducerDV">
+        <InputColumn>
+          <InputSet
+            visible="selectAccount">
+            <Label
+              id="AccountSelection"
+              label="displaykey.Web.NewSubmission.AccountSelection"/>
+            <PickerInput
+              conversionExpression="Account.checkedFindByNumber(PickedValue.AccountNumber, \ a -&gt; perm.Account.newSubmission(a))"
+              editable="true"
+              id="Account"
+              inputConversion="Account.checkedFindByNumber(VALUE, \ a -&gt; perm.Account.newSubmission(a))"
+              label="displaykey.Web.DesktopAccounts.AccountNumber"
+              onPick="uiHelper.refreshProductOffers(acct, selectionOfProducer)"
+              pickLocation="NewAccountPopup.push(true)"
+              required="true"
+              value="acct"
+              visible="true">
+              <PostOnChange
+                onChange="uiHelper.refreshProductOffers(acct, selectionOfProducer)"/>
+            </PickerInput>
+            <TextInput
+              action="AccountFileDoRetrievalForward.go(acct.AccountNumber)"
+              id="AccountName"
+              label="displaykey.Web.DesktopAccounts.Name"
+              value="acct.AccountHolder.AccountContact"
+              visible="acct.AccountNumber != null"/>
+          </InputSet>
+          <InputSet
+            id="ProducerSelectionInputSet">
+            <Label
+              id="ProducerSelection"
+              label="displaykey.Web.NewSubmission.ProducerSelection"/>
+            <OrgInput
+              editable="not User.util.CurrentUser.ExternalUser"
+              id="Producer"
+              label="displaykey.Web.ProducerSelection.Producer"
+              onPick="uiHelper.changedProducer(acct, selectionOfProducer)"
+              pickLocation="OrganizationSearchPopup.push(null, true)"
+              required="true"
+              validationExpression="selectionOfProducer.validateProducer()"
+              value="selectionOfProducer.Producer">
+              <PostOnChange
+                onChange="uiHelper.changedProducer(acct, selectionOfProducer)"/>
+            </OrgInput>
+            <RangeInput
+              desc="f"
+              editable="true"
+              id="ProducerCode"
+              label="displaykey.Web.ProducerSelection.ProducerCode"
+              optionLabel="displaykey.Web.ProducerSelection.ProducerCode.OptionLabel(VALUE.Code, VALUE.Description  != null ? VALUE.Description : &quot;&quot; )"
+              required="true"
+              validationExpression="selectionOfProducer.validateProducerCodeForSubmission()"
+              value="selectionOfProducer.ProducerCode"
+              valueRange="selectionOfProducer.getRangeOfActiveProducerCodesForCurrentUser()"
+              visible="selectionOfProducer.Producer != null">
+              <PostOnChange
+                onChange="uiHelper.refreshProductOffers(acct, selectionOfProducer)"/>
+            </RangeInput>
+          </InputSet>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelSet
+        visible="uiHelper.canPerformNameClearance(acct, selectionOfProducer)">
+        <DetailViewPanel
+          id="ProductSettingsDV">
+          <InputColumn>
+            <Label
+              id="SelectProducts"
+              label="displaykey.Web.NewSubmission.ProductOffers"/>
+            <Label
+              id="NoProducts"
+              label="displaykey.Web.ProductOffers.NoProductsOffered"
+              visible="productOffers.Count == 0"/>
+            <BooleanRadioInput
+              editable="true"
+              falseLabel="displaykey.Web.Submission.Products.Multiple"
+              id="CreateSingle"
+              label="displaykey.Web.Submission.Products.SingleMultiplePolicy"
+              trueLabel="displaykey.Web.Submission.Products.Single"
+              value="createSingle">
+              <PostOnChange/>
+            </BooleanRadioInput>
+            <TypeKeyInput
+              editable="true"
+              id="QuoteType"
+              label="displaykey.Web.Submission.Products.QuoteType"
+              required="true"
+              value="typeOfQuote">
+              <PostOnChange/>
+            </TypeKeyInput>
+            <TypeKeyInput
+              editable="true"
+              id="DefaultBaseState"
+              label="displaykey.Web.NewSubmission.DefaultBaseState"
+              required="true"
+              value="selectionOfProducer.State">
+              <PostOnChange/>
+            </TypeKeyInput>
+            <DateInput
+              editable="true"
+              id="DefaultPPEffDate"
+              label="displaykey.Web.NewSubmission.DefaultPPEffDate"
+              required="true"
+              value="selectionOfProducer.DefaultPPEffDate">
+              <PostOnChange/>
+            </DateInput>
+          </InputColumn>
+        </DetailViewPanel>
+        <DetailViewPanel
+          available="typeOfQuote != null"
+          id="ProductOffersDV">
+          <InputColumn>
+            <ListViewInput
+              def="ProductSelectionLV(productOffers, acct, selectionOfProducer, createSingle, typeOfQuote)"
+              visible="uiHelper.canPerformNameClearance(acct, selectionOfProducer)">
+              <Toolbar>
+                <ToolbarButton
+                  action="uiHelper.createMultipleSubmissions(productOffers, acct, selectionOfProducer, typeOfQuote)"
+                  id="MakeSubmissions"
+                  label="displaykey.Web.Submission.Products.MakeSubmissions"
+                  visible="not createSingle"/>
+              </Toolbar>
+            </ListViewInput>
+          </InputColumn>
+        </DetailViewPanel>
+      </PanelSet>
+    </Screen>
+  </Page>
+</PCF>

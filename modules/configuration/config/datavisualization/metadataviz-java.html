@@ -1,0 +1,199 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Metadata Visualization</title>
+
+    <!-- CSS Files -->
+    <link type="text/css" href="../resources/javascript/adapter/ext/Jit/Examples/css/base.css" rel="stylesheet"/>
+    <link type="text/css" href="../resources/javascript/adapter/ext/Jit/Examples/css/Hypertree.css" rel="stylesheet"/>
+
+    <!--[if IE]>
+    <script language="javascript" type="text/javascript"
+            src="../resources/javascript/adapter/ext/Jit/Extras/excanvas.js"></script><![endif]-->
+
+    <!-- JIT Library File -->
+    <script language="javascript" type="text/javascript" src="../resources/javascript/adapter/ext/Jit/jit.js"></script>
+
+    <!-- Example File -->
+    <script language="javascript" type="text/javascript"
+            src="../resources/javascript/adapter/ext/Jit/testingCaseJit.js"></script>
+    <script language="javascript">
+        var startFlag = 0;//use to see how many entities have been loaded, e.g. to check whether or not to contract
+        var json = {
+            "id": "gamma",
+            "name": "-",
+            "data": {
+                "$color" : "#7f8",
+                "$dim" : 1
+            }
+        };
+        var _graph = '';
+        var currEnt = '';
+
+        function searchForEntity(allEnts, name) {
+            for (var i = 0; i < allEnts.length; i++) {
+                if (allEnts[i].getAttribute("name") == name) {
+                    return (allEnts[i]);
+                }
+            }
+        }
+
+        function writer(str) {
+
+            var ents = str.responseXML.getElementsByTagName("entity");
+            var firstEntity = ents[0];
+            if (!!firstEntity) {
+                _graph = '{id:"gamma", adjacencies:["' + firstEntity.getAttribute("name").toUpperCase() + '"]}';
+                var linkedNodes = [firstEntity], tmp = [], allAttrs = [], allLinks = [], tkString = "", colString = "";
+
+                for (var i = 0; i < 3; i++) { //No way to get more than 3 levels anyways, but would be nice to recurse instead
+                    for (var l = 0; l < linkedNodes.length; l++) {
+                        _graph += ',{id: "' + linkedNodes[l].getAttribute("name").toUpperCase() + '", name: "' + linkedNodes[l].getAttribute("name").toUpperCase() + '", adjacencies: [';
+                        allLinks = linkedNodes[l].getElementsByTagName("link");
+                        for (var k = 0; k < allLinks.length; k++) {
+                            if (k > 0) {
+                                _graph += ",";    //todo: different colors for fks/arrs
+                            }
+                            _graph += '"' + allLinks[k].getAttribute("pointsTo").toUpperCase() + '"';
+                            tmp.push(searchForEntity(ents, allLinks[k].getAttribute("pointsTo")));
+                        }
+                        _graph += "], data: {";
+                        allAttrs = linkedNodes[l].getElementsByTagName("attribute");
+                        tkString = "";
+                        colString = "";
+                        for (var v=0; v<allAttrs.length; v++){
+                            if (allAttrs[v].getAttribute("type") == "TypeKey"){
+                                tkString += "*" + allAttrs[v].getAttribute("name") + ",";
+                            } else if (allAttrs[v].getAttribute("type") == "Column") {
+                                colString += "*" + allAttrs[v].getAttribute("name") + ",";
+                            }
+                        }
+                        _graph += '"Typekeys": "'+tkString+'", "Columns": "'+colString+'"}}';
+                    }
+                    linkedNodes = tmp;
+                    tmp = [];
+                }
+
+                _graph = '[' + _graph + ']';
+                currEnt = firstEntity.getAttribute("name");
+                startFlag++;
+                alert(_graph);
+                document.getElementById("xyz").click();
+            }
+        }
+        function entityHasName(eArray, listOfNames) {
+
+        }
+
+        function newXMLHttpRequest() {
+            var xmlreq = false;
+            if (window.XMLHttpRequest) {
+                xmlreq = new XMLHttpRequest();
+            } else if (window.ActiveXObject) {
+                try {
+                    xmlreq = new ActiveXObject("Msxml2.XMLHTTP");
+                } catch (e1) {
+                    try {
+                        xmlreq = new ActiveXObject("Microsoft.XMLHTTP");
+                    } catch (e2) {
+                    }
+                }
+            }
+            return xmlreq;
+        }
+
+        function getMyInfo() {
+            var ajaxRequest;
+            var javaServerURL = "localhost:8180/pc/service/metadataviz";
+            ajaxRequest = newXMLHttpRequest();
+            ajaxRequest.onreadystatechange = function() {
+                if (ajaxRequest.readyState == 4)
+
+                    if (ajaxRequest.status == 200) {
+                        writer(ajaxRequest);
+                    } else {
+                        alert("Yeah, I don't think so. HTTP Error " + ajaxRequest.statusText);
+                    }
+
+            };//getReadyStateHandler;
+            /*ajaxRequest.onerror = function (event) {
+             console.log(event.target);
+             }*/
+            ajaxRequest.open("GET", javaServerURL, true);
+            ajaxRequest.setRequestHeader("Content-Type",
+                    "application/x-www-form-urlencoded");
+            var buttonVals = ["fk","sub","tk","col"];
+            var awkwardString = "";
+            for (var i = 0; i < buttonVals.length; i++) {
+                var item = buttonVals[i];
+                awkwardString += "&" + item + "=" + document.getElementById(item).checked;
+            }
+            /*
+             $.ajax(gosuServerURL + "?blarg=0", {
+             type : "POST",
+             data : "var=" + document.getElementById("in").value + "&lvl=" +document.getElementById("levels").value + awkwardString,
+             error : function (response, status, error) {
+             console.log("ERROR!!! ",status, error);
+             },
+             success : function (data) {
+             console.log(data);
+             }            });   */
+
+
+            ajaxRequest.send("var=" + document.getElementById("in").value + "&lvl=" + document.getElementById("levels").value + awkwardString);
+
+        }
+
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="container">
+
+    <div id="left-container">
+
+
+        <div id="myText" class="text">
+
+            Select your options here.
+
+        </div>
+
+        <input type="text" id="in">
+        <button id="xyz" style="display:none">Display</button>
+        <br>
+        <button id="change" onclick="getMyInfo()">Load...</button>
+        <button id="ref">Collapse</button>
+        <button id="center">Recenter</button>
+        <br>
+        <input type="radio" id="fk" name="what" value="fk" checked>Foreign keys & arrays?
+        <input type="radio" id="sub" name="what" value="sub">Subtypes?
+        <input type="checkbox" id="tk" value="tk">Typekeys?
+        <input type="checkbox" id="col" value="col">Columns?
+        <select id="levels">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+        </select>
+        <br>
+
+    </div>
+
+    <div id="center-container">
+        <div id="infovis"></div>
+    </div>
+
+    <div id="right-container">
+
+        <div id="inner-details">Choose an entity to see its properties.</div>
+
+    </div>
+
+    <div id="log"></div>
+</div>
+<button id="clean">Clear the graph</button>
+</body>
+</html>

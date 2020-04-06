@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    canVisit="perm.System.viewteam and teamModel.hasActivitiesPage()"
+    id="TeamActivities"
+    title="displaykey.Web.Team.Activities(teamModel.Label, teamModel.getDisplayMode(false), domain.statistics.StatsWindowUtil.getActivitiesWindow())">
+    <LocationEntryPoint
+      signature="TeamActivities(teamModel : web.team.PCTeamModel)"/>
+    <Variable
+      name="teamModel"
+      type="web.team.PCTeamModel"/>
+    <Variable
+      initialValue="teamModel.canViewActivities()"
+      name="canViewActivities"/>
+    <Screen
+      id="TeamActivitiesScreen">
+      <TitleBar
+        appendListViewPaging="true"
+        title="displaykey.Web.Team.Activities(teamModel.Label, teamModel.getDisplayMode(false), domain.statistics.StatsWindowUtil.getActivitiesWindow())"/>
+      <Verbatim
+        label="displaykey.Web.Team.JobCountToDisplayExceedsMax(gw.api.system.PCConfigParameters.TeamScreenTabVisibilityRowCountCutoff.Value, &quot;activities&quot;, teamModel.Label)"
+        visible="not canViewActivities"/>
+      <PanelRef
+        def="TeamActivitiesLV(teamModel.Activities)"
+        visible="canViewActivities">
+        <Toolbar>
+          <CheckedValuesToolbarButton
+            allCheckedRowsAction="AssignActivitiesPopup.push(new web.activity.ActivityAssignmentPopup(CheckedValues, gw.assignment.AssignmentUtil.DefaultUser))"
+            flags="all canAssignActivity"
+            id="TeamGroupActivities_Assign"
+            iterator="TeamActivitiesLV.TeamActivitiesLV"
+            label="displaykey.Web.Team.Activities.Assign"
+            shortcut="A"/>
+        </Toolbar>
+      </PanelRef>
+    </Screen>
+  </Page>
+</PCF>

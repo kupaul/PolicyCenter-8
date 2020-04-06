@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="DatabaseStorageDV"
+    mode="OneAtATime">
+    <Require
+      name="ParameterSet"
+      type="database.DatabaseParameterSet"/>
+    <Variable
+      initialValue="ParameterSet.NameValuePairArrays[0]"
+      name="NameValuePairs"
+      type="gw.util.Pair[]"/>
+    <InputColumn>
+      <ListViewInput>
+        <Toolbar>
+          <ToolbarRangeInput
+            editable="true"
+            id="rangeInput"
+            label="ParameterSet.RowItemLabel"
+            optionLabel="getOptionLabel(VALUE) as java.lang.String"
+            sortValueRange="false"
+            value="NameValuePairs"
+            valueRange="ParameterSet.NameValuePairArrays">
+            <PostOnChange/>
+          </ToolbarRangeInput>
+        </Toolbar>
+        <ListViewPanel
+          editable="false"
+          id="DatabaseStorageLV">
+          <RowIterator
+            editable="false"
+            elementName="onerow"
+            pageSize="0"
+            value="NameValuePairs">
+            <Row>
+              <TextCell
+                id="name"
+                label="&quot;Attribute&quot;"
+                value="onerow.First"/>
+              <TextCell
+                id="value"
+                label="&quot;Value&quot;"
+                value="onerow.Second"/>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+      </ListViewInput>
+    </InputColumn>
+    <Code><![CDATA[uses gw.util.Pair
+function getOptionLabel(attributePairs: Pair[]): Object {
+  var optionLabel = ""
+  for (i in ParameterSet.KeyColumns) {
+    optionLabel +=  ((attributePairs[i].Second as String)  + " ")
+  }
+  return optionLabel
+}]]></Code>
+  </DetailViewPanel>
+</PCF>

@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Popup
+    countsAsWork="false"
+    id="CoveragePatternSearchByLinePatternPopup"
+    returnType="String"
+    title="searchType == CoveragePatternSearchType.TC_COVERAGE ? displaykey.Web.Coverage.SearchPage.Title(policyLinePattern.DisplayName) : displaykey.Web.Search.ExclusionAndCondition.Title(policyLinePattern.DisplayName)">
+    <LocationEntryPoint
+      signature="CoveragePatternSearchByLinePatternPopup(policyLinePattern : gw.api.productmodel.PolicyLinePattern, searchType : CoveragePatternSearchType)"/>
+    <Variable
+      name="policyLinePattern"
+      type="gw.api.productmodel.PolicyLinePattern"/>
+    <Variable
+      name="searchType"
+      type="CoveragePatternSearchType"/>
+    <Screen
+      id="CoveragePatternSearchScreen">
+      <SearchPanel
+        cachingEnabled="false"
+        criteriaName="searchCriteria"
+        resultsName="coveragePatterns"
+        search="searchCriteria.performSearch()"
+        searchCriteria="new gw.productmodel.ClausePatternSearchCriteria(){ :SearchType = searchType, :PolicyLinePatternCode = policyLinePattern.Code }"
+        searchOnEnter="false"
+        searchResultsType="gw.api.productmodel.ClausePattern[]">
+        <PanelRef
+          def="CoveragePatternSearchByLinePatternDV(searchCriteria, policyLinePattern)"/>
+        <PanelRef
+          def="CoveragePatternSearchResultsSelectLV(coveragePatterns)">
+          <Toolbar/>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+  </Popup>
+</PCF>

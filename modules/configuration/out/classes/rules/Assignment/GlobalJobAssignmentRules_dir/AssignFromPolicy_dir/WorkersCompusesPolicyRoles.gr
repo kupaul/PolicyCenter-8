@@ -1,0 +1,26 @@
+package rules.Assignment.GlobalJobAssignmentRules_dir.AssignFromPolicy_dir
+
+@gw.rules.RuleName("Workers Comp uses Policy Roles")
+internal class WorkersCompusesPolicyRoles {
+  static function doCondition(job : entity.Job) : boolean {
+    
+/*start00rule*/
+return job.Policy.Product == "WorkersComp"
+/*end00rule*/
+
+  }
+
+  static function doAction(job : entity.Job, actions : gw.rules.Action) {
+
+/*start00rule*/
+var assignment = job.CurrentRoleAssignment
+var polRole = job.Policy.getUserRoleAssignmentByRole( job.CurrentRoleAssignment.Role )
+if (polRole != null and polRole.AssignedUser != null) {
+  assignment.assign(polRole.AssignedGroup, polRole.AssignedUser)
+  gw.assignment.AssignmentUtil.logUserRoleAssignment(assignment, actions as java.lang.String)
+  actions.exit()
+}
+/*end00rule*/
+
+  }
+}

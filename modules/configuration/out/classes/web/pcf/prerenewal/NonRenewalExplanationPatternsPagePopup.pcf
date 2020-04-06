@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    canEdit="true"
+    id="NonRenewalExplanationPatternsPagePopup"
+    returnType="entity.NonRenewalExplanation[]"
+    startInEditMode="true"
+    title="displaykey.Web.PreRenewalDirection.NonRenewalExplanations">
+    <LocationEntryPoint
+      signature="NonRenewalExplanationPatternsPagePopup(policy : Policy, policyPeriod : PolicyPeriod, descriptions : String[])"/>
+    <Variable
+      name="policy"
+      type="Policy"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="descriptions"
+      type="String[]"/>
+    <Variable
+      initialValue="policyPeriod.PolicyTerm"
+      name="policyTerm"
+      type="PolicyTerm"/>
+    <Variable
+      initialValue="policyTerm.getAvailableNonRenewalExplanationPatterns()"
+      name="nonRenewalExplanationPatterns"
+      recalculateOnRefresh="true"/>
+    <Screen
+      id="NonRenewalExplanationPatternsScreen">
+      <Toolbar>
+        <CheckedValuesToolbarButton
+          id="NonRenewalExplanationPatternsPagePopup_AddButton"
+          iterator="NonRenewalExplanationPatternsLV"
+          label="displaykey.Web.NonRenewalExplanationPattern.Add"
+          pickValue="addNonRenewalExplanations(CheckedValues)"/>
+        <ToolbarButton
+          action="CurrentLocation.cancel()"
+          id="NonRenewalExplanationPatternsPagePopup_CancelButton"
+          label="displaykey.Web.NonRenewalExplanationPattern.Cancel"/>
+      </Toolbar>
+      <ListViewPanel
+        id="NonRenewalExplanationPatternsLV">
+        <RowIterator
+          editable="true"
+          elementName="nonRenewalExplanationPattern"
+          hasCheckBoxes="true"
+          id="NonRenewalExplanationPatternIterator"
+          value="nonRenewalExplanationPatterns">
+          <Row>
+            <Cell
+              enableSort="false"
+              id="Explanation"
+              label="displaykey.Web.PreRenewalDirection.NonRenewalExplanation.Explanation"
+              value="nonRenewalExplanationPattern.getEvaluatedBody(policyPeriod)"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </Screen>
+    <Code><![CDATA[
+function addNonRenewalExplanations(patterns : entity.NonRenewalExplanationPattern[]) : entity.NonRenewalExplanation[] {
+  var nonRenewalExplanations = new java.util.ArrayList<NonRenewalExplanation>()
+  patterns.each( \ pattern -> nonRenewalExplanations.add(policyTerm.addNonRenewalExplanation(pattern, policyPeriod)) )
+  descriptions[0] = descriptions[0] + policyTerm.createNonRenewalExplanationAddedHistoryDescription()
+  return nonRenewalExplanations.toTypedArray()
+}
+      
+    ]]></Code>
+  </Popup>
+</PCF>

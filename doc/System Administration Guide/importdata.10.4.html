@@ -1,0 +1,249 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Importing and Exporting Administrative Data from PolicyCenter</title>
+    <link rel="StyleSheet" href="css/importdata.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter System Administration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="importdata.10.1.html#1644791">Importing and Exporting Administrative Data</a> : Importing and Exporting Administrative Data from PolicyCenter</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1644791">Importing and Exporting Administrative Data from PolicyCenter</a></h3>
+      <div class="B_-_Body"><a name="1644795">You can import and export administrative data from the PolicyCenter user interface rather than from the command line. This interface imports and exports data in XML format only.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1644799">Creating an </a><span class="cvh_-_computer_voice_in_heading">XML</span> File for Import</h4>
+      <div class="B_-_Body"><a name="1644803">The </a><span class="cv_-_computer_voice">PolicyCenter/build/xsd/pc_import.xsd</span> file defines the XML schema used for import and export. This file further references information in two other XSD files in the same directory: <span class="cv_-_computer_voice">pc_entities.xsd</span> and <span class="cv_-_computer_voice">pc_typelists.xsd</span>. You can use any schema-aware XML editor to help format information properly according to these XSD definitions. You generate these XSD files with the following command:</div>
+      <div class="CS_-_Code_Single_Line"><a name="1644811">gwpc regen-xsd</a></div>
+      <div class="B_-_Body"><a name="1644812">Regenerate the XSD files any time you modify the data model. These files are likely to change as you configure the data model.</a></div>
+      <div class="B_-_Body"><a name="1644813">Within an XML file, it is common to have references between objects in the file. For example, a user object might refer to a group of which it is a member. Since the group definition is elsewhere in the XML file, or perhaps was previously defined elsewhere, the user definition refers to this group with a foreign key. The foreign key is the object’s public ID. For example, the XML file could contain:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="1644814">&lt;User publicID=“demo_sample:100”&gt; … &lt;/User&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1644815">…</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1644816">&lt;Group publicID=“demo_sample:200”&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1644817">&nbsp;&nbsp;…</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1644818">&nbsp;&nbsp;&lt;Users&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1644819">&nbsp;&nbsp;&nbsp;&nbsp;&lt;GroupUser&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1644820">&nbsp;&nbsp;&nbsp;&nbsp;&lt;User publicID=“demo_sample:100” /&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1644821">&nbsp;&nbsp;&nbsp;&nbsp;…</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1644822">&nbsp;&nbsp;&lt;/GroupUser&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1644823">&nbsp;&nbsp;&lt;/Users&gt;</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1644824">&lt;/Group&gt;</a></PRE>
+      <div class="B_-_Body"><a name="1644825">In this example, the user </a><span class="cv_-_computer_voice">demo_sample:100</span> is a member of group <span class="cv_-_computer_voice">demo_sample:200</span>.</div>
+      <div class="B_-_Body"><a name="1644826">Within a single XML file you can reference an item before defining the item. This enables you to define all of the groups first, for example, including referring to supervisor users who are not defined until later in the file. PolicyCenter reports errors only if a referenced object still does not exist after reading the entire file.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1673458">Validating the </a><span class="cvh_-_computer_voice_in_heading">XML</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1673513">You can validate the XML of your import file against an </a><span class="cv_-_computer_voice">pc_import.xsd</span> file using the following code:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="1673594">Uses java.io.File</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673595">Uses javax.xml.validation.SchemaFactory</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673596">Uses javax.xml.XMLConstants</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673597">Uses javax.xml.parsers.SAXParserFactory</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673598">Uses java.io.ByteArrayInputStream</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673590">Uses org.xml.sax.HandlerBase</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673610">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673521">var schemaFile = new File(TestEnvironment.TempDirectory, "pc_import.xsd")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673522">assertTrue(schemaFile + " Should exists", schemaFile.exists());</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673523">var factory = SchemaFactory.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673524">var schema = factory.newSchema(schemaFile)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673525">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673526">var spf = SAXParserFactory.newInstance();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673527">spf.setSchema(schema);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673528">spf.Validating = true</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673529">spf.NamespaceAware = true</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673530">var parser = spf.newSAXParser();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1673531">&nbsp;</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1673515">parser.parse(new FileInputStream("myImportFile.xml"), new HandlerBase()); </a></PRE>
+      <h4 class="H2_-_Heading_2"><a name="1644833">Importing Data From the User Interface</a></h4>
+      <div class="B_-_Body"><a name="1644834">You can import administrative data from the user interface. Log on as a user with the </a><span class="cv_-_computer_voice">viewadmin</span> and <span class="cv_-_computer_voice">soapadmin</span> permissions and choose <span class="ui_-_UI_element">Import/Export Data</span> from the <span class="ui_-_UI_element">Administration</span> page.</div>
+      <div class="B_-_Body"><a name="1644840">While importing data, PolicyCenter looks for matching data by </a><span class="cv_-_computer_voice">publicID</span> only. PolicyCenter notifies you if it locates existing records that match the data you are trying to import. You can then choose how you want to resolve differences between the existing data and the data you are importing.</div>
+      <div class="B_-_Body"><a name="1654680">If you perform a case-by-case resolution of each discrepancy, PolicyCenter displays conflicting fields and enables you to update the record with the new version or keep the old version.</a></div>
+      <div class="B_-_Body"><a name="1654688">During import, PolicyCenter inserts a new entity or updates an existing entity for each entity in the XML file, just as with the command-line import. During an import, PolicyCenter does not run validation rules. However PolicyCenter does run pre-update rules. For this reason, run the </a><span class="cv_-_computer_voice">maintenance_tools</span> actions to check for user and group exceptions after you import administrative data.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1654698">Importing Arrays</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1673303">PolicyCenter handles arrays differently depending on whether it is importing an owned array or a virtual array. If an entity owns the array, PolicyCenter notifies you of differences between the imported data and any existing data. However, you do not have the choice of resolving the array elements. PolicyCenter only gives you the option to delete the current array and replace all of the contents of the array. Virtual arrays, because they cannot be deleted, cannot be replaced by an import at all.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1654706">Exporting Data from the User Interface</a></h4>
+      <div class="B_-_Body"><a name="1672573">You can export different sets of data from PolicyCenter.</a></div>
+      <div class="T_-_Table"><a name="1652315">&nbsp;</a></div>
+      <div class="B_-_Body"><a name="1672784">You can export or import the following different sets of data: </a><span class="ui_-_UI_element">Admin</span>, <span class="ui_-_UI_element">Policy Forms</span>, <span class="ui_-_UI_element">Policy Holds</span>, and <span class="ui_-_UI_element">Roles</span>.</div>
+      <div class="B_-_Body"><a name="1654777">During export or import of users and groups, PolicyCenter also exports or imports any entities referred to by any </a><span class="cv_-_computer_voice">User</span> or <span class="cv_-_computer_voice">UserRole</span> object through a foreign key or array. </div>
+      <div class="B_-_Body"><a name="1654778">The </a><span class="ui_-_UI_element">Export</span> command exports an XML file.</div>
+      <h6 class="HS_-_Head_Sub"><a name="1657044">To export administrative data from PolicyCenter</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="1657061">Log on as a user with the </a><span class="cv_-_computer_voice">viewadmin</span> and <span class="cv_-_computer_voice">soapadmin</span> permissions</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1657129">Click the </a><span class="ui_-_UI_element">Administration</span> tab.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1657151">Choose </a><span class="ui_-_UI_element">Import/Export Data</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1657112">Select the </a><span class="ui_-_UI_element">Export</span> tab.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1657119">Select the data set to export.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1657171">Click </a><span class="ui_-_UI_element">Export</span>. Your browser prompts you to open or download the file.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	7.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1657181">Select to download the XML file.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

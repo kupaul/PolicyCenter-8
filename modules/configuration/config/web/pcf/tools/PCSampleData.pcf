@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    canEdit="true"
+    countsAsWork="false"
+    desc="Not for production use!  See the PolicyCenter Sample Data functional spec for further information."
+    id="PCSampleData"
+    parent="UnsupportedTools()"
+    startInEditMode="true"
+    title="displaykey.Web.InternalTools.PCSampleData">
+    <LocationEntryPoint
+      signature="PCSampleData()"/>
+    <Variable
+      initialValue="&quot;&quot;"
+      name="result"
+      type="String"/>
+    <Screen
+      id="PCSampleDataScreen">
+      <Toolbar/>
+      <Verbatim
+        label="result"/>
+      <PanelRef
+        def="UnsupportedToolsDisclaimerDV()"/>
+      <ListViewPanel
+        id="SampleDataSetsLV">
+        <RowIterator
+          editable="false"
+          elementName="dataSet"
+          value="typekey.SampleDataSet.getTypeKeys(false) as SampleDataSet[]">
+          <IteratorSort
+            sortBy="dataSet"
+            sortOrder="1"/>
+          <Row>
+            <LinkCell
+              id="Load">
+              <Link
+                action="loadSampleDataSet(dataSet)"
+                id="LoadSampleData"
+                label="displaykey.Web.UnsupportedTools.SampleData.Load"
+                styleClass="miniButton"/>
+            </LinkCell>
+            <Cell
+              id="Name"
+              label="displaykey.Web.UnsupportedTools.SampleData.Name"
+              value="dataSet.DisplayName"/>
+            <Cell
+              id="Description"
+              label="displaykey.Web.UnsupportedTools.SampleData.Description"
+              value="dataSet.Description"/>
+          </Row>
+        </RowIterator>
+        <!-- <Row>
+          <LinkCell
+            id="LoadOOSE">
+            <Link
+              action="gw.sampledata.OOSESampleData.makeOOSEData()"
+              id="LoadSampleData1"
+              label="displaykey.Web.UnsupportedTools.SampleData.Load"
+              styleClass="miniButton"/>
+          </LinkCell>
+          <Cell
+            id="Name1"
+            label="displaykey.Web.UnsupportedTools.SampleData.Name"
+            value="&quot;OOSE&quot;"/>
+          <Cell
+            id="Description1"
+            label="displaykey.Web.UnsupportedTools.SampleData.Description"
+            value="&quot;OOSE&quot;"/>
+        </Row> -->
+      </ListViewPanel>
+      <PanelSet>
+        <PanelRow>
+          <PanelColumn>
+            <DetailViewPanel>
+              <InputColumn>
+                <Label
+                  label="displaykey.Web.InternalTools.AdditionalSampleData"/>
+              </InputColumn>
+            </DetailViewPanel>
+            <ListViewPanel>
+              <Row>
+                <ButtonCell
+                  action="new gw.sampledata.GenerateCommercialPropertyPolicies().create()"
+                  align="left"
+                  bold="true"
+                  id="GenerateCommercialPropertyPolicies"
+                  label="displaykey.Web.InternalTools.LoadCatastropheSampleCPPolicies"
+                  value="displaykey.Web.InternalTools.LoadCatastropheSampleCPPolicies"/>
+              </Row>
+            </ListViewPanel>
+          </PanelColumn>
+        </PanelRow>
+      </PanelSet>
+    </Screen>
+    <Code><![CDATA[function loadSampleDataSet(dataSet : SampleDataSet) {
+  result = ""
+  gw.lang.reflect.TypeSystem.getByFullName("gw.sampledata.SampleData").TypeInfo.getMethod("loadSampleDataSet", {SampleDataSet}).CallHandler.handleCall(null, {dataSet})
+  result = displaykey.Web.UnsupportedTools.SampleData.Success(dataSet.DisplayName)
+}]]></Code>
+  </Page>
+</PCF>

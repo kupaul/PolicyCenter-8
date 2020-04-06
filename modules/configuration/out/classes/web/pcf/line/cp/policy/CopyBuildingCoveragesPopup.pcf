@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Popup
+    canEdit="true"
+    id="CopyBuildingCoveragesPopup"
+    startInEditMode="true"
+    title="displaykey.Web.PolicyLine.CopyCoverages.Title">
+    <LocationEntryPoint
+      signature="CopyBuildingCoveragesPopup(period : PolicyPeriod)"/>
+    <Variable
+      name="period"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="period.CPLine.CPLocations"
+      name="locations"/>
+    <Variable
+      initialValue="null"
+      name="copyFromBuilding"
+      type="CPBuilding"/>
+    <Variable
+      initialValue="10"
+      name="maxBuildings"
+      type="int"/>
+    <Variable
+      initialValue="10"
+      name="maxLocations"
+      type="int"/>
+    <Variable
+      initialValue="getBuildingsExcludingCopyFromBuilding()"
+      name="copyToBuildings"
+      recalculateOnRefresh="true"/>
+    <Screen>
+      <Toolbar>
+        <CheckedValuesToolbarButton
+          allCheckedRowsAction="copyFromBuilding.copyCoverages(CheckedValues); CurrentLocation.commit()"
+          id="copyCoverage"
+          iterator="CopyBuildingCoverage_CopyToLV.BuildingIterator"
+          label="displaykey.Web.PolicyLine.CopyCoverages.Copy"/>
+        <ToolbarButton
+          action="copyFromBuilding.copyCoverages(copyToBuildings); CurrentLocation.commit()"
+          available="copyFromBuilding != null"
+          id="copyAllCoverages"
+          label="displaykey.Web.PolicyLine.CopyCoverages.CopyAll"/>
+        <ToolbarButton
+          action="CurrentLocation.cancel()"
+          id="cancelCopyCoverages"
+          label="displaykey.Web.PolicyLine.CopyCoverages.Cancel"/>
+      </Toolbar>
+      <PanelRef
+        id="CopyFromPR">
+        <TitleBar
+          title="displaykey.Web.PolicyLine.CopyCoverages.CopyFrom.Title"/>
+        <DetailViewPanel
+          id="SelectFromBuildingDV">
+          <InputColumn>
+            <ButtonInput
+              hideIfDisabled="false"
+              id="copyFrom"
+              value="displaykey.Web.CopyPolicyData.CommercialProperty.Buildings.ChooseBuilding"
+              visible="true">
+              <MenuItemIterator
+                elementName="location"
+                id="CopyFromLocationIterator"
+                type="entity.CPLocation"
+                value="getLimitedNumberOfLocations(locations.toList())"
+                visible="true">
+                <IteratorSort
+                  sortBy="location.Location.LocationNum"
+                  sortOrder="1"/>
+                <MenuItem
+                  checked="location.ID == copyFromBuilding.CPLocation.ID"
+                  id="CopyFromLocation"
+                  label="location"
+                  visible="true">
+                  <MenuItemIterator
+                    elementName="building"
+                    id="CopyFromBuildingIterator"
+                    type="entity.CPBuilding"
+                    value="getLimitedNumberOfBuildings(location.Buildings.toList())"
+                    visible="true">
+                    <IteratorSort
+                      sortBy="building.Building.BuildingNum"
+                      sortOrder="1"/>
+                    <MenuItem
+                      action="copyFromBuilding = building"
+                      checked="copyFromBuilding.ID == building.ID"
+                      id="CopyFromBuilding"
+                      label="building"
+                      showConfirmMessage="false"
+                      visible="true"/>
+                  </MenuItemIterator>
+                  <PickerMenuItem
+                    action="BuildingSearchPopup.push(period)"
+                    id="CopyFromBuildingMore"
+                    label="displaykey.Web.CopyPolicyData.CommercialProperty.Buildings.CopyCoverages.More"
+                    onPick="copyFromBuilding = PickedValue"
+                    showConfirmMessage="false"
+                    visible="location.Buildings.Count &gt; maxBuildings"/>
+                </MenuItem>
+              </MenuItemIterator>
+              <PickerMenuItem
+                action="BuildingSearchPopup.push(period)"
+                id="CopyFromLocationMore"
+                label="displaykey.Web.CopyPolicyData.CommercialProperty.Buildings.CopyCoverages.More"
+                onPick="copyFromBuilding = PickedValue"
+                showConfirmMessage="false"
+                visible="locations.Count &gt; maxLocations"/>
+            </ButtonInput>
+            <TextInput
+              boldLabel="true"
+              boldValue="true"
+              id="SelectedBuilding"
+              label="displaykey.Web.CopyPolicyData.CommercialProperty.Buildings.CopyCoverages.SelectedBuilding"
+              value="copyFromBuilding == null ? displaykey.Web.CopyPolicyData.CommercialProperty.Buildings.CopyCoverages.NoneSelected : copyFromBuilding"/>
+          </InputColumn>
+        </DetailViewPanel>
+      </PanelRef>
+      <PanelRef
+        def="CPBldgSuggestedCovDV(copyFromBuilding == null ? locations.firstWhere(\ l -&gt; not l.Buildings.IsEmpty).Buildings.first() : copyFromBuilding, false)"
+        editable="false"
+        visible="copyFromBuilding != null"/>
+      <PanelRef
+        def="CopyBuildingCoverage_CopyToLV(locations, copyToBuildings)"
+        visible="copyFromBuilding != null">
+        <TitleBar
+          title="displaykey.Web.PolicyLine.CopyCoverages.CopyTo.Title"/>
+        <Toolbar/>
+      </PanelRef>
+    </Screen>
+    <Code><![CDATA[function getLimitedNumberOfBuildings(buildings : List<CPBuilding>) : List<CPBuilding> {
+  return buildings.Count > maxBuildings ? buildings.sortBy(\ b -> b.Building.BuildingNum).subList(0, maxBuildings) : buildings
+}
+
+function getLimitedNumberOfLocations(originalLocations : List<CPLocation>) : List<CPLocation> {
+  return originalLocations.Count > maxLocations ? originalLocations.sortBy(\ l -> l.Location.LocationNum).subList(0, maxLocations) : originalLocations
+}
+
+function getBuildingsExcludingCopyFromBuilding() : CPBuilding[] {
+  var sortedLocations = locations.sortBy(\ l -> l.Location.LocationNum)
+  var sortedBuildings : List<CPBuilding> = {}
+  sortedLocations.each(\ l -> sortedBuildings.addAll(l.Buildings.toList().sortBy(\ b -> b.Building.BuildingNum)))
+  return sortedBuildings.where(\ b -> b.ID != copyFromBuilding.ID).toArray(new CPBuilding[sortedBuildings.Count - 1])
+}]]></Code>
+  </Popup>
+</PCF>

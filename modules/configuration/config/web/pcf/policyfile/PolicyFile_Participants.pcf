@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    afterEnter="gw.api.web.PebblesUtil.addWebMessages(CurrentLocation, policyPeriod.PolicyFileMessages)"
+    canEdit="perm.System.editpolicyroles"
+    canVisit="perm.PolicyPeriod.view(policyPeriod) and perm.System.viewpolicyfile and perm.System.viewparticipants"
+    id="PolicyFile_Participants"
+    title="displaykey.Web.PolicyFile.Participants">
+    <LocationEntryPoint
+      signature="PolicyFile_Participants(policyPeriod : PolicyPeriod, asOfDate : DateTime)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="asOfDate"
+      type="DateTime"/>
+    <Variable
+      initialValue="policyPeriod.Policy"
+      name="policy"/>
+    <Screen
+      editable="true"
+      id="PolicyFileParticipantsScreen">
+      <Toolbar>
+        <EditButtons/>
+        <IteratorButtons
+          iterator="ParticipantsLV"/>
+      </Toolbar>
+      <ListViewPanel
+        id="ParticipantsLV">
+        <RowIterator
+          checkBoxVisible="assignment.Role != &quot;Creator&quot;"
+          editable="true"
+          elementName="assignment"
+          hasCheckBoxes="true"
+          hideCheckBoxesIfReadOnly="true"
+          toCreateAndAdd="policy.createAndAddRoleAssignment()"
+          toRemove="policy.removeFromRoleAssignments(assignment)"
+          value="policy.RoleAssignments">
+          <Row
+            editable="assignment.Role != &quot;Creator&quot;">
+            <TypeKeyCell
+              editable="assignment.New"
+              filter="gw.assignment.AssignmentUtil.filterAssignableRoles( policy, VALUE )"
+              id="AssignmentRole"
+              label="displaykey.Web.JobRoles.Role"
+              required="true"
+              unique="true"
+              value="assignment.Role"/>
+            <Cell
+              editable="true"
+              id="AssignedUser"
+              label="displaykey.Web.JobRoles.AssignedUser"
+              required="true"
+              value="assignment.AssignedUser"/>
+            <RangeCell
+              editable="true"
+              id="AssignedGroup"
+              label="displaykey.Web.Account.Participants.AssignedGroup"
+              required="true"
+              value="assignment.AssignedGroup"
+              valueRange="assignment.AssignedUser.AllGroups as Group[]"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </Screen>
+  </Page>
+</PCF>

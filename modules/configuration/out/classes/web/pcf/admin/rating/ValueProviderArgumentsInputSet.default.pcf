@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <InputSet
+    editable="advancedEdit"
+    id="ValueProviderArgumentsInputSet"
+    mode="default">
+    <Require
+      name="valueProviderProxy"
+      type="gw.rating.rtm.valueprovider.CustomValueProviderData"/>
+    <Require
+      name="advancedEdit"
+      type="boolean"/>
+    <Require
+      name="columnDefinition"
+      type="RateTableColumn"/>
+    <Input
+      id="ValueProviderHelpText"
+      value="valueProviderProxy.ClassName == &quot;TypeListValueProvider&quot; ? &quot;&quot; : gw.rating.rtm.valueprovider.RateTableCellValueProviderFactory.getValueProvider(columnDefinition).ArgumentsHelpText"
+      visible="CurrentLocation.InEditMode and valueProviderProxy.ClassName &lt;&gt; null"/>
+    <ListViewInput
+      id="ArgumentListView"
+      label="displaykey.Web.Rating.RateTableDefinition.Argument"
+      visible="valueProviderProxy.ClassName &lt;&gt; ValueProvider.TC_TYPELISTVALUEPROVIDER">
+      <Toolbar>
+        <IteratorButtons
+          iterator="ArgumentIterator"/>
+      </Toolbar>
+      <ListViewPanel>
+        <RowIterator
+          editable="true"
+          elementName="argument"
+          hideCheckBoxesIfReadOnly="true"
+          id="ArgumentIterator"
+          toCreateAndAdd="valueProviderProxy.addNewArgument()"
+          toRemove="valueProviderProxy.Arguments.remove(argument); valueProviderProxy.createValueProviderString()"
+          value="valueProviderProxy.Arguments">
+          <Row>
+            <Cell
+              editable="true"
+              enableSort="false"
+              id="ArgumentValue"
+              required="false"
+              value="argument.Name">
+              <PostOnChange
+                onChange="valueProviderProxy.createValueProviderString()"/>
+            </Cell>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </ListViewInput>
+  </InputSet>
+</PCF>

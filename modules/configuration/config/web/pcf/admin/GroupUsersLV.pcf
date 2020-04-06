@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    id="GroupUsersLV">
+    <ExposeIterator
+      valueType="entity.GroupUser"
+      widget="GroupUsersLV"/>
+    <Require
+      name="group"
+      type="Group"/>
+    <Variable
+      initialValue="group.Organization"
+      name="organization"
+      recalculateOnRefresh="true"
+      type="Organization"/>
+    <Variable
+      initialValue="organization.isCarrier()"
+      name="isCarrierOrg"
+      recalculateOnRefresh="true"
+      type="Boolean"/>
+    <RowIterator
+      checkBoxVisible="true"
+      conversionExpression="var GU = new GroupUser(); GU.User = PickedValue; GU.Group = group; return GU"
+      editable="perm.GroupUser.edit"
+      elementName="groupUser"
+      hasCheckBoxes="true"
+      hideCheckBoxesIfReadOnly="true"
+      pickLocation="UserSearchPopup.push(organization, getRequiredUserType())"
+      toAdd="groupUser.User.addToGroup(groupUser)"
+      toRemove="group.removeUser(groupUser.User)"
+      value="group.Users">
+      <Row>
+        <Cell
+          action="UserDetailPage.go(groupUser.User)"
+          editable="true"
+          id="User"
+          label="displaykey.Web.Admin.GroupUsers.User"
+          required="true"
+          unique="true"
+          value="groupUser.User">
+          <PostOnChange/>
+        </Cell>
+        <CheckBoxCell
+          editable="true"
+          id="Member"
+          label="displaykey.Web.Admin.GroupUsers.Member"
+          value="groupUser.Member"/>
+        <CheckBoxCell
+          editable="true"
+          id="Manager"
+          label="displaykey.Web.Admin.GroupUsers.Manager"
+          value="groupUser.Manager"/>
+        <Cell
+          align="left"
+          editable="true"
+          id="LoadFactorType"
+          label="displaykey.Web.Admin.GroupUsers.LoadFactorType"
+          value="groupUser.LoadFactorType"/>
+        <Cell
+          align="left"
+          editable="true"
+          id="LoadFactor"
+          label="displaykey.Web.Admin.GroupUsers.LoadFactor"
+          validationExpression="!(groupUser.LoadFactor &lt; 0 or groupUser.LoadFactor &gt; 100) ? null : displaykey.Web.Admin.GroupUsers.LoadFactor.OufOfRange"
+          value="groupUser.LoadFactor"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function getRequiredUserType() : UserType {
+  switch (group.GroupType) {
+    case GroupType.TC_BRANCHAUDIT :
+    case GroupType.TC_REGIONAUDIT : return UserType.TC_AUDITOR
+    case GroupType.TC_BRANCHUW :
+    case GroupType.TC_REGIONUW :
+    case GroupType.TC_HOMEOFFICEUW : return UserType.TC_UNDERWRITER
+    case GroupType.TC_PRODUCER : return UserType.TC_PRODUCER
+  }
+  return null
+}]]></Code>
+  </ListViewPanel>
+</PCF>

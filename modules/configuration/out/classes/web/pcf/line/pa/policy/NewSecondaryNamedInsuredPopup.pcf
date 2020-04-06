@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Popup
+    beforeCommit="policySecNamedInsured.resetContactAndRoles(duplicateContactsPopupHelper.existingPCContactWithABContactMatch)"
+    canEdit="true"
+    countsAsWork="false"
+    id="NewSecondaryNamedInsuredPopup"
+    returnType="PolicySecNamedInsured"
+    startInEditMode="true"
+    title="displaykey.Web.Contact.NewContact(entity.PolicySecNamedInsured.Type.TypeInfo.DisplayName)">
+    <LocationEntryPoint
+      signature="NewSecondaryNamedInsuredPopup(period: PolicyPeriod)"/>
+    <Variable
+      name="period"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="initializePolicySecondaryNamedInsured()"
+      name="policySecNamedInsured"/>
+    <Variable
+      initialValue="gw.api.util.JurisdictionMappingUtil.getJurisdiction(policySecNamedInsured.AccountContactRole.AccountContact.Contact.PrimaryAddress)"
+      name="referenceState"
+      type="Jurisdiction"/>
+    <Variable
+      initialValue="period.getReferenceDateForCurrentJob(referenceState)"
+      name="referenceDate"
+      type="java.util.Date"/>
+    <Variable
+      initialValue="period.Job.NewTerm ? null : policySecNamedInsured.BasedOn.IndustryCode"
+      name="previousIndustryCode"
+      type="IndustryCode"/>
+    <Variable
+      initialValue="new gw.pcf.duplicatecontacts.DuplicateContactsPopupHelper(policySecNamedInsured.AccountContactRole.AccountContact.Contact)"
+      name="duplicateContactsPopupHelper"/>
+    <Screen
+      editable="true"
+      id="ContactDetailScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.checkForDuplicatesOrUpdate(\ -&gt; CurrentLocation.pickValueAndCommit(policySecNamedInsured))"
+          id="ForceDupCheckUpdate"
+          label="displaykey.Button.OK"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+        <EditButtons
+          pickValue="policySecNamedInsured"
+          updateVisible="not duplicateContactsPopupHelper.ShowButton"/>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.push()"
+          id="CheckForDuplicates"
+          label="displaykey.Web.Contact.CheckForDuplicates"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+      </Toolbar>
+      <DetailViewPanel
+        id="SecondaryNamedInsuredInfoDV">
+        <InputColumn>
+          <TextInput
+            editable="true"
+            id="Relationship"
+            label="displaykey.Web.Policy.NamedInsured.Relationship"
+            value="policySecNamedInsured.Relationship"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef
+        def="NewPolicyContactRoleDetailsCV(policySecNamedInsured, false)"/>
+    </Screen>
+    <Code><![CDATA[function initializePolicySecondaryNamedInsured() : PolicySecNamedInsured {
+  period.changeSecondaryNamedInsuredTo(period.Policy.Account.addNewAccountContactOfType("Person").Contact)
+  return period.SecondaryNamedInsured  
+}]]></Code>
+  </Popup>
+</PCF>

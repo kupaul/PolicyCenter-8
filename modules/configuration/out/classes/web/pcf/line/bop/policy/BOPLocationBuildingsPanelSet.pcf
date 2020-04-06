@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <PanelSet
+    id="BOPLocationBuildingsPanelSet">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="policyPeriod.BOPLine"
+      name="bopLine"
+      type="BOPLine"/>
+    <ListDetailPanel
+      selectionName="bopLocation"
+      selectionType="BOPLocation">
+      <PanelRef
+        def="BOPLocationsLV(bopLine)">
+        <TitleBar
+          title="displaykey.Web.Policy.LocationContainer.Location.List.Title"/>
+        <Toolbar/>
+      </PanelRef>
+      <CardViewPanel>
+        <Card
+          id="BuildingCard"
+          title="displaykey.Web.Policy.LocationContainer.Location.Building.List.Title">
+          <ListDetailPanel
+            selectionName="selectedBuilding"
+            selectionType="BOPBuilding">
+            <PanelRef>
+              <Toolbar>
+                <IteratorButtons
+                  iterator="BOPLocationBuildingsLV"
+                  removeShortcut="E"/>
+              </Toolbar>
+              <ListViewPanel
+                id="BOPLocationBuildingsLV">
+                <RowIterator
+                  editable="true"
+                  elementName="building"
+                  hasCheckBoxes="true"
+                  hideCheckBoxesIfReadOnly="true"
+                  pickLocation="BOPBuildingPopup.push(bopLine, bopLocation, null, openForEdit, true, jobWizardHelper)"
+                  toRemove="bopLocation.removeFromLineSpecificBuildings(building)"
+                  type="BOPBuilding"
+                  value="bopLocation.Buildings">
+                  <Row>
+                    <Cell
+                      action="BOPBuildingPopup.push(bopLine, bopLocation, building, openForEdit, true, jobWizardHelper)"
+                      align="right"
+                      id="BuildingNumEdit"
+                      label="displaykey.Web.Policy.LocationContainer.Location.Building.BuildingNum"
+                      sortOrder="1"
+                      value="building.Building.BuildingNum"/>
+                    <Cell
+                      action="BOPBuildingPopup.push(bopLine, bopLocation, building, openForEdit, true, jobWizardHelper)"
+                      id="DescriptionEdit"
+                      label="displaykey.Web.Policy.LocationContainer.Location.Building.Description"
+                      value="building.Building.Description"/>
+                    <Cell
+                      id="CoverageCurrency"
+                      label="displaykey.Web.Policy.CoverableCurrency"
+                      value="building.PreferredCoverageCurrency"
+                      visible="gw.api.util.CurrencyUtil.isMultiCurrencyMode()"/>
+                  </Row>
+                </RowIterator>
+              </ListViewPanel>
+            </PanelRef>
+            <PanelRef
+              available="selectedBuilding != null"
+              def="PreferredCoverageCurrencyPanelSet(selectedBuilding, false, jobWizardHelper)"
+              id="PreferredCoverageCurrencySelectorRef"
+              visible="selectedBuilding != null"/>
+            <CardViewPanel>
+              <Card
+                id="BOPBuilding_DetailsCard"
+                title="displaykey.Web.Policy.BOP.Buildings.Details">
+                <PanelRef
+                  def="BOPBuilding_DetailsDV(selectedBuilding, false)"
+                  editable="false"/>
+                <PanelRef
+                  def="AdditionalInterestDetailsDV(selectedBuilding, false)"/>
+              </Card>
+              <Card
+                id="BOPBuilding_AdditionalCoveragesCard"
+                title="displaykey.Web.Policy.BOP.Buildings.AdditionalCoverage"
+                visible="selectedBuilding != null">
+                <PanelRef
+                  def="AdditionalCoveragesPanelSet(selectedBuilding, new String[]{&quot;BOPBuildingOtherCat&quot;,&quot;BOPIncomeExpenseCat&quot;,&quot;BOPBuildingUtilitiesCat&quot;,&quot;BOPBuildingSpecialPerilCat&quot;,&quot;BOPStateCat&quot;}, true)"
+                  editable="false"
+                  visible="selectedBuilding != null"/>
+              </Card>
+            </CardViewPanel>
+          </ListDetailPanel>
+        </Card>
+      </CardViewPanel>
+    </ListDetailPanel>
+  </PanelSet>
+</PCF>

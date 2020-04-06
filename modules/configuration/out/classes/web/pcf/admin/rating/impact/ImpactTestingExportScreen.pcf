@@ -1,0 +1,354 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Screen
+    id="ImpactTestingExportScreen">
+    <Require
+      name="testCase"
+      type="ImpactTestingTestCase"/>
+    <Variable
+      initialValue="new gw.pcf.rating.impact.ImpactTestingPrepareUIHelper(testCase)"
+      name="helper"/>
+    <Variable
+      initialValue="new gw.rating.impact.RatingExportUtil().generateIAStatistics(testCase)"
+      name="impactTestingStatistics"
+      type="gw.rating.impact.ImpactTestingStatistics"/>
+    <Variable
+      initialValue="impactTestingStatistics.Buckets"
+      name="impactTestingResultBuckets"
+      type="List&lt;gw.rating.impact.ImpactTestingResultBucket&gt;"/>
+    <Variable
+      initialValue="impactTestingStatistics.TotalNumberDataPoints"
+      name="numberOfValidDataPoints"
+      type="int"/>
+    <Variable
+      initialValue="getResultStatus() == -1"
+      name="waiting"
+      type="boolean"/>
+    <Variable
+      initialValue="(not waiting) and getResultStatus() == 100"
+      name="showDownload"
+      type="boolean"/>
+    <Variable
+      initialValue="new gw.rating.impact.ImpactTestRunFilterSet()"
+      name="filter"/>
+    <Variable
+      initialValue="testCase.TestPrepErrorCount &gt; 0 or testCase.TestRunErrorCount &gt; 0"
+      name="hasErrors"/>
+    <Toolbar>
+      <ToolbarButton
+        action="(CurrentLocation as pcf.api.Wizard).previous()"
+        id="BackButton"
+        label="displaykey.Web.Rating.ImpactTesting.Search.Back"/>
+    </Toolbar>
+    <PanelRef>
+      <TitleBar
+        title="displaykey.Web.Rating.ImpactTesting.Prepare.ImpactTestingResults"/>
+      <PanelSet>
+        <ListViewPanel
+          visible="numberOfValidDataPoints == 0">
+          <Row>
+            <TextCell
+              id="NoDataMessage"
+              value="displaykey.Web.Rating.ImpactTesting.Prepare.NoValidDataPointsToGraph"/>
+          </Row>
+        </ListViewPanel>
+        <PanelRow>
+          <PanelColumn
+            visible="numberOfValidDataPoints &gt; 0">
+            <ChartPanel
+              categoryLabelOrientation="Horizontal"
+              height="400"
+              id="DislocationAnalysisCountChart"
+              label="displaykey.Web.Rating.ImpactTesting.Prepare.PoliciesAffectedTitle"
+              type="Bar"
+              width="400">
+              <DomainAxis
+                label="displaykey.Web.Rating.ImpactTesting.Results.TermAmountRanges"
+                type="Category"
+                upperBound="6000"/>
+              <RangeAxis
+                label="displaykey.Web.Rating.ImpactTesting.Results.NumberOfPolicies"
+                type="Number"
+                useWholeNumbers="true"/>
+              <DataSeries
+                categoryLabel="value.ShortLabel"
+                dataValues="impactTestingResultBuckets"
+                label="displaykey.Web.Rating.ImpactTesting.Prepare.NumberOfPolicies"
+                value="value.Data.Count"/>
+            </ChartPanel>
+          </PanelColumn>
+          <PanelColumn
+            visible="numberOfValidDataPoints &gt; 0">
+            <ListViewPanel>
+              <Variable
+                initialValue="impactTestingStatistics.Buckets.sum(\b -&gt; b.Data.Count)"
+                name="TotalNumDataPoints"
+                type="int"/>
+              <RowIterator
+                editable="false"
+                elementName="impactTestResultBucket"
+                value="impactTestingStatistics.Buckets">
+                <Row>
+                  <Cell
+                    align="center"
+                    id="Range"
+                    label="displaykey.Web.Rating.ImpactTesting.Results.RangeHeader"
+                    tooltip="displaykey.Web.Rating.ImpactTesting.Results.RangeToolTip"
+                    value="impactTestResultBucket.Category"
+                    width="200"/>
+                  <Cell
+                    align="right"
+                    id="Count"
+                    label="displaykey.Web.Rating.ImpactTesting.Results.CountHeader"
+                    tooltip="displaykey.Web.Rating.ImpactTesting.Results.CountToolTip"
+                    value="impactTestResultBucket.Data.Count"
+                    width="100"/>
+                  <Cell
+                    align="right"
+                    id="PercentOfTotal"
+                    label="displaykey.Web.Rating.ImpactTesting.Results.PercentOfTotalHeader"
+                    tooltip="displaykey.Web.Rating.ImpactTesting.Results.PercentOfTotalToolTip"
+                    value="return (TotalNumDataPoints &gt; 0) ? ((impactTestResultBucket.Data.Count as java.math.BigDecimal)/TotalNumDataPoints * 100) : 0"
+                    width="100"/>
+                  <Cell
+                    align="right"
+                    formatType="currency"
+                    id="AvgDiff"
+                    label="displaykey.Web.Rating.ImpactTesting.Results.CurrencyDifferentialHeader"
+                    tooltip="displaykey.Web.Rating.ImpactTesting.Results.CurrencyDifferentialToolTip"
+                    value="impactTestResultBucket.Data.sum(\d -&gt; d.DiffInValue)"
+                    width="150"/>
+                </Row>
+              </RowIterator>
+              <Row
+                useTitleStyle="true">
+                <Cell
+                  align="center"
+                  id="Totals"
+                  value="displaykey.Web.Rating.ImpactTesting.Results.Total"
+                  width="200"/>
+                <Cell
+                  align="right"
+                  id="Count"
+                  label="displaykey.Web.Rating.ImpactTesting.Results.CountHeader"
+                  value="TotalNumDataPoints"
+                  width="100"/>
+                <Cell
+                  align="right"
+                  id="TotalPercent"
+                  value="return ((TotalNumDataPoints &gt; 0) ? &quot;100%&quot; : &quot;-&quot;)"
+                  width="100"/>
+                <Cell
+                  align="right"
+                  formatType="currency"
+                  id="AvgDiff"
+                  label="displaykey.Web.Rating.ImpactTesting.Results.CurrencyDifferentialHeader"
+                  value="impactTestingStatistics.TotalDiffValues"
+                  width="150"/>
+              </Row>
+            </ListViewPanel>
+          </PanelColumn>
+          <PanelColumn
+            visible="numberOfValidDataPoints &gt; 0">
+            <ChartPanel
+              categoryLabelOrientation="Horizontal"
+              height="400"
+              id="DislocationAnalysisPctChart"
+              label="displaykey.Web.Rating.ImpactTesting.Prepare.FinancialImpactTitle"
+              type="Bar"
+              width="400">
+              <DomainAxis
+                label="displaykey.Web.Rating.ImpactTesting.Results.TermAmountRanges"
+                type="Category"/>
+              <RangeAxis
+                label="displaykey.Web.Rating.ImpactTesting.Results.TotalAmountOfDifference(displaykey.Web.Rating.ImpactTesting.Results.CurrencyDifferentialHeader)"
+                type="Number"/>
+              <DataSeries
+                categoryLabel="value.ShortLabel"
+                dataValues="impactTestingStatistics.Buckets"
+                label="displaykey.Web.Rating.ImpactTesting.Results.TotalAmountOfDifference(displaykey.Web.Rating.ImpactTesting.Results.CurrencyDifferentialHeader)"
+                value="value.DiffTotal"/>
+            </ChartPanel>
+          </PanelColumn>
+          <PanelColumn>
+            <PanelRef>
+              <TitleBar
+                title="displaykey.Web.Rating.ImpactTesting.Prepare.SelectedRateBooks"/>
+              <DetailViewPanel
+                id="SelectedRateBooksPanelDV">
+                <InputColumn>
+                  <ListViewInput>
+                    <Toolbar
+                      id="toolbar"/>
+                    <ListViewPanel>
+                      <RowIterator
+                        editable="false"
+                        elementName="impactTestingRateBook"
+                        value="helper.SelectedRateBooks.orderBy(\ i -&gt; i.RateBook.UpdateTime)">
+                        <IteratorSort
+                          sortBy="impactTestingRateBook.RateBook.BookName"
+                          sortOrder="1"/>
+                        <IteratorSort
+                          sortBy="impactTestingRateBook.RateBook.BookCode"
+                          sortOrder="2"/>
+                        <IteratorSort
+                          sortBy="impactTestingRateBook.RateBook.BookEdition"
+                          sortOrder="3"/>
+                        <Row>
+                          <Cell
+                            id="SelectedRateBook"
+                            value="displaykey.Web.Rating.ImpactTesting.Prepare.SelectedRateBookLabel(impactTestingRateBook.RateBook.BookName,impactTestingRateBook.RateBook.BookEdition)"/>
+                        </Row>
+                      </RowIterator>
+                    </ListViewPanel>
+                  </ListViewInput>
+                </InputColumn>
+              </DetailViewPanel>
+            </PanelRef>
+          </PanelColumn>
+        </PanelRow>
+      </PanelSet>
+    </PanelRef>
+    <PanelRef>
+      <TitleBar
+        title="displaykey.Web.Rating.ImpactTesting.Prepare.ExportResults"/>
+      <DetailViewPanel>
+        <InputColumn
+          refreshOnProgressComplete="true">
+          <ButtonInput
+            action="helper.exportPeriodsToExcel()"
+            align="center"
+            id="ExportButton"
+            labelAbove="true"
+            value="displaykey.Web.Rating.ImpactTesting.Prepare.ExportToExcel"
+            visible="testCase.Result == null"/>
+          <ProgressInput
+            id="ExportProgressBar"
+            labelAbove="true"
+            percentage="getResultStatus()"
+            status="displaykey.Web.Rating.ImpactTesting.Prepare.ProcessingExportFile"
+            visible="testCase.Result != null and waiting"/>
+          <ButtonInput
+            action="helper.downloadExportFile()"
+            download="true"
+            id="DownloadResultButton"
+            labelAbove="true"
+            value="displaykey.Web.Rating.ImpactTesting.DownloadResults"
+            visible="showDownload"/>
+          <ButtonInput
+            action="helper.cancelCreateExportFileJob(); getResultStatus()"
+            download="true"
+            id="CancelJob"
+            labelAbove="true"
+            value="displaykey.Web.Rating.ImpactTesting.CancelJob"
+            visible="testCase.Result != null and waiting"/>
+          <DateInput
+            dateFormat="short"
+            id="ExportFileDateTimeStamp"
+            label="displaykey.Web.Rating.ImpactTesting.ImpactTestResultDateTimeStamp"
+            timeFormat="short"
+            value="testCase.Result.UpdateTime"
+            visible="showDownload"/>
+        </InputColumn>
+      </DetailViewPanel>
+    </PanelRef>
+    <PanelRef>
+      <Toolbar>
+        <ToolbarFilter
+          cacheKey="testCase?.UpdateTime.Time as String"
+          cacheOptions="false"
+          id="tbFilter"
+          iterator="periodList"
+          label="displaykey.Web.Rating.ImpactTesting.Export.PeriodListFilter"
+          name="filterSet">
+          <ToolbarFilterOption
+            filter="filter.AllFilter"
+            label="displaykey.Web.Rating.ImpactTesting.Export.FilterShowAll"
+            selectOnEnter="true"/>
+          <ToolbarFilterOption
+            filter="filter.SuccessFilter"
+            label="displaykey.Web.Rating.ImpactTesting.Export.FilterShowSucceeded"
+            visible="hasErrors"/>
+          <ToolbarFilterOption
+            filter="filter.FailureFilter"
+            label="displaykey.Web.Rating.ImpactTesting.Export.FilterShowFailed"
+            visible="hasErrors"/>
+        </ToolbarFilter>
+      </Toolbar>
+      <ListViewPanel
+        id="QuotedTestPeriodsLV">
+        <RowIterator
+          canPick="false"
+          editable="false"
+          elementName="period"
+          id="periodList"
+          value="testCase.Periods">
+          <Row>
+            <Cell
+              action="ImpactTestingPolicyPeriodPopup.push(period)"
+              icon="period.Success ? &quot;profiler_green.png&quot; : &quot;profiler_red.png&quot;"
+              iconLabel="period.HasFailures ? displaykey.Web.Rating.ImpactTesting.Prepare.ErrorHoverText(period.FailureMessage) : &quot;&quot;"
+              id="IconCol"
+              showHeaderIcon="false"
+              value="true"/>
+            <Cell
+              action="JobForward.go(period.OriginalPeriod.Job)"
+              confirmMessage="displaykey.Web.Rating.ImpactTesting.PeriodSummary.ExitingImpactTestingWizardConfirmationMsg"
+              id="originalPeriodPolicyNumberCol"
+              label="displaykey.Web.Rating.ImpactTesting.PeriodList.OrigPeriodPolicyNumber"
+              showConfirmMessage="true"
+              value="period.OriginalPeriod.PolicyNumberDisplayString"/>
+            <Cell
+              id="originalPeriodTermCol"
+              label="displaykey.Web.Rating.ImpactTesting.PeriodList.OrigPeriodTerm"
+              value="period.OriginalPeriod.TermNumber"/>
+            <Cell
+              id="originalPeriodProductCol"
+              label="displaykey.Web.Rating.ImpactTesting.PeriodList.OrigPeriodProduct"
+              value="gw.rating.rtm.util.ProductModelUtils.lineStyleProductDisplay(period.OriginalPeriod.Policy.Product)"/>
+            <Cell
+              id="originalPeriodProducerCol"
+              label="displaykey.Web.Rating.ImpactTesting.PeriodList.OrigPeriodProducer"
+              value="period.OriginalPeriod.Policy.ProducerCodeOfService"/>
+            <Cell
+              id="originalPeriodJurisdictionCol"
+              label="displaykey.Web.Rating.ImpactTesting.PeriodList.OrigPeriodJurisdiction"
+              value="period.OriginalPeriod.BaseState"/>
+            <Cell
+              id="originalPeriodEffectiveCol"
+              label="displaykey.Web.Rating.ImpactTesting.PeriodList.OrigPeriodEffective"
+              value="period.OriginalPeriod.PeriodStart"/>
+            <Cell
+              id="originalPeriodExpirationCol"
+              label="displaykey.Web.Rating.ImpactTesting.PeriodList.OrigPeriodExpiration"
+              value="period.OriginalPeriod.PeriodEnd"/>
+            <Cell
+              action="ImpactTestingPolicyPeriodOverviewPopup.push(period, period.BaselinePeriod)"
+              actionAvailable="period.TestPrepResult == ImpactTestingPrepResult.TC_SUCCESS"
+              id="baselinePeriodCol"
+              label="displaykey.Web.Rating.ImpactTesting.PeriodList.BaselinePeriod"
+              value="period.BaselinePeriod?.Job.JobNumber"/>
+            <Cell
+              action="ImpactTestingPolicyPeriodOverviewPopup.push(period, period.TestPeriod)"
+              actionAvailable="period.TestRunResult == TC_SUCCESS"
+              id="testPeriodCol"
+              label="displaykey.Web.Rating.ImpactTesting.PeriodList.TestPeriod"
+              value="period.TestPeriod?.Job.JobNumber"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </PanelRef>
+    <Code><![CDATA[function getResultStatus() : int {
+  var localTestCase = new gw.api.database.Query(ImpactTestingTestCase).select().whereTypeIs(ImpactTestingTestCase).first()
+  if (localTestCase.Result.Complete) {
+    showDownload = true
+    waiting = false
+    return 100
+  } else {
+    return -1
+  }
+}]]></Code>
+  </Screen>
+</PCF>

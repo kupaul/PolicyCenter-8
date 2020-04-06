@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <PanelSet
+    id="RatingCumulDetailsPanelSet"
+    mode="IMLine">
+    <Require
+      name="period"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="isEditable"
+      type="boolean"/>
+    <Variable
+      initialValue="period.IMLine"
+      name="imLine"/>
+    <Variable
+      initialValue="imLine.quotePageLength()"
+      name="pageLength"/>
+    <Variable
+      initialValue="checkViewMode()"
+      name="viewMode"/>
+    <PanelRef
+      def="RatingOverrideButtonDV(period, period.IMLine, jobWizardHelper, CurrentLocation.InEditMode)"
+      id="RatingOverrideButtonDV"/>
+    <PanelRef
+      def="IMRatingCumulPanelSet(imLine)"
+      mode="viewMode"
+      visible="not imLine.Costs.Empty">
+      <Toolbar
+        visible="period.Lines.Count == 1">
+        <ToolbarButton
+          action="viewMode = &quot;drilldown&quot;"
+          available="(viewMode != &quot;drilldown&quot;)"
+          id="compactviewButton"
+          label="displaykey.Web.Quote.CompactView"/>
+        <ToolbarButton
+          action="viewMode = &quot;scroll&quot;"
+          available="(viewMode != &quot;scroll&quot;) and pageLength &lt; 5000"
+          id="extendedviewButton"
+          label="displaykey.Web.Quote.ExtendedView"/>
+      </Toolbar>
+    </PanelRef>
+    <PanelRef
+      id="GrandTotalPanel">
+      <TitleBar
+        id="grandTotalTitle"
+        title="displaykey.Web.Quote.TotalCostLabel.Total2(imLine.Costs.AmountSum(period.PreferredSettlementCurrency))"/>
+      <DetailViewPanel>
+        <InputColumn/>
+      </DetailViewPanel>
+    </PanelRef>
+    <Code><![CDATA[function checkViewMode() : String {
+  return (pageLength > 50) ? "drilldown" : "scroll"
+}]]></Code>
+  </PanelSet>
+</PCF>

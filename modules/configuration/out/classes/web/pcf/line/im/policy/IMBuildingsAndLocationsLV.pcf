@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <ListViewPanel
+    id="IMBuildingsAndLocationsLV">
+    <ExposeIterator
+      flags="removeAvailable,removeAvailable"
+      valueType="entity.IMLocation"
+      widget="IMBuildingsAndLocationsLV"/>
+    <Require
+      name="imLine"
+      type="InlandMarineLine"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="10"
+      name="maxUnusedBuildings"
+      type="int"/>
+    <Row
+      renderAsSmartHeader="true">
+      <Cell
+        align="center"
+        id="ActionsHeader"
+        value="displaykey.Web.Policy.LocationContainer.Location.Actions"
+        width="75"/>
+      <Cell
+        align="left"
+        colspan="5"
+        id="BuildingDescHeader"
+        value="displaykey.Web.Policy.LocationContainer.Location.Building.Description"/>
+    </Row>
+    <RowIterator
+      checkBoxVisible="false"
+      editable="true"
+      elementName="imLocation"
+      hideCheckBoxesIfReadOnly="true"
+      numEntriesRequired="0"
+      pageSize="5"
+      pickLocation="IMLocationPopup.push(imLine, true, true)"
+      toRemove="imLine.removeFromLineSpecificLocations(imLocation)"
+      validationLabel="displaykey.Web.Policy.LocationContainer.Locations"
+      value="imLine.IMLocations">
+      <Variable
+        initialValue="imLocation.UnusedBuildings"
+        name="unusedBuildings"/>
+      <IteratorSort
+        sortBy="imLocation.Location.LocationNum"
+        sortOrder="1"/>
+      <!-- Need a toolbar flag to control the "Remove" button explicitly in a nested LV -->
+      <ToolbarFlag
+        name="removeAvailable"/>
+      <Row
+        useArchivedStyle="false"
+        useTitleStyle="true">
+        <Cell
+          align="center"
+          hideChildrenIfReadOnly="false"
+          id="Actions"
+          value="&quot;&quot;"
+          width="75">
+          <MenuItem
+            id="AddBuilding"
+            label="displaykey.Web.Policy.LocationContainer.Location.AddBuilding"
+            visible="openForEdit">
+            <MenuItem
+              action="IMBuildingPopup.push(imLine, imLocation, openForEdit, jobWizardHelper)"
+              id="AddNewBuilding"
+              label="displaykey.Web.Policy.LocationContainer.Location.CreateNewBuilding"/>
+            <MenuItem
+              id="AddExistingBuildings"
+              label="displaykey.Web.Policy.LocationContainer.Location.ExistingBuilding">
+              <MenuItemIterator
+                elementName="unusedBuilding"
+                id="UnusedBuildingIterator"
+                value="getLimitedNumberOfSortedUnusedBuildings(unusedBuildings, maxUnusedBuildings)">
+                <IteratorSort
+                  sortBy="unusedBuilding.BuildingNum"
+                  sortOrder="1"/>
+                <MenuItem
+                  action="IMBuildingPopup.push(imLine, imLocation, unusedBuilding, openForEdit, jobWizardHelper)"
+                  id="UnassignedBuilding"
+                  label="unusedBuilding.DisplayName"/>
+              </MenuItemIterator>
+              <MenuItem
+                action="MoreIMBuildingsPopup.push(imLocation, unusedBuildings, openForEdit)"
+                id="AddMoreBuildings"
+                label="displaykey.Web.Policy.LocationContainer.Location.MoreBuildings"
+                visible="unusedBuildings.Count &gt; maxUnusedBuildings"/>
+            </MenuItem>
+          </MenuItem>
+          <MenuItem
+            action="imLine.removeFromLineSpecificLocations(imLocation)"
+            confirmMessage="imLocation.hasSign() or imLocation.isReferencedByAccountsReceivable() ? displaykey.Web.Policy.LocationContainer.RemoveLocationAndSignConfirmMsg : displaykey.Web.Policy.LocationContainer.RemoveLocationConfirmMsg"
+            id="RemoveLocation"
+            label="displaykey.Web.Policy.LocationContainer.RemoveLocation"
+            visible="openForEdit"/>
+        </Cell>
+        <Cell
+          action="IMLocationPopup.push(imLocation, openForEdit, true)"
+          colspan="5"
+          id="LocationName"
+          value="imLocation.DisplayName"/>
+      </Row>
+      <RowIterator
+        checkBoxVisible="openForEdit"
+        editable="true"
+        elementName="imBuilding"
+        hasCheckBoxes="true"
+        id="buildingIterator"
+        pageSize="0"
+        toRemove="imLocation.removeFromLineSpecificBuildings(imBuilding)"
+        value="imLocation.Buildings">
+        <IteratorSort
+          sortBy="imBuilding.Building.BuildingNum"
+          sortOrder="1"/>
+        <ToolbarFlag
+          name="removeAvailable"/>
+        <Row>
+          <Cell
+            id="BlankCell2"
+            width="75"/>
+          <TextCell
+            action="IMBuildingPopup.push(imLine, imBuilding, openForEdit, jobWizardHelper)"
+            align="left"
+            colspan="5"
+            id="BuildingDescription"
+            value="imBuilding"
+            visible="not imLocation.Buildings.IsEmpty"/>
+        </Row>
+      </RowIterator>
+    </RowIterator>
+    <Code><![CDATA[function getLimitedNumberOfSortedUnusedBuildings(buildings : Building[], numBuildings : int) : Building[] {
+  var sortedBuildings = buildings.toList().sortBy(\building -> building.BuildingNum)
+  if (sortedBuildings.Count > numBuildings) {
+    sortedBuildings = sortedBuildings.subList(0, numBuildings)
+  }
+  return sortedBuildings.toTypedArray()
+}]]></Code>
+  </ListViewPanel>
+</PCF>

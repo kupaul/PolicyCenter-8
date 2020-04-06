@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="CancelPolicyDV">
+    <Require
+      name="cancellation"
+      type="Cancellation"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="cancellation.PolicyPeriod"
+      name="policyPeriod"/>
+    <Variable
+      initialValue="policyPeriod.EditEffectiveDate"
+      name="effectiveDate"
+      type="java.util.Date"/>
+    <InputColumn>
+      <TypeKeyInput
+        id="Source"
+        label="displaykey.Web.CancellationWizard.Source"
+        value="cancellation.Source"/>
+      <TypeKeyInput
+        id="Reason"
+        label="displaykey.Web.CancellationWizard.Reason"
+        value="cancellation.CancelReasonCode"/>
+      <TextAreaInput
+        editable="true"
+        id="ReasonDescription"
+        label="displaykey.Web.CancellationWizard.ReasonDescription"
+        numCols="40"
+        numRows="6"
+        value="cancellation.Description"/>
+      <TypeKeyInput
+        id="CalcMethod"
+        label="displaykey.Web.CancellationWizard.CalcMethod"
+        value="policyPeriod.RefundCalcMethod"/>
+      <DateInput
+        editable="cancellation.canEditEffectiveDate(policyPeriod)"
+        id="CancelDate"
+        label="displaykey.Web.CancellationWizard.CancelDate"
+        required="true"
+        validationExpression="cancellation.validateEffectiveDate(policyPeriod, effectiveDate, policyPeriod.RefundCalcMethod)"
+        value="effectiveDate">
+        <PostOnChange
+          onChange="if (effectiveDate != null) { applyCancellationDateChange() }"/>
+      </DateInput>
+    </InputColumn>
+    <Code><![CDATA[function applyCancellationDateChange() {
+  try{
+    policyPeriod.CancellationProcess.setCancellationDate(effectiveDate)
+    jobWizardHelper.setPeriodToView(policyPeriod.getSlice(policyPeriod.EditEffectiveDate))
+  } catch(e : java.lang.IllegalArgumentException) {
+    var formatString = displaykey.Web.CancellationSetup.Error.DateFormatString
+    var effDateStr = effectiveDate.format(formatString)
+    gw.api.job.JobProcessLogger.logWarning("Failed to change cancellation date to ${effDateStr} for period \"${policyPeriod}\" because: ${e.Message}")
+  }
+}]]></Code>
+  </DetailViewPanel>
+</PCF>

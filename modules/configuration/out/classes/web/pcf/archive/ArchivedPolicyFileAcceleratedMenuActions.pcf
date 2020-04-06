@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <AcceleratedMenuActions
+    id="ArchivedPolicyFileAcceleratedMenuActions"
+    title="displaykey.Web.PolicyFile.PolicyContractTitle"
+    titleIcon="&quot;PolicyContractTitle.png&quot;">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="asOfDate"
+      type="DateTime"/>
+    <Code><![CDATA[function switchToPolicyPeriodAsOfDate( selectedDate : java.util.Date, period : PolicyPeriod ) {
+        var endOfSelectedDate = gw.api.util.DateUtil.endOfDay(selectedDate)
+        var newPeriod = entity.Policy.finder.findPolicyPeriodByPolicyAndAsOfDate( policyPeriod.Policy, endOfSelectedDate )
+        if ( newPeriod != null ) {
+          PolicyFileForward.go( newPeriod, endOfSelectedDate )
+        } else {
+          var dateStr = gw.api.util.StringUtil.formatDate(endOfSelectedDate, "short")
+          throw new gw.api.util.DisplayableException( displaykey.Java.PolicyPeriodAsOfDateSelector.NoPeriod( dateStr ) )
+        }
+      }]]></Code>
+    <Link
+      action="switchToPolicyPeriodAsOfDate(ArgValue, policyPeriod)"
+      argInitialValue="asOfDate"
+      argLabel="displaykey.Java.PolicyFilePage.PeriodSelectorDate"
+      argType="java.util.Date"
+      id="PolicyPeriodEffDateID"
+      performActionOnArgChange="true"
+      recalculateArgOnRefresh="true"
+      styleClass="bigButton"/>
+  </AcceleratedMenuActions>
+</PCF>

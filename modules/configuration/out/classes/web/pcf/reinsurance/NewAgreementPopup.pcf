@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    beforeCommit="gw.reinsurance.agreement.RIAgreementValidation.validateUI(agreement); gw.reinsurance.agreement.RIAgreementValidation.validateAgainstRisk(agreement, ririsk)"
+    canEdit="true"
+    canVisit="(perm.System.editreinsuranceprogram and agreementType.isTreatyAgreement) or (perm.System.editreinsurancefacagreement and not agreementType.isTreatyAgreement)"
+    id="NewAgreementPopup"
+    returnType="RIAgreement"
+    startInEditMode="true"
+    title="agreementType.isTreatyAgreement ? ArrangementType.TC_TREATY.DisplayName : ArrangementType.TC_FACULTATIVE.DisplayName">
+    <LocationEntryPoint
+      signature="NewAgreementPopup(agreementType : typekey.RIAgreement, ririsk : entity.RIRisk)"/>
+    <Variable
+      name="agreementType"
+      type="typekey.RIAgreement"/>
+    <Variable
+      name="ririsk"
+      type="entity.RIRisk"/>
+    <Variable
+      initialValue="gw.web.admin.ReinsuranceUIHelper.createTreaty(ririsk, agreementType)"
+      name="agreement"
+      type="RIAgreement"/>
+    <ScreenRef
+      def="AgreementScreen(agreement, true)"/>
+  </Popup>
+</PCF>

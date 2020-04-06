@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <PanelSet
+    id="AuditPremiumDetailsPanelSet"
+    mode="WorkersCompLine">
+    <Require
+      name="auditInfo"
+      type="AuditInformation"/>
+    <Require
+      name="period"
+      type="PolicyPeriod"/>
+    <Require
+      name="isEditable"
+      type="boolean"/>
+    <Variable
+      initialValue="auditInfo.IsPremiumReport"
+      name="isPremiumReport"
+      type="boolean"/>
+    <Variable
+      initialValue="auditInfo.IsFinalAudit"
+      name="isFinalAudit"
+      type="boolean"/>
+    <Variable
+      initialValue="period.WorkersCompLine.Costs.cast( WCCost )"
+      name="lineCosts"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="lineCosts.partition( \ c -&gt; c.JurisdictionState ).mapValues(\i -&gt; i.toSet()).toAutoMap( \ st -&gt; java.util.Collections.emptySet&lt;WCCost&gt;() )"
+      name="partitionCosts"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="period.WorkersCompLine.RepresentativeJurisdictions"
+      name="jurisdictions"
+      recalculateOnRefresh="true"/>
+    <PanelIterator
+      elementName="jurisdiction"
+      value="jurisdictions">
+      <IteratorSort
+        sortBy="jurisdictions"
+        sortOrder="1"/>
+      <Variable
+        initialValue="partitionCosts.get(jurisdiction.State)"
+        name="stateCosts"
+        recalculateOnRefresh="true"/>
+      <Variable
+        initialValue="jurisdiction.AuditRatingPeriods"
+        name="ratingPeriods"
+        recalculateOnRefresh="true"/>
+      <PanelRef
+        visible="not stateCosts.Empty">
+        <TitleBar
+          title="jurisdiction.DisplayName"
+          visible="jurisdictions.Count &gt; 1"/>
+        <PanelSet
+          id="JurisdictionPanelSet">
+          <PanelIterator
+            elementName="ratingPeriod"
+            value="ratingPeriods.toTypedArray()">
+            <Variable
+              initialValue="stateCosts.byRatingPeriod( ratingPeriod )"
+              name="periodCosts"
+              recalculateOnRefresh="true"/>
+            <PanelRef
+              visible="not periodCosts.Empty">
+              <DetailViewPanel
+                id="PeriodDetailDV">
+                <InputColumn>
+                  <Label
+                    label="standardPremLabel(ratingPeriods.Count &gt; 1, ratingPeriod)"/>
+                  <ListViewInput
+                    def="AuditRateCostDetailLV(isPremiumReport, periodCosts, ratingPeriod)"
+                    labelAbove="true">
+                    <Toolbar/>
+                  </ListViewInput>
+                </InputColumn>
+              </DetailViewPanel>
+            </PanelRef>
+          </PanelIterator>
+          <PanelRef>
+            <DetailViewPanel
+              id="StateSummaryDetailDV">
+              <Variable
+                initialValue="jurisdiction.WCLine.BasedOn.Costs.cast( WCCost ).where( \ w -&gt; w.JurisdictionState==jurisdiction.State ).toSet()"
+                name="basedOnStateCosts"
+                recalculateOnRefresh="true"/>
+              <InputColumn>
+                <Label
+                  label="displaykey.Web.SubmissionWizard.Quote.WC.OtherPremiumAndTax"/>
+                <ListViewInput
+                  def="AuditRateCostDetailStateLV(isPremiumReport, stateCosts, basedOnStateCosts, jurisdiction)"
+                  labelAbove="true">
+                  <Toolbar/>
+                </ListViewInput>
+              </InputColumn>
+            </DetailViewPanel>
+          </PanelRef>
+        </PanelSet>
+      </PanelRef>
+    </PanelIterator>
+    <PanelRef
+      id="GrandTotalPanel">
+      <TitleBar
+        id="grandTotalTitle"
+        title="displaykey.Web.Quote.TotalCostLabel.Total2(lineCosts.AmountSum(period.PreferredSettlementCurrency))"/>
+      <DetailViewPanel>
+        <InputColumn/>
+      </DetailViewPanel>
+    </PanelRef>
+    <Code><![CDATA[
+function standardPremLabel(splitPeriod : boolean, ratingPeriod : gw.lob.wc.rating.WCRatingPeriod) : String {
+  if (isFinalAudit and not splitPeriod) {
+    return displaykey.Web.Quote.WC.StandardPremium.OnePeriod
+  }
+  else {
+    return displaykey.Web.Quote.WC.StandardPremium.SplitPeriod( gw.api.util.StringUtil.formatDate(ratingPeriod.RatingStart, "short"),
+      gw.api.util.StringUtil.formatDate(ratingPeriod.RatingEnd, "short") )
+  }
+}
+]]></Code>
+  </PanelSet>
+</PCF>

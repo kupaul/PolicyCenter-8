@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <PanelSet
+    id="PolicyLineSummaryPanelSet"
+    mode="GLLine">
+    <Require
+      name="line"
+      type="PolicyLine"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="line as GLLine"
+      name="glLine"/>
+    <!-- Line-level clauses -->
+    <DetailViewPanel
+      id="LineDV">
+      <InputColumn>
+        <Label
+          label="displaykey.Web.Policy.GL.ExposureUnits"/>
+        <ListViewInput
+          editable="false"
+          labelAbove="true">
+          <Toolbar/>
+          <ListViewPanel
+            id="glExposuresLV">
+            <RowIterator
+              editable="false"
+              elementName="eU"
+              value="(line as GeneralLiabilityLine).Exposures">
+              <IteratorSort
+                sortBy="eU.Location.LocationNum"
+                sortOrder="1"/>
+              <IteratorSort
+                sortBy="eU.ClassCode.Code"
+                sortOrder="2"/>
+              <Row>
+                <Cell
+                  id="EULoc"
+                  label="displaykey.Web.Policy.GL.ExposureUnits.Location"
+                  value="eU.Location"/>
+                <Cell
+                  id="EUClass"
+                  label="displaykey.Web.Policy.GL.ExposureUnits.ClassCode"
+                  value="eU.ClassCode.Code"/>
+                <Cell
+                  id="ClassCodeDescription"
+                  label="displaykey.Web.Policy.GL.ExposureUnits.Description"
+                  value="eU.ClassCode.Classification"/>
+                <Cell
+                  id="EUBasis"
+                  label="displaykey.Web.Policy.GL.ExposureUnits.Units"
+                  value="eU.ClassCode.Basis.Code"/>
+                <Cell
+                  id="EUUnits"
+                  label="displaykey.Web.Policy.GL.ExposureUnits.ExposureValue"
+                  value="eU.BasisAmount"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </ListViewInput>
+        <Label
+          label="displaykey.Web.Policy.GL.Quote.Coverages.Line.Title"/>
+        <ListViewInput
+          def="CoverageSummaryLV(glLine.GLLineCoveragesAndScheduleCovsWithNoCovTerms.toList(), glLine)"
+          labelAbove="true">
+          <Toolbar/>
+        </ListViewInput>
+        <Label
+          label="displaykey.Web.Policy.Coverages.Exclusions"
+          visible="not glLine.GLLineExclusions.IsEmpty"/>
+        <ListViewInput
+          def="CoverageSummaryLV(glLine.GLLineExclusions.toList(), glLine)"
+          id="ExclusionSummaryLV"
+          labelAbove="true"
+          visible="not glLine.GLLineExclusions.IsEmpty">
+          <Toolbar/>
+        </ListViewInput>
+        <Label
+          label="displaykey.Web.Policy.Coverages.PolicyConditions"
+          visible="not glLine.GLLineConditions.IsEmpty"/>
+        <ListViewInput
+          def="CoverageSummaryLV(glLine.GLLineConditions.toList(), glLine)"
+          id="ConditionSummaryLV"
+          labelAbove="true"
+          visible="not glLine.GLLineConditions.IsEmpty">
+          <Toolbar/>
+        </ListViewInput>
+        <Label
+          label="displaykey.Web.Policy.Schedule.Schedules"
+          visible="not glLine.GLScheduleCovsWithCovTerms.IsEmpty"/>
+        <ListViewInput
+          def="ScheduleCoverageSummaryLV(glLine.GLScheduleCovsWithCovTerms.toList())"
+          id="GLScheduleCoveragesLVI"
+          labelAbove="true"
+          visible="not glLine.GLScheduleCovsWithCovTerms.IsEmpty">
+          <Toolbar/>
+        </ListViewInput>
+      </InputColumn>
+    </DetailViewPanel>
+  </PanelSet>
+</PCF>

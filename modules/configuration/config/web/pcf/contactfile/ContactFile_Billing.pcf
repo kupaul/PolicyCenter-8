@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    id="ContactFile_Billing"
+    title="displaykey.Web.ContactFile.Billing.Title">
+    <LocationEntryPoint
+      signature="ContactFile_Billing(contact : Contact)"/>
+    <Variable
+      name="contact"
+      type="Contact"/>
+    <Screen>
+      <Variable
+        initialValue="contact.AssociationFinder.createTopLevelAccountToRolesMap()"
+        name="topLevelAccountToRolesMap"
+        type="java.util.Map&lt;String,String&gt;"/>
+      <Variable
+        initialValue="topLevelAccountToRolesMap.Count &lt;= gw.api.system.PCConfigParameters.BillingNumAccountWarningThreshold.Value"
+        name="renderListView"
+        type="boolean"/>
+      <Variable
+        initialValue="contact.AssociationFinder.findHeldAndBilledExternalAccounts(topLevelAccountToRolesMap)"
+        name="externalAccounts"
+        type="java.util.List&lt;gw.contact.ContactAssociationFinder.ExternalBillingAccount&gt;"/>
+      <AlertBar
+        action="renderListView = true"
+        allowDismiss="false"
+        id="billingConfirm"
+        label="displaykey.Web.ContactFile.Billing.ReturnLargeNumberOfAccountsWarning"
+        showConfirmMessage="false"
+        visible="topLevelAccountToRolesMap.Count &gt; gw.api.system.PCConfigParameters.BillingNumAccountWarningThreshold.Value"/>
+      <PanelRef>
+        <Toolbar/>
+        <ListViewPanel
+          id="BillingAccountsLV"
+          visible="renderListView">
+          <RowIterator
+            editable="false"
+            elementName="externalAccount"
+            value="externalAccounts">
+            <Row>
+              <Cell
+                action="AccountFileDoRetrievalForward.go(externalAccount.AccountNumber)"
+                actionAvailable="true"
+                available="true"
+                id="AccountNumber"
+                label="displaykey.Web.ContactFile.Billing.AccountNumber"
+                value="externalAccount.AccountNumber"/>
+              <Cell
+                id="Role"
+                label="displaykey.Web.ContactFile.Billing.Role"
+                value="externalAccount.Roles"/>
+              <Cell
+                action="BCAccount.push(gw.api.system.PCConfigParameters.BillingSystemURL.Value, externalAccount.ExternalAccountNumber)"
+                available="gw.api.system.PCConfigParameters.BillingSystemURL.Value.HasContent and perm.System.viewbillingsystem"
+                id="ExternalAccountNumber"
+                label="displaykey.Web.ContactFile.Billing.ExternalAccountNumber"
+                value="externalAccount.ExternalAccountNumber"/>
+              <Cell
+                id="ExternalAccountName"
+                label="displaykey.Web.ContactFile.Billing.ExternalAccountName"
+                value="externalAccount.BillingAccountDisplayTotals.AccountName"/>
+              <Cell
+                fontColor="externalAccount.BillingAccountDisplayTotals.Delinquent ? &quot;Red&quot; : &quot;&quot;"
+                id="Status"
+                label="displaykey.Web.ContactFile.Billing.Status"
+                value="externalAccount.BillingAccountDisplayTotals.Delinquent ? displaykey.Web.Billing.Status.Delinquent : displaykey.Web.Billing.Status.InGoodStanding"/>
+              <MonetaryAmountCell
+                formatType="currency"
+                id="BilledOutstanding"
+                label="displaykey.Web.ContactFile.Billing.BilledOutstanding"
+                value="externalAccount.BillingAccountDisplayTotals.BilledOutstandingTotal.Total"/>
+              <MonetaryAmountCell
+                formatType="currency"
+                id="CurrentDue"
+                label="displaykey.Web.ContactFile.Billing.CurrentDue"
+                value="externalAccount.BillingAccountDisplayTotals.BilledOutstandingCurrent.Total"/>
+              <MonetaryAmountCell
+                formatType="currency"
+                id="PastDue"
+                label="displaykey.Web.ContactFile.Billing.PastDue"
+                value="externalAccount.BillingAccountDisplayTotals.BilledOutstandingPastDue.Total"/>
+              <MonetaryAmountCell
+                formatType="currency"
+                id="Unbilled"
+                label="displaykey.Web.ContactFile.Billing.Unbilled"
+                value="externalAccount.BillingAccountDisplayTotals.UnbilledTotal.Total"/>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+      </PanelRef>
+      <DetailViewPanel>
+        <InputColumn>
+          <Input
+            align="right"
+            id="AccountBalancesConvertedAlert"
+            label="displaykey.Web.AccountFile.Billing.AmountsConvertedForReference"
+            labelAbove="true"
+            labelStyleClass="inputLabel_em"
+            value="null"
+            visible="externalAccounts*.BillingAccountDisplayTotals.hasMatch( \ totals -&gt; totals.AccountBalancesConverted)"/>
+        </InputColumn>
+      </DetailViewPanel>
+    </Screen>
+  </Page>
+</PCF>

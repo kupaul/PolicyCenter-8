@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Filtering Events</title>
+    <link rel="StyleSheet" href="css/eventsmessaging.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-messaging.html#4295862">Messaging</a> : <a class="WebWorks_Breadcrumb_Link" href="eventsmessaging.26.01.html#4295862">Messaging and Events</a> : Filtering Events</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="4295862">Filtering Events</a></h3>
+      <div class="B_-_Body"><a name="4295870">This section focuses on how PolicyCenter recognizes events and how to decide whether to notify external systems of these events.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="4295872">Validity and Rule-Based Event Filtering</a></h4>
+      <div class="B_-_Body"><a name="4295879">PolicyCenter allows entry and creation of policies with fewer restrictions than might be true for an external system, such as a mainframe. PolicyCenter does this so that a new policy can be committed to the database with minimal information and the policy can be improved later as you gather more information. </a></div>
+      <div class="B_-_Body"><a name="4295892">However, in some cases, an external system might not want to know about the policy until a much more complete (or perhaps more correct) policy commits to the database. You might choose to not send a </a><span class="e_-_emphasis">policy added</span> message to the mainframe if there is not enough information to create the record on the mainframe. Express this level of correctness or completeness by setting a <span class="e_-_emphasis">validation level</span> for the policy. Each external system’s <span class="e_-_emphasis">destination</span> defined in PolicyCenter may have completely different validation requirements.</div>
+      <div class="B_-_Body"><a name="4295909">For example, suppose an external system wants to be notified of every policy, but its standards were high about what kinds of policies it wants to know about. Additionally, you might want to omit notifying an external system about new notes on a policy that it does not know about yet. In other words, you did not send a message notifying the external system about the policy, so you probably do not want to send updates about its subobjects. </a></div>
+      <div class="B_-_Body"><a name="4295919">To implement this, there are two parts of the integration implementation:</a></div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><span class="ri_-_run_in_header"><a name="4315872">Your validation rules set the validation level</a></span> – There is one rule set that governs validation checking, called Policy Validation Rules. These rules can set the validation level. Set the property <span class="cv_-_computer_voice">claim.ValidationLevel</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><span class="ri_-_run_in_header"><a name="4315879">Your event rules check validation level (and other settings)</a></span> – You can define Event Fired rules that define whether to send a message to an external system. For example, the rule might listen for the events <span class="cv_-_computer_voice">PolicyAdded</span>, <span class="cv_-_computer_voice">PolicyChanged</span>, and perhaps other events. If the event name and destination ID matches what it listens for and the validation level was greater than a certain level, the rule creates a new message. Such a rule in Gosu might look like:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CF_-_Code_First_Line"><a name="4315882">if (policy.ValidationLevel &gt; externalSystemABCLevel) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4315883">&nbsp;&nbsp;// create message...</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4315884">}</a></PRE>
+      <div class="LP_-_List_Para"><a name="4295941">Similarly, if you did not want to send events for a note before its associated policy is valid, you could write a rule condition such as the following: </a></div>
+      <div class="CS_-_Code_Single_Line"><a name="4295945">note.policy.ValidationLevel &gt; externalSystemABCLevel</a></div>
+      <div class="B_-_Body"><a name="4295946">It is important to understand that you define your own standards for event filtering and processing. PolicyCenter does not enforce any requirements about validation levels. The </a><span class="ps_-_parameter_in_code_snippets">Entityname</span><span class="cv_-_computer_voice">Added</span> events and <span class="ps_-_parameter_in_code_snippets">Entityname</span><span class="cv_-_computer_voice">Changed</span> events trigger independent of the object’s validation level.</div>
+      <div class="B_-_Body"><a name="4295953">Generally speaking, PolicyCenter does not use the validation levels. You can define rules that set or get the validation level for some purpose. Your messaging rules might send a message to an external system because of an event, but ignore the event in some cases due to the validation rules.</a></div>
+      <div class="B_-_Body"><a name="4315898">There is one rule set that governs validation checking, called Policy Validation Rules. You can set validation levels in these rules that are checked later within the Event Fired rule set.</a></div>
+      <div class="B_-_Body"><a name="4315906">PolicyCenter itself does not actually use the validation level for any purpose. </a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

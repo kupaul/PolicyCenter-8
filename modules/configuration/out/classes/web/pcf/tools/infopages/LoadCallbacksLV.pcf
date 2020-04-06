@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ListViewPanel
+    id="LoadCallbacksLV">
+    <Require
+      name="PageHelper"
+      type="gw.api.tools.LoadHistoryHelper"/>
+    <Require
+      name="History"
+      type="LoadCommand"/>
+    <Require
+      name="LoadCallbacks"
+      type="LoadCallback[]"/>
+    <Require
+      name="ShowLinksAndCounts"
+      type="boolean"/>
+    <RowIterator
+      editable="false"
+      elementName="LoadCallback"
+      pageSize="30"
+      value="LoadCallbacks">
+      <Variable
+        initialValue="LoadCallback.CallbackResults.length"
+        name="ResultsCount"
+        type="Number"/>
+      <Row>
+        <Cell
+          action="LoadCallbackResultsDetail.drilldown(PageHelper, History, LoadCallback)"
+          available="ResultsCount &gt; 0 and ShowLinksAndCounts"
+          id="callbackname"
+          label="displaykey.Web.InternalTools.InfoPages.LoadHistory.CallbackName"
+          value="LoadCallback.Name"/>
+        <Cell
+          id="callbacktimetype"
+          label="displaykey.Web.InternalTools.InfoPages.LoadHistory.TimeType"
+          value="LoadCallback.ExecutionTime"
+          wrapLabel="true"/>
+        <Cell
+          align="center"
+          id="callbackexecuteorder"
+          label="displaykey.Web.InternalTools.InfoPages.LoadHistory.ExecutionOrder"
+          value="LoadCallback.ExecutionOrder"
+          wrapLabel="true"/>
+        <Cell
+          id="callbackstarttime"
+          label="displaykey.Web.InternalTools.InfoPages.LoadHistory.StartTime"
+          sortBy="LoadCallback.StartTime"
+          value="util.StringUtil.formatDate(LoadCallback.StartTime, &quot;MM/dd/yy HH:mm:ss.SSS&quot;)"/>
+        <Cell
+          id="callbackendtime"
+          label="displaykey.Web.InternalTools.InfoPages.LoadHistory.EndTime"
+          sortBy="LoadCallback.EndTime"
+          value="util.StringUtil.formatDate(LoadCallback.EndTime, &quot;MM/dd/yy HH:mm:ss.SSS&quot;)"/>
+        <Cell
+          align="right"
+          id="callbackduration"
+          label="displaykey.Web.InternalTools.InfoPages.LoadHistory.Duration"
+          value="PageHelper.getDurationString(LoadCallback.StartTime, LoadCallback.EndTime)"
+          wrapLabel="true"/>
+        <Cell
+          id="callbackdescription"
+          label="displaykey.Web.InternalTools.InfoPages.LoadHistory.Description"
+          value="LoadCallback.Description"/>
+        <Cell
+          align="center"
+          enableSort="false"
+          id="loadresultscount"
+          label="displaykey.Web.InternalTools.InfoPages.LoadHistory.NumResults"
+          value="util.StringUtil.formatNumber(ResultsCount, &quot;####0&quot;)"
+          visible="ShowLinksAndCounts"
+          wrapLabel="true"/>
+      </Row>
+    </RowIterator>
+  </ListViewPanel>
+</PCF>

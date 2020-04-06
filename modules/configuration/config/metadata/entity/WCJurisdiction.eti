@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity xmlns="http://guidewire.com/datamodel" desc="Container for state-level elements: coverages, modifiers, etc." displayName="Jurisdiction" effDatedBranchType="PolicyPeriod" entity="WCJurisdiction" exportable="true" extendable="true" loadable="false" platform="false" subpackage="lob.wc" table="wcjurisdiction" type="effdated">
+  <implementsInterface iface="gw.api.copier.EffDatedCopyable" impl="gw.lob.wc.WCJurisdictionCopier"/>
+  <implementsInterface iface="gw.api.logicalmatch.EffDatedLogicalMatcher" impl="gw.lob.wc.WCJurisdictionMatcher"/>
+  <implementsEntity adapter="gw.lob.wc.WCJurisdictionCoverableAdapter" name="Coverable"/>
+  <implementsEntity adapter="gw.lob.wc.WCJurisdictionModifiableAdapter" name="Modifiable"/>
+  <column desc="Anniversary date for this jurisdiction" getterScriptability="doesNotExist" name="AnniversaryDateInternal" nullok="true" setterScriptability="doesNotExist" type="datetime"/>
+  <column desc="Internal field for storing the reference date of this entity on bound policy periods." getterScriptability="doesNotExist" name="ReferenceDateInternal" nullok="true" setterScriptability="doesNotExist" type="datetime"/>
+  <typekey desc="The jurisdiction that is covered" name="State" nullok="true" typelist="Jurisdiction"/>
+  <foreignkey fkentity="WorkersCompLine" name="WCLine" nullok="true"/>
+  <array arrayentity="WCJurisdictionCost" cascadeDelete="true" name="Costs"/>
+  <array arrayentity="WCStateCov" cascadeDelete="true" desc="All Coverages on this State" name="Coverages" owner="false" setterScriptability="all"/>
+  <array arrayentity="RatingPeriodStartDate" desc="Sub-periods within which basis amounts of basis-scalable exposures cannot change." name="RatingPeriodStartDates" owner="true"/>
+  <array arrayentity="WCModifier" cascadeDelete="true" desc="Rating info for the jurisdiction." name="WCModifiers" owner="false"/>
+  <checkconstraint desc="Both effective date and expiration date should always be set to null (indicating that the entity spans the whole period)." predicate="EffectiveDate IS NULL AND ExpirationDate IS NULL"/>
+</entity>

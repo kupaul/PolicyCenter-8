@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    afterCommit="DividePoliciesLandingPage.go(periodToDivide, firstSubmission, secondSubmission)"
+    beforeCommit="createSubmissions()"
+    canEdit="true"
+    canVisit="true"
+    id="SplitPolicy"
+    parent="PolicyFile(periodToDivide, asOfDate)"
+    startInEditMode="true"
+    title="displaykey.Web.PolicyFile.SplitPolicy">
+    <LocationEntryPoint
+      signature="SplitPolicy(periodToDivide : PolicyPeriod, asOfDate : DateTime)"/>
+    <Variable
+      name="periodToDivide"
+      type="PolicyPeriod"/>
+    <Variable
+      name="asOfDate"
+      type="DateTime"/>
+    <Variable
+      initialValue="new gw.product.DividePolicySelection(periodToDivide)"
+      name="dividePolicySelection1"/>
+    <Variable
+      initialValue="new gw.product.DividePolicySelection(periodToDivide)"
+      name="dividePolicySelection2"/>
+    <Variable
+      initialValue="null"
+      name="firstSubmission"
+      type="Submission"/>
+    <Variable
+      initialValue="null"
+      name="secondSubmission"
+      type="Submission"/>
+    <Screen>
+      <Toolbar>
+        <ToolbarButton
+          action="CurrentLocation.commit()"
+          id="CreateButton"
+          label="displaykey.Web.SplitPolicy.Button.Create"/>
+        <ToolbarButton
+          action="CurrentLocation.cancel(); PolicyFileForward.go(periodToDivide, asOfDate)"
+          id="CancelButton"
+          label="displaykey.Web.SplitPolicy.Button.Cancel"/>
+      </Toolbar>
+      <PanelRow>
+        <PanelColumn>
+          <PanelRef
+            def="DividePolicyPanelSet(periodToDivide, dividePolicySelection1)"
+            editable="true"
+            id="SplitPolicy1">
+            <TitleBar
+              title="displaykey.Web.SplitPolicy.Submission1"/>
+          </PanelRef>
+        </PanelColumn>
+        <PanelColumn>
+          <PanelRef
+            def="DividePolicyPanelSet(periodToDivide, dividePolicySelection2)"
+            editable="true"
+            id="SplitPolicy2">
+            <TitleBar
+              title="displaykey.Web.SplitPolicy.Submission2"/>
+          </PanelRef>
+        </PanelColumn>
+      </PanelRow>
+    </Screen>
+    <Code><![CDATA[function createSubmissions() {
+  try {
+    firstSubmission = dividePolicySelection1.createSubmission()
+    secondSubmission = dividePolicySelection2.createSubmission()
+    gw.product.DividePolicyUtil.createSplitPolicyActivity(periodToDivide)
+  } catch (ise : java.lang.IllegalStateException) {  // might occur because of product unavailability
+    throw new gw.api.util.DisplayableException(ise.LocalizedMessage)
+  }
+}]]></Code>
+  </Page>
+</PCF>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<internalExtension xmlns="http://guidewire.com/datamodel" entityName="Contact">
+  <implementsInterface iface="gw.api.contact.ContactLifecycle" impl="gw.api.contact.PCContactLifecycle"/>
+  <column default="0" desc="Number of Accounts on which this Contact is the AccountHolder." name="AccountHolderCount" nullok="false" setterScriptability="doesNotExist" type="integer"/>
+  <column desc="Date and time of last update" exportable="false" name="LastUpdateTime" nullok="true" setterScriptability="hidden" type="datetime"/>
+  <column desc="Temporary date and time of last update; will eventually be copied to the LastUpdateTime during commit" exportable="false" getterScriptability="hidden" name="TemporaryLastUpdateTime" nullok="true" setterScriptability="hidden" type="datetime"/>
+  <column desc="Application assigned ID used as ABUID when ABUID is null" name="ExternalID" type="shorttext" nullok="true"/>
+
+  <searchColumn desc="Primary Address City, this is searchColumn for City on Address entity" name="CityDenorm" sourceColumn="CityDenorm" sourceForeignKey="PrimaryAddress"/>
+  <searchColumn desc="Primary Address Postal code, this is searchColumn for Postal code on Address entity" name="PostalCodeDenorm" sourceColumn="PostalCodeDenorm" sourceForeignKey="PrimaryAddress"/>
+  <searchTypekey desc="Primary Address State, this is denormalized column for State on Address entity" name="State" sourceTypekey="State" sourceForeignKey="PrimaryAddress"/>
+
+  <searchTypekey desc="Primary Address Country, this is denormalized column for Country on Address entity" name="Country" sourceTypekey="Country" sourceForeignKey="PrimaryAddress"/>
+
+  <typekey
+    name="PreferredSettlementCurrency"
+    desc="Preferred Settlement Currency"
+    nullok="true"
+    typelist="Currency"/>
+  <dbcheckbuilder className="com.guidewire.pc.domain.contact.dbchecks.ContactABUIDDBCheckBuilder"/>
+  <remove-index name="PrimaryAddress"/>
+  <index desc="index to help performance on assign by proximity, this should replace the backing index" name="PCPrimaryAddress" trackUsage="true" unique="true">
+    <indexcol keyposition="1" name="PrimaryAddressID"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="Subtype"/>
+    <indexcol keyposition="4" name="AccountHolderCount"/>
+    <indexcol keyposition="5" name="ID"/>
+  </index>
+  <foreignkey-override importableagainstexistingobject="false" name="PrimaryAddress"/>
+</internalExtension>

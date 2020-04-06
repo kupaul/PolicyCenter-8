@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    editable="true"
+    id="RIAgreementsLV">
+    <Require
+      name="ririsk"
+      type="RIRisk"/>
+    <Require
+      name="isPerRisk"
+      type="boolean"/>
+    <ExposeIterator
+      valueType="gw.api.reinsurance.RIAttachment"
+      widget="RIAgreementsLV"/>
+    <RowIterator
+      checkBoxVisible="attachment.Agreement.Subtype.hasCategory(typekey.ArrangementType.TC_FACULTATIVE)"
+      editable="true"
+      elementName="attachment"
+      hasCheckBoxes="true"
+      hideCheckBoxesIfReadOnly="true"
+      pageSize="0"
+      toRemove="ririsk.detachRiskFromFacultative(attachment.Agreement); gw.reinsurance.risk.RIRiskValidation.validateUI(ririsk)"
+      value="gw.web.admin.ReinsuranceUIHelper.getAttachments(ririsk, isPerRisk)">
+      <Variable
+        initialValue="attachment.Agreement"
+        name="agreement"
+        type="entity.RIAgreement"/>
+      <Variable
+        initialValue="agreement.getInclusion(ririsk)"
+        name="inclusion"
+        type="typekey.RIAttachmentInclusionType"/>
+      <IteratorSort
+        sortBy="attachment.Agreement.Subtype.Priority"
+        sortOrder="1"/>
+      <IteratorSort
+        sortBy="attachment.Agreement.AttachmentPoint"
+        sortOrder="2"/>
+      <Row>
+        <Cell
+          action="EditAgreementPopup.push(agreement, ririsk, (agreement typeis Facultative ? not CurrentLocation.InEditMode : true))"
+          id="Number"
+          label="displaykey.Web.Reinsurance.Agreement.AgreementNumber"
+          value="agreement.AgreementNumber"/>
+        <Cell
+          id="Name"
+          label="displaykey.Web.Reinsurance.Agreement.Name"
+          value="agreement.Name"/>
+        <Cell
+          id="Type"
+          label="displaykey.Web.Reinsurance.Agreement.Type"
+          value="agreement.Subtype"/>
+        <MonetaryAmountCell
+          currency="agreement.Currency"
+          formatType="currency"
+          id="AttachmentPoint"
+          label="displaykey.Web.Reinsurance.Agreement.AttachmentPoint"
+          value="agreement.getAttachmentPoint(ririsk.GrossRetention)"/>
+        <MonetaryAmountCell
+          currency="agreement.Currency"
+          formatType="currency"
+          id="CoverageLimit"
+          label="displaykey.Web.Reinsurance.Agreement.CoverageLimit"
+          value="agreement.getCoverageLimit(ririsk.GrossRetention)"/>
+        <TextCell
+          format="displaykey.Web.Reinsurance.PercentageDisplayFormat"
+          id="CededShare"
+          label="displaykey.Web.Reinsurance.Agreement.CededShare"
+          value="agreement.CededShare"/>
+        <MonetaryAmountCell
+          currency="attachment.Agreement.Currency"
+          formatType="currency"
+          id="MaxCeding"
+          label="displaykey.Web.Reinsurance.Agreement.MaxCeding"
+          value="attachment.MaxCeding"
+          visible="isPerRisk and ririsk.TotalRisk != null"/>
+        <MonetaryAmountCell
+          currency="attachment.Agreement.Currency"
+          formatType="currency"
+          id="CededRisk"
+          label="displaykey.Web.Reinsurance.Agreement.CededRisk"
+          value="attachment.CededRisk"
+          visible="isPerRisk and ririsk.TotalRisk != null"/>
+        <TextCell
+          format="displaykey.Web.Reinsurance.PercentageDisplayFormat"
+          id="ProportionCeded"
+          label="displaykey.Web.Reinsurance.Agreement.Proportion"
+          value="attachment.ProportionalPercentage"
+          visible="isPerRisk"/>
+        <TextCell
+          id="Inclusion"
+          label="displaykey.Web.Reinsurance.Attachment.Inclusion"
+          value="inclusion == TC_INCLUDED ? null : inclusion"/>
+        <TextCell
+          id="Projected"
+          label="displaykey.Web.Reinsurance.Attachment.Projected"
+          value="attachment.IsProjected ? displaykey.Web.Reinsurance.Attachment.Projected : null"/>
+        <LinkCell
+          hideIfReadOnly="true"
+          visible="perm.System.editreinsuranceforpolicyadvanced">
+          <Link
+            action="AttachmentInclusionPopup.push(agreement, ririsk)"
+            available="agreement typeis Treaty"
+            hideIfReadOnly="true"
+            id="UpdateInclusion"
+            label="displaykey.Web.Reinsurance.PolicyFile.Edit"
+            styleClass="bigButton"
+            visible="agreement typeis Treaty"/>
+        </LinkCell>
+      </Row>
+    </RowIterator>
+  </ListViewPanel>
+</PCF>

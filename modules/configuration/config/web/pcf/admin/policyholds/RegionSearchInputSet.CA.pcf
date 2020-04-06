@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <InputSet
+    id="RegionSearchInputSet"
+    mode="CA">
+    <Require
+      name="searchCriteria"
+      type="gw.api.admin.PCZoneSearchCriteria"/>
+    <Require
+      name="policyHold"
+      type="PolicyHold"/>
+    <Label
+      label="displaykey.Web.Admin.PolicyHold.SearchCriteria"/>
+    <RangeInput
+      editable="true"
+      id="Country"
+      label="displaykey.Web.Admin.PolicyHold.Country"
+      required="false"
+      value="searchCriteria.Country"
+      valueRange="searchCriteria.getPossibleCountries()">
+      <PostOnChange
+        onChange="searchCriteria.ZoneType = null; searchCriteria.LinkedZone = null; searchCriteria.clearFilters()"/>
+    </RangeInput>
+    <RangeRadioInput
+      editable="true"
+      id="ZoneType"
+      label="displaykey.Web.Admin.PolicyHold.RegionType"
+      required="true"
+      value="searchCriteria.ZoneType"
+      valueRange="searchCriteria.getRelevantZoneTypesForCountry()">
+      <PostOnChange
+        onChange="searchCriteria.clearFilters()"/>
+    </RangeRadioInput>
+    <RangeInput
+      editable="true"
+      id="linkzone"
+      label="displaykey.Web.Admin.PolicyHold.Province"
+      required="false"
+      value="searchCriteria.LinkedZone"
+      valueRange="Zone.finder.findZones(searchCriteria.Country, typekey.ZoneType.TC_PROVINCE)"/>
+  </InputSet>
+</PCF>

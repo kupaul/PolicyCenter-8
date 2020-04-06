@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    id="LocalizedValuesLV">
+    <Require
+      name="entity"
+      type="Object"/>
+    <Require
+      name="fieldNames"
+      type="String[]"/>
+    <Require
+      name="columnNames"
+      type="String[]"/>
+    <ExposeIterator
+      valueType="typekey.LanguageType"
+      widget="LocalizedFields"/>
+    <Variable
+      initialValue="gw.api.util.LocaleUtil.getDefaultLanguageType()"
+      name="defaultLanguage"
+      recalculateOnRefresh="true"
+      type="LanguageType"/>
+    <RowIterator
+      editable="true"
+      elementName="language"
+      id="LocalizedFields"
+      pageSize="0"
+      value="gw.api.util.LocaleUtil.getAllLanguages() as LanguageType[]">
+      <Row
+        editable="language != util.LocaleUtil.getCurrentLanguageType()">
+        <Cell
+          id="Language"
+          label="displaykey.Web.Admin.LocalizedValuesDV.Language"
+          value="language.DisplayName + (language == defaultLanguage ? displaykey.Web.Admin.LocalizedValuesLV.Default : &quot;&quot;)"/>
+        <Cell
+          editable="true"
+          id="column0"
+          label="columnNames[0]"
+          validationExpression="copyValueIfNotSet(language, 0)"
+          value="entity[fieldNames[0] + &quot;_&quot; + language.Code]"/>
+        <Cell
+          editable="true"
+          id="column1"
+          label="columnNames[1]"
+          validationExpression="copyValueIfNotSet(language, 1)"
+          value="entity[fieldNames[1] + &quot;_&quot; + language.Code]"
+          visible="fieldNames.Count &gt; 1"/>
+        <Cell
+          editable="true"
+          id="column2"
+          label="columnNames[2]"
+          validationExpression="copyValueIfNotSet(language, 2)"
+          value="entity[fieldNames[2] + &quot;_&quot; + language.Code]"
+          visible="fieldNames.Count &gt; 2"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[uses gw.api.util.LocaleUtil
+uses gw.api.util.LocationUtil
+
+function copyValueIfNotSet(language: LanguageType, columnNumber: int): String {
+  var localizedFieldName = fieldNames[columnNumber] + "_" + language.Code
+  var value = entity[localizedFieldName] as String
+  var copyFromValue = entity[fieldNames[columnNumber]] as String
+
+  if (not value.HasContent and copyFromValue.HasContent) {
+    LocationUtil.addRequestScopedWarningMessage(displaykey.Web.Admin.LocalizedValuesLV.ValuesCopiedMessage(columnNames[columnNumber]))
+    entity[localizedFieldName] = copyFromValue
+  }
+  
+  entity[fieldNames[columnNumber] + "_" + LocaleUtil.getCurrentLanguageType().Code] = copyFromValue // workaround for PL-23047
+  return null
+}]]></Code>
+  </ListViewPanel>
+</PCF>

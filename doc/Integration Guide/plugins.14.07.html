@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Getting Plugin Parameters from the Plugins Registry Editor</title>
+    <link rel="StyleSheet" href="css/plugins.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-plugins.html#2622893">Plugins</a> : <a class="WebWorks_Breadcrumb_Link" href="plugins.14.01.html#2622893">Plugin Overview</a> : Getting Plugin Parameters from the Plugins Registry Editor</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2622893">Getting Plugin Parameters from the Plugins Registry Editor</a></h3>
+      <div class="B_-_Body"><a name="2585897">In the Studio Plugins registry editor, you can add one or more optional parameters to pass to your plugin during initialization. For example, you could use the editor to pass server names, port numbers, timeout values, or other settings to your plugin code. The parameters are pairs of </a><span class="cv_-_computer_voice">String</span> values, also known as name/value pairs. PolicyCenter treats all plugin parameters as text values, even if they represent numbers or other objects. </div>
+      <div class="B_-_Body"><a name="2585600">To use the plugin parameters in your plugin implementation, your plugin must implement the </a><span class="cv_-_computer_voice">InitializablePlugin</span> interface in addition to the main plugin interface. </div>
+      <div class="B_-_Body"><a name="2585659">If you do this, PolicyCenter calls your plugin’s </a><span class="cv_-_computer_voice">setParameters</span> method. That method must have exactly one argument, which is a <span class="cv_-_computer_voice">java.util.Map</span> object. In the map, the parameters names are keys in the map, and they map to the values from Studio.</div>
+      <div class="B_-_Body"><a name="2585847">The following Gosu example demonstrates how to define an actual plugin that uses parameters:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585849">uses java.util.Map;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585850">uses java.plugin;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585851">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585853">class MyTransport implements MessageTransport, </a><span class="s_-_strong">InitializablePlugin</span> {</PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2622082">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2622101">&nbsp;&nbsp;&nbsp;private var _servername : String</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585854">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585855">&nbsp;&nbsp;&nbsp;// note the empty constructor. If you do provide an empty constructor, the application</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585857">&nbsp;&nbsp;&nbsp;// calls it as the plugin instantiates, which is before appplication calls setParameters </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585858">   construct() {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585860">   }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585861">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585862">&nbsp;&nbsp;&nbsp;override</a><span class="s_-_strong"> function setParameters(parameters: Map&lt;String,String&gt;)  {</span></PRE>
+      <PRE class="CM_-_Code_Middle_Line" style="font-style: normal; font-variant: normal; font-weight: bold; text-transform: none; vertical-align: baseline"><span class="s_-_strong"><a name="2585864">&nbsp;&nbsp;&nbsp;&nbsp;// access values in the MAP to get parameters defined in Plugins registry in Studio</a></span></PRE>
+      <PRE class="CM_-_Code_Middle_Line" style="font-style: normal; font-variant: normal; font-weight: bold; text-transform: none; vertical-align: baseline"><span class="s_-_strong"><a name="2854749">	&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; _servername = parameters["MyServerName"] as String</a></span></PRE>
+      <PRE class="CM_-_Code_Middle_Line" style="font-style: normal; font-variant: normal; font-weight: bold; text-transform: none; vertical-align: baseline"><span class="s_-_strong"><a name="2585866">&nbsp;&nbsp;&nbsp;}</a></span></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585867">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585868">&nbsp;&nbsp;// NEXT, define all your other methods required by the MAIN interface you are implementing...</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585869">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585870">  override function suspend() {}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585871">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585872">&nbsp;&nbsp;override function shutdown() {}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585873">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585874">&nbsp;&nbsp;override function setDestinationID(id:int) {}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585875">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585876">&nbsp;&nbsp;override function resume() {}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585877">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585878">&nbsp;&nbsp;override function send(message:entity.Message, transformedPayload:String) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2856626">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print("MESSAGE SEND ====== ${message.Payload} --&gt; ${transformedPayload}")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2856533">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;message.reportAck()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585882">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2585883">}</a></PRE>
+      <h6 class="HS_-_Head_Sub"><a name="2585698">Getting the Local File Path of the Root Directory</a></h6>
+      <div class="B_-_Body"><a name="2585699">For Gosu plugins and Java plugins, you can access the plugin root directory path by getting a special built-in property from the </a><span class="cv_-_computer_voice">Map</span>. For the key name for root directory, use the name in the static variable <span class="cv_-_computer_voice">InitializablePlugin.ROOT_DIR</span>. This parameter is unavailable from OSGi plugins.</div>
+      <h6 class="HS_-_Head_Sub"><a name="2806897">Getting the Local File Path of the Temp Directory</a></h6>
+      <div class="B_-_Body"><a name="2585712">For Gosu plugins and Java plugins, you can access the plugin temporary directory path by getting a special built-in property from the </a><span class="cv_-_computer_voice">Map</span>. For the key name to get the root directory, use the name in the static variable <span class="cv_-_computer_voice">InitializablePlugin.TEMP_DIR</span>. This parameter is unavailable from OSGi plugins.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

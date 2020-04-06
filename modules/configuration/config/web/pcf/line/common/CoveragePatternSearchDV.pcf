@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="CoveragePatternSearchDV">
+    <Require
+      name="searchCriteria"
+      type="gw.productmodel.ClausePatternSearchCriteria"/>
+    <Require
+      name="policyLinePattern"
+      type="gw.api.productmodel.PolicyLinePattern"/>
+    <Require
+      name="categories"
+      type="String[]"/>
+    <Require
+      name="includeElseExclude"
+      type="boolean"/>
+    <InputColumn>
+      <RangeInput
+        editable="true"
+        id="CoverageCategory"
+        label="displaykey.Web.Coverage.SearchPage.Category"
+        noneSelectedLabel="displaykey.Web.Coverage.SearchPage.NoneSelectedLabel"
+        value="searchCriteria.CoverageCategory"
+        valueRange="filterCategories()"/>
+      <Input
+        editable="true"
+        id="Keyword"
+        label="displaykey.Web.Coverage.SearchPage.Keyword"
+        value="searchCriteria.Keyword"/>
+      <RangeRadioInput
+        editable="true"
+        id="SearchType"
+        label="displaykey.Web.Coverage.SearchPage.Type"
+        required="true"
+        value="searchCriteria.SearchType"
+        valueRange="{ CoveragePatternSearchType.TC_EXCLCOND, CoveragePatternSearchType.TC_CONDITION, CoveragePatternSearchType.TC_EXCLUSION }"
+        visible="searchCriteria.SearchType != CoveragePatternSearchType.TC_COVERAGE"/>
+    </InputColumn>
+    <InputFooterSection>
+      <InputSetRef
+        def="SearchAndResetInputSet()"/>
+    </InputFooterSection>
+    <Code><![CDATA[function filterCategories() : java.util.List<gw.api.productmodel.CoverageCategory> {
+  if (includeElseExclude) {
+    return policyLinePattern.CoverageCategories.where( \ c -> categories.contains( c.Code ) ).toList()
+  }
+  else {
+    return policyLinePattern.CoverageCategories.where( \ c -> !categories.contains( c.Code ) ).toList()
+  }
+}
+]]></Code>
+  </DetailViewPanel>
+</PCF>

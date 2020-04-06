@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    autosaveable="false"
+    canEdit="true"
+    canVisit="perm.User.ViewLog or perm.User.DevAllAccess"
+    countsAsWork="false"
+    id="ViewLogs"
+    parent="ServerTools()"
+    startInEditMode="true"
+    title="displaykey.Web.InternalTools.ViewLogs">
+    <LocationEntryPoint
+      signature="ViewLogs()"/>
+    <LocationEntryPoint
+      signature="ViewLogs(logFileName:String, maxLinesValue:int, filter:String)"/>
+    <Variable
+      initialValue="1000"
+      name="maxLinesValue"
+      type="int"/>
+    <Variable
+      initialValue="&quot;&quot;"
+      name="logFileName"
+      type="String"/>
+    <Variable
+      initialValue="&quot;&quot;"
+      name="filter"
+      type="String"/>
+    <Variable
+      initialValue="tools.LogViewInfo.createViewInfo(logFileName, maxLines, filter)"
+      name="logViewInfo"
+      type="tools.LogViewInfo"/>
+    <Screen
+      id="ViewLogsScreen">
+      <DetailViewPanel>
+        <InputColumn>
+          <RangeInput
+            editable="true"
+            id="LogFile"
+            label="displaykey.Web.InternalTools.ViewLogs.LogFile"
+            value="logFileName"
+            valueRange="tools.LogViewInfo.getLogFiles()"/>
+          <TextInput
+            editable="true"
+            id="LogFilter"
+            label="displaykey.Web.InternalTools.ViewLogs.LogFilterRegex"
+            value="filter"/>
+          <TextInput
+            editable="true"
+            id="MaxLines"
+            label="displaykey.Web.InternalTools.ViewLogs.MaxLines"
+            value="maxLines"/>
+          <ButtonInput
+            action="logViewInfo = tools.LogViewInfo.createViewInfo(logFileName, maxLines, filter)"
+            align="center"
+            id="ViewLogs"
+            value="displaykey.Web.InternalTools.ViewLogs.ViewLogs"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <DetailViewPanel>
+        <InputColumn>
+          <TextAreaInput
+            id="LogDisplay"
+            labelAbove="true"
+            numCols="150"
+            numRows="50"
+            value="logViewInfo.LogText"/>
+        </InputColumn>
+      </DetailViewPanel>
+    </Screen>
+    <Code><![CDATA[
+property get maxLines():java.lang.Integer {
+        return maxLinesValue
+      }
+      /**
+       * Set the maximum length to a number between 1 and 10,000.
+       * This will ensure that no strange memory issues occur.
+       */
+      property set maxLines(len:java.lang.Integer){
+         if (len == null) {
+            throw new util.DisplayableException(displaykey.Web.InternalTools.ViewLogs.MaxLinesNotSpecifiedMsg)
+         }
+         if (len <= 0){
+            throw new util.DisplayableException(displaykey.Web.InternalTools.ViewLogs.MaxLinesTooSmallMsg)
+         }
+         if (len > 10000){
+            throw new util.DisplayableException(displaykey.Web.InternalTools.ViewLogs.MaxLinesTooBigMsg)
+         }
+         maxLinesValue = len
+      }
+      
+    ]]></Code>
+  </Page>
+</PCF>

@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Merging compatibility-xsd.xml</title>
+    <link rel="StyleSheet" href="css/procedure-config-c.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Upgrade Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="part-basicupgrade_2.html#1916981">Upgrading from 4.0.x</a> : <a class="WebWorks_Breadcrumb_Link" href="procedure-config-c.16.01.html#1916981">Upgrading the PolicyCenter 4.0.x Configuration</a> : Merging compatibility-xsd.xml</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1916981">Merging </a><span class="cvh_-_computer_voice_in_heading">compatibility-xsd.xml</span></h3>
+      <div class="B_-_Body"><a name="1917024">The PolicyCenter 7.0 Configuration Upgrade Tool generates a </a><span class="cv_-_computer_voice">compatibility-xsd.xml</span> file which enables existing 4.0 code referencing XSD types to continue compiling. PolicyCenter 8.0 includes its own <span class="cv_-_computer_voice">compatibility-xsd.xml</span> file. Therefore, the <span class="cv_-_computer_voice">compatibility-xsd.xml</span> file appears under the <span class="ui_-_UI_element">BOTH_ADD</span> filter in the Configuration Upgrade Tool. </div>
+      <div class="B_-_Body"><a name="1917355">Merge all XSD entries in the two files together. Entries in the PolicyCenter 8.0 </a><span class="cv_-_computer_voice">compatibility-xsd.xml</span> file are required to keep base code compiling. For example, where ClaimCenter code references XSD types related to ISO web services. For custom XSDs, the XSD entry will probably maintain backwards compatibility and allow the code to compile.</div>
+      <div class="B_-_Body"><a name="1917159">However, because Gosu is case sensitive in 8.0, the code might still not compile if the prior version code was not referencing XSD types with the proper case.</a></div>
+      <div class="B_-_Body"><a name="1917161">If you have to edit usages of the XSD types anyway, Guidewire recommends that you remove the XSD entry in </a><span class="cv_-_computer_voice">compatibility-xsd.xml</span>, and fix any case issues. By doing that, the code will now compile against the most recent version of the XSD typeloader, instead of relying on backwards-compatible behavior which might disappear later.</div>
+      <h6 class="HS_-_Head_Sub"><a name="1917163">For example:</a></h6>
+      <div class="B_-_Body"><a name="1917166">A custom environment adds a </a><span class="cv_-_computer_voice">Custom.xsd</span> file to the <span class="cv_-_computer_voice">gw</span> package directory. The XSD file contains a root element called <span class="cv_-_computer_voice">root</span>.</div>
+      <div class="B_-_Body"><a name="1917168">The </a>4.0 XSD typeloader exposes this element to Gosu as <span class="cv_-_computer_voice">gw.Custom.root</span>. Add <span class="cv_-_computer_voice">gw.Custom</span> to <span class="cv_-_computer_voice">compatibility-xsd.xml</span> to maintain this behavior.</div>
+      <div class="B_-_Body"><a name="1917169">The 7.0 and later XSD typeloader exposes this element to Gosu as </a><span class="cv_-_computer_voice">gw.custom.Root</span>.</div>
+      <div class="B_-_Body"><a name="1917149">Code that referenced the type as </a><span class="cv_-_computer_voice">gw.custom.root</span> would have compiled in 4.0 and 7.0 because Gosu was case-insensitive. Now that Gosu in 8.0 is case-sensitive for all types except entity types, this code will not compile with either behavior without fixing the capitalization. Guidewire recommends choosing the 7.0 and later behavior and fixing the capitalization of your code to match.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Exposing Typelists and Enumerations As String Values</title>
+    <link rel="StyleSheet" href="css/webservices-wsi-publish.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-webservices.html#3750726">Web Services</a> : <a class="WebWorks_Breadcrumb_Link" href="webservices-wsi-publish.07.01.html#3750726">Publishing Web Services (WS-I)</a> : Exposing Typelists and Enumerations As String Values</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="3750726">Exposing Typelists and Enumerations As String Values</a></h3>
+      <div class="B_-_Body"><a name="3736902">For each typelist type or enumeration (Gosu or Java), the web service by default exposes this data as an enumeration value in the WSDL. This applies to both requests and responses for the service. </a></div>
+      <div class="B_-_Body"><a name="3742398">For example:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="3741503">&lt;xs:simpleType name="HouseType"&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3741504">&nbsp;&nbsp;&lt;xs:restriction base="xs:string"&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3741553">&nbsp;&nbsp;&nbsp;&nbsp;&lt;xs:enumeration value="apartment"/&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3741577">&nbsp;&nbsp;&nbsp;&nbsp;&lt;xs:enumeration value="house"/&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3741593">&nbsp;&nbsp;&nbsp;&nbsp;&lt;xs:enumeration value="shack"/&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3741506">&nbsp;&nbsp;&nbsp;&nbsp;&lt;xs:enumeration value="mobilehome"/&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3741507">&nbsp;&nbsp;&lt;/xs:restriction&gt;</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3741494">&lt;/xs:simpleType&gt; </a></PRE>
+      <div class="B_-_Body"><a name="3742444">The published web service validates any incoming values against the set of choices and throws an exception for unknown values. Depending on the client implementation, the web service client might check if responses contain only allowed enumeration values during de-serialization. For typical cases, this approach is the desired behavior for both server and client.</a></div>
+      <div class="B_-_Body"><a name="3741699">For example, suppose you add new codes to a typelist or enumeration for responses. If the service returns an unexpected value in a response, it might be desirable that the client throws an exception. System integrators would quickly detect this unexpected change. The client system can explicitly refresh the WSDL and carefully check how the system explicitly handles any new codes.</a></div>
+      <div class="B_-_Body"><a name="3740097">However, in some cases you might want to expose enumerations as </a><span class="cv_-_computer_voice">String</span> values instead:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3740098">The WSDL for a service that references typelist or enumeration types can grow in size significantly. This is true especially if some typelists or enumerations contain a vast number of choices.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3738605">Changing enumeration values even slightly can cause incompatible WSDL. Forcing the web service client to refresh the WSDL might exacerbate upgrade issues on some projects. Although the client can refresh the WSDL from the updated service, sometimes this is an undesirable requirement. For example, perhaps new enumeration values on the server are predictably irrelevant to an older external system.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3740417">In some cases, your actual WS-I web service client code might be middleware that simply passes through </a><span class="cv_-_computer_voice">String</span> values from another system. In such cases, you may not require explicit detection of enumeration changes in the web service client code.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3737495">To expose typelist types and enumerations (from Gosu or Java) as a </a><span class="cv_-_computer_voice">String</span> type, add the <span class="cv_-_computer_voice">@WsiExposeEnumAsString</span> annotation before the web service implementation class. In the annotation constructor, pass the typelist or enumeration type as the argument. </div>
+      <div class="B_-_Body"><a name="3740962">You can expose multiple types as </a><span class="cv_-_computer_voice">String</span> values by repeating the annotation multiple types on separate lines, each providing a different type as the argument.</div>
+      <div class="B_-_Body"><a name="3736830">For example, to expose the </a><span class="cv_-_computer_voice">HouseType</span> enumeration as a <span class="cv_-_computer_voice">String</span>, add the following line before the web service implementation class declaration:</div>
+      <div class="CS_-_Code_Single_Line"><a name="3741272">@WsiExposeEnumAsString( HouseType )</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

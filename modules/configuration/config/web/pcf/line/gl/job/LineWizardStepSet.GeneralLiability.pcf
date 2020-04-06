@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <WizardStepSet
+    id="LineWizardStepSet"
+    mode="GeneralLiability">
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <JobWizardStep
+      beforeSave="gw.policy.PolicyLocationValidation.validateLocationsStep(policyPeriod.PolicyLocations)"
+      id="Locations"
+      save="openForEdit"
+      screen="LocationsScreen(policyPeriod, openForEdit, jobWizardHelper, policyPeriod.GLLine.SupportsNonSpecificLocations)"
+      title="displaykey.Web.LineWizardMenu.Locations"/>
+    <JobWizardStep
+      beforeSave="gw.lob.gl.GLLineValidation.validateSchedules(policyPeriod.GLLine)"
+      id="GLLine"
+      onChange="gw.lob.gl.GLLineValidation.validatePolicyContacts(policyPeriod.GLLine)"
+      onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.sync(policyPeriod.GLLine.AllCoverables, policyPeriod.GLLine.AllModifiables, null, null, jobWizardHelper); gw.web.productmodel.ProductModelSyncIssuesHandler.syncConditions(policyPeriod.GLLine.AllCoverables, jobWizardHelper)}"
+      save="openForEdit"
+      screen="GeneralLiabilityScreen(job, policyPeriod, openForEdit,jobWizardHelper)"
+      title="displaykey.Web.Policy.GL.Coverages"/>
+    <JobWizardStep
+      beforeSave="gw.lob.gl.GLLineValidation.validateExposures(policyPeriod.GLLine)"
+      id="GLLineEU"
+      save="openForEdit"
+      screen="GeneralLiabilityEUScreen(policyPeriod, openForEdit,jobWizardHelper)"
+      title="displaykey.Web.Policy.GL.ExposureUnits.ScreenName"/>
+    <JobWizardStep
+      beforeSave="gw.validation.ValidationUtil.checkCurrentResult()"
+      id="Modifiers"
+      onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncModifiers(policyPeriod.GLLine.AllModifiables, jobWizardHelper)}"
+      save="policyPeriod.OpenForEdit"
+      screen="ModifiersScreen(policyPeriod, openForEdit, jobWizardHelper, policyPeriod.GLLine.GLModifiers)"
+      title="displaykey.Web.SubmissionWizardMenu.Modifiers"
+      visible="policyPeriod.CanViewModifiers"/>
+  </WizardStepSet>
+</PCF>

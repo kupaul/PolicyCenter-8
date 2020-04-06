@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    afterCommit="gw.job.uw.RiskApprovalDetailsPopupAsst.doAfterCommit(issues)"
+    afterEnter="if (canEdit) { issues.each(\ issue -&gt; initializeApproval(issue)) }"
+    beforeCommit="validateUserAuthority()"
+    canEdit="canEdit"
+    countsAsWork="false"
+    id="RiskApprovalDetailsPopup"
+    startInEditMode="canEdit"
+    title="displaykey.Web.UWIssue.RiskApprovalDetailsPopup.RiskApprovalDetails">
+    <LocationEntryPoint
+      signature="RiskApprovalDetailsPopup(issues: UWIssue[], canEdit: boolean, usingApproveAllPermission : boolean)"/>
+    <Variable
+      name="issues"
+      type="UWIssue[]"/>
+    <Variable
+      name="canEdit"
+      type="boolean"/>
+    <Variable
+      name="usingApproveAllPermission"
+      type="boolean"/>
+    <Variable
+      initialValue="issues.map( \ i -&gt; new gw.job.uw.UWApprovalLVAsst(i))"
+      name="assts"
+      type="gw.job.uw.UWApprovalLVAsst[]"/>
+    <Screen>
+      <Toolbar>
+        <EditButtons
+          cancelVisible="canEdit"
+          editVisible="false"
+          id="UpdateButtons"
+          updateConfirmMessage="if (issues[0].PolicyPeriod.Status == TC_DRAFT and issues.hasMatch(\ u -&gt; not u.Approval.EditBeforeBind)) {return displaykey.Web.UWIssue.RiskApprovalDetailsPopup.ApprovalNoEditBeforeBind}"
+          updateVisible="canEdit"/>
+      </Toolbar>
+      <PanelIterator
+        elementName="asst"
+        value="assts">
+        <Variable
+          initialValue="asst.Issue"
+          name="issue"/>
+        <PanelRef
+          editable="canEdit"
+          id="DetailSection">
+          <Toolbar/>
+          <DetailViewPanel
+            id="IssueDetailsDV">
+            <InputColumn>
+              <TextAreaInput
+                boldLabel="true"
+                id="IssueLongDescription"
+                label="issue.ShortDescription"
+                labelAbove="true"
+                numRows="5"
+                value="issue.LongDescription"/>
+              <Input
+                id="IssueCurrentValue"
+                labelAbove="true"
+                value="displayValue(issue)"
+                visible="issue.Value != null"/>
+            </InputColumn>
+            <InputColumn>
+              <ListViewInput
+                boldLabel="true"
+                def="UWApprovalLV(asst, canEdit)"
+                editable="canEdit"
+                id="UWApproval"
+                label="displaykey.Web.UWIssue.RiskApprovalDetailsPopup.NewApproval"
+                labelAbove="true"
+                visible="canEdit">
+                <Toolbar/>
+              </ListViewInput>
+              <InputDivider
+                visible="canEdit"/>
+              <Label
+                label="displaykey.Web.UWIssue.RiskApprovalDetailsPopup.NoHistory"
+                visible="issue.Histories.IsEmpty"/>
+              <ListViewInput
+                boldLabel="true"
+                def="UWIssueHistoryLV(issue, issue.Histories, false)"
+                editable="false"
+                id="UWIssueHistory"
+                label="displaykey.Web.UWIssue.RiskApprovalDetailsPopup.History"
+                labelAbove="true"
+                visible="not issue.Histories.IsEmpty">
+                <Toolbar/>
+              </ListViewInput>
+            </InputColumn>
+          </DetailViewPanel>
+        </PanelRef>
+      </PanelIterator>
+    </Screen>
+    <Code><![CDATA[function displayValue(issue : UWIssue) : String {
+  return displaykey.Web.UWIssue.RiskApprovalDetailsPopup.ReferenceValue(gw.web.policy.RiskEvaluationPanelSetModalRow.formatValue(issue))
+}
+
+function validateUserAuthority() {
+  if (usingApproveAllPermission) {
+    return
+  }
+  var currentUser = User.util.CurrentUser
+  var problemIssues = issues.where(\ i -> !i.Approval.userHasAuthorityToGrantThisApproval(currentUser))
+  if (!problemIssues.IsEmpty) {
+    var errorMsg = problemIssues.map(\ i -> displaykey.Web.Job.Warning.UWIssue.UserNoAuthorityRefValue(i.ShortDescription, i.Approval.ReferenceValue)).join("")
+    throw new gw.api.util.DisplayableException(errorMsg)
+  }
+}
+
+function initializeApproval(issue : UWIssue) {
+  issue.createDefaultApproval()
+  issue.Approval.ReferenceValue = issue.IssueType.calculateDefaultValue(issue.Approval.IssueValue)
+}]]></Code>
+  </Popup>
+</PCF>

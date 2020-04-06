@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    afterCancel="NewAccount.go()"
+    afterCommit="afterCommitNewAccount()"
+    beforeCommit="beforeCommitNewAccount()"
+    canEdit="true"
+    id="CreateAccount"
+    parent="NewAccount()"
+    startInEditMode="true"
+    title="displaykey.Web.CreateAccount">
+    <LocationEntryPoint
+      signature="CreateAccount(insuredContactType : typekey.ContactType, populator : gw.account.AccountPopulator, forNewSubmission: boolean)"/>
+    <Variable
+      name="insuredContactType"
+      type="typekey.ContactType"/>
+    <Variable
+      name="populator"
+      type="gw.account.AccountPopulator"/>
+    <Variable
+      name="forNewSubmission"
+      type="boolean"/>
+    <Variable
+      initialValue="populator.createNewAccount(gw.transaction.Transaction.getCurrent(), insuredContactType)"
+      name="account"
+      type="Account"/>
+    <Variable
+      initialValue="gw.web.account.AccountCreateUtil.getOrCreateProducerSelectionForCreateAccount()"
+      name="producerSelection"
+      type="ProducerSelection"/>
+    <Variable
+      initialValue="new gw.pcf.duplicatecontacts.DuplicateContactsPopupHelper(account.AccountHolderContact)"
+      name="duplicateContactsPopupHelper"/>
+    <ScreenRef
+      def="CreateAccountScreen(account, producerSelection, duplicateContactsPopupHelper)"/>
+    <Code><![CDATA[uses gw.api.web.job.submission.SubmissionUtil
+uses gw.api.database.PCBeanFinder
+
+/**
+ * Prepares to actually save the new Account to the database
+ */
+
+public static function beforeCommitNewAccount() {
+  account.createPrimaryLocationFromMainContact()
+  account.addProducerCode(producerSelection.ProducerCode)
+  var existingPCContactWithABContactMatch = duplicateContactsPopupHelper.existingPCContactWithABContactMatch
+  if (existingPCContactWithABContactMatch != null) {
+    // existing ab contact that matches the current new contact
+    var newAccountContact = account.AccountHolder.AccountContact
+    existingPCContactWithABContactMatch = account.Bundle.add(PCBeanFinder.loadBeanByPublicID<Contact>(existingPCContactWithABContactMatch.PublicID, Contact))
+    existingPCContactWithABContactMatch.copyUIFieldsFromContact(newAccountContact.Contact)
+    account.changeAccountHolderTo(existingPCContactWithABContactMatch)
+    newAccountContact.Contact.OfficialIDs.each(\o -> o.remove())
+    newAccountContact.Contact.remove()
+    newAccountContact.remove()
+  }
+}
+
+public static function afterCommitNewAccount() {
+  SubmissionUtil.setLastProducerSelection(producerSelection)
+  gw.api.web.util.SessionUtil.addAccountToHistory(account)
+  if (forNewSubmission) {
+    SubmissionManager.go(account)
+    NewSubmission.push(account)
+  } else {
+    AccountFile_Summary.go(account)
+  }
+}]]></Code>
+  </Page>
+</PCF>

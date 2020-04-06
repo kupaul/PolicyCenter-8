@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Screen
+    editable="openForEdit"
+    id="GeneralLiabilityScreen">
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="policyPeriod.GLLine"
+      name="glLine"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, job, jobWizardHelper)"/>
+    </Toolbar>
+    <PanelRef
+      def="PreferredCoverageCurrencyPanelSet(glLine, openForEdit, jobWizardHelper)"
+      id="PreferredCoverageCurrencySelectorRef"/>
+    <PanelRef
+      def="OOSEPanelSet(policyPeriod, jobWizardHelper)"/>
+    <CardViewPanel>
+      <Card
+        id="GeneralLiability_IncludedCard"
+        title="displaykey.Web.LineWizard.StandardCoverages">
+        <PanelRef
+          available="policyPeriod.getLineExists(glLine.Pattern)"
+          def="PolicyLineDV(glLine, jobWizardHelper)"
+          mode="glLine.Pattern.Code"/>
+      </Card>
+      <Card
+        id="GeneralLiability_AdditionalCoveragesCard"
+        title="displaykey.Web.LineWizard.AdditionalCoverages">
+        <PanelRef
+          def="AdditionalCoveragesPanelSet(glLine, new String[]{&quot;GLGroup&quot;}, false)"/>
+      </Card>
+      <Card
+        id="ExclusionsAndConditionsCard"
+        title="displaykey.Web.LineWizard.ExclusionsAndConditions">
+        <PanelRef
+          def="AdditionalExclusionsAndConditionsPanelSet(glLine, glLine.getAdditionalCoverageCategories() , true)"/>
+      </Card>
+      <Card
+        id="GeneralLiability_AdditionalInsuredCard"
+        title="displaykey.Web.LineWizard.AdditionalInsured">
+        <PanelRef
+          def="AdditionalInsuredsDV(glLine, openForEdit, true)"/>
+      </Card>
+    </CardViewPanel>
+  </Screen>
+</PCF>

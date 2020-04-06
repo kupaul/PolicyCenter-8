@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <RowSet
+    id="StateCostRowSet"
+    mode="GL">
+    <Require
+      name="costWrapper"
+      type="ui.CostWrapper"/>
+    <Variable
+      initialValue="costWrapper.Cost as GLCost"
+      name="aggCost"/>
+    <Row
+      id="AggCostRow"
+      visible="not aggCost.ActualAmountBilling.IsZero">
+      <Cell
+        id="empty"
+        value="aggCost.Location.LocationNum"/>
+      <Cell
+        id="ClassCode"
+        value="aggCost.Coverage.PatternCode"/>
+      <Cell
+        id="Description"
+        value="aggCost.DisplayName"
+        wrap="true"/>
+      <Cell
+        align="right"
+        id="Basis"
+        value="aggCost.Basis == null or aggCost.Basis == 0 ? &quot;&quot; : aggCost.Basis.DisplayValue"/>
+      <TextCell
+        align="right"
+        format="&quot;0.0000&quot;"
+        id="Rate"
+        value="aggCost.ActualAdjRate == 0 ? &quot;&quot; : aggCost.ActualAdjRate.DisplayValue"/>
+      <MonetaryAmountCell
+        align="right"
+        formatType="currency"
+        id="TermAmount"
+        numCols="6"
+        value="aggCost.ActualAmountBilling"/>
+    </Row>
+  </RowSet>
+</PCF>

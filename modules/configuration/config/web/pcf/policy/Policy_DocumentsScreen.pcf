@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Screen
+    id="Policy_DocumentsScreen">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="CurrentLocation typeis pcf.api.Wizard ? CurrentLocation : null"
+      name="wizard"
+      type="pcf.api.Wizard"/>
+    <SearchPanel
+      criteriaName="searchCriteria"
+      resultCachingEnabled="false"
+      resultsName="documents"
+      search="searchCriteria.performSearch()"
+      searchCriteria="return createCriteria()"
+      searchOnEnter="true"
+      searchResultsType="DocumentQuery">
+      <PanelRef
+        def="Policy_DocumentSearchDV(searchCriteria, policyPeriod)"/>
+      <PanelRef
+        def="DocumentsLV(documents, false)"
+        editable="true">
+        <TitleBar
+          appendListViewPaging="true"
+          title="displaykey.Web.PolicyFile.Documents"/>
+        <Toolbar>
+          <CheckedValuesToolbarButton
+            checkedRowAction="CheckedValue.Obsolete = true; maybeSaveDraft()"
+            flags="all editableDocument,no hidden"
+            id="PolicyFile_Documents_ObsolesceButton"
+            iterator="DocumentsLV.DocumentsLV"
+            label="displaykey.Web.PolicyFile.Documents.Obsolesce"
+            shortcut="O"/>
+          <CheckedValuesToolbarButton
+            checkedRowAction="CheckedValue.Obsolete = false; maybeSaveDraft()"
+            flags="all editableDocument,all hidden"
+            id="PolicyFile_Documents_DeobsolesceButton"
+            iterator="DocumentsLV.DocumentsLV"
+            label="displaykey.Web.PolicyFile.Documents.Deobsolesce"
+            shortcut="O"
+            visible="searchCriteria.IncludeObsoletes"/>
+          <ToolbarButton
+            action="maybeSaveDraft()"
+            hideIfReadOnly="true"
+            id="Draft"
+            label="displaykey.Button.SaveDraft"
+            shortcut="S"
+            visible="wizard &lt;&gt; null"/>
+        </Toolbar>
+      </PanelRef>
+    </SearchPanel>
+    <Code><![CDATA[function createCriteria() : DocumentSearchCriteria {
+  var criteria = new DocumentSearchCriteria()
+  criteria.IncludeObsoletes = false
+  criteria.Policy = policyPeriod.Policy
+  criteria.Account = policyPeriod.Policy.Account
+  return criteria
+}
+
+function maybeSaveDraft() {
+  if (wizard <> null) {
+    wizard.saveDraft()
+  }
+}]]></Code>
+  </Screen>
+</PCF>

@@ -1,0 +1,350 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Generating New Messages in Event Fired Rules</title>
+    <link rel="StyleSheet" href="css/eventsmessaging.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-messaging.html#3961690">Messaging</a> : <a class="WebWorks_Breadcrumb_Link" href="eventsmessaging.26.01.html#3961690">Messaging and Events</a> : Generating New Messages in Event Fired Rules</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="3961690">Generating New Messages in Event Fired Rules</a></h3>
+      <div class="B_-_Body"><a name="4247978">Each time a system event triggers a messaging event, PolicyCenter calls the Event Fired rule set. The application calls this rule set once for each event/destination pair for destinations that are interested in this event. Remember that destinations signal which events they care about in the Messaging editor in Studio, which specifies your messaging plugins by name. The </a><span class="e_-_emphasis">plugin name</span> is the name for which Studio prompts you when you register a plugin in the Plugins Editor in Studio. Your Event Fired rules must decide what to do in response to the event. Most importantly, decide whether you want to create a message in response to the event. Because message creation impacts user response times, avoid unnecessarily large or complex messages if possible.</div>
+      <div class="B_-_Body"><a name="4375664">The most important object your Event Fired rules use is a </a><span class="e_-_emphasis">message context object</span>, which you can access using the <span class="cv_-_computer_voice">messageContext</span> variable. This object contains information such as the event name and destination ID. Typically your rule set generates one or more messages, although the logic can omit creating messages as appropriate. The following sections explain how to use business rules to analyze the event and generate messages.</div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="4248391">Event Fired rules and messaging plugin implementations have limitations about what data you can change. See </a><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.02.html#4367010', '');" title="Messaging Overview">“Important Entity Data Restrictions in Messaging Rules and Messaging Plugins”</a>.</div>
+      <div class="B_-_Body"><a name="4247985">Studio includes a tool that helps you export business data entities (and other types like Gosu classes) to XML. You can select which properties are required or optional for each integration point. You can export an XSD to describe the data interchange format you selected. Then, you can edit your Event Fired rules to generate a payload for the entity that conforms to your custom XSD. For more details, see </a><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.06.html#4348018', '');" title="Generating New Messages in Event Fired Rules">“Creating XML Payloads Using Guidewire XML (GX) Models”</a>.</div>
+      <h6 class="HS_-_Head_Sub"><a name="3946630">Rule Set Structure </a></h6>
+      <div class="B_-_Body"><a name="3946634">If you look at the sample Event Fired rule set, you can see a suggested hierarchy for your rules. The top level creates a different branch of the tree for each destination. You can determine which destination this event applies to by using the </a><span class="cv_-_computer_voice">messageContext</span> variable accessible from <span class="cv_-_computer_voice">EventFired</span> rule sets. For example, to check the destination ID number, use code like the following:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="3946636">// If this is for destination #1</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3946637">messageContext.DestID == 1  </a></PRE>
+      <div class="B_-_Body"><a name="3946640">At the next level in the rules hierarchy, it determines for what root object an event triggered:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="3946648">messageContext.Root typeis Policy // If the root object is a Policy...</a></div>
+      <div class="B_-_Body"><a name="3946650">Finally, at the third level there is a rule for handling each event of interest:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="3946654">messageContext.EventName == "PolicyChanged"   </a></div>
+      <div class="B_-_Body"><a name="3946656">In this way, it is easy to organize the rules and keep the logic for handling any single event separate. Of course, if you have shared logic that would be useful to processing multiple events, create a Gosu class that encapsulates that logic. Your messaging code can call the shared logic from each rule that needs it. </a></div>
+      <h6 class="HS_-_Head_Sub"><a name="3946663">Simple Message Payload</a></h6>
+      <div class="B_-_Body"><a name="3946665">There are multiple steps in creating a message. First, you must convert (</a><span class="e_-_emphasis">cast</span>) the root object of the event to a variable of known type:</div>
+      <div class="CS_-_Code_Single_Line"><a name="3946672">var policy = messageContext.Root as Policy </a></div>
+      <div class="B_-_Body"><a name="3946678">Once the Rule Engine recognizes the root object as a </a><span class="cv_-_computer_voice">Policy</span>, it allows you to access properties and methods on the policy to parameterize the payload of your message. </div>
+      <div class="B_-_Body"><a name="4045864">Next, create a message with a </a><span class="cv_-_computer_voice">String</span> payload:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="3946691">var msg = messageContext.createMessage("The policy number is " + policy.PolicyNumber +</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4298947">&nbsp;&nbsp;" and event name is " + messageContext.EventName)</a></PRE>
+      <h6 class="HS_-_Head_Sub"><a name="4298948">Message Payloads and Setting Message Root or Primary Entities</a></h6>
+      <div class="B_-_Body"><a name="4299165">If you want to use the safe ordering feature of PolicyCenter, you may need additional lines of code</a>, depending on what the root object of the event is.</div>
+      <div class="B_-_Body"><a name="4299174">For more information about these concepts, see:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.02.html#4207420', '');" title="Messaging Overview" name="4299178">“Root Object”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.02.html#4207620', '');" title="Messaging Overview" name="4299010">“Primary Entity and Primary Object”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.06.html#4348048', '');" title="Generating New Messages in Event Fired Rules" name="4299025">“Setting a Message Root Object or Primary Object”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h6 class="HS_-_Head_Sub"><a name="4298967">Multiple Messages for One Event</a></h6>
+      <div class="B_-_Body"><a name="4298956">The Event Fired rule&nbsp;set runs once for each event/destination pair. Therefore, if you need to send multiple messages, create multiple messages in the desired order in your Event Fired rules. For example:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="3946703">var msg1 = messageContext.createMessage("Message 1 for policy " + policy.PublicID +</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946704">&nbsp;&nbsp;" and event name " + messageContext.EventName) </a></PRE>
+      <PRE class="CF_-_Code_First_Line"><a name="3946711">var msg2 = messageContext.createMessage("Message 2 for policy " + policy.PublicID +</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946712">&nbsp;&nbsp;" and event name " + messageContext.EventName) </a></PRE>
+      <div class="B_-_Body"><a name="3946716">You can also use loops or queries as needed. For example, suppose that if a policy-related event occurs, you want to send a message for the policy and then a message for each note on the policy. The rule might look like the following:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="3946730">var policy = messageContext.Root as Policy</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946737">var msg = messageContext.createMessage("message for policy with public ID " + policy.PublicID)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946738">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946742">for (note in policy.Notes) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946743">  msg = messageContext.createMessage(note.Body)</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3946744">}</a></PRE>
+      <div class="B_-_Body"><a name="3946751">This creates one message for the policy and also one message for </a><span class="e_-_emphasis">each</span> note on the policy.</div>
+      <div class="B_-_Body"><a name="3946752">If you create multiple messages for one event like this, you can share information easily across all of the messages. For example, you could determine the username of the person who made the change, store that in a variable, and then include it in the message payload for all messages.</a></div>
+      <div class="B_-_Body"><a name="3946753">Remember that if multiple destinations requested notification for a specific event name, your Event Fired rule set runs once for each destination, varying only in the </a><span class="cv_-_computer_voice">messageContext.DestID</span>.</div>
+      <div class="B_-_Body"><a name="4298935">You might need to share information across multiple runs of the Event Fired rule set for the same event or different events. If so, see </a><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.06.html#3946802', '');" title="Generating New Messages in Event Fired Rules">“Saving Intermediate Values Across Rule&nbsp;Set Executions”</a>.</div>
+      <h6 class="HS_-_Head_Sub"><a name="4298939">Determining What Changed</a></h6>
+      <div class="B_-_Body"><a name="4298942">In addition to normal access to the </a><span class="cv_-_computer_voice">messageContext</span>’s root object, there is a way to find out what has changed. Your Gosu business rule logic can determine which user made the change, the timestamp, and the original value of changed properties. This information is available only at the time you originally generate the message (<span class="e_-_emphasis">early binding</span>). </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3946764">You cannot use the </a><span class="cv_-_computer_voice">messageContext</span> object during processing of late bound properties, which are properties that employ <span class="e_-_emphasis">late binding</span> immediately before sending. For more information about late binding, see <a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.08.html#3946497', '');" title="Late Binding Data in Your Payload">“Late Binding Data in Your Payload”</a>.</div>
+      <div class="B_-_Body"><a name="3946770">At the beginning of your code, use </a><span class="cv_-_computer_voice">isFieldChanged</span> method test whether the property changed. If the field changed (and only if the property changed), call the <span class="cv_-_computer_voice">getOriginalValue</span> function to get the original value of that property. To get the new (changed) value, simply access the property directly on an entity. The new value has not yet been committed to the database. There are additional functions similar to <span class="cv_-_computer_voice">isFieldChanged</span> and <span class="cv_-_computer_voice">getOriginalValue</span> that are useful for array properties and other situations. Refer to <a href="javascript:WWHClickedPopup('gosu', 'transactions.22.10.html#1637667', '');" title="Determining What Data Changed in a Bundle">“Determining What Data Changed in a Bundle” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.10.html#1637667', '');" title="Determining What Data Changed in a Bundle">Gosu Reference Guide</a></span> for the complete list.</div>
+      <div class="B_-_Body"><a name="3946775">For example, the following Event Fired rule code checks if a desired property changed, and checks its original value also:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="3946776">Var usr = User.util.getCurrentUser() as User</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946777">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946778">Var msg = "Current user is " + usr.Credential.UserName + "."</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4317697">msg = msg + " current loss cause value is " + policy.LossCause</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946783">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4317714">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4317715">if (policy.isFieldChanged("LossCause")) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4317716">  msg = msg + " old value is " + (policy.getOriginalValue("LossCause") as LossCause).Code)</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="4317717">}</a></PRE>
+      <div class="B_-_Body"><a name="3946798">For a complete list of Gosu methods related to finding what data changed, see </a><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.10.html#1637667', '');" title="Determining What Data Changed in a Bundle">“Determining What Data Changed in a Bundle” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.10.html#1637667', '');" title="Determining What Data Changed in a Bundle">Gosu Reference Guide</a></span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="4248659">Rule Sets Must Never Call Message Methods for ACK, Error, or Skip</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="4248660">From within rule sets, you must never call any message acknowledgment or skipping methods such as the </a><span class="cv_-_computer_voice">Message</span> methods <span class="cv_-_computer_voice">reportAck</span>, <span class="cv_-_computer_voice">reportError</span>, or <span class="cv_-_computer_voice">skip</span>. Use those <span class="cv_-_computer_voice">Message</span> methods only within messaging plugins. </div>
+      <div class="B_-_Body"><a name="4248661">This prohibition also applies to Event Fired rules.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="3946802">Saving Intermediate Values Across Rule&nbsp;Set Executions</a></h4>
+      <div class="B_-_Body"><a name="3946803">A single action in the user interface can generate multiple events that share some of the same information. Imagine that you do some calculation to determine the user’s ID in the destination system and want to send this in all messages. You cannot save that in a variable in a rule and use it in another rule. The built-in scope of variables within the rule engine is a single rule. You cannot use the information later if the rule&nbsp;set runs again for another event caused by the same user interface action. </a></div>
+      <div class="B_-_Body"><a name="3946814">PolicyCenter provides a solution to this problem by providing a </a><span class="cv_-_computer_voice">HashMap</span> you can use across all rule&nbsp;set executions for the same action that triggered the system event. In other words, the <span class="cv_-_computer_voice">HashMap</span> is available for all Event Fired rules executing in a single database transaction triggered by the same system event.</div>
+      <div class="B_-_Body"><a name="3946817">Let us consider an example. Suppose that in a single action, an activity completes and it creates a note. This causes two different events and hence two separate executions of the </a><span class="cv_-_computer_voice">EventFired</span> rule&nbsp;set. As PolicyCenter executes rules for completing the activity, your rule logic could save the subject of the activity by adding it to the <span class="e_-_emphasis">temporary map</span> using the <span class="cv_-_computer_voice">SessionMarker.addToTempMap</span> method. Later, if the rule&nbsp;set executes for the new note, your code checks if the subject is in the <span class="cv_-_computer_voice">HashMap</span>. If it is in the map, your code adds the subject of the activity to the message for the note. </div>
+      <div class="B_-_Body"><a name="3946829">Code to save the activity’s information would look like the following:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="3946830">var session = messageContext.SessionMarker // get the sessionmarker</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946831">var act = messageContext.Root as Activity  // get the activity</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946832">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946833">// Store the subject in the "temporary map" for later retrieval!</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3946834">session.addToTempMap( "related_activity_subject", act.Subject )</a></PRE>
+      <div class="B_-_Body"><a name="3946836">Later, to retrieve stored information from the </a><span class="cv_-_computer_voice">HashMap</span>, your code would look like the following:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="3946837">var session = messageContext.SessionMarker // get the sessionmarker</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946838">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946839">// Get the subject line from the "temporary map" stored earlier!</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3946840">var subject = session.getFromTempMap("related_activity_subject") as String</a></PRE>
+      <h4 class="H2_-_Heading_2"><a name="3946843">Creating a Payload Using Gosu Templates</a></h4>
+      <div class="B_-_Body"><a name="3946845">You can use Gosu code in business rules to generate Gosu strings using concatenation to design </a><span class="e_-_emphasis">message payloads</span>, which are the text body of a message. Generating your message payloads directly in Gosu offers more control over the logic flow for what messages you need and for using shared logic in Gosu classes. </div>
+      <div class="B_-_Body"><a name="3946847">However, sometimes it is simpler to use a text-based template to generate the message payload text. This is particularly true if the template contains far more static content than code to generate content. Also, templates are easier to write than constructing a long string using concatenation with linefeed characters. Particularly for long templates, templates expose static message content in simple text files. People who might not be trained in Guidewire Studio or Gosu coding can easily edit these files.</a></div>
+      <div class="B_-_Body"><a name="3946854">You can use Gosu templates from within business rules to create some or all of your message payload. </a></div>
+      <div class="B_-_Body"><a name="3946855">For example, suppose you create a template file </a><span class="cv_-_computer_voice">NotifyAdminTemplate.gst</span> within the package <span class="cv_-_computer_voice">mycompany.templates</span>. Your fully-qualified name of the template is <span class="cv_-_computer_voice">mycompany.templates.NotifyAdminTemplate</span>. </div>
+      <div class="B_-_Body"><a name="3946856">Use the following code to generate (run) a template and pass a parameter:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="3946863">var myPolicy = messageContext.Root as Policy;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946864">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946865">// generate the template and pass a parameter to the template</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946869">var x = mycompany.templates.NotifyAdminTemplate.renderToString(myPolicy)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946870">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946871">// create the message</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3946872">var msg = messageContext.createMessage("Test my template content: " + x)</a></PRE>
+      <div class="B_-_Body"><a name="3946873">This code assumes the template supports parameter passing. For example, something like this:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="3946880">&lt;%@ params(myPolicyParameter : Policy) %&gt;</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946890">The Policy Number is &lt;%= myPolicyParameter.PolicyNumber %&gt;</a></PRE>
+      <div class="B_-_Body"><a name="3946898">There are a couple of steps. First, select the template. Then, you let templates use objects from the template’s Gosu context using the </a><span class="cv_-_computer_voice">template.addSymbol</span> method. Finally, you execute the template and get a <span class="cv_-_computer_voice">String</span> result you could use as the message payload, or as part of the message payload. </div>
+      <div class="B_-_Body"><a name="3946908">The </a><span class="cv_-_computer_voice">addSymbol</span> method takes the <span class="e_-_emphasis">symbol name</span> that is available from within the template’s Gosu code, an object type, and the actual object to pass to the template. The object type could be any intrinsic type, including PolicyCenter entities such as <span class="cv_-_computer_voice">Policy</span> or even a Java class.</div>
+      <div class="B_-_Body"><a name="4424144">For more information about using templates, see </a><a href="javascript:WWHClickedPopup('gosu', 'templates.23.1.html#1453662', '');" title="Gosu Templates">“Gosu Templates” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'templates.23.1.html#1453662', '');" title="Gosu Templates">Gosu Reference Guide</a></span>.</div>
+      <h4 class="H2_-_Heading_2"><a name="4348048">Setting a Message Root Object or Primary Object</a></h4>
+      <div class="B_-_Body"><a name="4348052">From the Gosu environment, the </a><span class="cv_-_computer_voice">messageContext.Root</span> property specifies the <span class="e_-_emphasis">root object</span> for an event. Typically this same object also the root object for the message generated for that event. Because that is the most common case, by default any new message gets the same root object as the event object root. The message root indicates which object this message is about. For further definition of a root object, see <a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.02.html#4207420', '');" title="Messaging Overview">“Root Object”</a>. Contrast this with the definition of primary object on <a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.02.html#4207620', '');" title="Messaging Overview">“Primary Entity and Primary Object”</a>.</div>
+      <div class="B_-_Body"><a name="4249000">You can override the message root object to be a different object. For example, suppose you added a subobject and caught the related event in your Event Fired rules and added a message. You might want the message root to be the subobject’s parent object instead of the default behavior. To override the message root, set the message’s </a><span class="cv_-_computer_voice">MessageRoot</span> (not <span class="cv_-_computer_voice">Root</span>) property in your Event Fired rules. For example:</div>
+      <div class="CS_-_Code_Single_Line"><a name="4249026">message.MessageRoot = myObject</a></div>
+      <div class="B_-_Body"><a name="4248881">It is important to note that the </a><span class="e_-_emphasis">primary object</span> of a message is different from the <span class="e_-_emphasis">message root</span>, however. It is actually the primary object of a message that defines the message ordering algorithm. See <a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.02.html#4307737', '');" title="Messaging Overview">“Safe Ordering”</a> and <a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.07.html#4261012', '');" title="Message Ordering and Multi-Threaded Sending">“Message Ordering and Performance Tuning Details”</a>.</div>
+      <div class="B_-_Body"><a name="4249162">Unlike the message root, there is not a single property that implements the primary object data for a message. Instead, there are multiple properties on a </a><span class="cv_-_computer_voice">Message</span> object that correspond to each type of data that could be a primary object for that application. As mentioned in <a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.02.html#4207620', '');" title="Messaging Overview">“Primary Entity and Primary Object”</a>, each application can define a default primary entity. Each messaging destination can choose from a small set of primary entities. The properties on the <span class="cv_-_computer_voice">Message</span> object for primary entity are strongly typed to the type of the primary entity. In other words, there is a different property on <span class="cv_-_computer_voice">Message</span> for each primary entity type.</div>
+      <div class="B_-_Body"><a name="4249369">In PolicyCenter, there are multiple properties on </a><span class="cv_-_computer_voice">Message</span> for the primary entity:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="4317736">message.Account</a></span> – The account, if any, associated with this <span class="cv_-_computer_voice">Message</span> object.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="4317737">message.Contact</a></span> – The contact, if any, associated with this <span class="cv_-_computer_voice">Message</span> object.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="4317738">Additionally, there is a </a><span class="cv_-_computer_voice">message.PolicyPeriod</span> property. However, <span class="cv_-_computer_voice">PolicyPeriod</span> is not a primary entity for PolicyCenter messaging.</div>
+      <div class="B_-_Body"><a name="4317750">In PolicyCenter, if you set the </a><span class="cv_-_computer_voice">message.MessageRoot</span> property, the following behavior occurs automatically as a side-effect of setting this property from Gosu or Java:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="4317751">If the entity type is </a><span class="cv_-_computer_voice">Account</span> or has an <span class="cv_-_computer_voice">Account</span> property, PolicyCenter automatically sets the <span class="cv_-_computer_voice">message.Account</span> property to set the primary entity.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="4317752">If the entity type is </a><span class="cv_-_computer_voice">Contact</span> or has a <span class="cv_-_computer_voice">Contact</span> property, ClaimCenter automatically sets the <span class="cv_-_computer_voice">message.Contact</span> property to set the primary entity.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="4317753">Additionally, if the entity type is a </a><span class="cv_-_computer_voice">PolicyPeriod</span> or has a <span class="cv_-_computer_voice">PolicyPeriod</span> property, PolicyCenter automatically sets the <span class="cv_-_computer_voice">message.PolicyPeriod</span> property, however this is not a property that affects the primary entity.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="4299281">You only need to set the primary entity properties manually if the automatic behaviors described in this topic did not set them already. Note that you do not need to set unused primary entity properties to </a><span class="cv_-_computer_voice">null</span>. The only primary entity property used in the <span class="cv_-_computer_voice">Message</span> object is the one that matches the primary entity for the destination.</div>
+      <div class="B_-_Body"><a name="4249831">To configure custom behavior of the message ordering system (safe ordering) by manually overriding properties that reference a primary object: </a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="4296100">Set the alternative primary entity in the messaging destination</a>if you are not using an application default primary entity.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="4250042">In your Event Fired rules, manually set the primary entity property on the </a><span class="cv_-_computer_voice">Message</span> object that matches the primary entity for that destination. The primary entity for the destination is either the application default primary entity or overridden in the messaging destination configuration. You can set a primary entity property to <span class="cv_-_computer_voice">null</span> instead of an object. If the property for the primary entity for that destination is <span class="cv_-_computer_voice">null</span>, then PolicyCenter treats the message as a <span class="e_-_emphasis">non-safe-ordered</span> message. PolicyCenter orders safe-ordered and non-safe-ordered messages differently. For details, see <a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.07.html#4253049', '');" title="Message Ordering and Multi-Threaded Sending">“Message Ordering and Multi-Threaded Sending”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="4348013">Be careful with setting message properties that store a reference to a primary object. PolicyCenter uses that information to implement safe ordering of messages by primary object.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="4348018">Creating XML Payloads Using Guidewire XML (GX) Models</a></h4>
+      <div class="B_-_Body"><a name="4348019">Studio includes a tool that helps you export business data entities (and other types like Gosu classes) to XML. You can select which properties are required or optional for each integration point. You can export an XSD to describe the data interchange format you selected. Then, you can use this model to export XML or import XML in your integrations. For example, your messaging plugins or your Event Fired rules could send XML to external systems. You could also write web services that take XML data its payload from an external system or return XML as its result.</a></div>
+      <div class="B_-_Body"><a name="3946980">The output XML only includes the properties specified in your custom XSD. It is best to create a custom XSD for each integration. Part of this is to ensure you send only the data you need for each integration point. For example, a check printing system probably needs a smaller subset of object properties than a external legacy financials system might need.</a></div>
+      <div class="B_-_Body"><a name="3946982">The first step is to create a new XML model in Studio. In Studio, navigate in the resource tree to the package hierarchy in which you want to store your XML model. Next, right-click on the package and from the contextual menu choose </a><span class="ui_-_UI_element">New</span> → <span class="ui_-_UI_element">Guidewire XML Model</span>. </div>
+      <div class="B_-_Body"><a name="3946988">For instructions on using the GX modeler, see </a><a href="javascript:WWHClickedPopup('gosu', 'xml.21.20.html#1864864', '');" title="The Guidewire XML (GX) Modeler">“The Guidewire XML (GX) Modeler” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'xml.21.20.html#1864864', '');" title="The Guidewire XML (GX) Modeler">Gosu Reference Guide</a></span>.</div>
+      <h4 class="H2_-_Heading_2"><a name="3946990">Using Java Code to Generate Messages</a></h4>
+      <div class="B_-_Body"><a name="3946993">Business rules, including message-generation rules, can optionally call out to Java modules to generate the message payload string. See </a><a href="javascript:WWHClickedPopup('gosu', 'java-gosu.09.1.html#2133774', '');" title="Calling Java from Gosu">“Calling Java from Gosu” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'java-gosu.09.1.html#2133774', '');" title="Calling Java from Gosu">Gosu Reference Guide</a></span>.</div>
+      <h4 class="H2_-_Heading_2"><a name="3946997">Saving Attributes of the Message</a></h4>
+      <div class="B_-_Body"><a name="3946999">As part of creating a message, you can save a </a><span class="e_-_emphasis">message code</span> property within the message to help categorize the types of messages that you send. Optionally, you can use this information to help your messaging plugins know how to handle the message. Alternatively, your destination could report on how many messages of each type where processed by PolicyCenter (for example, for reconciliation).</div>
+      <div class="B_-_Body"><a name="3947004">If you need additional properties on the </a><span class="cv_-_computer_voice">Message</span> entity for messaging-specific data, extend the data model with new properties. Only do this for messaging-specific data.</div>
+      <div class="B_-_Body"><a name="3947013">During the </a><span class="cv_-_computer_voice">send</span> method of your message transport plugin, you could test any of these properties to determine how to handle the message. As you acknowledge the message, you could compare values on these properties to values returned from the remote system to detect possible mismatches.</div>
+      <div class="B_-_Body"><a name="3947017">PolicyCenter also lets you save </a><span class="e_-_emphasis">entities by name </span>(saving references to objects) with the message to update PolicyCenter entities as you process acknowledgements. For example, to save a <span class="cv_-_computer_voice">Note</span> entity by the name <span class="cv_-_computer_voice">note1</span> to update a property on it later, use code similar to the following:</div>
+      <div class="CS_-_Code_Single_Line"><a name="3947021">msg.putEntityByName("note1", note)</a></div>
+      <div class="B_-_Body"><a name="3947024">For more information about using </a><span class="cv_-_computer_voice">putEntityByName</span>, see <a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.09.html#4016335', '');" title="Reporting Acknowledgements and Errors">“Reporting Acknowledgements and Errors”</a>.</div>
+      <div class="B_-_Body"><a name="3947026">These methods are especially helpful to handle special actions in acknowledgements. For example, to update properties on an entity, use these methods to authoritatively find the original entity. These methods work even if public IDs or other properties on the entity change. This approach is particularly useful if public ID values could change between the time Event Fired rules create the message and the time you messaging plugins acknowledge the message. The </a><span class="cv_-_computer_voice">getEntityByName</span> method always returns the correct reference to the original entity.</div>
+      <h4 class="H2_-_Heading_2"><a name="3947045">Maximum Message Size</a></h4>
+      <div class="B_-_Body"><a name="4253045">In this version of PolicyCenter, messages can contain up to one billion characters.</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

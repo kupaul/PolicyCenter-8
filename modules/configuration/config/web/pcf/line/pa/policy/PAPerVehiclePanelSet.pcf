@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <PanelSet
+    id="PAPerVehiclePanelSet">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="policyPeriod.PersonalAutoLine"
+      name="paLine"/>
+    <Variable
+      initialValue="gw.api.productmodel.CoveragePattern"
+      name="unavailableCoverages"/>
+    <PanelRef
+      id="PerVehicleCoveragesDV">
+      <TitleBar
+        title="displaykey.Web.Policy.PA.PerVehicleCoveragesTitle(paLine.BaseState)"/>
+      <Toolbar>
+        <ToolbarButton
+          action="jobWizardHelper.validateAndSaveDraft(); CopyCoveragesPopup.push(policyPeriod)"
+          id="CopyCoverages"
+          label="displaykey.Web.PolicyLine.CopyCoverages.Button"
+          visible="openForEdit and policyPeriod.CanCopyCoverages and paLine.Vehicles.length &gt; 1"/>
+      </Toolbar>
+      <ListDetailPanel
+        selectionName="selectedVehicle"
+        selectionType="PersonalVehicle">
+        <ListViewPanel
+          editable="false"
+          id="VehicleCoveragesLV">
+          <RowIterator
+            editable="openForEdit"
+            elementName="vehicle"
+            pageSize="0"
+            type="PersonalVehicle"
+            value="paLine.Vehicles">
+            <Row>
+              <Cell
+                align="left"
+                id="VehicleNumber"
+                label="displaykey.Web.PolicyLine.Vehicle.VehicleNumber"
+                sortBy="vehicle.VehicleNumber"
+                sortOrder="1"
+                value="vehicle.VehicleNumber"
+                wrapLabel="true"/>
+              <Cell
+                align="left"
+                enableSort="false"
+                id="Description"
+                label="displaykey.Web.PolicyLine.Vehicle.Description"
+                value="getVehicleDescription(vehicle)"
+                wrapLabel="true"/>
+              <Cell
+                align="left"
+                enableSort="false"
+                id="Comprehensive"
+                label="displaykey.Web.PolicyLine.Vehicle.Comprehensive"
+                value="vehicle.PAComprehensiveCov.PACompDeductibleTerm.Value != null ? vehicle.PAComprehensiveCov.PACompDeductibleTerm.DisplayValue : displaykey.Web.PolicyLine.Vehicle.NotSelected"
+                wrapLabel="true"/>
+              <Cell
+                align="left"
+                enableSort="false"
+                id="Collision"
+                label="displaykey.Web.PolicyLine.Vehicle.Collision"
+                value="vehicle.PACollisionCov.PACollDeductibleTerm.Value != null ? vehicle.PACollisionCov.PACollDeductibleTerm.DisplayValue : displaykey.Web.PolicyLine.Vehicle.Collision.NotSelected"
+                wrapLabel="true"/>
+              <Cell
+                align="left"
+                enableSort="false"
+                id="TowingLabor"
+                label="displaykey.Web.PolicyLine.Vehicle.TowingLabor"
+                value="vehicle.PATowingLaborCovExists ? displaykey.Web.PolicyLine.Vehicle.TowingLabor.Selected : displaykey.Web.PolicyLine.Vehicle.TowingLabor.NotSelected"
+                wrapLabel="true"/>
+              <Cell
+                align="left"
+                enableSort="false"
+                id="Rental"
+                label="displaykey.Web.PolicyLine.Vehicle.Rental"
+                value="vehicle.PARentalCov.PARentalTerm.PackageValue.Description != null ? vehicle.PARentalCov.PARentalTerm.PackageValue.Description : displaykey.Web.PolicyLine.Vehicle.Rental.NotSelected"
+                wrapLabel="true"/>
+              <Cell
+                align="left"
+                enableSort="false"
+                id="VehiclePreferredCoverageCurrency"
+                label="displaykey.Web.Policy.CoverableCurrency"
+                value="vehicle.PreferredCoverageCurrency"
+                visible="gw.api.util.CurrencyUtil.isMultiCurrencyMode()"
+                wrapLabel="true"/>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+        <PanelRef
+          def="PreferredCoverageCurrencyPanelSet(selectedVehicle, openForEdit, jobWizardHelper)"
+          id="PreferredCoverageCurrencySelectorRef"/>
+        <CardViewPanel
+          id="VehicleCoverageDetailsCV">
+          <Card
+            id="VehicleCoverageDetailsCard"
+            title="displaykey.Web.PolicyLine.Vehicle.CoverageDetails">
+            <PanelRow>
+              <PanelColumn>
+                <PanelRef
+                  def="PersonalAuto_VehicleCoverageDetailDV(selectedVehicle, openForEdit)"/>
+              </PanelColumn>
+            </PanelRow>
+          </Card>
+        </CardViewPanel>
+      </ListDetailPanel>
+    </PanelRef>
+    <Code><![CDATA[function getVehicleDescription(vehicle : PersonalVehicle) : String {
+        return vehicle.Year + " " + vehicle.Make + " " + vehicle.Model   
+}]]></Code>
+  </PanelSet>
+</PCF>

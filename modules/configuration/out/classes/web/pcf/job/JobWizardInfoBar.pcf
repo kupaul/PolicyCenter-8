@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InfoBar
+    id="JobWizardInfoBar">
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <InfoBarElement
+      icon="displaykey.Web.Wizard.InfoBar.JobStatusIcon(job.Subtype.Code)"
+      id="JobLabel"
+      label="displaykey.Web.Wizard.InfoBar.JobStatus(job.DisplayType,policyPeriod.Status)"/>
+    <InfoBarElement
+      action="WorkflowDetail.go(policyPeriod.ActiveWorkflow)"
+      id="WorkflowLabel"
+      value="displaykey.Web.Wizard.InfoBar.WorkflowStatus(policyPeriod.ActiveWorkflow.State == &quot;active&quot; ? policyPeriod.ActiveWorkflow.ActiveState.DisplayName : policyPeriod.ActiveWorkflow.State.DisplayName )"
+      visible="policyPeriod.hasActiveWorkflow()"/>
+    <InfoBarElement
+      icon="displaykey.Web.Wizard.InfoBar.LOBIcon(policyPeriod.Policy.Product.Abbreviation)"
+      id="LOBLabel"
+      label="policyPeriod.Policy.Product"/>
+    <InfoBarElement
+      id="EffectiveDate"
+      label="displaykey.Web.Wizard.InfoBar.EffectiveDate(util.StringUtil.formatDate(policyPeriod.EditEffectiveDate, &quot;short&quot;))"
+      visible="policyPeriod.EditEffectiveDate != null"/>
+    <InfoBarElement
+      id="AccountName"
+      value="policyPeriod.PrimaryNamedInsured.DisplayName"
+      visible="policyPeriod.PrimaryNamedInsured != null"/>
+    <InfoBarElement
+      action="AccountFileForward.go(job.Policy.Account)"
+      id="AccountNumber"
+      label="displaykey.Web.JobWizard.InfoBar.AccountNumber"
+      value="job.Policy.Account.AccountNumber"/>
+    <InfoBarElement
+      action="if (job.LatestPeriod.PolicyNumberAssigned) PolicyFileForward.go(job.LatestPeriod.PolicyNumber, job.LatestPeriod.EditEffectiveDate)"
+      id="PolicyNumber"
+      label="displaykey.Web.Wizard.InfoBar.PolicyNumber"
+      value="job.LatestPeriod.PolicyNumberDisplayString"
+      visible="(job typeis Renewal) or (job typeis Rewrite) or (job typeis PolicyChange) or (job typeis Reinstatement) or (job.NewTerm and job.DisplayStatus == &quot;Bound&quot;)"/>
+    <InfoBarElement
+      id="Underwriter"
+      label="displaykey.Web.Wizard.InfoBar.Underwriter"
+      value="job.getUnderwriter()"
+      visible="job.getUnderwriter() != null"/>
+    <InfoBarElement
+      id="EditLock"
+      value="getLockedForUWReviewLabel()"
+      visible="policyPeriod.UWLocked"/>
+    <Code><![CDATA[function getLockedForUWReviewLabel() : String {
+  if (job.SideBySide) {
+    return displaykey.Web.Wizard.InfoBar.JobEditLock
+  } else {
+    return displaykey.Web.Wizard.InfoBar.EditLock
+  }
+}]]></Code>
+  </InfoBar>
+</PCF>

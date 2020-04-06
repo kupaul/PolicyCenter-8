@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Screen
+    id="NotesScreen">
+    <Require
+      name="account"
+      type="Account"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="viewOnly"
+      type="boolean"/>
+    <Require
+      name="activity"
+      type="Activity"/>
+    <SearchPanel
+      criteriaName="searchCriteria"
+      resultCachingEnabled="false"
+      resultsName="notes"
+      search="searchCriteria.setSearchCriteria(activity); return searchCriteria.performSearch()"
+      searchCriteria="new NoteSearchCriteria() {:Account = (policyPeriod == null ? account : null), :Policy = policyPeriod.Policy}"
+      searchOnEnter="true"
+      searchResultsType="NoteQuery">
+      <PanelRef
+        def="NoteSearchDV(searchCriteria, policyPeriod)"/>
+      <PanelRef
+        def="NotesLV(notes, viewOnly)">
+        <TitleBar
+          appendListViewPaging="true"
+          title="displaykey.Web.PolicyFile.Notes"/>
+        <Toolbar
+          visible="not viewOnly">
+          <IteratorButtons
+            iterator="NotesLV.NotesLV"/>
+        </Toolbar>
+      </PanelRef>
+    </SearchPanel>
+  </Screen>
+</PCF>

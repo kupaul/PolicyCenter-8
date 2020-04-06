@@ -1,0 +1,52 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<DocumentTemplateDescriptor
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="http://www.guidewire.com/schema/policycenter/document-template.xsd"
+
+  id="SampleConfirmationLetter.rtf"
+  name="Sample Confirmation Letter"
+  description="Sample Confirmation Letter"
+  type="confirm_letter"
+  scope="all"
+  lob=""
+  state=""
+  mime-type="application/rtf"
+  date-effective="2003-03-15"
+  date-expires=""
+  keywords="policy"
+  required-symbols="policyPeriod">
+
+  <ContextObject name="Job" type="Job">
+    <DefaultObjectValue>policyPeriod.Job</DefaultObjectValue>
+  </ContextObject>
+  <ContextObject name="Producer" type="User">
+    <DefaultObjectValue>(policyPeriod.Job).getUserRoleAssignmentByRole( "producer" ).AssignedUser</DefaultObjectValue>
+  </ContextObject>  
+  <ContextObject name="Policy" type="Policy">
+    <DefaultObjectValue>policyPeriod.Policy</DefaultObjectValue>
+  </ContextObject>
+  <ContextObject name="Address" type="Address">
+    <DefaultObjectValue>policyPeriod.PrimaryNamedInsured.AccountContactRole.AccountContact.Contact.PrimaryAddress</DefaultObjectValue>
+  </ContextObject>
+
+  <FormFieldGroup name="default">
+    <DisplayValues>
+      <NullDisplayValue>None</NullDisplayValue>
+    </DisplayValues>
+    
+    <FormField name="AccountName">policyPeriod.PrimaryNamedInsured.DisplayName</FormField>
+    <FormField name="AccountAddress1">Address.AddressLine1</FormField>
+    <FormField name="AccountAddress2">Address.AddressLine2 == null ? "" : "\n"+ Address.AddressLine2</FormField>
+    <FormField name="AccountAddress3">Address.AddressLine3 == null ? "" : "\n"+ Address.AddressLine3</FormField>
+    <FormField name="AccountAddress4">Address.CityStateZip</FormField>
+    <FormField name="PerEffDate">policyPeriod.PeriodStart.format("medium")</FormField>
+    <FormField name="PerExpDate">policyPeriod.PeriodEnd.format("medium")</FormField>
+
+    <FormField name="ProductType">Policy.Product</FormField>
+    <FormField name="JobNumber">Job.JobNumber</FormField>
+
+    <FormField name="ProducerName">Producer.DisplayName</FormField>
+    <FormField name="ProducerEMail">Producer.Contact.EmailAddress1</FormField>
+  </FormFieldGroup>
+
+</DocumentTemplateDescriptor>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" desc="A standardized code describing operations performed" entity="IndustryCode" exportable="true" extendable="true" ignoreForEvents="true" loadable="false" platform="false" readOnly="true" subpackage="product" table="industrycode" type="retireable">
+  <implementsEntity name="SimpleEffDated"/>
+  <!-- A typically numeric code -->
+  <column desc="The code value" name="Code" nullok="false" setterScriptability="doesNotExist" type="shorttext"/>
+  <typekey desc="The type of code (SIC, NAICS, etc)" name="Domain" nullok="false" typelist="IndustryCodeType"/>
+  <column desc="The Classification of the code (essentially a short description)" name="Classification" nullok="true" type="mediumtext">
+    <localization nullok="true" tableName="indcode_class"/>
+  </column>
+  <!-- Enforce the fact that an industry code should only have one instance -->
+  <index desc="Ensures that industry codes are unique within a given domain and effective period." name="ccu1" unique="true">
+    <indexcol keyposition="1" name="Code"/>
+    <indexcol keyposition="2" name="Domain"/>
+    <indexcol keyposition="3" name="Retired"/>
+    <indexcol keyposition="4" name="EffectiveDate"/>
+  </index>
+</entity>

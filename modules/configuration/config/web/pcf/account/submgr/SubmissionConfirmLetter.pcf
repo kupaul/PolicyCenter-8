@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    afterCancel="SubmissionManager.go(account)"
+    afterCommit="SubmissionLetterSuccess.go(account)"
+    beforeCommit="letter.addJobs( gw.job.SubmissionLetterHelper.getCheckedSubmissions() ); letter.createAndAttachDocument()"
+    canEdit="true"
+    canVisit="perm.Account.newSubmission(account)"
+    id="SubmissionConfirmLetter"
+    parent="SubmissionManager(account)"
+    showUpLink="true"
+    startInEditMode="true"
+    title="displaykey.Web.SubmissionConfirmLetter"
+    validateOnBundleCommit="false">
+    <LocationEntryPoint
+      signature="SubmissionConfirmLetter(account : Account)"/>
+    <Variable
+      name="account"
+      type="Account"/>
+    <Variable
+      initialValue="initLetter()"
+      name="letter"
+      type="Letter"/>
+    <Screen
+      id="SubmissionConfirmLetterScreen">
+      <Toolbar>
+        <EditButtons
+          updateLabel="displaykey.Web.SubmissionConfirmLetter.GenerateLetter"/>
+      </Toolbar>
+      <PanelRef
+        def="SubmissionConfirmLetterDV(letter, account)"/>
+    </Screen>
+    <Code><![CDATA[function initLetter() : Letter {
+  var result = new Letter()
+  result.Type = "Confirmation"
+  return result
+}]]></Code>
+  </Page>
+</PCF>

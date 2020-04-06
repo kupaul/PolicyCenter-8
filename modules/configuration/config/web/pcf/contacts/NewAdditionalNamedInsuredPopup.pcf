@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    beforeCommit="policyAddlNamedInsured.resetContactAndRoles(duplicateContactsPopupHelper.existingPCContactWithABContactMatch)"
+    canEdit="true"
+    countsAsWork="false"
+    id="NewAdditionalNamedInsuredPopup"
+    returnType="PolicyAddlNamedInsured"
+    startInEditMode="true"
+    title="displaykey.Web.Contact.NewContact(entity.PolicyAddlNamedInsured.Type.TypeInfo.DisplayName)">
+    <LocationEntryPoint
+      signature="NewAdditionalNamedInsuredPopup(period: PolicyPeriod, contactType: typekey.ContactType)"/>
+    <Variable
+      name="period"
+      type="PolicyPeriod"/>
+    <Variable
+      name="contactType"
+      type="typekey.ContactType"/>
+    <Variable
+      initialValue="period.addNewPolicyAddlNamedInsuredOfContactType(contactType)"
+      name="policyAddlNamedInsured"/>
+    <Variable
+      initialValue="period.Job.NewTerm ? null : policyAddlNamedInsured.BasedOn.IndustryCode"
+      name="previousIndustryCode"
+      type="IndustryCode"/>
+    <Variable
+      initialValue="period.PolicyContactRoles.whereTypeIs(entity.PolicyAddlNamedInsured).map(\ p -&gt; p.AccountContactRole.AccountContact.Contact)"
+      name="existingContacts"
+      type="Contact[]"/>
+    <Variable
+      initialValue="new gw.pcf.duplicatecontacts.DuplicateContactsPopupHelper(policyAddlNamedInsured.AccountContactRole.AccountContact.Contact, existingContacts)"
+      name="duplicateContactsPopupHelper"/>
+    <Screen
+      editable="true"
+      id="ContactDetailScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.checkForDuplicatesOrUpdate(\ -&gt; CurrentLocation.pickValueAndCommit(policyAddlNamedInsured))"
+          id="ForceDupCheckUpdate"
+          label="displaykey.Button.OK"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+        <EditButtons
+          pickValue="policyAddlNamedInsured"
+          updateVisible="not duplicateContactsPopupHelper.ShowButton"/>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.push()"
+          id="CheckForDuplicates"
+          label="displaykey.Web.Contact.CheckForDuplicates"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+      </Toolbar>
+      <DetailViewPanel
+        id="AdditionalNamedInsuredInfoDV">
+        <InputColumn>
+          <TextInput
+            editable="true"
+            id="Relationship"
+            label="displaykey.Web.Policy.NamedInsured.Relationship"
+            value="policyAddlNamedInsured.Relationship"/>
+          <IndustryCodeInput
+            domain="&quot;SIC&quot; as IndustryCodeType"
+            editable="true"
+            id="IndustryCode"
+            label="displaykey.Web.EditAccount.IndustryCode"
+            pickLocation="IndustryCodeSearchPopup.push(&quot;SIC&quot; as IndustryCodeType, ReferenceDate, previousIndustryCode)"
+            previousCode="previousIndustryCode.Code"
+            referenceDate="ReferenceDate"
+            value="(policyAddlNamedInsured.AccountContactRole as NamedInsured).IndustryCode"
+            visible="policyAddlNamedInsured.AccountContactRole.AccountContact.Company"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef
+        def="NewPolicyContactRoleDetailsCV(policyAddlNamedInsured, false)"/>
+    </Screen>
+    <Code><![CDATA[property get ReferenceState() : Jurisdiction {
+  return gw.api.util.JurisdictionMappingUtil.getJurisdiction(policyAddlNamedInsured.AccountContactRole.AccountContact.Contact.PrimaryAddress)
+}
+
+property get ReferenceDate() : DateTime {
+  return ReferenceState == null ? period.EditEffectiveDate : period.getReferenceDateForCurrentJob(ReferenceState)
+}]]></Code>
+  </Popup>
+</PCF>

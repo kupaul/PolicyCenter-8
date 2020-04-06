@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    autosaveable="false"
+    countsAsWork="false"
+    desc="Special page for asynchronous operations"
+    id="PleaseBePatientPopup"
+    title="displaykey.Web.PleaseBePatientPopup.Title">
+    <LocationEntryPoint
+      signature="PleaseBePatientPopup(policyPeriod : PolicyPeriod,helper : web.job.JobWizardHelper, nextStep : String, context : gw.web.PatienceContext)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="helper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      name="nextStep"
+      type="String"/>
+    <Variable
+      name="context"
+      type="gw.web.PatienceContext"/>
+    <Screen
+      id="PleaseBePatientPopupScreen">
+      <Toolbar/>
+      <DetailViewPanel>
+        <InputColumn>
+          <ProgressInput
+            actionOnComplete="helper.redirectBasedOnBranchStatus( helper.refreshAndReturnPolicyPeriod(), nextStep )"
+            id="JobWizardPatiences"
+            percentage="context.keepWaiting() ? waitCount() : 100"/>
+        </InputColumn>
+      </DetailViewPanel>
+    </Screen>
+    <Code><![CDATA[var _waitCount : int = 0
+
+function waitCount() : int {
+  _waitCount = _waitCount + 10
+  if(_waitCount < 100) {
+    return -1
+  } else {
+    return 100
+  }
+}]]></Code>
+  </Popup>
+</PCF>

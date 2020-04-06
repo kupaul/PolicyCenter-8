@@ -1,0 +1,232 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <PanelSet
+    id="RatingCumulDetailsPanelSet"
+    mode="PersonalAutoLine">
+    <Require
+      name="period"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="isEditable"
+      type="boolean"/>
+    <PanelRef
+      def="RatingOverrideButtonDV(period, period.PersonalAutoLine, jobWizardHelper, CurrentLocation.InEditMode)"
+      id="RatingOverrideButtonDV"/>
+    <PanelIterator
+      elementName="garage"
+      id="garageIterator"
+      value="period.VersionList.PolicyLocations.map(\l -&gt; l.AllVersions.last()).toTypedArray()">
+      <IteratorSort
+        sortBy="garage.LocationNum"
+        sortOrder="1"/>
+      <PanelRef>
+        <DetailViewPanel
+          id="garageIdentifierDV">
+          <InputColumn>
+            <Label
+              label="displaykey.Web.Policy.PA.Garage( garage.LocationNum, garage.CompactName )"/>
+          </InputColumn>
+        </DetailViewPanel>
+      </PanelRef>
+      <PanelIterator
+        elementName="vehicle"
+        id="vehiclePanelIterator"
+        value="period.PersonalAutoLine.VersionList.Vehicles.map( \ vl -&gt; vl.AllVersions.last() ).where(\v -&gt; v.GarageLocation.FixedId == garage.FixedId).toTypedArray()">
+        <Variable
+          initialValue="costsForVehicle(vehicle)"
+          name="vehicleCosts"
+          recalculateOnRefresh="true"/>
+        <Variable
+          initialValue="vehicleCosts.AnyProrated"
+          name="prorated"
+          recalculateOnRefresh="true"/>
+        <IteratorSort
+          sortBy="vehicle.VehicleNumber"
+          sortOrder="1"/>
+        <PanelRef>
+          <TitleBar
+            title="displaykey.Web.Policy.BA.Review.VehicleNumber(vehicle.VehicleNumber)"/>
+          <PanelSet>
+            <PanelRef>
+              <DetailViewPanel>
+                <InputColumn>
+                  <Input
+                    boldLabel="true"
+                    id="Year"
+                    label="displaykey.Web.PolicyLine.Vehicle.Year"
+                    value="vehicle.Year"/>
+                </InputColumn>
+                <InputColumn>
+                  <Input
+                    boldLabel="true"
+                    id="Make"
+                    label="displaykey.Web.PolicyLine.Vehicle.Make"
+                    value="vehicle.Make"/>
+                </InputColumn>
+                <InputColumn>
+                  <Input
+                    boldLabel="true"
+                    id="Model"
+                    label="displaykey.Web.PolicyLine.Vehicle.Model"
+                    value="vehicle.Model"/>
+                </InputColumn>
+                <InputColumn>
+                  <Input
+                    boldLabel="true"
+                    id="Vin"
+                    label="displaykey.Web.PolicyLine.Vehicle.Vin"
+                    value="vehicle.Vin"/>
+                </InputColumn>
+              </DetailViewPanel>
+            </PanelRef>
+            <PanelRef>
+              <DetailViewPanel>
+                <InputColumn>
+                  <ListViewInput>
+                    <Toolbar/>
+                    <ListViewPanel
+                      id="costLV">
+                      <RowIterator
+                        editable="false"
+                        elementName="cost"
+                        id="costIterator"
+                        pageSize="0"
+                        value="vehicleCosts.toTypedArray()">
+                        <IteratorSort
+                          sortBy="cost.Coverage.Pattern.Priority"
+                          sortOrder="1"/>
+                        <IteratorSort
+                          sortBy="cost.EffDate"
+                          sortOrder="2"/>
+                        <Row>
+                          <Cell
+                            footerLabel="displaykey.Web.Financials.Subtotal"
+                            id="Description"
+                            label="displaykey.Web.PolicyLine.Coverages.Description"
+                            value="displaykey.Web.PolicyLine.Coverage(alterCoveragePatternName(cost.Coverage.Pattern.DisplayName, cost))"
+                            width="400"
+                            wrap="true"/>
+                          <Cell
+                            enableSort="false"
+                            id="TermAmount"
+                            label="displaykey.Web.SubmissionWizard.Quote.WC.Amount"
+                            value="cost.ActualTermAmountBilling"
+                            visible="prorated"
+                            wrap="true"/>
+                          <Cell
+                            enableSort="false"
+                            id="EffDate"
+                            label="displaykey.Web.Quote.CumulDetail.Default.PeriodStart"
+                            value="cost.EffDate"
+                            visible="prorated"/>
+                          <Cell
+                            enableSort="false"
+                            id="ExpDate"
+                            label="displaykey.Web.Quote.CumulDetail.Default.PeriodEnd"
+                            value="cost.ExpDate"
+                            visible="prorated"/>
+                          <Cell
+                            align="right"
+                            id="TxProration"
+                            label="displaykey.Web.SubmissionWizard.Quote.WC.Prorata"
+                            value="gw.api.util.StringUtil.formatNumber(cost.Proration, &quot;#0.0000&quot;)"
+                            visible="prorated"/>
+                          <MonetaryAmountCell
+                            enableSort="false"
+                            formatType="currency"
+                            id="TxAmount"
+                            label="displaykey.Web.Policy.BA.Premium"
+                            value="cost.ActualAmountBilling">
+                            <ColumnFooter>
+                              <TextCell
+                                formatType="currency"
+                                id="VehicleSubTotal"
+                                value="vehicleCosts.AmountSum(period.PreferredSettlementCurrency)"/>
+                            </ColumnFooter>
+                          </MonetaryAmountCell>
+                        </Row>
+                      </RowIterator>
+                    </ListViewPanel>
+                  </ListViewInput>
+                </InputColumn>
+              </DetailViewPanel>
+            </PanelRef>
+          </PanelSet>
+        </PanelRef>
+        <PanelRef>
+          <DetailViewPanel>
+            <InputColumn>
+              <ListViewInput>
+                <Toolbar/>
+                <ListViewPanel>
+                  <Row>
+                    <Cell
+                      align="right"
+                      bold="true"
+                      id="SubTotalLabel"
+                      value="displaykey.Web.Financials.PremiumSubtotal"/>
+                    <MonetaryAmountCell
+                      bold="true"
+                      formatType="currency"
+                      id="SubTotal"
+                      value="period.PersonalAutoLine.VersionList.PACosts.flatMap(\c -&gt; c.AllVersions).where(\c -&gt; c.Vehicle != null).AmountSum(period.PreferredSettlementCurrency)"
+                      width="100"/>
+                  </Row>
+                  <RowIterator
+                    canPick="false"
+                    editable="false"
+                    elementName="otherCost"
+                    id="rowiterator"
+                    pageSize="0"
+                    value="period.PersonalAutoLine.VersionList.PACosts.flatMap(\c -&gt; c.AllVersions).where(\c -&gt; c.Vehicle == null).toTypedArray()">
+                    <IteratorSort
+                      sortBy="(typeof otherCost).AllTypesInHierarchy.size()"
+                      sortDirection="descending"
+                      sortOrder="1"/>
+                    <IteratorSort
+                      sortBy="typeof otherCost"
+                      sortOrder="2"/>
+                    <IteratorSort
+                      sortBy="otherCost.EffDate"
+                      sortOrder="3"/>
+                    <Row>
+                      <Cell
+                        align="right"
+                        enableSort="false"
+                        id="Description"
+                        value="otherCost"/>
+                      <MonetaryAmountCell
+                        enableSort="false"
+                        formatType="currency"
+                        id="Amount"
+                        value="otherCost.ActualAmountBilling"/>
+                    </Row>
+                  </RowIterator>
+                </ListViewPanel>
+              </ListViewInput>
+            </InputColumn>
+          </DetailViewPanel>
+        </PanelRef>
+      </PanelIterator>
+    </PanelIterator>
+    <Code><![CDATA[function costsForVehicle(vehicle : PersonalVehicle) : List<PACost> {
+  var vehicleVL = vehicle.VersionList
+  var allCosts = new java.util.ArrayList<PACost>()
+  allCosts.addAll(vehicleVL.Costs.flatMap(\c -> c.AllVersions).toList())
+  allCosts.addAll(vehicleVL.Coverages.flatMap(\c -> c.Costs).flatMap(\c -> c.AllVersions).toList())
+  return allCosts
+}
+function alterCoveragePatternName(name : String, cost : PACost) : String {
+  if (name.contains("PIP") ) {
+    return name + " - " + (cost as PersonalAutoPIPCovCost).PAPIPCovCostType.DisplayName
+  } else {
+    return name
+  }
+}]]></Code>
+  </PanelSet>
+</PCF>

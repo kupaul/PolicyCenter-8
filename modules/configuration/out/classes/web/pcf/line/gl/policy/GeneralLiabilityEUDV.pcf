@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="GeneralLiabilityEUDV">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <InputColumn>
+      <Label
+        label="displaykey.Web.Policy.GL.ExposureUnits"/>
+      <ListViewInput
+        editable="true"
+        labelAbove="true">
+        <Toolbar>
+          <IteratorButtons
+            iterator="SubmissionWizard_GL_ExposureUnitsLV"/>
+          <CheckedValuesToolbarButton
+            allCheckedRowsAction="endExposure(CheckedValues)"
+            confirmMessage="displaykey.Web.Policy.GL.ExposureUnits.Confirm.EndExposures"
+            hideIfReadOnly="true"
+            id="End"
+            iterator="SubmissionWizard_GL_ExposureUnitsLV"
+            label="displaykey.Button.End"
+            visible="policyPeriod.Job typeis PolicyChange"/>
+          <CheckedValuesToolbarButton
+            allCheckedRowsAction="splitExposure(CheckedValues)"
+            confirmMessage="displaykey.Web.Policy.GL.ExposureUnits.Confirm.SplitExposures"
+            hideIfReadOnly="true"
+            id="Split"
+            iterator="SubmissionWizard_GL_ExposureUnitsLV"
+            label="displaykey.Button.Split"
+            visible="policyPeriod.Job typeis PolicyChange"/>
+        </Toolbar>
+        <ListViewPanel
+          id="SubmissionWizard_GL_ExposureUnitsLV">
+          <RowIterator
+            editable="true"
+            elementName="exposure"
+            hasCheckBoxes="true"
+            hideCheckBoxesIfReadOnly="true"
+            toCreateAndAdd="policyPeriod.GLLine.addExposureWM()"
+            toRemove="exposure.removeWM()"
+            value="policyPeriod.GLLine.GLExposuresWM">
+            <IteratorSort
+              sortBy="exposure.ClassCode.Code"
+              sortOrder="1"/>
+            <Row>
+              <DateCell
+                id="EffectiveDate"
+                label="displaykey.Web.Policy.GL.ExposureUnits.EffectiveDate"
+                value="exposure.EffectiveDate">
+                <PostOnChange/>
+              </DateCell>
+              <DateCell
+                id="ExpirationDate"
+                label="displaykey.Web.Policy.GL.ExposureUnits.ExpirationDate"
+                value="exposure.ExpirationDate">
+                <PostOnChange/>
+              </DateCell>
+              <RangeCell
+                editable="exposure.NewExposure"
+                id="Location"
+                label="displaykey.Web.Policy.GL.ExposureUnits.Location"
+                required="true"
+                value="exposure.LocationWM"
+                valueRange="getPolicyLocationsFilteredByNonSpecificLocationSupport()">
+                <PostOnChange/>
+              </RangeCell>
+              <PickerCell
+                available="exposure.LocationWM != null"
+                editable="true"
+                id="ClassCode"
+                inputConversion="findFirstMatchingClassCode(VALUE, exposure)"
+                label="displaykey.Web.Policy.GL.ExposureUnits.ClassCode"
+                numCols="5"
+                outputConversion="VALUE == null ? &quot;&quot; : VALUE.Code"
+                pickLocation="GLClassCodeSearchPopup.push(policyPeriod.GLLine, exposure)"
+                required="true"
+                value="exposure.ClassCode">
+                <PostOnChange/>
+              </PickerCell>
+              <Cell
+                id="ClassCodeDescription"
+                label="displaykey.Web.Policy.GL.ExposureUnits.Description"
+                value="exposure.ClassCode.Classification"/>
+              <Cell
+                editable="true"
+                id="BasisAmount"
+                label="displaykey.Web.Policy.GL.ExposureUnits.Basis"
+                required="true"
+                value="exposure.BasisAmount"/>
+              <Cell
+                align="center"
+                id="ClassCodeUnits"
+                label="displaykey.Web.Policy.GL.ExposureUnits.BasisType"
+                value="exposure.ClassCode.Basis.Description"/>
+            </Row>
+            <RowIterator
+              editable="true"
+              elementName="version"
+              id="VersionIterator"
+              pageSize="0"
+              value="exposure.AdditionalVersions.cast(GLExposure)">
+              <Row>
+                <DateCell
+                  id="EffectiveDate"
+                  value="version.EffectiveDate">
+                  <PostOnChange/>
+                </DateCell>
+                <DateCell
+                  id="ExpirationDate"
+                  value="version.ExpirationDate">
+                  <PostOnChange/>
+                </DateCell>
+                <Cell
+                  id="Location"
+                  required="true"
+                  value="version.LocationWM">
+                  <PostOnChange/>
+                </Cell>
+                <PickerCell
+                  editable="version.LocationWM != null"
+                  id="ClassCode"
+                  inputConversion="findFirstMatchingClassCode(VALUE, version)"
+                  numCols="5"
+                  outputConversion="VALUE == null ? &quot;&quot; : VALUE.Code"
+                  pickLocation="GLClassCodeSearchPopup.push(policyPeriod.GLLine, version)"
+                  required="true"
+                  value="version.ClassCode"/>
+                <Cell
+                  id="ClassCodeDescription"
+                  value="version.ClassCode.Classification"/>
+                <Cell
+                  editable="true"
+                  id="BasisAmount"
+                  required="true"
+                  value="version.BasisAmount"/>
+                <Cell
+                  align="center"
+                  id="ClassCodeUnits"
+                  value="version.ClassCode.Basis.Description"/>
+              </Row>
+            </RowIterator>
+          </RowIterator>
+        </ListViewPanel>
+      </ListViewInput>
+    </InputColumn>
+    <Code><![CDATA[uses pcf.api.Wizard
+
+function findFirstMatchingClassCode(code : String, exposure : GLExposure) : GLClassCode{
+  var classCode = exposure.firstMatchingClassCode(code)
+  if (classCode == null) {
+    util.LocationUtil.addRequestScopedErrorMessage(displaykey.Java.ClassCodePickerWidget.InvalidCode(code))
+  }
+  return classCode
+}
+
+function endExposure(exposures : GLExposure[]){
+  if((CurrentLocation as Wizard).saveDraft()){ // to keep the data up-to-date before changing LV PL-5377
+    for(exposure in exposures){
+      exposure.endDateWM(policyPeriod.EditEffectiveDate)
+    }
+  }
+}
+
+function splitExposure(exposures : GLExposure[]){
+  if((CurrentLocation as Wizard).saveDraft()){ // to keep the data up-to-date before changing LV PL-5377
+    for(exposure in exposures){
+      exposure.splitWM(policyPeriod.EditEffectiveDate)
+    }
+  }
+}
+
+function getPolicyLocationsFilteredByNonSpecificLocationSupport() : PolicyLocation[] {
+  var locations = policyPeriod.PolicyLocationsWM
+  if (policyPeriod.GLLine.SupportsNonSpecificLocations) {
+    return locations
+  }
+  return locations.where(\ l -> not l.AccountLocation.NonSpecific)
+}]]></Code>
+  </DetailViewPanel>
+</PCF>

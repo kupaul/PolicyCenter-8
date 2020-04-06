@@ -1,0 +1,33 @@
+package rules.Exception.PremiumReportEscalationRules_dir
+
+@gw.rules.RuleName("Create Activity")
+internal class CreateActivity {
+  static function doCondition(auditInformation : entity.AuditInformation) : boolean {
+    
+/*start00rule*/
+return true
+/*end00rule*/
+
+  }
+
+  static function doAction(auditInformation : entity.AuditInformation, actions : gw.rules.Action) {
+
+/*start00rule*/
+uses gw.assignment.AssignmentUtil
+
+var activity = ActivityPattern.finder.getActivityPatternByCode("premium_report_overdue").createJobActivity( auditInformation.Bundle, auditInformation.Audit, displaykey.Audit.PremiumReportOverdue, displaykey.Audit.PremiumReportOverdue, null, null, null, null, null )
+
+// Attempt to assign to the policy underwriter, and fall back to the default user if that fails
+var success = false
+var policyUnderwriter = auditInformation.Audit.Policy.getUserRoleAssignmentByRole("Underwriter")
+if (policyUnderwriter != null) {
+  success = activity.assign(policyUnderwriter.AssignedGroup, policyUnderwriter.AssignedUser)
+}
+
+if (!success) {
+   activity.assign( AssignmentUtil.DefaultUser.DefaultAssignmentGroup, AssignmentUtil.DefaultUser ) 
+}
+/*end00rule*/
+
+  }
+}

@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Writing a Geocoding Plugin</title>
+    <link rel="StyleSheet" href="css/geocoding.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-plugins.html#2057623">Plugins</a> : <a class="WebWorks_Breadcrumb_Link" href="geocoding.19.1.html#2057623">Geographic Data Integration</a> : Writing a Geocoding Plugin</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2057623">Writing a Geocoding Plugin</a></h3>
+      <div class="B_-_Body"><a name="2100818">To use a geocoding service other than Microsoft Bing Maps Geocode Service, write your own </a><span class="cv_-_computer_voice">GeocodePlugin</span> implementation in Gosu and register your implementation class in PolicyCenter Studio. </div>
+      <div class="B_-_Body"><a name="2100819">The high level features and related plugin methods of the </a><span class="cv_-_computer_voice">GeocodePlugin</span> interface are:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2100820">Geocode an address</a></span> – <span class="cv_-_computer_voice">geocodeAddressBestMatch</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2100821">List possible matches for an address</a></span> – <span class="cv_-_computer_voice">geocodeAddressWithCorrections</span>, <span class="cv_-_computer_voice">pluginSupportsCorrections</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2100822">Retrieve driving directions between two addresses</a></span> – <span class="cv_-_computer_voice">getDrivingDirections</span>, <span class="cv_-_computer_voice">pluginSupportsDrivingDirections</span>, <span class="cv_-_computer_voice">pluginReturnsOverviewMapWithDrivingDirections</span>, <span class="cv_-_computer_voice">pluginReturnsStepByStepMapsWithDrivingDirections</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2100823">Retrieve a map for an address</a></span> – <span class="cv_-_computer_voice">getMapForAddress</span>, <span class="cv_-_computer_voice">pluginSupportsMappingByAddress</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2100824">Retrieve an address from a pair of geocode coordinates</a></span> – <span class="cv_-_computer_voice">getAddressByGeocodeBestMatch</span>, <span class="cv_-_computer_voice">pluginSupportsFindByGeocode</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2100825">List possible addresses from a pair of geocode coordinates</a></span> – <span class="cv_-_computer_voice">getAddressByGeocode</span>, <span class="cv_-_computer_voice">pluginSupportsFindByGeocodeMultiple</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2100826">The </a><span class="cv_-_computer_voice">geocodeAddressBestMatch</span> method is the only method required of a <span class="cv_-_computer_voice">GeocodePlugin</span> implementation to be considered functional. The other methods are for optional features of the <span class="cv_-_computer_voice">GeocodePlugin</span>. </div>
+      <h4 class="H2_-_Heading_2"><a name="2100849">Using the Abstract Geocode Java Class</a></h4>
+      <div class="B_-_Body"><a name="2100850">Although you can write your own implementation of the </a><span class="cv_-_computer_voice">GeocodePlugin</span>, Guidewire provides a built-in implementation of the plugin interface, called <span class="cv_-_computer_voice">AbstractGeocodePlugin</span>. It is an abstract Java class that your Gosu implementation can extend. The default behaviors of <span class="cv_-_computer_voice">AbstractGeocodePlugin</span> may save you work, particularly if you do not support all the optional features of the plugin. This built-in, abstract implementation is defined in the package <span class="cv_-_computer_voice">gw.api.geocode</span>. </div>
+      <div class="B_-_Body"><a name="2100871">If you use </a><span class="cv_-_computer_voice">AbstractGeocodePlugin</span> as the base class of your implementation, your Gosu class must provide implementations of these methods:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="2100872">geocodeAddressBestMatch</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="2100873">getDrivingDirections</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="2100874">pluginSupportsDrivingDirections</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2100875">You can add other interface methods to your Gosu class to support other optional features of the </a><span class="cv_-_computer_voice">GeocodePlugin</span>. </div>
+      <h4 class="H2_-_Heading_2"><a name="2100887">High-Level Steps to Writing a Geocoding Plugin Implementation</a></h4>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2057885">Write a new class in Studio that extends </a><span class="cv_-_computer_voice">AbstractGeocodePlugin</span>:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><a name="2058897">class MyGeocodePlugin extends AbstractGeocodePlugin {</a></div>
+      <div class="LP_-_List_Para"><a name="2058898">Omit “</a><span class="cv_-_computer_voice">implements GeocodePlugin</span>” because <span class="cv_-_computer_voice">AbstractGeocodePlugin</span> already implements the interface.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2100899">Implement the required method </a><span class="cv_-_computer_voice">geocodeAddressBestMatch. </span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2100900">The method accepts an address and returns a different address with latitude and longitude coordinates assigned. </a></div>
+      <div class="LP_-_List_Para"><a name="2057943">See </a><a href="javascript:WWHClickedPopup('integration', 'geocoding.19.5.html#2101021', '');" title="Geocoding an Address">“Geocoding an Address”</a>.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2058014">To support driving directions, implement these methods:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2100918">pluginSupportsDrivingDirections</a></span> – Return <span class="cv_-_computer_voice">true</span> from this method to indicate that your implementation supports driving directions. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2100919">getDrivingDirections</a></span> – If your implementation supports driving directions, return driving directions based on a start address and a destination address that have latitude and longitude coordinates. Otherwise, return <span class="cv_-_computer_voice">null</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2058020">See </a><a href="javascript:WWHClickedPopup('integration', 'geocoding.19.6.html#2061833', '');" title="Getting Driving Directions">“Getting Driving Directions”</a>.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2100937">If you want to support other optional features, such as getting a map for an address or getting an address from geocode coordinates, override additional methods. Be sure to let PolicyCenter know your plugin supports these features by implementing the methods that identify feature support. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2101018">For more information, see:</a></div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a href="javascript:WWHClickedPopup('integration', 'geocoding.19.5.html#2062484', '');" title="Geocoding an Address" name="2101019">“Supporting Multiple Address Corrections with a List of Possible Matches”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a href="javascript:WWHClickedPopup('integration', 'geocoding.19.6.html#2096744', '');" title="Getting Driving Directions" name="2101077">“Retrieving Overview Maps”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a href="javascript:WWHClickedPopup('integration', 'geocoding.19.6.html#2062428', '');" title="Getting Driving Directions" name="2101092">“Adding Segments of the Journey with Optional Maps”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a href="javascript:WWHClickedPopup('integration', 'geocoding.19.7.html#2062535', '');" title="Getting a Map for an Address" name="2101107">“Getting a Map for an Address”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a href="javascript:WWHClickedPopup('integration', 'geocoding.19.8.html#2101036', '');" title="Getting an Address from Coordinates (Reverse Geocoding)" name="2101062">“Getting an Address from Coordinates (Reverse Geocoding)”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

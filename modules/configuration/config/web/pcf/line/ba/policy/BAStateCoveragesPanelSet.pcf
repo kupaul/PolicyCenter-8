@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <PanelSet
+    id="BAStateCoveragesPanelSet">
+    <Require
+      name="selectedState"
+      type="BAJurisdiction"/>
+    <Require
+      name="baLine"
+      type="BusinessAutoLine"/>
+    <Require
+      name="openForEdit"
+      type="Boolean"/>
+    <Variable
+      initialValue="baLine.Pattern.getCoverageCategory(&quot;BAPVehicleStateGrp&quot;)"
+      name="vehicleStateGroup"/>
+    <Variable
+      initialValue="baLine.Pattern.getCoverageCategory(&quot;BAPHiredGrp&quot;)"
+      name="hiredGroup"/>
+    <Variable
+      initialValue="baLine.Pattern.getCoverageCategory(&quot;BAPNonownedGrp&quot;)"
+      name="nonOwnedGroup"/>
+    <Variable
+      initialValue="baLine.Pattern.getCoverageCategory(&quot;BAPIPCoverageCat&quot;)"
+      name="pipGroup"/>
+    <PanelRow>
+      <PanelColumn
+        visible="baLine.isGarageState(gw.api.util.StateJurisdictionMappingUtil.getStateMappingForJurisdiction(selectedState.State)) or selectedState.Coverages.Count &gt; 0">
+        <PanelRef>
+          <TitleBar
+            title="vehicleStateGroup.DisplayName"/>
+          <DetailViewPanel>
+            <Variable
+              initialValue="selectedState == null ? null : vehicleStateGroup.coveragePatternsForEntity(BAJurisdiction).whereSelectedOrAvailable(selectedState, openForEdit)"
+              name="vehicleStateGroupCoveragePatterns"
+              recalculateOnRefresh="true"/>
+            <InputColumn>
+              <InputIterator
+                elementName="coveragePattern"
+                forceRefreshDespiteChangedEntries="true"
+                id="BAPVehicleStateGrpIterator"
+                value="vehicleStateGroupCoveragePatterns">
+                <IteratorSort
+                  sortBy="coveragePattern.Priority"
+                  sortOrder="1"/>
+                <InputSetRef
+                  def="CoverageInputSet(coveragePattern, selectedState, openForEdit)"/>
+              </InputIterator>
+            </InputColumn>
+          </DetailViewPanel>
+        </PanelRef>
+      </PanelColumn>
+      <PanelColumn>
+        <PanelRef>
+          <TitleBar
+            title="pipGroup.DisplayName"
+            visible="gw.api.domain.StateSet.get( gw.api.domain.StateSet.PIPSTATES ).contains(gw.api.util.StateJurisdictionMappingUtil.getStateMappingForJurisdiction(selectedState.State.Code))"/>
+          <DetailViewPanel>
+            <Variable
+              initialValue="selectedState == null ? null : pipGroup.coveragePatternsForEntity(BAJurisdiction).whereSelectedOrAvailable(selectedState, openForEdit)"
+              name="pipGroupCoveragePatterns"
+              recalculateOnRefresh="true"/>
+            <InputColumn>
+              <InputIterator
+                elementName="coveragePattern"
+                forceRefreshDespiteChangedEntries="true"
+                id="PIPVehicleStateGrpIterator"
+                value="pipGroupCoveragePatterns">
+                <IteratorSort
+                  sortBy="coveragePattern.Priority"
+                  sortOrder="1"/>
+                <InputSetRef
+                  def="CoverageInputSet(coveragePattern, selectedState, openForEdit)"/>
+              </InputIterator>
+            </InputColumn>
+          </DetailViewPanel>
+        </PanelRef>
+      </PanelColumn>
+    </PanelRow>
+  </PanelSet>
+</PCF>

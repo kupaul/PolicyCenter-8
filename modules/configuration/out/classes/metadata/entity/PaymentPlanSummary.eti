@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  desc="Payment plan summary info from billing system"
+  entity="PaymentPlanSummary"
+  exportable="true"
+  loadable="false"
+  subpackage="billing"
+  table="paymentplansummary"
+  type="retireable">
+  <implementsEntity
+    name="Extractable"/>
+  <column
+    desc="Stores the billing system's Public ID for this Payment Plan"
+    name="BillingId"
+    nullok="true"
+    type="shorttext"/>
+  <column
+    desc="Name of this payment plan (only for Installments plans)"
+    name="Name"
+    nullok="true"
+    type="shorttext"/>
+  <monetaryamount
+    amountColumnName="DownPayment"
+    desc="DownPayment"
+    name="DownPayment"
+    nullok="true"/>
+  <monetaryamount
+    amountColumnName="Installment"
+    desc="Installment"
+    name="Installment"
+    nullok="true"/>
+  <monetaryamount
+    amountColumnName="Total"
+    desc="Total"
+    name="Total"
+    nullok="true"/>
+  <column
+    desc="Notes"
+    name="Notes"
+    nullok="true"
+    type="shorttext"/>
+  <typekey
+    default="monthly"
+    desc="The frequency of invoicing (weekly, every two weeks, monthly, etc.)"
+    name="InvoiceFrequency"
+    nullok="false"
+    typelist="BillingPeriodicity"/>
+  <array
+    arrayentity="AllowedPaymentMethod"
+    desc="The list of supported payment methods."
+    getterScriptability="hidden"
+    name="PaymentMethodsInternal"
+    owner="true"
+    setterScriptability="hidden"
+    triggersValidation="true"/>
+  <foreignkey
+    columnName="PolicyPeriod"
+    desc="Policy period where the plan summary resides"
+    exportasid="true"
+    fkentity="PolicyPeriod"
+    name="PolicyPeriod"
+    nullok="true"/>
+  <typekey
+    default="Installments"
+    desc="The type of this payment plan (typically either Installments or Reporting)"
+    name="PaymentPlanType"
+    nullok="false"
+    typelist="PaymentMethod"/>
+  <column
+    desc="The code of the pattern to use for creating and scheduling premium reports"
+    name="ReportingPatternCode"
+    nullok="true"
+    type="patterncode"/>
+</entity>

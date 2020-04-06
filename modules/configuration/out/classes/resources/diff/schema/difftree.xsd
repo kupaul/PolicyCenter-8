@@ -1,0 +1,178 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  
+  <!-- Defines a difference tree element in the difference tree configuration. -->
+  <xsd:element name="DiffTree">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="Section" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Defines an entity element in the difference tree configuration. -->
+  <xsd:element name="Entity">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="Entity" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="Properties" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="SubSection" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- A gosu expression that returns the text for the label column when displaying this
+           entity in the difference tree.  This expression has access to a special symbol, ENTITY,
+           of the same type as the type attribute.  If this attribute is null, the entity's DisplayName
+           will be used instead. -->
+      <xsd:attribute name="label" type="xsd:string"/>
+      <!-- A gosu expression to use in order to resolve from this entity to its parent entity.
+            This expression has access to a special, properly typed symbol, ENTITY, representing
+           the entity associated with this element. -->
+      <xsd:attribute name="parentpath" type="xsd:string" use="required"/>
+      <!-- Whether or not to show adds for this element. -->
+      <xsd:attribute name="showadds" type="xsd:boolean" default="true"/>
+      <!-- Whether or not to show changes for this element.  A default Properties will be added
+           if and only if this attribute is "true".  Note that this attribute doesn't affect
+           any explicitly defined child Properties. -->
+      <xsd:attribute name="showchanges" type="xsd:boolean" default="true"/>
+      <!-- Whether or not to show removes for this element. -->
+      <xsd:attribute name="showremoves" type="xsd:boolean" default="true"/>
+      <!-- Whether or not to show window changes for this element. -->
+      <xsd:attribute name="showwindows" type="xsd:boolean" default="true"/>
+      <!-- Sort order (ascending). -->
+      <xsd:attribute name="sortorder" type="xsd:integer" default="0"/>
+      <!-- Type of the entity for this element. -->
+      <xsd:attribute name="type" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Describes the information for an excluded property in the difference tree. -->
+  <xsd:element name="ExcludedProperty">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <!-- Name of the property to exclude. -->
+      <xsd:attribute name="propertyname" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Defines a properties element in the difference tree configuration. -->
+  <xsd:element name="Properties">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="ExcludedProperty" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="PropertyDisplay" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Type from which properties are included on this element. -->
+      <xsd:attribute name="includefromtype" type="xsd:NMTOKEN" use="required"/>
+      <!-- A gosu expression to use in order to resolve from this entity to its parent entity.
+            This expression has access to a special, properly typed symbol, ENTITY, representing
+           the entity associated with this element. -->
+      <xsd:attribute name="parentpath" type="xsd:string" use="required"/>
+      <!-- Sort order (ascending). -->
+      <xsd:attribute name="sortorder" type="xsd:integer" default="0"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Describes the display information for a property in the difference tree, including
+       property name and value. -->
+  <xsd:element name="PropertyDisplay">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <!-- A gosu expression that returns the text to display for the label column when displaying
+           this property in the difference tree.  This expression has access to two special symbols:
+           ENTITY (a properly typed symbol representing the entity associated with this property)
+           and PROP (a symbol of type IEntityPropertyInfo representing the property).  If this
+           attribute is null, the property's Name will be used (adding spaces before each capitalized
+           letter besides the first), unless it is a property on a Coverage entity, in which
+           case the coverage's pattern's Name (unmodified) will be used instead. -->
+      <xsd:attribute name="label" type="xsd:string"/>
+      <!-- Name of the property to which this element applies. -->
+      <xsd:attribute name="propertyname" type="xsd:string" use="required"/>
+      <!-- Sort order (ascending). -->
+      <xsd:attribute name="sortorder" type="xsd:integer" default="0"/>
+      <!-- A gosu expression that returns the text to display for the value column when displaying
+           this property in the difference tree.  This expression has access to three special
+           symbols: ENTITY (a properly typed symbol representing the entity associated with this
+           property), PROP (a symbol of type IEntityPropertyInfo representing the property),
+           and VALUE (a properly typed symbol representing the value for this property).  If
+           this attribute is null, the value will simply be converted into a String, Booleans
+           being displayed through special display keys, foreign keys displaying through their
+           DisplayNames, and CovTerms displaying through their DisplayValues. -->
+      <xsd:attribute name="value" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Defines a root entity element in the difference tree configuration. -->
+  <xsd:element name="RootEntity">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="Entity" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="Properties" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="SubSection" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- A gosu expression that returns the text for the label column when displaying this
+           entity in the difference tree.  This expression has access to a special symbol, ENTITY,
+           of the same type as the type attribute.  If this attribute is null, the entity's DisplayName
+           will be used instead. -->
+      <xsd:attribute name="label" type="xsd:string"/>
+      <!-- Whether or not to show adds for this element. -->
+      <xsd:attribute name="showadds" type="xsd:boolean" default="true"/>
+      <!-- Whether or not to show changes for this element.  A default Properties will be added
+           if and only if this attribute is "true".  Note that this attribute doesn't affect
+           any explicitly defined child Properties. -->
+      <xsd:attribute name="showchanges" type="xsd:boolean" default="true"/>
+      <!-- Whether or not to show removes for this element. -->
+      <xsd:attribute name="showremoves" type="xsd:boolean" default="true"/>
+      <!-- Whether or not to show window changes for this element. -->
+      <xsd:attribute name="showwindows" type="xsd:boolean" default="true"/>
+      <!-- Sort order (ascending). -->
+      <xsd:attribute name="sortorder" type="xsd:integer" default="0"/>
+      <!-- Type of the entity for this element. -->
+      <xsd:attribute name="type" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Defines a root properties element in the difference tree configuration. -->
+  <xsd:element name="RootProperties">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="ExcludedProperty" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="PropertyDisplay" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Type from which properties are included on this element. -->
+      <xsd:attribute name="includefromtype" type="xsd:NMTOKEN" use="required"/>
+      <!-- Sort order (ascending). -->
+      <xsd:attribute name="sortorder" type="xsd:integer" default="0"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Defines a section element in the difference tree configuration. -->
+  <xsd:element name="Section">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="RootEntity" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="RootProperties" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="Section" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- A gosu expression that resolves to the label to use when displaying this element in
+           the difference tree. -->
+      <xsd:attribute name="label" type="xsd:string" use="required"/>
+      <!-- Sort order (ascending). -->
+      <xsd:attribute name="sortorder" type="xsd:integer" default="0"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Defines a subsection element in the difference tree configuration. -->
+  <xsd:element name="SubSection">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="Entity" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="Properties" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="SubSection" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- A gosu expression that resolves to the label to use when displaying this element in
+           the difference tree. -->
+      <xsd:attribute name="label" type="xsd:string" use="required"/>
+      <!-- Sort order (ascending). -->
+      <xsd:attribute name="sortorder" type="xsd:integer" default="0"/>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="AdditionalConditionsDV">
+    <Require
+      name="coverable"
+      type="Coverable"/>
+    <Require
+      name="coverageCategories"
+      type="String[]"/>
+    <Require
+      name="includeExclude"
+      type="boolean"/>
+    <Variable
+      initialValue="coverable == null ? null : filteredConditions().map(\ cond -&gt; cond.Pattern )"
+      name="addedConditionsToShow"
+      recalculateOnRefresh="true"/>
+    <InputColumn>
+      <InputSet
+        visible="addedConditionsToShow.Count &gt; 0">
+        <InputIterator
+          elementName="pattern"
+          forceRefreshDespiteChangedEntries="true"
+          id="AddedConditionsIterator"
+          value="addedConditionsToShow">
+          <IteratorSort
+            sortBy="pattern.CoverageCategory.Priority"
+            sortOrder="1"/>
+          <IteratorSort
+            sortBy="pattern.Priority"
+            sortOrder="2"/>
+          <InputSetRef
+            def="CoverageInputSet( pattern, coverable, CurrentLocation.InEditMode )"
+            mode="pattern.Code"/>
+        </InputIterator>
+      </InputSet>
+    </InputColumn>
+    <Code><![CDATA[function filteredConditions() : PolicyCondition[] {
+  var condlist : PolicyCondition[]
+  if (coverable == null ) {
+    return null
+  }
+  if (includeExclude ) {
+    return coverable.getConditionsInCategories( coverageCategories ) as entity.PolicyCondition []
+  } else {
+    return coverable .getConditionsNotInCategories( coverageCategories ) as entity.PolicyCondition []
+  }
+}]]></Code>
+  </DetailViewPanel>
+</PCF>

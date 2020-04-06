@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Worksheet
+    canEdit="true"
+    canVisit="policyPeriod == null ? true : not policyPeriod.PolicyTerm.Archived"
+    id="NewActivityWorksheet"
+    startInEditMode="true"
+    tabLabel="displaykey.Web.Activity.ActivityDetailTab"
+    title="displaykey.Web.NewActivity.Title">
+    <LocationEntryPoint
+      signature="NewActivityWorksheet(policyPeriod : PolicyPeriod, activityPattern : ActivityPattern)"/>
+    <LocationEntryPoint
+      signature="NewActivityWorksheet(policyPeriod : PolicyPeriod, policy : Policy, activityPattern : ActivityPattern)"/>
+    <LocationEntryPoint
+      signature="NewActivityWorksheet(account : Account, activityPattern : ActivityPattern)"/>
+    <Scope
+      location="JobForward(policyPeriod.Job)"/>
+    <Scope
+      location="PolicyFile(policyPeriod)"/>
+    <Scope
+      location="AccountFile(policyPeriod.Policy.Account)"/>
+    <Scope
+      location="AccountFile(account)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="policy"
+      type="Policy"/>
+    <Variable
+      name="account"
+      type="Account"/>
+    <Variable
+      name="activityPattern"
+      type="ActivityPattern"/>
+    <Variable
+      initialValue="createActivity()"
+      name="activity"
+      type="Activity"/>
+    <Variable
+      initialValue="new web.activity.ActivityAssignmentPopup(new Activity[]{activity}, gw.assignment.AssignmentUtil.DefaultUser)"
+      name="assignmentPopup"
+      type="web.activity.ActivityAssignmentPopup"/>
+    <Variable
+      initialValue="createNote()"
+      name="note"
+      type="Note"/>
+    <ScreenRef
+      def="NewActivityScreen(activity, note, assignmentPopup)"/>
+    <Code><![CDATA[uses gw.api.web.activity.ActivityUtil
+
+function createActivity() : Activity {
+    var a : Activity
+    if (account != null) {
+        return account.newActivity(activityPattern)
+    } else if (policy != null) {
+        a = activityPattern.createPolicyActivity( policy.Bundle, policy, null, null, null, null, null, null, null )
+    } else if (policyPeriod != null) {
+        a = activityPattern.createJobActivity( policyPeriod.Job.Bundle, policyPeriod.Job, null, null, null, null, null, null, null )
+    }
+    ActivityUtil.setPreviousUserOnNewActivity(a, User.util.CurrentUser)
+    return a
+  }
+
+function createNote() : Note {
+  if (perm.Note.create) {
+    return activity.newNote()
+  }
+  return null
+}]]></Code>
+  </Worksheet>
+</PCF>

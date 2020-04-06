@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <WizardStepSet
+    id="LineWizardStepSet"
+    mode="InlandMarine">
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <JobWizardStep
+      id="IMPartSelection"
+      onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages(policyPeriod.IMLine.AllCoverables, jobWizardHelper)}"
+      save="openForEdit"
+      screen="IMPartSelectionScreen(job, policyPeriod, openForEdit, jobWizardHelper)"
+      title="displaykey.Web.Policy.IM.CoveragePartSelection"/>
+    <JobWizardStep
+      id="Buildings"
+      onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages(policyPeriod.IMLine.AllCoverables, jobWizardHelper)}"
+      save="openForEdit"
+      screen="IMBuildingsScreen(policyPeriod.IMLine, openForEdit, jobWizardHelper)"
+      title="displaykey.Web.LineWizardMenu.BuildingsandLocations"/>
+    <WizardStepIterator
+      elementName="imcoveragepart"
+      type="typekey.IMCoveragePart"
+      value="IMLine.definedParts().sortBy( \ part -&gt; part.DisplayName )">
+      <JobWizardStep
+        beforeSave="gw.lob.im.IMLineValidation.validateSinglePartAsPage( policyPeriod.IMLine.maybeCreateCoveragePart( imcoveragepart  )); gw.lob.im.IMLineValidation.validateSupplementalQuestons( policyPeriod.IMLine ) "
+        id="impartstep"
+        mode="imcoveragepart.Code"
+        onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages(policyPeriod.IMLine.AllCoverables, jobWizardHelper); gw.web.productmodel.ProductModelSyncIssuesHandler.syncExclusions(policyPeriod.IMLine.AllCoverables, jobWizardHelper); gw.web.productmodel.ProductModelSyncIssuesHandler.syncQuestions({policyPeriod.IMLine}, jobWizardHelper) }"
+        save="openForEdit"
+        screen="IMPartScreen(job, policyPeriod, openForEdit, jobWizardHelper)"
+        title="imcoveragepart.DisplayName"
+        visible="policyPeriod.IMLine.coveragePartExists( imcoveragepart.Code )"/>
+    </WizardStepIterator>
+  </WizardStepSet>
+</PCF>

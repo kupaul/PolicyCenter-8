@@ -1,0 +1,383 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Metadata Visualization</title>
+
+    <!-- CSS Files -->
+    <link type="text/css" href="../resources/javascript/adapter/ext/Jit/Examples/css/base.css" rel="stylesheet"/>
+    <link type="text/css" href="../resources/javascript/adapter/ext/Jit/Examples/css/Hypertree.css" rel="stylesheet"/>
+
+    <!--[if IE]>
+    <script language="javascript" type="text/javascript"
+            src="../resources/javascript/adapter/ext/Jit/Extras/excanvas.js"></script><![endif]-->
+
+    <!-- JIT Library File -->
+    <script language="javascript" type="text/javascript" src="../resources/javascript/adapter/ext/Jit/jit.js"></script>
+
+    <!-- Example File -->
+    <script language="javascript" type="text/javascript"
+            src="../resources/javascript/adapter/ext/Jit/testingCaseJit.js"></script>
+    <script language="javascript">
+        var startFlag = 0;//use to see how many entities have been loaded, e.g. to check whether or not to contract
+        var json = {
+            "id": "gamma",
+            "name": "-",
+            "data": {
+                "$color" : "#7f8",
+                "$dim" : 1
+            }
+        };
+        var _graph = '';
+        var currEnt = '';
+        var listOfAdjacencies = [];
+        var listOfNodes = [];
+        var colors = [document.getElementById("color1").value, document.getElementById("color2").value, document.getElementById("color3").value, document.getElementById("color4").value, document.getElementById("color5").value];
+
+
+        function searchForEntity(allEnts, name) {
+            for (var i = 0; i < allEnts.length; i++) {
+                if (allEnts[i].getAttribute("name") == name) {
+                    return (allEnts[i]);
+                }
+            }
+        }
+
+        function writer(str) {
+
+            var ents = str.responseXML.getElementsByTagName("entity");
+            var firstEntity = ents[0];
+
+            if (!!firstEntity) {
+                _graph = '{id:"gamma", adjacencies:["' + firstEntity.getAttribute("name").toUpperCase() + '"]}';
+                var linkedNodes = [firstEntity], tmp = [], allAttrs = [], allLinks = [], tkString = "", colString = "";
+                listOfAdjacencies = [];
+               // listOfNodes = [];
+                for (var i = 0; i <= 3; i++) { //No way to get more than 3 levels anyways, but would be nice to recurse instead
+                    for (var l = 0; l < linkedNodes.length; l++) {
+                        _graph += ',{id: "' + linkedNodes[l].getAttribute("name").toUpperCase() + '", name: "' + linkedNodes[l].getAttribute("name").toUpperCase() + '", adjacencies: [';
+                        if(!contains(listOfNodes, linkedNodes[l].getAttribute("name").toUpperCase())){
+                            //alert("Checking");
+                            alert(listOfNodes.length);
+
+                        //}
+                       // if((l == 0) || (linkedNodes[l].getAttribute("name").toUpperCase() != linkedNodes[l - 1].getAttribute("name").toUpperCase())){
+                            listOfNodes.push(linkedNodes[l].getAttribute("name").toUpperCase());
+                        }
+                        allLinks = linkedNodes[l].getElementsByTagName("link");
+                       // alert(allLinks.length);
+                       // alert(linkedNodes[l].getAttribute("name").toUpperCase());
+                      //  alert(linkedNodes[l].getElementsByTagName("attribute").length)
+                        for (var k = 0; k < allLinks.length; k++) {
+
+                            if (k > 0) {
+                                _graph += ",";
+                            }
+
+                            /**\
+                             *
+                            [
+                                {id:"gamma", adjacencies:["PERSON"]},
+                                {id: "PERSON", name: "PERSON",
+                                        adjacencies: [{nodeTo: "USER", $color: #ff0},"USER","ADDRESS","CONTACTADDRESS","CONTACTCONTACT","CONTACTCONTACT","OFFICIALID","CONTACTCATEGORYSCORE","CONTACTTAG","ACCOUNTCONTACT"], data: {"Typekeys": "", "Columns": "", "$color": ""}},
+                                {id: "USER", name: "USER", adjacencies: [], data: {"Typekeys": "", "Columns": "", "$color": ""}},
+                                {id: "USER", name: "USER", adjacencies: [], data: {"Typekeys": "", "Columns": "", "$color": ""}},
+                                {id: "ADDRESS", name: "ADDRESS", adjacencies: [], data: {"Typekeys": "", "Columns": "", "$color": ""}},
+                                {id: "CONTACTADDRESS", name: "CONTACTADDRESS", adjacencies: [], data: {"Typekeys": "", "Columns": "", "$color": ""}},
+                                {id: "CONTACTCONTACT", name: "CONTACTCONTACT", adjacencies: [], data: {"Typekeys": "", "Columns": "", "$color": ""}},
+                                {id: "CONTACTCONTACT", name: "CONTACTCONTACT", adjacencies: [], data: {"Typekeys": "", "Columns": "", "$color": ""}},
+                                {id: "OFFICIALID", name: "OFFICIALID", adjacencies: [], data: {"Typekeys": "", "Columns": "", "$color": ""}},
+                                {id: "CONTACTCATEGORYSCORE", name: "CONTACTCATEGORYSCORE", adjacencies: [], data: {"Typekeys": "", "Columns": "", "$color": ""}},
+                                {id: "CONTACTTAG", name: "CONTACTTAG", adjacencies: [], data: {"Typekeys": "", "Columns": "", "$color": ""}},
+                                {id: "ACCOUNTCONTACT", name: "ACCOUNTCONTACT", adjacencies: [], data: {"Typekeys": "", "Columns": "", "$color": ""}}
+
+                            ]
+                             */
+                            //{nodeTo: "CONTACTCONTACT", $color: "#ff0"
+                            var otherNodeName = allLinks[k].getAttribute("pointsTo").toUpperCase();
+                            _graph += '"' + otherNodeName + '"';
+                            tmp.push(searchForEntity(ents, allLinks[k].getAttribute("pointsTo")));
+                            listOfAdjacencies.push([allLinks[k].getAttribute("pointsTo"), allLinks[k].getAttribute("pointsFrom"), allLinks[k].getAttribute("type")]);
+                        }
+                        //Changes here
+                        _graph += "]";
+                        allAttrs = linkedNodes[l].getElementsByTagName("attribute");
+                        tkString = "";
+                        colString = "";
+                        for (var v=0; v<allAttrs.length; v++){
+                            if (allAttrs[v].getAttribute("type") == "TypeKey"){
+                                tkString += "*" + allAttrs[v].getAttribute("name") + ",";
+
+
+                            } else if (allAttrs[v].getAttribute("type") == "Column") {
+                                colString += "*" + allAttrs[v].getAttribute("name") + ",";
+
+                            }
+                            //if(allAttrs[v].getAttribute())
+                        }
+                        if(tkString.length + colString.length != 0){
+                            _graph += ', data: {"Typekeys": "'+tkString+'", "Columns": "'+colString+'"}}';
+                        } else {
+                            _graph += '}'
+
+                        }
+                    }
+                    console.log(_graph)
+                    linkedNodes = tmp;
+                    tmp = [];
+                }
+
+                _graph = '[' + _graph + ']';
+                currEnt = firstEntity.getAttribute("name");
+                startFlag++;
+                alert(_graph);
+                document.getElementById("xyz").click();
+
+            }
+        }
+
+
+        function entityHasName(eArray, listOfNames) {
+
+        }
+
+        function newXMLHttpRequest() {
+            var xmlreq = false;
+            if (window.XMLHttpRequest) {
+                xmlreq = new XMLHttpRequest();
+            } else if (window.ActiveXObject) {
+                try {
+                    xmlreq = new ActiveXObject("Msxml2.XMLHTTP");
+                } catch (e1) {
+                    try {
+                        xmlreq = new ActiveXObject("Microsoft.XMLHTTP");
+                    } catch (e2) {
+                    }
+                }
+            }
+            return xmlreq;
+        }
+
+        function getMyInfo() {
+            var ajaxRequest;
+            var gosuServerURL = "metadataviz";
+            ajaxRequest = newXMLHttpRequest();
+            ajaxRequest.onreadystatechange = function() {
+                if (ajaxRequest.readyState == 4)
+
+                    if (ajaxRequest.status == 200) {
+                        var firstEntityName = ajaxRequest.responseXML.getElementsByTagName("entity");
+                        if (firstEntityName.length > 0) {
+                            writer(ajaxRequest);
+                        }
+                    } else {
+                        alert("Yeah, I don't think so. HTTP Error " + ajaxRequest.statusText);
+                    }
+
+            };//getReadyStateHandler;
+            /*ajaxRequest.onerror = function (event) {
+             console.log(event.target);
+             }*/
+            ajaxRequest.open("POST", gosuServerURL, true);
+            ajaxRequest.setRequestHeader("Content-Type",
+                    "application/x-www-form-urlencoded");
+            //var buttonVals = ["fk","sub","tk","col"];
+            var awkwardString = "";
+            //for (var i = 0; i < buttonVals.length; i++) {
+                //var item = buttonVals[i];
+                awkwardString += "&fk=" + document.getElementById("fk").checked;
+                awkwardString += "&sub=" + document.getElementById("sub").checked;
+                awkwardString += "&tk=true&col=true";
+            //}
+
+            /*
+             $.ajax(gosuServerURL + "?blarg=0", {
+             type : "POST",
+             data : "var=" + document.getElementById("in").value + "&lvl=" +document.getElementById("levels").value + awkwardString,
+             error : function (response, status, error) {
+             console.log("ERROR!!! ",status, error);
+             },
+             success : function (data) {
+             console.log(data);
+             }            });   */
+
+
+            ajaxRequest.send("var=" + document.getElementById("in").value + "&lvl=" + document.getElementById("levels").value + awkwardString);
+
+        }
+
+
+        function changeColor() {
+            colors = [document.getElementById("color1").value, document.getElementById("color2").value, document.getElementById("color3").value, document.getElementById("color4").value, document.getElementById("color5").value];
+            document.getElementById("color1").style.backgroundColor =document.getElementById("color1").value;
+            document.getElementById("color2").style.backgroundColor =document.getElementById("color2").value;
+            document.getElementById("color3").style.backgroundColor =document.getElementById("color3").value;
+            document.getElementById("color4").style.backgroundColor =document.getElementById("color4").value;
+            document.getElementById("color5").style.backgroundColor =document.getElementById("color5").value;
+        }
+
+        function contains(a, obj) {
+            var i = a.length;
+            while (i--) {
+                if (a[i] === obj) {
+                    return true;
+                }
+            }
+            return false;
+        }
+
+    </script>
+    </head>
+
+<body onload="init();">
+<div id="container">
+
+    <div id="left-container">
+
+
+        <div id="myText" class="text">
+
+            Select your options here.
+
+        </div>
+
+        <input type="text" id="in">
+        <button id="xyz" style="display:none">Display</button>
+
+        <br>
+        <button id="change" onclick="getMyInfo()">Load...</button>
+        <button id="ref">Collapse</button>
+        <button id="center">Recenter</button>
+        <br>
+        <input type="radio" id="fk" name="what" value="fk" checked>Foreign keys & arrays?
+        <input type="radio" id="sub" name="what" value="sub">Subtypes?
+        <input type="checkbox" id="tk" value="tk">Typekeys?
+        <input type="checkbox" id="col" value="col">Columns?
+        <select id="levels">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+        </select>
+        <br>
+        <br>
+        <br>
+
+
+        <br>
+        <table border="1" width="100">
+            <tr><td><b>Color</b>  </td><td><b>Link Type</b></td></tr>
+            <tr><td onclick="changeColor()">
+                <form name="myForm1">
+                <select name="color1" id="color1" style="background-color: Red">
+                <option value="#FFFFFF" style="background-color: White;" >White</option>
+                <option value="#7FFFD4" style="background-color: Aquamarine;">Aquamarine</option>
+                <option value="#0000FF" style="background-color: Blue;">Blue</option>
+                <option value="#FF00FF" style="background-color: Magenta;">Magenta</option>
+                <option value="#EE82EE" style="background-color: Violet;">Violet</option>
+                <option value="#FFC0CB" style="background-color: Pink;">Pink</option>
+                <option value="#006400" style="background-color: DarkGreen;">DarkGreen</option>
+                <option value="#008000" style="background-color: Green;">Green</option>
+                <option value="#9ACD32" style="background-color: YellowGreen;">YellowGreen</option>
+                <option value="#FFFF00" style="background-color: Yellow;">Yellow</option>
+                <option value="#FFA500" style="background-color: Orange;">Orange</option>
+                <option value="#FF0000" style="background-color: Red;" selected = "selected">Red</option>
+                <option value="#A52A2A" style="background-color: Brown;">Brown</option>
+                <option value="#D2B48C" style="background-color: Tan;">Tan</option>
+                </select>
+                </form></td><td>ForeignKey</td></tr>
+            <tr><td onclick="changeColor()">   <form name="myForm2">
+                <select name="color2" id ="color2" style="background-color: Blue">
+                <option value="#FFFFFF" style="background-color: White;" >White</option>
+                <option value="#7FFFD4" style="background-color: Aquamarine;">Aquamarine</option>
+                <option value="#0000FF" style="background-color: Blue;" selected = "selected">Blue</option>
+                <option value="#FF00FF" style="background-color: Magenta;">Magenta</option>
+                <option value="#EE82EE" style="background-color: Violet;">Violet</option>
+                <option value="#FFC0CB" style="background-color: Pink;">Pink</option>
+                <option value="#006400" style="background-color: DarkGreen;">DarkGreen</option>
+                <option value="#008000" style="background-color: Green;">Green</option>
+                <option value="#9ACD32" style="background-color: YellowGreen;">YellowGreen</option>
+                <option value="#FFFF00" style="background-color: Yellow;">Yellow</option>
+                <option value="#FFA500" style="background-color: Orange;">Orange</option>
+                <option value="#FF0000" style="background-color: Red;">Red</option>
+                <option value="#A52A2A" style="background-color: Brown;">Brown</option>
+                <option value="#D2B48C" style="background-color: Tan;">Tan</option>
+                </select>
+                </form></td><td>Array</td></tr>
+            <tr><td onclick="changeColor()">   <form name="myForm3">
+                <select name="color3" id="color3" style="background-color: Green">
+                <option value="#FFFFFF" style="background-color: White;" >White</option>
+                <option value="#7FFFD4" style="background-color: Aquamarine;">Aquamarine</option>
+                <option value="#0000FF" style="background-color: Blue;">Blue</option>
+                <option value="#FF00FF" style="background-color: Magenta;">Magenta</option>
+                <option value="#EE82EE" style="background-color: Violet;">Violet</option>
+                <option value="#FFC0CB" style="background-color: Pink;">Pink</option>
+                <option value="#006400" style="background-color: DarkGreen;">DarkGreen</option>
+                <option value="#008000" style="background-color: Green;" selected = "selected">Green</option>
+                <option value="#9ACD32" style="background-color: YellowGreen;">YellowGreen</option>
+                <option value="#FFFF00" style="background-color: Yellow;">Yellow</option>
+                <option value="#FFA500" style="background-color: Orange;">Orange</option>
+                <option value="#FF0000" style="background-color: Red;">Red</option>
+                <option value="#A52A2A" style="background-color: Brown;">Brown</option>
+                <option value="#D2B48C" style="background-color: Tan;">Tan</option>
+                </select>
+                </form></td><td>OneToOne</td></tr>
+            <tr><td onclick="changeColor()">   <form name="myForm4">
+                <select name="color4" id="color4" style="background-color: Yellow">
+                <option value="#FFFFFF" style="background-color: White;" >White</option>
+                <option value="#7FFFD4" style="background-color: Aquamarine;">Aquamarine</option>
+                <option value="#0000FF" style="background-color: Blue;">Blue</option>
+                <option value="#FF00FF" style="background-color: Magenta;">Magenta</option>
+                <option value="#EE82EE" style="background-color: Violet;">Violet</option>
+                <option value="#FFC0CB" style="background-color: Pink;">Pink</option>
+                <option value="#006400" style="background-color: DarkGreen;">DarkGreen</option>
+                <option value="#008000" style="background-color: Green;">Green</option>
+                <option value="#9ACD32" style="background-color: YellowGreen;">YellowGreen</option>
+                <option value="#FFFF00" style="background-color: Yellow;" selected = "selected">Yellow</option>
+                <option value="#FFA500" style="background-color: Orange;">Orange</option>
+                <option value="#FF0000" style="background-color: Red;">Red</option>
+                <option value="#A52A2A" style="background-color: Brown;">Brown</option>
+                <option value="#D2B48C" style="background-color: Tan;">Tan</option>
+                </select>
+                </form></td><td>EdgeForeignKey</td></tr>
+            <tr><td onclick="changeColor()">
+                <form name="myForm5">
+                <select name="color5" id="color5" style="background-color: Magenta">
+                <option value="#FFFFFF" style="background-color: White;" >White</option>
+                <option value="#7FFFD4" style="background-color: Aquamarine;">Aquamarine</option>
+                <option value="#0000FF" style="background-color: Blue;">Blue</option>
+                <option value="#FF00FF" style="background-color: Magenta;" selected = "selected">Magenta</option>
+                <option value="#EE82EE" style="background-color: Violet;">Violet</option>
+                <option value="#FFC0CB" style="background-color: Pink;">Pink</option>
+                <option value="#006400" style="background-color: DarkGreen;">DarkGreen</option>
+                <option value="#008000" style="background-color: Green;">Green</option>
+                <option value="#9ACD32" style="background-color: YellowGreen;">YellowGreen</option>
+                <option value="#FFFF00" style="background-color: Yellow;">Yellow</option>
+                <option value="#FFA500" style="background-color: Orange;">Orange</option>
+                <option value="#FF0000" style="background-color: Red;">Red</option>
+                <option value="#A52A2A" style="background-color: Brown;">Brown</option>
+                <option value="#D2B48C" style="background-color: Tan;">Tan</option>
+                </select>
+                </form>
+            </td><td>Subtype</td></tr>
+        </table>
+
+
+
+    </div>
+
+    <div id="center-container">
+        <div id="infovis"></div>
+    </div>
+
+    <div id="right-container">
+
+        <div id="inner-details">Choose an entity to see its properties.</div>
+
+    </div>
+
+    <div id="log"></div>
+</div>
+<button id="clean">Clear the graph</button>
+</body>
+</html>

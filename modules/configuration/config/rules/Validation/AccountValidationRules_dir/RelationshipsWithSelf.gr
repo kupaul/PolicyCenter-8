@@ -1,0 +1,29 @@
+package rules.Validation.AccountValidationRules_dir
+
+@gw.rules.RuleName("RelationshipsWithSelf")
+internal class RelationshipsWithSelf {
+  static function doCondition(account : entity.Account) : boolean {
+    
+/*start00rule*/
+return true
+/*end00rule*/
+
+  }
+
+  static function doAction(account : entity.Account, actions : gw.rules.Action) {
+
+/*start00rule*/
+// An account mustn't be in a relationship with itself
+var relatedToSelf = account.getAllRelatedAccounts(null).where( \aa -> aa.SourceAccount == aa.TargetAccount)
+if (!relatedToSelf.IsEmpty) {
+    account.reject("loadsave", 
+      displaykey.Account.RelatedAccount.Error.RelationshipWithSelf(account), 
+      null, null)
+    actions.exit()
+  }
+
+
+/*end00rule*/
+
+  }
+}

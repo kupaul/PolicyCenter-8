@@ -1,0 +1,26 @@
+package rules.Assignment.GlobalJobAssignmentRules_dir.AssignAuditor_dir
+
+@gw.rules.RuleName("Default")
+internal class Default_ {
+  static function doCondition(job : entity.Job) : boolean {
+    
+/*start00rule*/
+return // If all else fails, pick a default user.
+true
+/*end00rule*/
+
+  }
+
+  static function doAction(job : entity.Job, actions : gw.rules.Action) {
+
+/*start00rule*/
+var assignment = job.CurrentRoleAssignment
+var group = gw.api.database.Query.make(entity.Group).compare(entity.Group#Name.PropertyInfo.Name, Equals, "Western Region Audit").select().FirstResult
+var user = gw.api.system.PLDependenciesGateway.getUserFinder().findByCredentialName("tallen")
+assignment.assign(group, user)
+gw.assignment.AssignmentUtil.logUserRoleAssignment(assignment, actions as java.lang.String)
+actions.exit()
+/*end00rule*/
+
+  }
+}

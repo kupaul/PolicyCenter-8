@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="pcf.xsd">
+  <PanelSet
+    available="coverable != null"
+    id="PreferredCoverageCurrencyPanelSet"
+    visible="gw.api.util.CurrencyUtil.isMultiCurrencyMode()">
+    <Require
+      name="coverable"
+      type="Coverable"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <PanelRef
+      id="PreferredCoverageCurrencySelectorPanelRef">
+      <Toolbar
+        id="PreferredCoverageCurrencySelectorToolbar">
+        <ToolbarRangeInput
+          available="openForEdit"
+          confirmMessage="displaykey.Web.Policy.ChangingCoverageCurrencyResyncs"
+          editable="openForEdit"
+          id="PreferredCoverageCurrencySelectorDropDown"
+          label="displaykey.Web.Policy.CoverableCurrency"
+          required="true"
+          showConfirmMessage="coverable.CoveragesFromCoverable.length &gt; 0"
+          value="coverable.PreferredCoverageCurrency"
+          valueRange="gw.web.policy.CoverableCoverageCurrencySynchronizer.getAvailableCurrencies(coverable)"
+          visible="openForEdit">
+          <PostOnChange
+            onChange="gw.web.policy.CoverableCoverageCurrencySynchronizer.synchronizeCurrencies(coverable, jobWizardHelper)"/>
+        </ToolbarRangeInput>
+        <ToolbarInput
+          available="!openForEdit"
+          id="CoverageCurrencyDisplay"
+          label="displaykey.Web.Policy.CoverableCurrency + &quot;:&quot;"
+          value="coverable.PreferredCoverageCurrency.DisplayName"
+          visible="!openForEdit"/>
+      </Toolbar>
+      <DetailViewPanel>
+        <InputColumn/>
+      </DetailViewPanel>
+    </PanelRef>
+  </PanelSet>
+</PCF>

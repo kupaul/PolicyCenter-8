@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../../pcf.xsd">
+  <PanelSet
+    id="IMPartReviewPanelSet"
+    mode="ContractorsEquipPart">
+    <Require
+      name="imLine"
+      type="InlandMarineLine"/>
+    <Variable
+      initialValue="imLine.ContractorsEquipPart"
+      name="contractorsEquipmentPart"/>
+    <DetailViewPanel
+      visible="contractorsEquipmentPart.ContrEquipPartCovs.Count &gt; 0">
+      <InputColumn>
+        <Label
+          label="displaykey.Web.Policy.IM.ContractorsEquipments"/>
+        <ListViewInput
+          def="CoverageSummaryLV(contractorsEquipmentPart.ContrEquipPartCovs.toList(), contractorsEquipmentPart)"
+          labelAbove="true">
+          <Toolbar/>
+        </ListViewInput>
+      </InputColumn>
+    </DetailViewPanel>
+    <DetailViewPanel
+      visible="!imLine.ContractorsEquipPart.ContractorsEquipments.IsEmpty">
+      <InputColumn>
+        <Label
+          label="displaykey.Web.Policy.IM.ContractorsEquipment.ScheduledEquipments"/>
+      </InputColumn>
+    </DetailViewPanel>
+    <PanelIterator
+      elementName="contractorsEquipment"
+      value="contractorsEquipmentPart.ContractorsEquipments">
+      <DetailViewPanel>
+        <InputColumn>
+          <Label
+            label="contractorsEquipment.DisplayName"/>
+          <ListViewInput
+            def="CoverageSummaryLV(contractorsEquipment.Coverages.toList(), contractorsEquipment)"
+            labelAbove="true">
+            <Toolbar/>
+          </ListViewInput>
+        </InputColumn>
+      </DetailViewPanel>
+    </PanelIterator>
+  </PanelSet>
+</PCF>

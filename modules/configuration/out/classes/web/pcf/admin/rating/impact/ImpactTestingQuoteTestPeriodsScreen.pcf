@@ -1,0 +1,131 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Screen
+    id="ImpactTestingQuoteTestPeriodsScreen">
+    <Require
+      name="testCase"
+      type="ImpactTestingTestCase"/>
+    <Variable
+      initialValue="new gw.pcf.rating.impact.ImpactTestingPrepareUIHelper(testCase)"
+      name="helper"/>
+    <Variable
+      initialValue="gw.rating.impact.ImpactBatchUtil.isTestRunJobBeingProcessed()"
+      name="waiting"
+      type="boolean"/>
+    <Variable
+      initialValue="testCase.TestRunProcessedCount &lt; testCase.Periods.Count and testCase.TestRunProcessedCount &gt; 0"
+      name="inprogress"
+      type="boolean"/>
+    <Variable
+      initialValue="testCase.TestRunUnprocessedCount == 0 and !waiting"
+      name="complete"
+      type="boolean"/>
+    <Toolbar>
+      <ToolbarButton
+        action="(CurrentLocation as pcf.api.Wizard).previous()"
+        id="BackButton"
+        label="displaykey.Web.Rating.ImpactTesting.Search.Back"
+        visible="(CurrentLocation as pcf.api.Wizard).CurrentStepId != &quot;ChoosePoliciesStep&quot;"/>
+    </Toolbar>
+    <AlertBar
+      allowDismiss="false"
+      id="ExportJobRunningMessage"
+      label="displaykey.Web.Rating.ImpactTesting.Prepare.ExportJobRunning"
+      showConfirmMessage="false"
+      visible="gw.rating.impact.ImpactBatchUtil.jobBeingProcessed() == BatchProcessType.TC_IMPACTTESTINGEXPORT"/>
+    <DetailViewPanel
+      visible="!waiting and !testCase.IsTestRunComplete">
+      <InputColumn>
+        <Label
+          label="displaykey.Web.Rating.ImpactTesting.QuoteTestPeriodsLabel  "/>
+        <InputDivider/>
+      </InputColumn>
+    </DetailViewPanel>
+    <DetailViewPanel>
+      <InputColumn
+        refreshOnProgressComplete="true">
+        <TextInput
+          boldValue="true"
+          id="TestQuotesBeingCreatedLabel"
+          labelAbove="true"
+          value="displaykey.Web.Rating.ImpactTesting.Search.TestQuoteConfirmationMessage"
+          visible="waiting"/>
+        <InputDivider
+          visible="waiting"/>
+        <ProgressInput
+          id="TestQuoteProgressBar"
+          labelAbove="true"
+          percentage="getPercentageAndUpdateWaitFlag()"
+          status="displaykey.Web.Rating.ImpactTesting.Prepare.ProgressBarStatus(testCase.TestRunProcessedCount, testCase.Periods.Count, testCase.TestRunErrorCount)"
+          visible="waiting"/>
+        <ButtonInput
+          action="gw.rating.impact.ImpactBatchUtil.startTestRunBatchProcess(testCase); waiting = true; complete = false"
+          align="left"
+          hideIfDisabled="false"
+          id="QuoteTestPeriodsButton"
+          labelAbove="true"
+          value="displaykey.Web.Rating.ImpactTesting.QuoteTestPeriods"
+          visible="!waiting and !complete"/>
+        <Input
+          id="Spacer2"
+          value="&quot;&quot;"
+          visible="true"/>
+        <ButtonInput
+          action="gw.rating.impact.ImpactBatchUtil.startTestRunBatchProcess(testCase, true); waiting = true; complete = false"
+          align="left"
+          hideIfDisabled="false"
+          id="ContinueQuoteTestPeriodsButton"
+          labelAbove="true"
+          value="displaykey.Web.Rating.ImpactTesting.ContinueQuoteTestPeriods"
+          visible="inprogress and !waiting"/>
+        <ButtonInput
+          action="gw.rating.impact.ImpactBatchUtil.cancelTestRunBatchProcess(); waiting = false;complete = false; inprogress = true"
+          align="left"
+          hideIfDisabled="false"
+          id="CancelBatchJob"
+          labelAbove="true"
+          value="displaykey.Web.Rating.ImpactTesting.QuoteTestCase.Cancel"
+          visible="waiting"/>
+        <Input
+          boldValue="true"
+          id="ProgressStatusMessage"
+          labelAbove="true"
+          value="displaykey.Web.Rating.ImpactTesting.QuoteTestCase.TestQuoteComplete(testCase.TestRunProcessedCount, testCase.Periods.Count, testCase.TestRunErrorCount)"
+          visible="!waiting and testCase.IsTestRunComplete"/>
+        <InputDivider
+          visible="!waiting and testCase.IsTestRunComplete"/>
+        <ButtonInput
+          action="gw.rating.impact.ImpactBatchUtil.startTestRunBatchProcess(testCase); waiting = true;complete = false; "
+          align="left"
+          hideIfDisabled="false"
+          id="RequoteTestPeriodsButton"
+          labelAbove="true"
+          value="displaykey.Web.Rating.ImpactTesting.RequoteTestPeriods"
+          visible="complete"/>
+        <Input
+          id="Spacer"
+          value="&quot;&quot;"
+          visible="complete"/>
+        <ButtonInput
+          action="(CurrentLocation as pcf.api.Wizard).next()"
+          hideIfDisabled="false"
+          id="NextButton"
+          labelAbove="true"
+          value="displaykey.Web.Rating.ImpactTesting.Search.Next"
+          visible="complete"/>
+      </InputColumn>
+    </DetailViewPanel>
+    <Code><![CDATA[function getPercentageAndUpdateWaitFlag() : int{
+
+  var percentage = testCase.TestRunPercentComplete
+  if (percentage == 100) {
+    waiting = false
+	  inprogress = false
+    complete = true
+  } 
+  return percentage
+}]]></Code>
+  </Screen>
+</PCF>

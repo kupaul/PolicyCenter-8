@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InputSet
+    id="OfficialIDInputSet"
+    mode="person|usercontact">
+    <Require
+      name="personContact"
+      type="Contact"/>
+    <Variable
+      initialValue="(personContact as Person)"
+      name="person"
+      recalculateOnRefresh="true"
+      type="Person"/>
+    <TextInput
+      editable="true"
+      id="OfficialIDDV_Input"
+      inputMask="&quot;###-##-####&quot;"
+      label="displaykey.Web.SubmissionWizard.Account.SSN"
+      value="person.SSNOfficialID"/>
+    <Code><![CDATA[function checkValidSSN(contact : Contact, ssn : String) : String {
+  var query = gw.api.database.Query.make(OfficialID)
+  query.compare(OfficialID#OfficialIDValue.PropertyInfo.Name, Equals, ssn)
+  query.compare(OfficialID#OfficialIDType.PropertyInfo.Name, Equals, OfficialIDType.TC_SSN)
+  var officialID = query.select().FirstResult
+  if(officialID != null and officialID.Contact != contact) {
+    return displaykey.Web.OfficialID.DuplicateSSN
+  }
+  return null
+}]]></Code>
+  </InputSet>
+</PCF>

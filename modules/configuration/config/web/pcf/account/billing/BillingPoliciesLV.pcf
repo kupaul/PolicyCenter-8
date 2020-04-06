@@ -1,0 +1,108 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ListViewPanel
+    id="BillingPoliciesLV">
+    <Require
+      name="accountNumber"
+      type="String"/>
+    <Require
+      name="areOwnedPolicies"
+      type="boolean"/>
+    <Variable
+      initialValue="retrievePolicies()"
+      name="policyPeriods"
+      recalculateOnRefresh="true"/>
+    <RowIterator
+      editable="false"
+      elementName="billingPeriod"
+      pageSize="0"
+      value="policyPeriods">
+      <Variable
+        initialValue="billingPeriod.findPolicyPeriod()"
+        name="policyPeriod"/>
+      <IteratorSort
+        sortBy="billingPeriod.EffectiveDate"
+        sortOrder="1"/>
+      <IteratorSort
+        sortBy="billingPeriod.Product"
+        sortOrder="2"/>
+      <Row
+        useArchivedStyle="policyPeriod.PolicyTerm.Archived">
+        <Cell
+          action="PolicyFileForward.go(policyPeriod, policyPeriod.PeriodStart, &quot;PolicyBilling&quot;)"
+          id="PolicyNumber"
+          label="displaykey.Web.AccountBasics.PoliciesLV.PolicyNumber"
+          value="billingPeriod.PolicyNumber"
+          width="100"/>
+        <Cell
+          id="Product"
+          label="displaykey.Web.AccountBasics.PoliciesLV.Product"
+          value="billingPeriod.Product"
+          width="150"
+          wrap="true"/>
+        <DateCell
+          id="EffDate"
+          label="displaykey.Web.AccountBasics.PoliciesLV.PolicyEffDate"
+          value="billingPeriod.EffectiveDate"/>
+        <DateCell
+          id="ExpDate"
+          label="displaykey.Web.AccountBasics.PoliciesLV.PolicyExpirDate"
+          value="billingPeriod.ExpirationDate"/>
+        <TypeKeyCell
+          id="Billed"
+          label="displaykey.Web.Policy.Payment.BillingMethod"
+          value="billingPeriod.BillingMethod"
+          visible="areOwnedPolicies"/>
+        <Cell
+          id="AltBillingAccount"
+          label="displaykey.Web.Policy.Payment.AltBillingAccount"
+          value="billingPeriod.AltBillingAccount"
+          visible="areOwnedPolicies"/>
+        <Cell
+          id="OwningAccount"
+          label="displaykey.Web.Policy.Payment.OwningAccount"
+          value="billingPeriod.OwningAccount"
+          visible="not areOwnedPolicies"/>
+        <Cell
+          id="Status"
+          label="displaykey.Web.Billing.Status"
+          value="billingPeriod.Delinquent ? displaykey.Web.Billing.Status.Delinquent : displaykey.Web.Billing.Status.InGoodStanding"
+          width="150"
+          wrap="true"/>
+        <MonetaryAmountCell
+          formatType="currency"
+          id="BilledAmount"
+          label="displaykey.Web.Billing.BilledAmount"
+          value="billingPeriod.TotalBilled"/>
+        <MonetaryAmountCell
+          formatType="currency"
+          id="PastDue"
+          label="displaykey.Web.Billing.PastDue"
+          value="billingPeriod.PastDue"/>
+        <MonetaryAmountCell
+          formatType="currency"
+          id="Unbilled"
+          label="displaykey.Web.Billing.Unbilled"
+          value="billingPeriod.Unbilled"/>
+        <Cell
+          id="InvoiceStream"
+          label="displaykey.Web.Billing.InvoiceStream"
+          value="billingPeriod.InvoiceStream"
+          valueVisible="not areOwnedPolicies or billingPeriod.AltBillingAccount == null // only for periods billed to this account"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function retrievePolicies() : gw.plugin.billing.BillingPeriodInfo[]{
+  try {
+    var plugin = gw.plugin.Plugins.get(gw.plugin.billing.IBillingSummaryPlugin)
+    var result = areOwnedPolicies ? plugin.retrieveBillingPolicies( accountNumber ) 
+      : plugin.getPoliciesBilledToAccount(accountNumber)
+    return result.cast(gw.plugin.billing.BillingPeriodInfo)
+  } catch (e : gw.api.util.DisplayableException) {
+    util.LocationUtil.addRequestScopedErrorMessage(e.LocalizedMessage)
+    return new gw.plugin.billing.BillingPeriodInfo[0]
+  }
+}]]></Code>
+  </ListViewPanel>
+</PCF>

@@ -1,0 +1,89 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <InputSet
+    id="LinkedAddressInputSet">
+    <Require
+      name="currentAddress"
+      type="entity.Address"/>
+    <Require
+      name="currentContact"
+      type="entity.Contact"/>
+    <Require
+      name="aPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="anAccount"
+      type="entity.Account"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="aPeriod == null ? null : aPeriod.PrimaryNamedInsured.AccountContactRole.AccountContact.Contact"
+      name="primaryNamedInsuredContact"
+      type="entity.Contact"/>
+    <Variable
+      initialValue="gw.address.LinkedAddressUIHelper.getContactsAvailableAsLinks(currentContact, anAccount, aPeriod)"
+      name="contactsAvailableAsLinks"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="openForEdit and not contactsAvailableAsLinks.Empty"
+      name="linkable"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="getLinkAddressLabel()"
+      name="linkAddressLabel"
+      recalculateOnRefresh="true"/>
+    <Label
+      id="LinkedAddressWarningMessage"
+      label="displaykey.Web.ContactDetail.LinkedAddress.AlreadyLinkedMessage"
+      visible="currentAddress.LinkedAddress != null"/>
+    <Input
+      boldLabel="true"
+      hideChildrenIfReadOnly="false"
+      id="LinkAddressMenu"
+      label="displaykey.Web.ContactDetail.Location"
+      value="linkAddressLabel"
+      visible="currentContact != null">
+      <MenuItemIterator
+        elementName="contact"
+        id="ContactIterator"
+        type="gw.address.LinkedAddressUIHelper.ContactTypePair"
+        value="gw.address.LinkedAddressUIHelper.getContactsAvailableAsLinks(currentContact, anAccount, aPeriod)"
+        visible="openForEdit and (currentAddress.LinkedAddress == null)">
+        <MenuItem
+          id="contactDetail"
+          label="displaykey.Web.ContactDetail.LinkedAddress.DisplayLabel(contact.Contact, contact.ContactType)">
+          <MenuItem
+            action="currentAddress.linkAddress(contact.Contact.PrimaryAddress, currentContact)"
+            id="PrimaryAddress"
+            label="displaykey.Web.Addresses.Linked.MarkAsPrimaryAddress(contact.Contact.PrimaryAddress)"/>
+          <MenuItemIterator
+            elementName="address"
+            type="entity.Address"
+            value="contact.Contact.SecondaryAddresses">
+            <MenuItem
+              action="currentAddress.linkAddress(address, currentContact)"
+              id="Address"
+              label="address"/>
+          </MenuItemIterator>
+        </MenuItem>
+      </MenuItemIterator>
+      <MenuItem
+        action="LinkedAddressEditPopup.push(currentAddress)"
+        id="EditAddress"
+        label="displaykey.Web.ContactDetail.LinkedAddress.EditAddress"
+        visible="openForEdit and currentAddress.LinkedAddress != null"/>
+    </Input>
+    <Code><![CDATA[function getLinkAddressLabel() : String {
+  if (linkable and currentAddress.LinkedAddress == null) {
+    return displaykey.Web.ContactDetail.LinkedAddress.Label.Unlinked
+  }
+  if (openForEdit and currentAddress.LinkedAddress != null) {
+    return displaykey.Web.ContactDetail.LinkedAddress.Label.Linked
+  }
+  return ""
+}]]></Code>
+  </InputSet>
+</PCF>

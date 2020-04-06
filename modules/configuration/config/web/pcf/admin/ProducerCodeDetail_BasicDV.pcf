@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    editable="true"
+    id="ProducerCodeDetail_BasicDV">
+    <Require
+      name="producerCode"
+      type="ProducerCode"/>
+    <Variable
+      initialValue="gw.web.admin.ProducerCodeUIHelper.getCommissionPlans(producerCode.Organization.Tier)"
+      name="commissionPlans"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="new gw.pcf.contacts.AddressAutoFillSearchOwner(producerCode.Address, true)"
+      name="addrAutoFillSearchOwner"/>
+    <InputColumn>
+      <Input
+        editable="true"
+        id="Code"
+        label="displaykey.Web.Admin.ProducerCodeDetail.Code"
+        required="true"
+        value="producerCode.Code"/>
+      <TextAreaInput
+        editable="true"
+        id="Description"
+        label="displaykey.Web.Admin.ProducerCodeDetail.Description"
+        numRows="2"
+        value="producerCode.Description"/>
+      <OrgInput
+        action="OrganizationDetail.go(producerCode.Organization)"
+        actionAvailable="producerCode.Organization != null and not User.util.CurrentUser.ExternalUser"
+        editable="producerCode.New and not User.util.CurrentUser.ExternalUser"
+        id="Organization"
+        label="displaykey.Web.Admin.ProducerCodeDetail.Organization"
+        onPick="gw.web.admin.ProducerCodeUIHelper.initializeCommissionPlans(producerCode, producerCode.OrganizationWithUpdate); gw.api.web.PebblesUtil.invalidateIterators(CurrentLocation, CommissionPlan) "
+        pickLocation="OrganizationSearchPopup.push(null,true)"
+        requestValidationExpression="VALUE.ProducerStatus &lt;&gt; TC_ACTIVE ? displaykey.Web.Admin.ProducerCodeDetail.IncorrectProducerStatus(VALUE.Type.DisplayName) : null"
+        required="true"
+        value="producerCode.OrganizationWithUpdate">
+        <PostOnChange
+          onChange="gw.web.admin.ProducerCodeUIHelper.initializeCommissionPlans(producerCode, producerCode.OrganizationWithUpdate); gw.api.web.PebblesUtil.invalidateIterators(CurrentLocation, CommissionPlan)"
+          target="CommissionPlan"/>
+      </OrgInput>
+      <RangeInput
+        available="producerCode.Organization != null"
+        editable="producerCode.New"
+        id="CommissionPlan"
+        label="displaykey.Web.Admin.ProducerCodeDetail.CommissionPlan"
+        noneSelectedLabel="displaykey.Web.ProducerCodeDetailDV.AcceptDefault"
+        optionLabel="commissionPlans.firstWhere( \ c -&gt; c.Id == VALUE ).Name"
+        value="producerCode.SingleCurrencyCommissionPlanID"
+        valueRange="commissionPlans*.Id"
+        visible="not gw.api.util.CurrencyUtil.isMultiCurrencyMode()"/>
+      <ProducerCodeInput
+        editable="true"
+        id="ParentCode"
+        label="displaykey.Web.Admin.ProducerCodeDetail.ParentCode"
+        pickLocation="AdminProducerCodeSearchPopup.push(producerCode.Organization)"
+        value="producerCode.Parent">
+        <PostOnChange/>
+      </ProducerCodeInput>
+      <DateInput
+        editable="true"
+        id="AppointmentDate"
+        label="displaykey.Web.Admin.ProducerCodeDetail.AppointmentDate"
+        value="producerCode.AppointmentDate">
+        <PostOnChange/>
+      </DateInput>
+      <TypeKeyInput
+        editable="true"
+        id="Status"
+        label="displaykey.Web.Admin.ProducerCodeDetail.Status"
+        required="true"
+        value="producerCode.ProducerStatus">
+        <PostOnChange/>
+      </TypeKeyInput>
+      <DateInput
+        editable="true"
+        id="TerminationDate"
+        label="displaykey.Web.Admin.ProducerCodeDetail.TerminationDate"
+        value="producerCode.TerminationDate"
+        visible="producerCode.ProducerStatus == &quot;Terminating&quot; ||                             producerCode.ProducerStatus == &quot;Terminated&quot;"/>
+      <InputSetRef
+        def="AddressOwnerAddressInputSet(addrAutoFillSearchOwner)"/>
+      <InputDivider/>
+      <TypeKeyInput
+        id="Currency"
+        label="displaykey.Web.Admin.ProducerCodeDetail.Currency"
+        value="producerCode.SingleCurrencyCommissionPlanCurrency"
+        visible="not gw.api.util.CurrencyUtil.isMultiCurrencyMode()"/>
+      <Label
+        label="displaykey.Web.Admin.ProducerCodeDetail.ParticipantsAssignmentLogic"/>
+      <Input
+        action="UserDetailPage.go(producerCode.PreferredUnderwriter)"
+        actionAvailable="producerCode.PreferredUnderwriter != null and not User.util.CurrentUser.ExternalUser"
+        editable="not User.util.CurrentUser.ExternalUser"
+        id="PreferredUnderwriter"
+        label="displaykey.Web.Admin.ProducerCodeDetail.PreferredUnderwriter"
+        value="producerCode.PreferredUnderwriter"
+        visible="perm.System.prodcodeviewprefuw"/>
+      <PickerInput
+        action="GroupDetailPage.go(producerCode.Branch)"
+        actionAvailable="producerCode.Branch != null and producerCode.Branch.GroupType != &quot;root&quot; and not User.util.CurrentUser.ExternalUser"
+        editable="not User.util.CurrentUser.ExternalUser"
+        id="Branch"
+        inputConversion="gw.web.admin.ProducerCodeUIHelper.performBranchSearch(VALUE)"
+        label="displaykey.Web.Admin.ProducerCodeDetail.Branch"
+        pickLocation="OrganizationBranchSearchPopup.push()"
+        value="producerCode.Branch">
+        <PostOnChange/>
+      </PickerInput>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

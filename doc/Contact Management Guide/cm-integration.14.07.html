@@ -1,0 +1,1077 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>ContactMapper Class</title>
+    <link rel="StyleSheet" href="css/cm-integration.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>Guidewire Contact Management Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="cm-integration.14.01.html#2708573">ContactManager Integration Reference</a> : ContactMapper Class</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><span class="cvh_-_computer_voice_in_heading"><a name="2708573">ContactMapper</a></span> Class</h3>
+      <div class="B_-_Body"><a name="2443389">Guidewire core applications send contact information to ContactManager by using an XML SOAP object. They use the </a><span class="cv_-_computer_voice">ContactMapper</span> class both to generate the SOAP object and to interpret it when they receive an XML SOAP object from ContactManager. </div>
+      <div class="B_-_Body"><a name="2756919">ContactManager and the Guidewire core applications each have their own version of the </a><span class="cv_-_computer_voice">ContactMapper</span> class. This class enables the applications to convert <span class="cv_-_computer_voice">Contact</span> entities and subentities to XML and send them to ContactManager. The class also enables Guidewire core applications to receive XML representations of the entities from ContactManager and convert them to <span class="cv_-_computer_voice">Contact</span> entities. ContactManager also uses its version of this class to generate XML to send to the applications and to interpret the XML it receives from the applications. The class file in each core application and in ContactManager explicitly specifies every field of the entities to send or receive and how to handle them in that application.</div>
+      <div class="B_-_Body"><a name="2443429">In the base configuration of each Guidewire core application, the </a><span class="cv_-_computer_voice">ContactMapper</span> class is configured to handle all the <span class="cv_-_computer_voice">Contact</span> entities and subentities. The class handles the entities and fields of those entities that are to be sent to and received from ContactManager. </div>
+      <div class="B_-_Body"><a name="2756079">In the base configuration, there are differences in entity names, typecodes, and contact entity field names between the core applications and ContactManager. Each Guidewire core application has its own domain namespace, but the ContactManager web services require the ContactManager domain namespace. The core applications use ContactManager web services to communicate with ContactManager. Therefore, when there are differences in names of fields, datatypes, and typecodes between the core application and ContactManager, each core application is responsible for doing the name mapping.</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2758081">To map differing entity field names, a core application uses a method on the </a><span class="cv_-_computer_voice">ContactMapper</span> class.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2758069">To map names of datatypes and typecodes, a core application uses the </a><span class="cv_-_computer_voice">ContactMapper</span> class in conjunction with a mapping class that specifies these name mappings. For example, a <span class="cv_-_computer_voice">Contact</span> in the core application maps to an <span class="cv_-_computer_voice">ABContact</span> in ContactManager. See <a href="javascript:WWHClickedPopup('contact', 'extending.09.2.html#2641438', '');" title="Overview of Contact Entities">“Core Application Mapping”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2776676">The ContactManager </a><span class="cv_-_computer_voice">ContactMapper</span> class handles only <span class="cv_-_computer_voice">ABContact</span> entities and subentities. Because ContactManager must be able to communicate with all the Guidewire core applications, its <span class="cv_-_computer_voice">ContactMapper</span> class must contain all fields of each type of contact that each core application needs. In a Guidewire core application, you can map just the contact fields that you want to send to ContactManager and receive from it.</div>
+      <div class="B_-_Body"><a name="2453541">The </a><span class="cv_-_computer_voice">ContactMapper</span> class creates a SOAP object called <span class="cv_-_computer_voice">XMLBackedInstance</span> to pass the data between a Guidewire core application and ContactManager. This object contains the fields and data of contacts and their related arrays and foreign keys that are defined in the <span class="cv_-_computer_voice">ContactMapper</span> class. <span class="cv_-_computer_voice">XmlBackedInstance</span> has a representation both as an object and as an XML string. </div>
+      <div class="B_-_Body"><a name="2444071">If you are working only with the entities supplied by Guidewire in the base configuration, you do not need to make any changes to the </a><span class="cv_-_computer_voice">ContactMapper</span> class. For information on the contact data model in the base configuration, see <a href="javascript:WWHClickedPopup('contact', 'extending.09.2.html#2391229', '');" title="Overview of Contact Entities">“Overview of Contact Entities”</a>. </div>
+      <div class="B_-_Body"><a name="2443526">You can extend your Guidewire core application’s </a><span class="cv_-_computer_voice">Contact</span> data model, as described in <a href="javascript:WWHClickedPopup('contact', 'extending.09.1.html#2872619', '');" title="Extending the Contact Data Model">“Extending the Contact Data Model”</a>. You make the extension in ContactManager as well, and then map the entities to each other in <span class="cv_-_computer_voice">ContactMapper</span> in both the Guidewire core application and in ContactManager. Additionally, you use the application’s mapping class to map differing entity names and any different typecodes to and from ContactManager.</div>
+      <div class="B_-_Body"><a name="2482528">This topic includes:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2443646', '');" title="ContactMapper Class" name="2482556">ContactManager ContactMapper Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2443701', '');" title="ContactMapper Class" name="2482571">Core Application ContactMapper Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="2443646">ContactManager </a><span class="cvh_-_computer_voice_in_heading">ContactMapper</span> Class</h4>
+      <div class="B_-_Body"><a name="2443683">In ContactManager, you use the class </a><span class="cv_-_computer_voice">gw.contactmapper.ab800.ContactMapper</span> to map <span class="cv_-_computer_voice">ABContact</span> entities and subentities. The class maps them to an XML object to send to Guidewire core applications and maps them from the XML objects received from Guidewire core applications. The class in the base ContactManager configuration works only with <span class="cv_-_computer_voice">ABContact</span> entities and subentities. ContactManager leaves it to the applications to map <span class="cv_-_computer_voice">ABContact</span> entities and subentities to and from <span class="cv_-_computer_voice">Contact</span> entities and subentities.</div>
+      <div class="B_-_Body"><a name="2477672">You can access this class in ContactManager Studio in the </a><span class="ui_-_UI_element">Project </span>window. Navigate to <span class="ui_-_UI_element">configuration → gsrc</span> and then to <span class="cv_-_computer_voice">gw.contactmapper.ab800.ContactMapper</span>.</div>
+      <div class="B_-_Body"><a name="2477692">The following methods map the fields, foreign keys, and arrays of the ContactManager </a><span class="cv_-_computer_voice">ABContact</span> entities and subentities:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2753368">fieldMapping</a></span> – Maps fields of an entity</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2753390">fkMapping</a></span> – Maps foreign keys of an entity</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2753401">arrayMapping</a></span> – Maps array references of an entity</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2756791">This topic includes:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2753251', '');" title="ContactMapper Class" name="2780725">Mapping Fields of a ContactManager Contact</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2753702', '');" title="ContactMapper Class" name="2780738">Mapping Foreign Keys of a ContactManager Contact</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2753729', '');" title="ContactMapper Class" name="2780753">Mapping Array References of a ContactManager Contact</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2759714', '');" title="ContactMapper Class" name="2780770">Special Handling in ContactManager for Addresses</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2753251">Mapping Fields of a ContactManager Contact</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2443881">The method </a><span class="cv_-_computer_voice">fieldMapping(</span><span class="ps_-_parameter_in_code_snippets">Entity</span><span class="cv_-_computer_voice">#</span><span class="ps_-_parameter_in_code_snippets">Field</span><span class="cv_-_computer_voice">)</span> by default maps <span class="cv_-_computer_voice">ABContact</span> entity and subentity fields in both directions.</div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2798353">Parameters to methods in </a><span class="cv_-_computer_voice">ContactMapper</span> use Gosu <span class="e_-_emphasis">feature literals</span> syntax<span class="e_-_emphasis"> </span>to statically refer to an entity’s fields. See <a href="javascript:WWHClickedPopup('gosu', 'typesystem.24.4.html#1487207', '');" title="Using Reflection">“Feature Literals” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'typesystem.24.4.html#1487207', '');" title="Using Reflection">Gosu Reference Guide</a></span>.</div>
+      <div class="B_-_Body"><a name="2798370">The mapping directions are:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2753605">To a Guidewire core application</a></span> – From a ContactManager entity to an XML object to be sent to a Guidewire core application</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2753614">From a Guidewire core application</a></span> – From an XML object sent by a core application to a ContactManager entity </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2753347">You also use this method to map fields of an entity that the contact references with either an array reference or a foreign key, as described later. To map a foreign key or array reference itself, you use different methods, also described later.</a></div>
+      <div class="B_-_Body"><a name="2753695">Each complete method call must be followed by a comma unless it is the last method call in the block.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="2759575">Specifying a Single Direction</a></h6>
+      <div class="B_-_Body"><a name="2752108">You specify a single direction by using </a><span class="cv_-_computer_voice">.withMappingDirection</span>, as follows:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2752343">.withMappingDirection(TO_XML)</a></span> – Maps the field from ContactManager to the core application. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2752864">For example, use this method call to map a </a><span class="cv_-_computer_voice">LinkID</span> field to a core application. This mapping is one-way because ContactManager sets and maintains the <span class="cv_-_computer_voice">LinkID</span> value. For example:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2752713">fieldMapping(ABContact#LinkID)</a></PRE>
+      <PRE class="CF_-_Code_First_Line"><a name="2752699">&nbsp;&nbsp;.withMappingDirection(TO_XML),</a></PRE>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2752871">.withMappingDirection(TO_BEAN)</a></span> – Maps the field from the core application to ContactManager. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2802585">Mapping Externally Specified Unique IDs of a ContactManager Contact</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2802614">ContactManager supports creation of a contact with an external unique ID specified by the core application. </a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2803679">If an external unique ID is specified in the </a><span class="cv_-_computer_voice">XmlBackedInstance</span> data sent in the <span class="cv_-_computer_voice">createContact</span> method call, ContactManager populates the <span class="cv_-_computer_voice">LinkID</span> of the new contact with that value. The field that ContactManager checks for in the <span class="cv_-_computer_voice">createContact</span> call is <span class="cv_-_computer_voice">External_UniqueID</span><span style="font-family: &quot;Lucida Sans Typewriter&quot;; font-size: 7.0pt">.</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2803574">If the </a><span class="cv_-_computer_voice">createContact</span> method call does not specify an external unique ID, ContactManager generates its own unique ID and stores that value in the contact’s <span class="cv_-_computer_voice">LinkID</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2803311">For example, the following lines of mapping code from various parts of the </a><span class="cv_-_computer_voice">construct</span> method in the <span class="cv_-_computer_voice">ContactManager</span> class <span class="cv_-_computer_voice">ContactMapper</span> support this mechanism:</div>
+      <div class="CS_-_Code_Single_Line"><a name="2803125">fieldMapping(ABContact#External_UniqueID),</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2803167">fieldMapping(ABContactAddress#External_UniqueID),</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2803194">fieldMapping(Address#External_UniqueID),</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2803395">fieldMapping(ABContactTag#External_UniqueID),</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2803410">fieldMapping(EFTData#External_UniqueID),</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2803425">fieldMapping(ABContactCategoryScore#External_UniqueID),</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="2803804">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2804109', '');" title="ContactMapper Class" name="2803817">PolicyCenter Mapping of Externally Specified Unique IDs</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'syncing.11.2.html#2178765', '');" title="Linking a Contact" name="2804950">Creating and Linking a Contact</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.03.html#2744944', '');" title="ContactManager Entities" name="2803845">ContactManager Link IDs and Comparison to Other IDs</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.04.html#2747641', '');" title="ContactManager Web Services" name="2804102">ABContactAPI Methods</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2753702">Mapping Foreign Keys of a ContactManager Contact</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2762811">The method </a><span class="cv_-_computer_voice">fkMapping(</span><span class="ps_-_parameter_in_code_snippets">Entity</span><span class="cv_-_computer_voice">#</span><span class="ps_-_parameter_in_code_snippets">ForeignKey</span><span class="cv_-_computer_voice">)</span> maps foreign keys for <span class="cv_-_computer_voice">ABContact</span> entities, subentities, and join tables. You can use the following additional qualifying methods as well:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2762812">withMappingDirection(TO_XML)</a></span> – Specifies that the foreign key is mapped to the core application. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2762813">withMappingDirection(TO_BEAN)</a></span> – Specifies that the foreign key is mapped from the core application. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2762807">Use the </a><span class="cv_-_computer_voice">fieldMapping</span> method to map all the fields of the entity to which a foreign key refers. </div>
+      <div class="B_-_Body"><a name="2753945">For example, the foreign key on </a><span class="cv_-_computer_voice">ABContactAddress</span> that points to an <span class="cv_-_computer_voice">Address</span> object is defined as follows:</div>
+      <div class="CS_-_Code_Single_Line"><a name="2754362">fkMapping(ABContactAddress#Address),</a></div>
+      <div class="B_-_Body"><a name="2754337">Additionally, the fields for the </a><span class="cv_-_computer_voice">Address</span> object must also be defined by using <span class="cv_-_computer_voice">fieldMapping</span> method calls. The code for the <span class="cv_-_computer_voice">Address</span> entity referenced by the foreign key is:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2754439">fieldMapping(Address#LinkID)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754440">&nbsp;&nbsp;.withMappingDirection(TO_XML),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754441">fieldMapping(Address#External_PublicID),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754503">fieldMapping(Address#AddressLine1),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754443">fieldMapping(Address#AddressLine1Kanji),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754444">fieldMapping(Address#AddressLine2),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754445">fieldMapping(Address#AddressLine2Kanji),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754446">fieldMapping(Address#AddressLine3),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754447">fieldMapping(Address#AddressType),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754448">fieldMapping(Address#City),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754449">fieldMapping(Address#CityKanji),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754450">fieldMapping(Address#Country),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754451">fieldMapping(Address#County),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754452">fieldMapping(Address#Description),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754453">fieldMapping(Address#GeocodeStatus),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754454">fieldMapping(Address#PostalCode),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754455">fieldMapping(Address#State),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754456">fieldMapping(Address#ValidUntil),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2754457">fieldMapping(Address#CEDEX),</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2754331">fieldMapping(Address#CEDEXBureau),</a></PRE>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2753729">Mapping Array References of a ContactManager Contact</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2762745">The method </a><span class="cv_-_computer_voice">arrayMapping(</span><span class="ps_-_parameter_in_code_snippets">Entity</span><span class="cv_-_computer_voice">#</span><span class="ps_-_parameter_in_code_snippets">ArrayKey</span><span class="cv_-_computer_voice">)</span> maps array references for <span class="cv_-_computer_voice">ABContact</span> entities and subentities. You can use the following additional qualifying methods as well:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2762746">withMappingDirection(TO_XML)</a></span> – Specifies that the array reference is mapped to the core application. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2762747">withMappingDirection(TO_BEAN)</a></span> – Specifies that the array reference is mapped from the core application. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2762741">Use the </a><span class="cv_-_computer_voice">fieldMapping</span> method to map all the fields of the entity to which an array reference refers. </div>
+      <div class="B_-_Body"><a name="2754600">For example, the array extension example </a><a href="javascript:WWHClickedPopup('contact', 'extending.09.4.html#2651247', '');" title="Extending the Vendor Contact Data Model">Extending Contacts with an Array</a> adds a new entity named <span class="cv_-_computer_voice">ContactServiceState</span>. This entity represents a state in which a vendor contact operates. Each vendor can operate in more than one state, so the example adds an array reference to <span class="cv_-_computer_voice">ABContact</span> named <span class="cv_-_computer_voice">ContactServiceArea</span> that references an array of <span class="cv_-_computer_voice">ContactServiceState</span> entities. </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2756765">The example also creates a ClaimCenter </a><span class="cv_-_computer_voice">ContactServiceState</span> entity and a <span class="cv_-_computer_voice">ContactServiceArea</span> array reference on the ClaimCenter <span class="cv_-_computer_voice">Contact</span> entity. </div>
+      <div class="B_-_Body"><a name="2755218">To transfer this data into and out of ContactManager, you define the array reference and map the fields of the entity to which it refers in </a><span class="cv_-_computer_voice">ContactMapper</span>, as follows:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2755461">arrayMapping(ABContact#ContactServiceArea),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2755462">fieldMapping(ContactServiceState#LinkID)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2755463">&nbsp;&nbsp;.withMappingDirection(TO_XML),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2755464">fieldMapping(ContactServiceState#External_PublicID),</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2755409">fieldMapping(ContactServiceState#ServiceState)</a></PRE>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2759714">Special Handling in ContactManager for Addresses</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2759764">Addresses sent from core applications require special handling in ContactManager to handle scenarios like swapping a primary address for a secondary address. Turning address data into XML does not require any special handling, so addresses being sent to core applications use the normal </a><span class="cv_-_computer_voice">ContactMapper</span> code. For these reasons, the following foreign key and array references are defined as one-way, from ContactManager to the core application:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2760015">fkMapping(ABContact#PrimaryAddress)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2760016">&nbsp;&nbsp;.withMappingDirection(TO_XML),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2760017">arrayMapping(ABContact#ContactAddresses)</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2760008">&nbsp;&nbsp;.withMappingDirection(TO_XML),</a></PRE>
+      <div class="B_-_Body"><a name="2760092">When a change to a primary or secondary address for a contact comes in from a core application, ContactManager calls </a><span class="cv_-_computer_voice">ABUpdateBeanPopulator.populateAddresses</span> instead of the regular mapping code.</div>
+      <div class="B_-_Body"><a name="2760351">While the address foreign key and array reference require special handling, the fields of an address do not. You can add or delete address fields as needed by using the </a><span class="cv_-_computer_voice">fieldMapping</span> method.</div>
+      <h4 class="H2_-_Heading_2"><a name="2443701">Core Application </a><span class="cvh_-_computer_voice_in_heading">ContactMapper</span> Class</h4>
+      <div class="B_-_Body"><a name="2463221">In the Guidewire core applications, you use the class </a><span class="cv_-_computer_voice">gw.contactmapper.ab800.ContactMapper</span> to map entities between the core application and ContactManager. The class maps entities to an XML object to send to ContactManager and maps entities from the XML objects received from ContactManager.</div>
+      <div class="B_-_Body"><a name="2443531">You can access this class in Guidewire Studio from the </a><span class="ui_-_UI_element">Project </span>window. Navigate to <span class="ui_-_UI_element">configuration → gsrc</span> and then to <span class="cv_-_computer_voice">gw.contactmapper.ab800.ContactMapper</span>.</div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2463302">ContactManager also has a </a><span class="cv_-_computer_voice">ContactMapper</span> class. If you want ContactManager to handle changes you make in the ClaimCenter class, you must update the ContactManager class as well. For example, you might add a new field to a <span class="cv_-_computer_voice">Contact</span> subtype and want ContactManager to use that new field with the <span class="cv_-_computer_voice">ABContact</span> subtype. For more information on the ContactManager class, see <a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2443646', '');" title="ContactMapper Class">“ContactManager ContactMapper Class”</a>.</div>
+      <div class="B_-_Body"><a name="2463248">As described in </a><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2708573', '');" title="ContactMapper Class">“ContactMapper Class”</a>, each core application uses <span class="cv_-_computer_voice">ContactMapper</span> to map differing field names used by the core application and ContactManager. To map differing contact entity names and typecodes used by ClaimCenter and ContactManager, each core application uses a separate <span class="p_-_parameter">XX</span><span class="cv_-_computer_voice">NameMapper</span> Gosu class. You can access this class for each core application in Guidewire Studio from the <span class="ui_-_UI_element">Project </span>window. Navigate to <span class="ui_-_UI_element">configuration → gsrc</span> and then to <span class="cv_-_computer_voice">gw.contactmapper.ab800</span>. Double-click the following file for your application to open it an editor: </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2758633">ClaimCenter – </a><span class="cv_-_computer_voice">CCNameMapper</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2758634">PolicyCenter – </a><span class="cv_-_computer_voice">PCNameMapper</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2758635">BillingCenter – </a><span class="cv_-_computer_voice">BCNameMapper</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2758626">There is no equivalent ContactManager class for mapping differing entity and typecode names. All the mapping of differing names is done on the core application side.</a></div>
+      <div class="B_-_Body"><a name="2764825">For an example that shows how to map entity names from ClaimCenter to ContactManager, see </a><a href="javascript:WWHClickedPopup('contact', 'extending.09.4.html#2647559', '');" title="Extending the Vendor Contact Data Model">“Step 3: Map the Subtype Names”</a>.</div>
+      <div class="B_-_Body"><a name="2648398">This topic includes:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2764184', '');" title="ContactMapper Class" name="2648422">Mapping Fields of a Core Application Contact</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2761828', '');" title="ContactMapper Class" name="2764130">Mapping Foreign Keys of a Core Application Contact</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2762095', '');" title="ContactMapper Class" name="2764149">Mapping Array References of a Core Application Contact</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2804109', '');" title="ContactMapper Class" name="2805296">PolicyCenter Mapping of Externally Specified Unique IDs</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2763036', '');" title="ContactMapper Class" name="2764182">Special Handling in ContactMapper in Core Applications</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2764184">Mapping Fields of a Core Application Contact</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2764185">The method </a><span class="cv_-_computer_voice">fieldMapping(</span><span class="ps_-_parameter_in_code_snippets">Entity</span><span class="cv_-_computer_voice">#</span><span class="ps_-_parameter_in_code_snippets">Field</span><span class="cv_-_computer_voice">)</span> by default maps <span class="cv_-_computer_voice">Contact</span> entity and subentity fields in both directions:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2759134">To ContactManager</a></span> – From a core application entity to an XML object to be sent to ContactManager</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2759135">From ContactManager</a></span> – From an XML object sent by ContactManager to a a core application</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2759611">You also use this method to map fields of an entity that the contact references with either an array reference or a foreign key. To map a foreign key or array reference itself, you use different methods, as described later.</a></div>
+      <div class="B_-_Body"><a name="2759612">Each method call with qualifying methods, if any, is an entry in the set of return values. If you add a method to the set, add a comma after it if your method is not the last method in the set.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="2759613">Specifying a Single Mapping Direction for a Field</a></h6>
+      <div class="B_-_Body"><a name="2759296">You specify a single direction for the field mapping by using the qualifying method </a><span class="cv_-_computer_voice">withMappingDirection</span>, as follows:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2759297">.withMappingDirection(TO_XML)</a></span> – Maps the field from the core application to ContactManager. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2759298">For example, use the following method call to map a </a><span class="cv_-_computer_voice">PublicID</span> field to the ContactManager <span class="cv_-_computer_voice">External_PublicID</span> field. This mapping is one-way because the core application sets and maintains this value. </div>
+      <PRE class="CF_-_Code_First_Line"><a name="2761672">fieldMapping(Contact#PublicID)</a></PRE>
+      <PRE class="CF_-_Code_First_Line"><a name="2761673">&nbsp;&nbsp;.withMappingDirection(TO_XML)</a></PRE>
+      <PRE class="CF_-_Code_First_Line"><a name="2759403">&nbsp;&nbsp;.withABName(MappingConstants.EXTERNAL_PUBLIC_ID),</a></PRE>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2759404">.withMappingDirection(TO_BEAN)</a></span> – Maps the field from ContactManager to the core application. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h6 class="HS_-_Head_Sub"><a name="2761142">Mapping Fields with Differing Names</a></h6>
+      <div class="B_-_Body"><a name="2761143">If a field for a contact has a different name in the core application from the name in ContactManager, you map it by using the </a><span class="cv_-_computer_voice">withABName</span> method. For example, the <span class="cv_-_computer_voice">AddressBookUID</span> property on a ClaimCenter <span class="cv_-_computer_voice">Contact</span> entity is called <span class="cv_-_computer_voice">LinkID</span> on an <span class="cv_-_computer_voice">ABContact</span> in ContactManager. The following code maps these different field names for a <span class="cv_-_computer_voice">Contact</span> entity:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2761631">fieldMapping(Contact#AddressBookUID)</a></PRE>
+      <PRE class="CF_-_Code_First_Line"><a name="2761618">&nbsp;&nbsp;.withABName(MappingConstants.LINK_ID),</a></PRE>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2761828">Mapping Foreign Keys of a Core Application Contact</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2762927">The method </a><span class="cv_-_computer_voice">fkMapping(</span><span class="ps_-_parameter_in_code_snippets">Entity</span><span class="cv_-_computer_voice">#</span><span class="ps_-_parameter_in_code_snippets">ForeignKey</span><span class="cv_-_computer_voice">)</span> maps foreign keys for <span class="cv_-_computer_voice">Contact</span> entities, subentities, and join tables. The method by default operates in both directions. You can use the following additional qualifying methods as well:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2762928">withMappingDirection(TO_XML)</a></span> – Specifies that the foreign key is mapped to ContactManager. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2762929">withMappingDirection(TO_BEAN)</a></span> – Specifies that the foreign key is mapped from ContactManager. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2762930">withABName(</a></span><span class="ps_-_parameter_in_code_snippets">name</span><span class="cv_-_computer_voice">:String)</span> – Specifies a different name for the foreign key on the entity in ContactManager</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2762923">Use the </a><span class="cv_-_computer_voice">fieldMapping</span> method to map all the fields of the entity to which a foreign key refers. </div>
+      <div class="B_-_Body"><a name="2761830">For example, the foreign key on </a><span class="cv_-_computer_voice">ContactAddress</span> that points to an <span class="cv_-_computer_voice">Address</span> object is defined as follows:</div>
+      <div class="CS_-_Code_Single_Line"><a name="2761831">fkMapping(ContactAddress#Address),</a></div>
+      <div class="B_-_Body"><a name="2762074">Additionally, the fields for the </a><span class="cv_-_computer_voice">Address</span> object must all be defined by using <span class="cv_-_computer_voice">fieldMapping</span> method calls. The code for the <span class="cv_-_computer_voice">Address</span> entity referenced by the foreign key is:</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762102">fieldMapping(Address#AddressBookUID)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762103">&nbsp;&nbsp;.withABName(MappingConstants.LINK_ID),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762104">fieldMapping(Address#PublicID)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762105">&nbsp;&nbsp;.withMappingDirection(TO_XML)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762106">&nbsp;&nbsp;.withABName(MappingConstants.EXTERNAL_PUBLIC_ID),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762107">fieldMapping(Address#AddressLine1),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762108">fieldMapping(Address#AddressLine2),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762109">fieldMapping(Address#AddressLine3),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762110">fieldMapping(Address#AddressType),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762111">fieldMapping(Address#City),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762112">fieldMapping(Address#County),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762113">fieldMapping(Address#Country),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762114">fieldMapping(Address#Description),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762115">fieldMapping(Address#GeocodeStatus),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762116">fieldMapping(Address#PostalCode),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762117">fieldMapping(Address#State),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762118">fieldMapping(Address#ValidUntil),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762119">fieldMapping(Address#AddressLine1Kanji),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762120">fieldMapping(Address#AddressLine2Kanji),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762121">fieldMapping(Address#CityKanji),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762122">fieldMapping(Address#CEDEX),</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2762094">fieldMapping(Address#CEDEXBureau),</a></PRE>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2762095">Mapping Array References of a Core Application Contact</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2762096">The method </a><span class="cv_-_computer_voice">arrayMapping(</span><span class="ps_-_parameter_in_code_snippets">Entity</span><span class="cv_-_computer_voice">#</span><span class="ps_-_parameter_in_code_snippets">ArrayKey</span><span class="cv_-_computer_voice">)</span> maps array references for <span class="cv_-_computer_voice">Contact</span> entities and subentities. The method by default operates in both directions. You can use the following additional qualifying methods as well:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2762463">withMappingDirection(TO_XML)</a></span> – Specifies that the array reference is mapped to ContactManager. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2762583">withMappingDirection(TO_BEAN)</a></span> – Specifies that the array reference is mapped from ContactManager. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2763537">For example, in ClaimCenter, the array of category scores from a vendor performance review is maintained by ContactManager. Therefore, the direction of the array reference is one-way, from ContactManager:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2763766">arrayMapping(Contact#CategoryScores)</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2763759">&nbsp;&nbsp;.withMappingDirection(TO_BEAN),</a></PRE>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2762612">withABName(</a></span><span class="ps_-_parameter_in_code_snippets">name</span><span class="cv_-_computer_voice">:String)</span> – Specifies a different name for the array reference on the entity in ContactManager</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2762466">Use the </a><span class="cv_-_computer_voice">fieldMapping</span> method to map all the fields of the entity to which an array reference refers. </div>
+      <div class="B_-_Body"><a name="2761858">For example, the array extension example </a><a href="javascript:WWHClickedPopup('contact', 'extending.09.4.html#2651247', '');" title="Extending the Vendor Contact Data Model">Extending Contacts with an Array</a> adds a new entity named <span class="cv_-_computer_voice">ContactServiceState</span>. This entity represents a state in which a vendor contact operates. Each vendor can operate in more than one state, so the example adds an array reference to <span class="cv_-_computer_voice">Contact</span> named <span class="cv_-_computer_voice">ContactServiceArea</span> that references an array of <span class="cv_-_computer_voice">ContactServiceState</span> entities. </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2761859">The example also creates a ContactManager </a><span class="cv_-_computer_voice">ContactServiceState</span> entity and a <span class="cv_-_computer_voice">ContactServiceArea</span> array reference on the ContactManager <span class="cv_-_computer_voice">ABContact</span> entity. </div>
+      <div class="B_-_Body"><a name="2761860">To transfer this data to and from a core application, you define the array reference and map the fields of the entity to which it refers in </a><span class="cv_-_computer_voice">ContactMapper</span>, as follows:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2761861">arrayMapping(Contact#ContactServiceArea),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762347">fieldMapping(ContactServiceState#AddressBookUID)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762348">&nbsp;&nbsp;.withABName(MappingConstants.LINK_ID),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762349">fieldMapping(ContactServiceState#PublicID)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762350">&nbsp;&nbsp;.withMappingDirection(TO_XML)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2761865">&nbsp;&nbsp;.withABName(MappingConstants.EXTERNAL_PUBLIC_ID),</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2763035">fieldMapping(ContactServiceState#ServiceState)</a></PRE>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2804109">PolicyCenter Mapping of Externally Specified Unique IDs </a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2804110">As described in </a><a href="javascript:WWHClickedPopup('contact', 'syncing.11.2.html#2180440', '');" title="Linking a Contact">“PolicyCenter Contact Creation with External Unique IDs”</a>, PolicyCenter specifies unique IDs for the contacts it creates and sends to ContactManager. ContactManager uses these unique IDs for the new contact’s <span class="cv_-_computer_voice">LinkID</span> value rather than creating its own unique ID. </div>
+      <div class="B_-_Body"><a name="2804291">The PolicyCenter </a><span class="cv_-_computer_voice">ContactMapping</span> class defines the following mapping for the unique ID of a contact that is to be created in ContactManager:</div>
+      <div class="CS_-_Code_Single_Line"><a name="2804958">fieldMapping(Contact#ExternalID)<br />.withMappingDirection(TO_XML)<br />.withABName(EXTERNAL_UNIQUE_ID),</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="2804120">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2802585', '');" title="ContactMapper Class" name="2804124">Mapping Externally Specified Unique IDs of a ContactManager Contact</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'syncing.11.2.html#2178765', '');" title="Linking a Contact" name="2804665">Creating and Linking a Contact</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.03.html#2744944', '');" title="ContactManager Entities" name="2804128">ContactManager Link IDs and Comparison to Other IDs</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.04.html#2747641', '');" title="ContactManager Web Services" name="2804132">ABContactAPI Methods</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2763036">Special Handling in </a><span class="cvh_-_computer_voice_in_heading">ContactMapper in </span>Core Applications </h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2764461">In some cases, it is not possible to use </a><span class="cv_-_computer_voice">ContactMapper</span> code to handle the transfer of contact data. In those cases, the core application uses methods that handle more complex cases, like related contacts and addresses. </div>
+      <h6 class="HS_-_Head_Sub"><a name="2763037">Special Handling in One Direction</a></h6>
+      <div class="B_-_Body"><a name="2763203">Address handling is an example of special handling of data sent from ContactManager. Addresses sent from ContactManager require special handling in core applications to support scenarios like swapping a primary address for a secondary address. Turning address data into XML does not require any special handling, so addresses being sent to ContactManager use the normal </a><span class="cv_-_computer_voice">ContactMapper</span> code. For these reasons, the following foreign key and array references are defined as one-way, from the core application to ContactManager:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2762996">fkMapping(Contact#PrimaryAddress)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762997">&nbsp;&nbsp;.withMappingDirection(TO_XML),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2762998">arrayMapping(Contact#ContactAddresses)</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2762999">&nbsp;&nbsp;.withMappingDirection(TO_XML),</a></PRE>
+      <div class="B_-_Body"><a name="2763000">When a change to a primary or secondary address for a contact comes in from a core application, the core application calls </a><span class="cv_-_computer_voice">populateAddresses</span> instead of the regular mapping code. The method is defined in <span class="cv_-_computer_voice">ContactIntegrationXMLMapperAppBase</span>.</div>
+      <div class="B_-_Body"><a name="2764215">This method call is explicit in ClaimCenter:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2763187">arrayMapping(Contact#ContactAddresses)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2763188">&nbsp;&nbsp;.withMappingDirection(TO_BEAN)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2763189">&nbsp;&nbsp;.withArrayBeanBlock( \ am, bp -&gt;</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2763291">&nbsp;&nbsp;&nbsp;&nbsp;populateAddresses(bp.Bean as Contact, bp.XmlBackedInstance)),</a></PRE>
+      <div class="B_-_Body"><a name="2763001">PolicyCenter and BillingCenter also call </a><span class="cv_-_computer_voice">populateAddresses</span> for incoming addresses, but the method call is not explicit in <span class="cv_-_computer_voice">ContactMapper</span>. </div>
+      <div class="B_-_Body"><a name="2764218">While the address foreign key and address array reference require special handling, the fields of an address do not. You can add or delete address fields as needed by using the </a><span class="cv_-_computer_voice">fieldMapping</span> method.</div>
+      <h6 class="HS_-_Head_Sub"><a name="2763312">Special Handling in Both Directions</a></h6>
+      <div class="B_-_Body"><a name="2763313">In ClaimCenter, related contacts use a parameter of the </a><span class="cv_-_computer_voice">withMappingDirection</span> method not discussed so far:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2763314">.withMappingDirection(BOTH)</a></PRE>
+      <div class="B_-_Body"><a name="2778027">You can use this method to specify one behavior for a field when it is sent to ContactManager and another behavior when the field is received from ContactManager. For example:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2778295">fkMapping(ContactContact#RelatedContact)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2778296">&nbsp;&nbsp;.withMappingDirection(BOTH)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2778297">&nbsp;&nbsp;.withABName("RelABContact")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2778298">&nbsp;&nbsp;.withEntityXMLBlock( \ lm, xp -&gt; populateContactXmlForRelatedContact(lm, xp))</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2778287">&nbsp;&nbsp;.withEntityBeanBlock( \ lm, bp -&gt; populateBeanFromXml(bp)),</a></PRE>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2777372">Excluding Contact Fields from ClaimCenter Contact Synchronization</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2777373">You can use the </a><span class="cv_-_computer_voice">ContactMapper</span> method <span class="cv_-_computer_voice">withAffectsSync</span> to configure fields to be excluded from the set of fields that ClaimCenter uses to determine if a contact is synchronized with ContactManager. By default, all fields that you add to <span class="cv_-_computer_voice">ContactMapper</span> are included in the fields that are checked for synchronization status.</div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2778663">You do not use </a><span class="cv_-_computer_voice">ContactMapper</span> for fields that determine contact relationships, such as <span class="cv_-_computer_voice">contactBidiRelCode="employer"</span>. The inclusion or exclusion of contact relationship fields is defined in the <span class="cv_-_computer_voice">RelationshipSyncConfig</span> class. See <a href="javascript:WWHClickedPopup('contact', 'syncing.11.3.html#1982640', '');" title="Synchronizing with ContactManager">“Synchronizing ClaimCenter Contact Fields”</a>.</div>
+      <div class="B_-_Body"><a name="2777981">If there is a field in </a><span class="cv_-_computer_voice">ContactMapper</span> that you want excluded from the synchronization check, use the <span class="cv_-_computer_voice">withAffectsSync</span> method and set its parameter to <span class="cv_-_computer_voice">false</span>. For example, the following code excludes the field <span class="cv_-_computer_voice">CategoryScores</span>:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2777982">arrayMapping(Contact#CategoryScores)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2777983">&nbsp;&nbsp;.withMappingDirection(TO_BEAN)</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2777984">&nbsp;&nbsp;.withAffectsSync(false),</a></PRE>
+      <h6 class="HS_-_Head_Sub"><a name="2794472">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'syncing.11.3.html#1936539', '');" title="Synchronizing with ContactManager" name="2794493">“Synchronizing ClaimCenter and ContactManager Contacts”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2778806">Excluding Contact Fields from Being Saved in the ClaimCenter Database</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2778807">You can use the </a><span class="cv_-_computer_voice">ContactMapper</span> method <span class="cv_-_computer_voice">withPersist</span> to specify that a contact field not be saved in the ClaimCenter database. This feature enables ClaimCenter to receive the field from ContactManager and display it the ClaimCenter user interface, but not save the field. By default, all contact fields in <span class="cv_-_computer_voice">ContactMapper</span> are saved, or <span class="e_-_emphasis">persisted</span>. </div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="2793955">Setting a field to not persist means that you want the ClaimCenter user to be able to see the value of the field but not change it. Do not enable editing for the field in screens like </a><span class="cv_-_computer_voice">ContactDetails.pcf</span>, and do not send the field back to ContactManager.</div>
+      <div class="B_-_Body"><a name="2780101">To set a field to not persist, use the </a><span class="cv_-_computer_voice">withPersist</span> method and set its parameter to <span class="cv_-_computer_voice">false</span>. You must also use <span class="cv_-_computer_voice">withMappingDirection(TO_BEAN)</span> to map the field only from ContactManager to ClaimCenter. Additionally, use <span class="cv_-_computer_voice">withAffectsSync(false)</span> to exclude the field from being included in the synchronization check. Otherwise, the contact would always be out of sync. For example:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2778813">arrayMapping(Contact#ContactManagerOnlyField)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2778814">&nbsp;&nbsp;.withMappingDirection(TO_BEAN)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2778815">&nbsp;&nbsp;.withAffectsSync(false)</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2779476">&nbsp;&nbsp;.withPersist(false),</a></PRE>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

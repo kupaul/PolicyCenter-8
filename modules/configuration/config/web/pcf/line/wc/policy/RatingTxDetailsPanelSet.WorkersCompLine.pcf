@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <PanelSet
+    id="RatingTxDetailsPanelSet"
+    mode="WorkersCompLine">
+    <Require
+      name="thePeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="totalPremLabel"
+      type="String"/>
+    <Require
+      name="totalCostLabel"
+      type="String"/>
+    <Require
+      name="revOpenForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="thePeriod.WorkersCompLine.WCTransactions.toSet()"
+      name="lineTxs"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="lineTxs.partition( \ t -&gt; t.WCCost.JurisdictionState ).toAutoMap( \ st -&gt; java.util.Collections.emptySet&lt;WCTransaction&gt;() )"
+      name="partitionedTxs"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="new gw.pcf.line.common.RatingTxDetailsPanelSetUIHelper()"
+      name="helper"/>
+    <Variable
+      initialValue="helper.getJurisdictions(thePeriod)"
+      name="jurisdictions"
+      recalculateOnRefresh="true"/>
+    <PanelIterator
+      elementName="jurisdiction"
+      value="jurisdictions">
+      <IteratorSort
+        sortBy="jurisdiction"
+        sortOrder="1"/>
+      <Variable
+        initialValue="partitionedTxs.get( jurisdiction.State )"
+        name="stateTxs"
+        recalculateOnRefresh="true"/>
+      <Variable
+        initialValue="jurisdiction.RatingPeriods"
+        name="ratingPeriods"
+        recalculateOnRefresh="true"/>
+      <PanelRef
+        visible="not stateTxs.Empty">
+        <TitleBar
+          title="jurisdiction.DisplayName"
+          visible="jurisdictions.Count &gt; 1"/>
+        <PanelSet
+          id="JurisdictionPanelSet">
+          <PanelIterator
+            elementName="ratingPeriod"
+            value="ratingPeriods.toTypedArray()">
+            <Variable
+              initialValue="stateTxs.byRatingPeriod( ratingPeriod )"
+              name="periodTxs"
+              recalculateOnRefresh="true"/>
+            <PanelRef
+              visible="not periodTxs.Empty">
+              <DetailViewPanel
+                id="PeriodDetailDV">
+                <InputColumn>
+                  <Label
+                    label="helper.standardPremLabel(ratingPeriods.Count &gt; 1, ratingPeriod)"/>
+                  <ListViewInput
+                    def="WCRateTxDetailLV(periodTxs)"
+                    labelAbove="true">
+                    <Toolbar/>
+                  </ListViewInput>
+                </InputColumn>
+              </DetailViewPanel>
+            </PanelRef>
+          </PanelIterator>
+          <PanelRef>
+            <DetailViewPanel
+              id="StateSummaryDetailDV">
+              <InputColumn>
+                <Label
+                  label="displaykey.Web.SubmissionWizard.Quote.WC.OtherPremiumAndTax"/>
+                <ListViewInput
+                  def="WCRateTxDetailStateLV(stateTxs, jurisdiction)"
+                  labelAbove="true">
+                  <Toolbar/>
+                </ListViewInput>
+              </InputColumn>
+            </DetailViewPanel>
+          </PanelRef>
+        </PanelSet>
+      </PanelRef>
+    </PanelIterator>
+    <PanelRef
+      id="GrandTotalPanel">
+      <TitleBar
+        id="grandTotalTitle"
+        title="displaykey.Web.Quote.TotalCostLabel.Total2(gw.api.util.StringUtil.formatNumber(lineTxs.AmountSum(thePeriod.PreferredSettlementCurrency).Amount as java.lang.Double, &quot;currency&quot;))"/>
+      <DetailViewPanel>
+        <InputColumn/>
+      </DetailViewPanel>
+    </PanelRef>
+  </PanelSet>
+</PCF>

@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SearchConfig
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="search-config.xsd"
+        version="1">
+
+  <!--                                                                       -->
+  <!--                            WARNING                                    -->
+  <!--                                                                       -->
+  <!--
+    The search screens are some of the most performance sensitive in PolicyCenter.
+    Any changes to the search-config.xml file should be followed by thorough
+    performance testing. Remember that a change that works perfectly well at
+    small scale may fail catastrophically under heavy load on a large database.
+    Here are some guidelines for making changes:
+
+    * The main search screens are divided into required and optional sections.
+      The properties in the required section have been carefully chosen so don't
+      change them. You can't add new required properties anyway, but don't
+      even change the match type of the existing ones.
+    * You may need to add an index to improve performance. Unfortunately the
+      exact index to add will depend on the database being used and the details
+      of the situation. Consult a database expert.
+    * Avoid the "contains" match type if possible, it is the most expensive type
+      of match (followed by startsWith).
+    * If you add an ArrayCriterion the array table must have two unique indexes.
+      The first must be on the foreign key back to the main table and your
+      chosen arrayMemberProperty. The second must be on the same two properties
+      but in the reverse order (arrayMemberProperty first).
+  -->
+
+  <!-- Mapping from Address properties to their respective searchColumns on Contact table -->
+  <!-- Used by ContactSearchCriteria -->
+  <CriteriaDef entity="Address" targetEntity="Contact">
+    <Criterion property="City" targetProperty="CityDenorm" matchType="startsWith"/>
+    <Criterion property="CityKanji" targetProperty="CityKanjiDenorm" matchType="startsWith"/>
+    <Criterion property="State" targetProperty="State" matchType="eq"/>
+    <Criterion property="PostalCode" targetProperty="PostalCodeDenorm" matchType="startsWith"/>
+    <Criterion property="Country" targetProperty="Country" matchType="eq"/>
+  </CriteriaDef>
+
+  <!-- ============================= POLICY SEARCH ================================== -->
+
+  <!--Mapping from policy search criteria to Policy tables-->
+  <CriteriaDef entity="PolicySearchCriteria" targetEntity="Policy">
+  </CriteriaDef>
+
+  <!--Mapping from policy search criteria to PolicyPeriod tables-->
+  <CriteriaDef entity="PolicySearchCriteria" targetEntity="PolicyPeriod">
+    <Criterion property="AssignedRisk" matchType="eq"/>
+    <Criterion property="UWCompany" matchType="eq"/>
+  </CriteriaDef>
+
+  <!--Mapping from policy search criteria to Submission tables-->
+  <CriteriaDef entity="PolicySearchCriteria" targetEntity="Submission">
+    <Criterion property="RejectReason" matchType="eq"/>
+  </CriteriaDef>
+
+  <!--Mapping from policy search criteria to Cancellation tables-->
+  <CriteriaDef entity="PolicySearchCriteria" targetEntity="Cancellation">
+  </CriteriaDef>
+
+  <!--Mapping from policy search criteria to Reinstatement tables-->
+  <CriteriaDef entity="PolicySearchCriteria" targetEntity="Reinstatement">
+  </CriteriaDef>
+
+  <!--Mapping from policy search criteria to PolicyChange tables-->
+  <CriteriaDef entity="PolicySearchCriteria" targetEntity="PolicyChange">
+  </CriteriaDef>
+
+  <!--Mapping from policy search criteria to Renewal tables-->
+  <CriteriaDef entity="PolicySearchCriteria" targetEntity="Renewal">
+    <Criterion property="NonRenewalCode" matchType="eq"/>
+  </CriteriaDef>
+
+  <!--Mapping from policy search criteria to Rewrite tables-->
+  <CriteriaDef entity="PolicySearchCriteria" targetEntity="Rewrite">
+  </CriteriaDef>
+
+  <!--Mapping from policy search criteria to RewriteNewAccount tables-->
+  <CriteriaDef entity="PolicySearchCriteria" targetEntity="RewriteNewAccount">
+  </CriteriaDef>
+
+  <!--Mapping from policy search criteria to Audit tables-->
+  <CriteriaDef entity="PolicySearchCriteria" targetEntity="Audit">
+  </CriteriaDef>
+
+  <!-- ============================= DOCUMENT SEARCH ================================== -->
+
+  <!-- Map a search on Document to search criteria -->
+  <CriteriaDef entity="DocumentSearchCriteria" targetEntity="Document">
+    <Criterion property="Author" targetProperty="Author" matchType="startsWith"/>
+  </CriteriaDef>
+
+</SearchConfig>

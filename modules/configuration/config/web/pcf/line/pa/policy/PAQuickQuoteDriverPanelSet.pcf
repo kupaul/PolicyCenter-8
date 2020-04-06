@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <PanelSet
+    id="PAQuickQuoteDriverPanelSet">
+    <Require
+      name="paLine"
+      type="PersonalAutoLine"/>
+    <Require
+      name="policyDriver"
+      type="PolicyDriver"/>
+    <Require
+      name="accountDriver"
+      type="Driver"/>
+    <Require
+      name="driverNum"
+      type="int"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="gw.plugin.Plugins.get(gw.plugin.contact.IContactConfigPlugin)"
+      name="contactConfigPlugin"/>
+    <Variable
+      initialValue="paLine.UnassignedDrivers"
+      name="unassignedDrivers"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="new gw.lob.pa.PolicyDriverNameAdapter(policyDriver)"
+      name="policyDriverNameAdapter"
+      recalculateOnRefresh="true"/>
+    <PanelRef>
+      <TitleBar
+        hideIfEditable="true"
+        title="displaykey.Web.PersonalAuto.QuickQuote.Button.Driver(driverNum)"
+        visible="policyDriver &lt;&gt; null"/>
+      <Toolbar
+        id="DriverToolbar"
+        visible="openForEdit">
+        <ToolbarButton
+          available="true"
+          hideIfReadOnly="true"
+          id="AddDriverButton"
+          label="displaykey.Web.PersonalAuto.QuickQuote.Button.Driver(driverNum)">
+          <MenuItemIterator
+            elementName="contactType"
+            value="contactConfigPlugin.getAllowedContactTypesForPolicyContactRoleType(typekey.PolicyContactRole.TC_POLICYDRIVER)">
+            <IteratorSort
+              sortBy="contactType.DisplayName"
+              sortOrder="1"/>
+            <MenuItem
+              action="paLine.addNewPolicyDriverOfContactType(contactType, driverNum)"
+              id="ContactType"
+              label="displaykey.Web.Contact.AddNewOfType(contactType)"/>
+          </MenuItemIterator>
+          <PickerMenuItem
+            action="ContactSearchPopup.push(&quot;Driver&quot;)"
+            id="AddFromSearch"
+            label="displaykey.Web.Policy.Contact.FromAddressBook"
+            onPick="paLine.addNewPolicyDriverForContact(PickedValue, driverNum)"/>
+          <MenuItem
+            id="AddExistingContact"
+            label="displaykey.Web.Policy.Contact.AddExisting(entity.PolicyDriver.Type.TypeInfo.DisplayName)"
+            visible="not policyDriver.Branch.Promoted">
+            <MenuItemIterator
+              elementName="unassignedDriver"
+              id="ContactOfSameType"
+              value="unassignedDrivers">
+              <MenuItem
+                action="paLine.addNewPolicyDriverForContact(unassignedDriver.Contact, driverNum)"
+                id="UnassignedDriver"
+                label="unassignedDriver"/>
+            </MenuItemIterator>
+          </MenuItem>
+        </ToolbarButton>
+        <ToolbarButton
+          action="policyDriver.removeDriver()"
+          available="policyDriver &lt;&gt; null"
+          hideIfReadOnly="true"
+          id="RemoveDriverButton"
+          label="displaykey.Button.Remove"/>
+      </Toolbar>
+      <DetailViewPanel
+        visible="policyDriver &lt;&gt; null">
+        <InputColumn>
+          <InputSetRef
+            def="GlobalPersonNameInputSet(new gw.api.name.RequiredBasicNameOwner(policyDriverNameAdapter))"
+            mode="gw.api.name.NameLocaleSettings.PCFMode"/>
+          <DateInput
+            editable="true"
+            id="DateOfBirth"
+            label="displaykey.Web.ContactDetail.Person.DateOfBirth"
+            required="policyDriver &lt;&gt; null"
+            value="policyDriver.DateOfBirth"/>
+          <TypeKeyInput
+            editable="true"
+            id="MaritalStatus"
+            label="displaykey.Web.ContactDetail.Person.MaritalStatus"
+            required="policyDriver &lt;&gt; null"
+            value="policyDriver.MaritalStatus"/>
+          <TypeKeyInput
+            editable="true"
+            id="NumberOfAccidents"
+            label="displaykey.Web.Account.Contact.Driver.NumberOfAccidents"
+            required="policyDriver &lt;&gt; null"
+            value="policyDriver.NumberOfAccidents"/>
+          <TypeKeyInput
+            editable="true"
+            id="NumberOfViolations"
+            label="displaykey.Web.Account.Contact.Driver.NumberOfViolations"
+            required="policyDriver &lt;&gt; null"
+            value="policyDriver.NumberOfViolations"/>
+          <Input
+            editable="true"
+            id="YearLicensed"
+            label="displaykey.Web.Account.Contact.Driver.YearGotLicence"
+            numCols="6"
+            required="policyDriver &lt;&gt; null"
+            value="accountDriver.YearLicensed"/>
+          <TypeKeyInput
+            editable="true"
+            id="TrainingClassType"
+            label="displaykey.Web.Account.Contact.Driver.TrainingClassType"
+            value="accountDriver.TrainingClassType"/>
+          <DateInput
+            editable="true"
+            id="DateCompletedTrainingClass"
+            label="displaykey.Web.Account.Contact.Driver.DateCompletedTrainingClass"
+            value="accountDriver.DateCompletedTrainingClass"/>
+        </InputColumn>
+      </DetailViewPanel>
+    </PanelRef>
+  </PanelSet>
+</PCF>

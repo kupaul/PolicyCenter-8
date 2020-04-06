@@ -1,0 +1,262 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    afterCancel="resetValueProviderCache();createController(); initializeController()"
+    afterCommit="createController(); initializeController()"
+    afterEnter="initializeController()"
+    beforeCommit="controller.beforePageCommit()"
+    canEdit="perm.System.ratebookedit"
+    canVisit="perm.System.ratebookview"
+    id="RateTableFactorList"
+    parent="RateBookDetail(rateBook)//RateBookDetail(_rateTable.RateBook)"
+    showUpLink="true"
+    startEditing="onEdit()"
+    startInEditMode="controller.startInEditMode()"
+    title="displaykey.Web.Rating.RateFactors.Title">
+    <LocationEntryPoint
+      signature="RateTableFactorList(controller : gw.rating.rtm.domain.RateTableFactorListController, rateTable : RateTable, rateBook : RateBook)"/>
+    <Variable
+      name="controller"
+      type="gw.rating.rtm.domain.RateTableFactorListController"/>
+    <Variable
+      name="rateTable"
+      type="RateTable"/>
+    <Variable
+      initialValue="new gw.rating.rtm.valueprovider.RateTableCellValueProviderFactory()"
+      name="valueProviderFactory"
+      type="gw.rating.rtm.valueprovider.RateTableCellValueProviderFactory"/>
+    <Variable
+      name="rateBook"
+      type="entity.RateBook"/>
+    <Variable
+      initialValue="null"
+      name="displayMessage"
+      type="String"/>
+    <Screen
+      id="RateTableFactorListScreen">
+      <Variable
+        initialValue="controller.RateTableModel.RateTableDefinition.SortedParameters"
+        name="parameters"
+        type="RateTableColumn[]"/>
+      <Variable
+        initialValue="controller.RateTableModel.RateTableDefinition.SortedFactors"
+        name="factors"
+        type="RateTableColumn[]"/>
+      <Variable
+        initialValue="rateTable.Definition.Factors.Count == 1"
+        name="onlyOneFactor"
+        type="boolean"/>
+      <Variable
+        initialValue="new gw.rating.rtm.util.RatingConfig().RTMRowCountNormalizationThreshold"
+        name="rtmRowCountNormalizationThreshold"
+        type="int"/>
+      <DetailViewPanel>
+        <InputColumn>
+          <Input
+            id="RateTableCode"
+            label="displaykey.Web.Rating.RateTables.Code"
+            value="controller.RateTableModel.RateTableDefinition.TableCode"/>
+          <Input
+            id="RateTableName"
+            label="displaykey.Web.Rating.RateTables.Name"
+            value="controller.RateTableModel.RateTableDefinition.TableName"/>
+          <Input
+            id="RateTableDescription"
+            label="displaykey.Web.Rating.RateTables.Description"
+            value="controller.RateTableModel.RateTableDefinition.TableDesc"/>
+          <Input
+            id="RateTablePolicyLine"
+            label="displaykey.Web.Rating.RateTables.PolicyLine"
+            value="gw.api.productmodel.PolicyLinePatternLookup.getByCode(controller.RateTableModel.RateTableDefinition.PolicyLine).DisplayName"/>
+          <TextInput
+            id="Empty"
+            value="&quot;&quot;"/>
+          <Input
+            id="RateBook"
+            label="displaykey.Web.Rating.Ratebooks.Ratebook"
+            value="displaykey.Web.Rating.RateTableDefinition.Usage.RateBookLabel(rateTable.RateBook.BookName, rateTable.RateBook.BookEdition)"/>
+          <Input
+            id="Usage"
+            label="displaykey.Web.Rating.RateTables.Usage"
+            value="gw.rating.rtm.util.RatingUIUtil.getOwnershipLabel(controller.RateTableModel.RateTable)"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef
+        id="ParamsAndFactors">
+        <TitleBar
+          title="displaykey.Web.Rating.RateFactors.RateTableContent"/>
+        <Toolbar>
+          <IteratorButtons
+            addVisible="true"
+            iterator="RowIterator"
+            removeVisible="controller.removeVisible()"/>
+          <EditButtons
+            cancelVisible="true"
+            editVisible="controller.editable() and perm.System.ratebookedit"
+            showUpdateConfirmMessage="false"
+            updateDefault="true"/>
+          <ToolbarButton
+            action="ExcelImport.go(rateTable, new gw.rating.rtm.util.WebFileWrapper())"
+            id="ImportToolbarButton"
+            label="displaykey.Web.Rating.Import.Import"
+            showConfirmMessage="false"
+            visible="controller.editable() and (not CurrentLocation.InEditMode) and perm.System.ratebookedit"/>
+          <ToolbarButton
+            action="new gw.rating.rtm.excel.ExcelExport().export(controller.RateTableModel)"
+            download="true"
+            id="ExportToolbarButton"
+            label="displaykey.Web.Rating.RateTables.ExportTable"
+            showConfirmMessage="false"
+            visible="not CurrentLocation.InEditMode"/>
+        </Toolbar>
+        <Verbatim
+          hideIfReadOnly="true"
+          id="WarningMessage"
+          label="displayMessage"
+          labelStyleClass="warning"
+          visible="displayMessage!=null"
+          warning="true"/>
+        <DetailViewPanel
+          id="FactorsDV">
+          <Variable
+            initialValue="controller.RateTableModel.RateTableDefinition.SortedParameters"
+            name="parameters"
+            recalculateOnRefresh="true"
+            type="RateTableColumn[]"/>
+          <Variable
+            initialValue="controller.RateTableModel.RateTableDefinition.SortedFactors"
+            name="factors"
+            recalculateOnRefresh="true"
+            type="RateTableColumn[]"/>
+          <InputColumn
+            id="FactorsInputColumn">
+            <Label
+              id="NoFactorsLabel"
+              label="displaykey.Web.Rating.RateFactors.NoFactors"
+              visible="controller.RateTableModel.FactorRows.Empty"/>
+            <Label
+              id="NormalizationMessageId"
+              label="displaykey.Web.Rating.RateTables.TooManyNormalizationRows(rtmRowCountNormalizationThreshold)"
+              visible="rateTable.NormalizedRowCount &gt; rtmRowCountNormalizationThreshold"/>
+            <CheckBoxInput
+              editable="true"
+              helpText="displaykey.Web.Rating.RateTables.ReduceMemoryUsageHelpText"
+              hideChildrenIfReadOnly="false"
+              id="ReduceMemoryUsageCheckbox"
+              label="displaykey.Web.Rating.RateTables.ReduceMemoryUsage"
+              value="rateTable.ReduceMemoryUsage"
+              visible="rateTable.NormalizedRowCount &gt; rtmRowCountNormalizationThreshold"/>
+            <ListViewInput
+              id="FactorsLV"
+              labelAbove="true"
+              visible="not controller.RateTableModel.FactorRows.Empty">
+              <Toolbar/>
+              <ListViewPanel>
+                <Row
+                  renderAsSmartHeader="true">
+                  <Cell
+                    id="IconSpacer"
+                    visible="CurrentLocation.InEditMode"
+                    width="32"/>
+                  <CellIterator
+                    elementName="param"
+                    id="RateParameterHeadingIterator"
+                    value="parameters">
+                    <Cell
+                      id="RateParameterHeader"
+                      value="param.ColumnLabel"/>
+                  </CellIterator>
+                  <CellIterator
+                    elementName="factor"
+                    id="RateFactorHeadingIterator"
+                    value="factors">
+                    <Cell
+                      bold="true"
+                      id="RateFactorHeader"
+                      styleClass="bold"
+                      value="(onlyOneFactor ? &quot;* &quot; : &quot;&quot;) + factor.ColumnLabel"/>
+                  </CellIterator>
+                </Row>
+                <RowIterator
+                  canPick="false"
+                  editable="true"
+                  elementName="row"
+                  hasCheckBoxes="true"
+                  hideCheckBoxesIfReadOnly="true"
+                  id="RowIterator"
+                  numEntriesToAdd="1"
+                  toCreateAndAdd="controller.RateTableModel.addEmptyRow()"
+                  toRemove="controller.RateTableModel.removeFactorRow(row)"
+                  value="controller.RateTableModel.FactorRows">
+                  <IteratorSort
+                    sortBy="row"
+                    sortOrder="1"/>
+                  <Row
+                    highlighted="controller.getRowErrors(row).Count &gt; 0">
+                    <Cell
+                      icon="&quot;flag_excl.png&quot;"
+                      iconLabel="getErrorsTooltip(row)"
+                      id="IconCell"
+                      showHeaderIcon="false"
+                      value="controller.getRowErrors(row).Count &gt; 0"
+                      visible="CurrentLocation.InEditMode"
+                      width="32"/>
+                    <CellIterator
+                      elementName="param"
+                      id="ParameterIterator"
+                      value="row.Parameters">
+                      <ModalCellRef
+                        def="RateTableModalCell(param, valueProviderFactory.getValueProviderFor(param), false)"
+                        editable="true"
+                        id="ValueCell"
+                        mode="param.EditMode"/>
+                    </CellIterator>
+                    <CellIterator
+                      elementName="factor"
+                      id="FactorIterator"
+                      value="row.Factors">
+                      <ModalCellRef
+                        def="RateTableFactorModalCell(factor, valueProviderFactory.getValueProviderFor(factor), onlyOneFactor)"
+                        editable="true"
+                        id="ValueCell"
+                        mode="factor.EditMode"/>
+                    </CellIterator>
+                  </Row>
+                </RowIterator>
+              </ListViewPanel>
+            </ListViewInput>
+          </InputColumn>
+        </DetailViewPanel>
+      </PanelRef>
+    </Screen>
+    <Code><![CDATA[uses gw.rating.rtm.domain.RateTableFactorListController
+uses gw.rating.rtm.domain.table.RateTableCell
+uses gw.rating.rtm.domain.table.RateTableRow
+
+function onEdit() {
+  controller.createModel(rateTable, valueProviderFactory)
+  displayMessage = controller.onPageEdit()
+}
+
+function createController() {
+  controller = RateTableFactorListController.createDatabaseBasedController()
+}
+
+function initializeController() {
+  controller.createModel(rateTable, valueProviderFactory)
+  controller.refresh()
+}
+
+function resetValueProviderCache() {
+  controller.resetValueProviderFactory(valueProviderFactory)
+}
+
+function getErrorsTooltip(row: RateTableRow) : String {
+  var errors = controller.getRowErrors(row)
+  return (errors <> null) ? errors.join("\n") : ""
+}
+]]></Code>
+  </Page>
+</PCF>

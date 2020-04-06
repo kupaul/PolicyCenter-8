@@ -1,0 +1,146 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <PanelSet
+    id="RatingTxDetailsPanelSet"
+    mode="BOPLine">
+    <Require
+      name="thePeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="totalPremLabel"
+      type="String"/>
+    <Require
+      name="totalCostLabel"
+      type="String"/>
+    <Require
+      name="revOpenForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="thePeriod.BOPLine.BOPTransactions.toSet().byCoveragePremium()"
+      name="coverageOrOtherTransactionMap"/>
+    <Variable
+      initialValue="coverageOrOtherTransactionMap.get( true ).byFixedLocation()"
+      name="locationTransactionMap"
+      recalculateOnRefresh="true"/>
+    <PanelRow>
+      <PanelColumn>
+        <DetailViewPanel>
+          <Variable
+            initialValue="locationTransactionMap.get( null )"
+            name="lineLevelTransactions"
+            recalculateOnRefresh="true"/>
+          <InputColumn>
+            <ListViewInput
+              boldLabel="true"
+              def="BOPCoverageTxLV( lineLevelTransactions )"
+              label="displaykey.Web.Policy.BOP.Quote.Coverages.Line.Title"
+              labelAbove="true">
+              <Toolbar/>
+            </ListViewInput>
+          </InputColumn>
+        </DetailViewPanel>
+        <PanelIterator
+          elementName="location"
+          id="locationIterator"
+          value="locationTransactionMap.Keys.where(\l -&gt; l &lt;&gt; null).toTypedArray()">
+          <Variable
+            initialValue="locationTransactionMap.get( location ).byFixedBuilding()"
+            name="buildingTransactionMap"
+            recalculateOnRefresh="true"/>
+          <DetailViewPanel>
+            <InputColumn>
+              <ListViewInput
+                def="BOPCoverageTxLV( buildingTransactionMap.get( null ) )"
+                label="location.DisplayName"
+                labelAbove="true">
+                <Toolbar/>
+              </ListViewInput>
+            </InputColumn>
+          </DetailViewPanel>
+          <PanelIterator
+            elementName="building"
+            id="buildingIterator"
+            value="buildingTransactionMap.Keys.where(\b -&gt; b &lt;&gt; null).toTypedArray()">
+            <DetailViewPanel>
+              <InputColumn>
+                <ContentInput
+                  id="BuildingLinkInput">
+                  <Link
+                    action="BOPBuildingPopup.push(thePeriod.BOPLine, location, building, revOpenForEdit, false, jobWizardHelper)"
+                    id="BuildingLink"
+                    label="building.DisplayName"/>
+                </ContentInput>
+                <ListViewInput
+                  def="BOPCoverageTxLV( buildingTransactionMap.get( building ) )">
+                  <Toolbar/>
+                </ListViewInput>
+              </InputColumn>
+            </DetailViewPanel>
+          </PanelIterator>
+        </PanelIterator>
+        <DetailViewPanel>
+          <InputColumn>
+            <ListViewInput
+              boldLabel="true"
+              label="displaykey.Web.Policy.BOP.Quote.OtherPremiums.Title"
+              labelAbove="true">
+              <Toolbar/>
+              <ListViewPanel>
+                <Variable
+                  initialValue="coverageOrOtherTransactionMap.get( false )"
+                  name="otherTransactions"
+                  recalculateOnRefresh="true"/>
+                <RowIterator
+                  canPick="false"
+                  editable="false"
+                  elementName="otherTransaction"
+                  pageSize="0"
+                  value="otherTransactions.toTypedArray()">
+                  <IteratorSort
+                    sortBy="(typeof otherTransaction.BOPCost).AllTypesInHierarchy.Count"
+                    sortDirection="descending"
+                    sortOrder="1"/>
+                  <IteratorSort
+                    sortBy="typeof otherTransaction.BOPCost"
+                    sortOrder="2"/>
+                  <IteratorSort
+                    sortBy="otherTransaction.BOPCost.EffDate"
+                    sortOrder="3"/>
+                  <IteratorSort
+                    sortBy="otherTransaction.ID"
+                    sortOrder="4"/>
+                  <Row>
+                    <Cell
+                      enableSort="false"
+                      footerLabel="displaykey.Web.Policy.BA.Subtotal"
+                      id="Description"
+                      label="displaykey.Web.Policy.BOP.Quote.OtherPremiums.Description"
+                      value="otherTransaction"/>
+                    <Cell
+                      enableSort="false"
+                      id="Jurisdiction"
+                      label="displaykey.Web.Policy.BOP.Quote.Jurisdiction"
+                      value="otherTransaction.BOPCost.State"/>
+                    <MonetaryAmountCell
+                      enableSort="false"
+                      footerSumValue="otherTransaction.AmountBilling"
+                      formatType="currency"
+                      id="Amount"
+                      label="displaykey.Web.Policy.BOP.Quote.Amount"
+                      value="otherTransaction.AmountBilling"/>
+                  </Row>
+                </RowIterator>
+              </ListViewPanel>
+            </ListViewInput>
+          </InputColumn>
+        </DetailViewPanel>
+      </PanelColumn>
+      <PanelColumn/>
+    </PanelRow>
+  </PanelSet>
+</PCF>

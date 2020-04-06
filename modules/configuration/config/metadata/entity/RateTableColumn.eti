@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity xmlns="http://guidewire.com/datamodel" desc="Holds metadata about a column (parameter or factor) of a rate table" entity="RateTableColumn" loadable="false" platform="false" subpackage="rating" table="ratetablecolumn" type="retireable">
+  <column desc="The name of a column in a rate table" name="ColumnName" nullok="false" type="shorttext"/>
+  <typekey default="String" desc="The data type of this column" name="ColumnType" nullok="false" typelist="RateTableDataType"/>
+  <column desc="The scale to use for this column." name="ColumnScale" nullok="true" type="integer"/>
+  <column desc="The name of the physical table column to which this column is mapped." name="PhysicalColumnName" nullok="false" type="sqlidentifier"/>
+  <column desc="The label of a column to be displayed in the UI" name="ColumnLabel" nullok="false" type="shorttext">
+    <localization nullok="false" tableName="rtcol_label_l10n"/>
+  </column>
+  <typekey default="Normal" desc="How this column should be displayed" name="DisplayType" nullok="false" typelist="RateTableColumnDisplay"/>
+  <column default="0" desc="Sort order of the column" name="SortOrder" nullok="false" type="integer"/>
+  <column desc="Fully qualified name of the class implementing value provider interface" name="ValueProvider" nullok="true" type="shorttext"/>
+  <foreignkey desc="Rate table definition for a parameter" fkentity="RateTableDefinition" name="DefinitionForParam" nullok="true"/>
+  <foreignkey desc="Rate table definition for a factor" fkentity="RateTableDefinition" name="DefinitionForFactor" nullok="true"/>
+  <foreignkey desc="Match operation" fkentity="RateTableMatchOp" name="MatchOp" nullok="true"/>
+  <edgeForeignKey desc="Defines parameter dependency." edgeTableName="rtcoledge" fkentity="RateTableColumn" name="DependsOn" nullok="true"/>
+  <index desc="Index ensuring the uniqueness of rate table parameter/factor definitions per table." name="RTColU1" unique="true">
+    <indexcol keyposition="1" name="ColumnName"/>
+    <indexcol keyposition="2" name="DefinitionForParam"/>
+    <indexcol keyposition="3" name="DefinitionForFactor"/>
+    <indexcol keyposition="4" name="Retired"/>
+  </index>
+</entity>

@@ -1,0 +1,184 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="AdditionalNamedInsuredsDV"
+    visible="not period.Policy.Product.Personal and (period.Submission.QuoteType == &quot;Full&quot; or not (period.Job typeis Submission))">
+    <Require
+      name="period"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="gw.plugin.Plugins.get(gw.plugin.contact.IContactConfigPlugin)"
+      name="contactConfigPlugin"/>
+    <Variable
+      initialValue="null"
+      name="unassignedAdditionalNamedInsureds"
+      recalculateOnRefresh="true"
+      type="AccountContactView[]"/>
+    <Variable
+      initialValue="null"
+      name="otherContacts"
+      recalculateOnRefresh="true"
+      type="AccountContactView[]"/>
+    <Variable
+      initialValue="gw.api.system.PLDependenciesGateway.getPluginConfig()"
+      name="pluginConfig"/>
+    <InputColumn>
+      <InputSet
+        id="NamedInsuredInputSet">
+        <Label
+          label="displaykey.Web.Policy.Contact.NamedInsureds"/>
+        <ListViewInput
+          editable="true"
+          labelAbove="true">
+          <Toolbar>
+            <AddButton
+              hideIfReadOnly="true"
+              id="AddContactsButton"
+              iterator="NamedInsuredsLV"
+              label="displaykey.Web.Contact.Add"
+              subMenuOnDemand="true"
+              visible="openForEdit">
+              <AddMenuItemIterator
+                elementName="contactType"
+                value="contactConfigPlugin.getAllowedContactTypesForPolicyContactRoleType(&quot;PolicyAddlNamedInsured&quot;)">
+                <IteratorSort
+                  sortBy="contactType.DisplayName"
+                  sortOrder="1"/>
+                <AddMenuItem
+                  id="ContactType"
+                  iterator="NamedInsuredsLV"
+                  label="displaykey.Web.Contact.AddNewOfType(contactType)"
+                  pickLocation="NewAdditionalNamedInsuredPopup.push(period, contactType)"/>
+              </AddMenuItemIterator>
+              <AddMenuItem
+                conversionExpression="period.addNewPolicyAddlNamedInsuredForContact(PickedValue)"
+                id="AddFromSearch"
+                iterator="NamedInsuredsLV"
+                label="displaykey.Web.Policy.Contact.FromAddressBook"
+                pickLocation="ContactSearchPopup.push(&quot;NamedInsured&quot;)"/>
+              <AddMenuItem
+                id="AddExistingContact"
+                iterator="NamedInsuredsLV"
+                label="displaykey.Web.Policy.Contact.AddExisting(PolicyAddlNamedInsured.Type.TypeInfo.DisplayName)"
+                visible="true">
+                <AddMenuItemIterator
+                  elementName="namedInsured"
+                  id="ContactOfSameType"
+                  value="getUnassignedAdditionalNamedInsureds()">
+                  <IteratorSort
+                    sortBy="namedInsured.DisplayName"
+                    sortOrder="1"/>
+                  <AddMenuItem
+                    id="ExistingAdditionalNamedInsured"
+                    iterator="NamedInsuredsLV"
+                    label="namedInsured"
+                    toCreateAndAdd="period.addNewPolicyAddlNamedInsuredForContact(namedInsured.AccountContact.Contact)"/>
+                </AddMenuItemIterator>
+                <AddMenuItem
+                  id="AddAll"
+                  iterator="NamedInsuredsLV"
+                  label="displaykey.Web.Account.Contact.AddAll"
+                  toCreateAndAdd="period.addAllExistingAdditionalNamedInsureds()"
+                  visible="unassignedAdditionalNamedInsureds.length &gt; 0"/>
+              </AddMenuItem>
+              <AddMenuItem
+                id="AddOtherContact"
+                iterator="NamedInsuredsLV"
+                label="displaykey.Web.Policy.Contact.AddOtherContacts"
+                visible="getOtherContacts().Count &gt; 0">
+                <AddMenuItemIterator
+                  elementName="otherContact"
+                  id="ContactOfOtherType"
+                  value="getOtherContacts()">
+                  <IteratorSort
+                    sortBy="otherContact.DisplayName"
+                    sortOrder="1"/>
+                  <AddMenuItem
+                    id="OtherContact"
+                    iterator="NamedInsuredsLV"
+                    label="otherContact"
+                    toCreateAndAdd="period.addNewPolicyAddlNamedInsuredForContact(otherContact.AccountContact.Contact)"/>
+                </AddMenuItemIterator>
+              </AddMenuItem>
+            </AddButton>
+            <IteratorButtons
+              id="ANIIteratorButtons"
+              iterator="NamedInsuredsLV"/>
+          </Toolbar>
+          <ListViewPanel
+            id="NamedInsuredsLV">
+            <RowIterator
+              editable="openForEdit"
+              elementName="additionalNamedInsured"
+              hasCheckBoxes="true"
+              hideCheckBoxesIfReadOnly="true"
+              toRemove="period.removePolicyNamedInsured(additionalNamedInsured)"
+              value="period.PolicyContactRoles.whereTypeIs(PolicyAddlNamedInsured)">
+              <Variable
+                initialValue="gw.api.util.JurisdictionMappingUtil.getJurisdiction(additionalNamedInsured.AccountContactRole.AccountContact.Contact.PrimaryAddress)"
+                name="referenceState"
+                type="Jurisdiction"/>
+              <Variable
+                initialValue="referenceState == null ? period.EditEffectiveDate : period.getReferenceDateForCurrentJob(referenceState)"
+                name="referenceDate"
+                type="java.util.Date"/>
+              <Variable
+                initialValue="period.Job.NewTerm ? null : additionalNamedInsured.IndustryCode"
+                name="previousIndustryCode"
+                type="IndustryCode"/>
+              <IteratorSort
+                sortBy="additionalNamedInsured"
+                sortOrder="1"/>
+              <Row
+                editable="openForEdit">
+                <TextCell
+                  action="EditPolicyContactRolePopup.push(additionalNamedInsured, openForEdit)"
+                  id="Name"
+                  label="displaykey.Web.Policy.NamedInsured.NameOnly"
+                  numCols="32"
+                  value="additionalNamedInsured"/>
+                <Cell
+                  editable="true"
+                  id="Relationship"
+                  label="displaykey.Web.SubmissionWizard.NamedInsured.Relationship"
+                  value="additionalNamedInsured.Relationship"
+                  width="500"
+                  wrap="true"/>
+                <!-- IndustryCode is visible on commercial policies CC-52306 -->
+                <IndustryCodeCell
+                  domain="&quot;SIC&quot; as IndustryCodeType"
+                  editable="true"
+                  id="IndustryCode"
+                  label="displaykey.Web.SubmissionWizard.NamedInsured.IndustryCode"
+                  numCols="10"
+                  pickLocation="IndustryCodeSearchPopup.push(&quot;SIC&quot; as IndustryCodeType, referenceDate, previousIndustryCode)"
+                  referenceDate="referenceDate"
+                  value="(additionalNamedInsured.AccountContactRole as NamedInsured).IndustryCode"
+                  valueVisible="additionalNamedInsured.AccountContactRole.AccountContact.Company"
+                  visible="period.Policy.Product.isContactTypeSuitableForProductAccountType(Company)"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </ListViewInput>
+      </InputSet>
+    </InputColumn>
+    <Code><![CDATA[function getUnassignedAdditionalNamedInsureds() : AccountContactView[] {
+  if (unassignedAdditionalNamedInsureds == null) {
+    unassignedAdditionalNamedInsureds = period.UnassignedAdditionalNamedInsureds.asViews()
+  }
+  return unassignedAdditionalNamedInsureds
+}
+
+function getOtherContacts() : AccountContactView[] {
+  if (otherContacts == null) {
+    otherContacts = period.AdditionalNamedInsuredOtherCandidates.asViews()
+  }
+  return otherContacts
+}]]></Code>
+  </DetailViewPanel>
+</PCF>

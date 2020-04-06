@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <PanelSet
+    id="OOSEPanelSet">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <PanelRef
+      def="WarningsPanelSet(policyPeriod.getWizardWarningMessages())"/>
+    <DetailViewPanel
+      visible="showSliceSelector()">
+      <InputColumn>
+        <ContentInput
+          id="OOSEPeriodSelectorInput"
+          label="displaykey.Java.PolicyPeriod.OOSChange.ActivePeriod">
+          <Link
+            action="jobWizardHelper.setOOSPeriodToView(policyPeriod.getSlice(ArgValue))"
+            argInitialValue="policyPeriod.SliceDate"
+            argOptionLabel="VALUE.format(&quot;short&quot;)"
+            argRange="policyPeriod.OOSSliceDates"
+            argType="java.util.Date"
+            id="OOSEPeriodSelector"
+            performActionOnArgChange="true"
+            recalculateArgOnRefresh="true"/>
+          <Link
+            action="jobWizardHelper.setOOSPeriodToView(policyPeriod.getSlice(policyPeriod.NextBlockedSliceDate))"
+            available="policyPeriod.NextBlockedSliceDate != null"
+            id="NextSliceLink"
+            label="displaykey.Web.Job.OOSEPanelSet.NextBlockedSliceButton"
+            styleClass="bigButton"/>
+        </ContentInput>
+      </InputColumn>
+    </DetailViewPanel>
+    <PanelDivider
+      visible="policyPeriod.Job.OOSJob and policyPeriod.FailedOOSEValidation"/>
+    <Code><![CDATA[function showSliceSelector() : Boolean {
+  if (not policyPeriod.Job.OOSJob) {
+    return false  // never show unless it's an OOS job
+  }
+  
+  return jobWizardHelper.PolicyPeriod.SliceDate > policyPeriod.EditEffectiveDate  // always show if we're editing a future slice
+      or policyPeriod.FailedOOSEValidation or policyPeriod.FailedOOSEEvaluation   // otherwise show if there are errors in a future slice
+}]]></Code>
+  </PanelSet>
+</PCF>

@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    canEdit="true"
+    canVisit="perm.System.viewmyactivities"
+    id="DesktopActivities"
+    title="displaykey.Web.DesktopActivities">
+    <LocationEntryPoint
+      signature="DesktopActivities()"/>
+    <Variable
+      initialValue="Activity.finder.getAssignedToCurrentUser()"
+      name="activities"
+      recalculateOnRefresh="true"/>
+    <Screen
+      id="DesktopActivitiesScreen">
+      <TitleBar
+        appendListViewPaging="true"
+        title="displaykey.Web.DesktopActivities"/>
+      <AlertBar
+        action="web.activity.CanceledActivitiesAlertUtil.goToCanceledActivities()"
+        dismissed="dismissed"
+        id="DesktopActivities_CanceledActivitiesAlertBar"
+        label="displaykey.Web.DesktopActivities.CanceledActivitiesAlert"/>
+      <PanelRef
+        def="DesktopActivitiesLV(activities)">
+        <Toolbar>
+          <CheckedValuesToolbarButton
+            allCheckedRowsAction="AssignActivitiesPopup.push(new web.activity.ActivityAssignmentPopup(CheckedValues, gw.assignment.AssignmentUtil.DefaultUser))"
+            flags="all canAssignActivity"
+            id="DesktopActivities_AssignButton"
+            iterator="DesktopActivitiesLV.DesktopActivitiesLV"
+            label="displaykey.Web.ActivitySearch.Results.Assign"
+            shortcut="A"/>
+          <CheckedValuesToolbarButton
+            allCheckedRowsAction="web.activity.ActivityUtil.skipActivities(CheckedValues)"
+            flags="all canSkipActivity"
+            id="DesktopActivities_SkipButton"
+            iterator="DesktopActivitiesLV.DesktopActivitiesLV"
+            label="displaykey.Web.ActivitySearch.Results.Skip"
+            shortcut="S"/>
+          <CheckedValuesToolbarButton
+            allCheckedRowsAction="web.activity.ActivityUtil.completeActivities(CheckedValues)"
+            flags="all canCompleteActivity"
+            id="DesktopActivities_CompleteButton"
+            iterator="DesktopActivitiesLV.DesktopActivitiesLV"
+            label="displaykey.Web.ActivitySearch.Results.Complete"
+            shortcut="O"/>
+          <ToolbarDivider/>
+        </Toolbar>
+      </PanelRef>
+    </Screen>
+    <Code><![CDATA[
+property get dismissed() : Boolean {
+        return not web.activity.CanceledActivitiesAlertUtil.hasCanceledActivitiesSinceLastDismissed()
+      }
+      property set dismissed(d : Boolean) {
+        if(d) {
+          web.activity.CanceledActivitiesAlertUtil.onDismiss()
+        }
+      }
+    ]]></Code>
+  </Page>
+</PCF>

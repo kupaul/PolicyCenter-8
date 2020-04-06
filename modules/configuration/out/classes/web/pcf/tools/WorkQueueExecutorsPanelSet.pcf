@@ -1,0 +1,199 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <PanelSet
+    id="WorkQueueExecutorsPanelSet">
+    <Require
+      name="Helper"
+      type="gw.api.web.tools.WorkQueueInfoPage"/>
+    <Require
+      name="Queue"
+      type="gw.api.web.tools.WorkQueueDisplayInfo"/>
+    <Variable
+      initialValue="Helper.getWorkQueueExecutorInfoArray(Queue)"
+      name="Executors"
+      recalculateOnRefresh="true"/>
+    <Verbatim
+      label="getMaxNumberOfExecutorsShownText()"
+      labelStyleClass="alertBar"
+      visible="isMaximumNumberOfExecutorsShown()"/>
+    <ListDetailPanel
+      id="WorkQueueExecutorLDV"
+      selectionName="SelectedExecutor"
+      selectionType="gw.api.web.tools.WorkQueueExecutorDisplayInfo">
+      <ListViewPanel
+        id="ExecutorDetailLV">
+        <RowIterator
+          editable="false"
+          elementName="executor"
+          id="ExecutorsList"
+          pageSize="0"
+          type="gw.api.web.tools.WorkQueueExecutorDisplayInfo"
+          value="Executors">
+          <Row>
+            <Cell
+              enableSort="false"
+              id="Hostname"
+              label="displaykey.Web.WorkQueueExecutorsLv.Hostname"
+              value="executor.HostName"/>
+            <Cell
+              enableSort="false"
+              id="MaxWorkers"
+              label="displaykey.Web.WorkQueueExecutorsLv.MaxWorkers"
+              value="executor.MaxNumberOfWorkers"/>
+            <Cell
+              enableSort="false"
+              id="ProcessedItemsCount"
+              label="displaykey.Web.WorkQueueExecutorsLv.ProcessedItemCount"
+              value="executor.Summary.Processed"/>
+            <Cell
+              enableSort="false"
+              id="ExceptionsCount"
+              label="displaykey.Web.WorkQueueExecutorsLv.Exceptions"
+              value="executor.Summary.Exceptions"/>
+            <Cell
+              enableSort="false"
+              id="FailedCount"
+              label="displaykey.Web.WorkQueueExecutorsLv.Failed"
+              value="executor.Summary.Failed"/>
+            <Cell
+              enableSort="false"
+              id="Active"
+              label="displaykey.Web.WorkQueueExecutorsLv.Active"
+              value="executor.ActiveStatus"/>
+            <DateCell
+              enableSort="false"
+              id="StartedTime"
+              label="displaykey.Web.WorkQueueExecutorsLv.Started"
+              timeFormat="long"
+              value="executor.StartTime"/>
+            <Cell
+              enableSort="false"
+              id="UpTime"
+              label="displaykey.Web.WorkQueueExecutorsLv.UpTime"
+              outputConversion="VALUE.DisplayString"
+              value="executor.UpTime"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+      <CardViewPanel
+        id="WorkersDV">
+        <Card
+          id="Tasks"
+          title="displaykey.Web.WorkQueueWorkers.Title">
+          <PanelRef>
+            <Toolbar>
+              <IteratorButtons
+                iterator="TaskIterator"/>
+            </Toolbar>
+            <ListViewPanel
+              id="WorkersLV">
+              <RowIterator
+                editable="false"
+                elementName="task"
+                id="TaskIterator"
+                pageSize="25"
+                type="InstrumentedWorkerTask"
+                value="find (task in InstrumentedWorkerTask where task.InstrumentedWorkExecutorID == SelectedExecutor.InstrumentedExecutor.ID.Value)">
+                <ToolbarFilter
+                  label="displaykey.Web.WorkQueueWorkersLv.TaskFilter"
+                  name="TaskFilter">
+                  <ToolbarFilterOption
+                    filter="new gw.api.filters.StandardQueryFilter(&quot;All&quot;, \ q -&gt; {})"/>
+                  <ToolbarFilterOption
+                    filter="new gw.api.filters.StandardQueryFilter(&quot;With errors&quot;, \ q -&gt; q.compare(&quot;Exceptions&quot;, database.Relop.GreaterThan, 0))"/>
+                </ToolbarFilter>
+                <Row>
+                  <Cell
+                    enableSort="false"
+                    id="InstanceId"
+                    label="displaykey.Web.WorkQueueWorkersLv.InstanceId"
+                    value="task.InstanceNumber"/>
+                  <Cell
+                    enableSort="false"
+                    id="WriterId"
+                    label="displaykey.Web.WorkQueueWorkersLv.WriterId"
+                    value="task.ProcessHistoryID"/>
+                  <Cell
+                    enableSort="false"
+                    id="Success"
+                    label="displaykey.Web.WorkQueueWorkersLv.Success"
+                    value="task.RanToCompletion"/>
+                  <Cell
+                    id="CheckedOutItemsCount"
+                    label="displaykey.Web.WorkQueueWorkersLv.CheckedOut"
+                    value="task.WorkitemsCheckedOut"/>
+                  <Cell
+                    id="ProcessedItemsCount"
+                    label="displaykey.Web.WorkQueueExecutorsLv.ProcessedItemCount"
+                    value="task.WorkitemsProcessed"/>
+                  <Cell
+                    id="ExceptionCount"
+                    label="displaykey.Web.WorkQueueExecutorsLv.Exceptions"
+                    value="task.Exceptions"/>
+                  <Cell
+                    id="OrphansCount"
+                    label="displaykey.Web.WorkQueueExecutorsLv.Orphans"
+                    value="task.OrphansAdopted"/>
+                  <Cell
+                    id="FailedCount"
+                    label="displaykey.Web.WorkQueueExecutorsLv.Failed"
+                    value="task.WorkitemsFailed"/>
+                  <Cell
+                    id="SkippedCount"
+                    label="displaykey.Web.WorkQueueExecutorsLv.Skipped"
+                    value="task.WorkitemsSkipped"/>
+                  <DateCell
+                    id="StartedTime"
+                    label="displaykey.Web.WorkQueueWorkersLv.Started"
+                    sortDirection="descending"
+                    sortOrder="1"
+                    timeFormat="long"
+                    value="task.StartTime"/>
+                  <DateCell
+                    enableSort="false"
+                    id="EndedTime"
+                    label="displaykey.Web.WorkQueueWorkersLv.Ended"
+                    timeFormat="long"
+                    value="task.EndTime"/>
+                  <Cell
+                    enableSort="false"
+                    id="Active"
+                    label="displaykey.Web.WorkQueueWorkersLv.Active"
+                    value="task.EndTime == null"/>
+                  <Cell
+                    enableSort="false"
+                    id="ConsecutiveErrors"
+                    label="displaykey.Web.WorkQueueWorkersLv.ConsecutiveErrors"
+                    value="task.ConsecutiveExceptions"/>
+                </Row>
+              </RowIterator>
+            </ListViewPanel>
+          </PanelRef>
+        </Card>
+      </CardViewPanel>
+    </ListDetailPanel>
+    <Code><![CDATA[function isMaximumNumberOfExecutorsShown() : boolean {
+  if (Executors == null) {
+    return false
+  }
+  return Executors.Count >= Helper.MaxSizeOfExecutorsArray;
+}
+
+function getMaxNumberOfExecutorsShownText() : String {
+  if (Executors == null) {
+    return ""
+  }
+  return Executors.allMatch(\ w -> w.ActiveStatus) 
+      ? displaykey.Web.InternalTools.WorkQueueInfo.OnlyActiveExecutorsAreShown : displaykey.Web.InternalTools.WorkQueueInfo.OnlyLastNRecordsAreShown(Executors.Count)
+}
+
+function formatDuration(milis: java.lang.Long) : String {
+  if (milis == null) {
+    return ""
+  }
+  return gw.api.web.tools.Duration.shortFormatMillisecs(milis)
+}]]></Code>
+  </PanelSet>
+</PCF>

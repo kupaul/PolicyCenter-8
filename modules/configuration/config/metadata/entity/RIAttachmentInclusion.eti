@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<!-- ====================================================================  RIAttachmentInclusion  ==================================================================== -->
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  entity="RIAttachmentInclusion"
+  table="riattachmentinclusion"
+  type="editable"
+  desc="RI attachment exclusions, inclusions and special acceptances"
+  final="false"
+  subpackage="reinsurance"
+  loadable="false">
+  <implementsEntity name="Extractable"/>
+  <typekey
+    name="Inclusion"
+    typelist="RIAttachmentInclusionType"
+    nullok="false"
+    default="Excluded"
+    desc="Inclusion status of attachment"/>
+  <foreignkey
+    name="Agreement"
+    desc="The attached reinsurance agreement"
+    fkentity="RIAgreement"
+    nullok="false"/>
+  <column
+    name="RiskNumber"
+    type="shorttext"
+    desc="The risk that is excluded/accepted from the agreement.  This will be the same as the DraftRiskVersionList's risk."
+    nullok="false"/>
+  <foreignkey
+    name="DraftRiskVersionList"
+    desc="The associated RIRiskVersionList, was previously null if the job had been promoted to represent the active inclusion status.  Should never be null"
+    fkentity="RIRiskVersionList"
+    nullok="false"/>
+  <foreignkey
+    name="PolicyTerm"
+    desc="Policy term information associated with this attachment inclusion"
+    fkentity="PolicyTerm"
+    setterScriptability="hidden"
+    getterScriptability="hidden"
+    nullok="false"/>
+  <dbcheckbuilder
+    className="com.guidewire.pc.domain.reinsurance.dbchecks.RIAttachmentInclusionRiskNumberDBCheckBuilder"/>
+  <index
+    name="riattachmentinclu1"
+    desc="Index ensuring the uniqueness of risk numbers."
+    unique="true">
+    <indexcol
+      name="RiskNumber"
+      keyposition="1"/>
+    <indexcol
+      name="Agreement"
+      keyposition="2"/>
+    <indexcol
+      name="DraftRiskVersionList"
+      keyposition="3"/>
+    <indexcol
+      name="PolicyTerm"
+      keyposition="4"/>
+  </index>
+  <fulldescription>RI attachment exclusions, inclusions, and special acceptances</fulldescription>
+</entity>

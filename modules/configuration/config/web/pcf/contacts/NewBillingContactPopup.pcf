@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    beforeCommit="newPolicyBillingContact.resetContactAndRoles(duplicateContactsPopupHelper.existingPCContactWithABContactMatch); policyPeriod.changeBillingContactTo(newPolicyBillingContact.AccountContactRole.AccountContact.Contact)"
+    canEdit="true"
+    countsAsWork="false"
+    id="NewBillingContactPopup"
+    returnType="PolicyBillingContact"
+    startInEditMode="true"
+    title="displaykey.Web.Contact.NewContact(PolicyBillingContact.Type.TypeInfo.DisplayName)">
+    <LocationEntryPoint
+      signature="NewBillingContactPopup(policyPeriod: PolicyPeriod, contactType: typekey.ContactType)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="contactType"
+      type="typekey.ContactType"/>
+    <Variable
+      initialValue="policyPeriod.addNewPolicyBillingContactOfContactType(contactType)"
+      name="newPolicyBillingContact"/>
+    <Variable
+      initialValue="new gw.pcf.duplicatecontacts.DuplicateContactsPopupHelper(newPolicyBillingContact.AccountContactRole.AccountContact.Contact)"
+      name="duplicateContactsPopupHelper"/>
+    <Screen
+      desc="a screen"
+      editable="true"
+      id="ContactDetailScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.checkForDuplicatesOrUpdate(\ -&gt; CurrentLocation.pickValueAndCommit(newPolicyBillingContact))"
+          id="ForceDupCheckUpdate"
+          label="displaykey.Button.OK"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+        <EditButtons
+          pickValue="newPolicyBillingContact"
+          updateVisible="not duplicateContactsPopupHelper.ShowButton"/>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.push()"
+          id="CheckForDuplicates"
+          label="displaykey.Web.Contact.CheckForDuplicates"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+      </Toolbar>
+      <PanelRef
+        def="NewPolicyContactRoleDetailsCV(newPolicyBillingContact,true)"/>
+    </Screen>
+  </Popup>
+</PCF>

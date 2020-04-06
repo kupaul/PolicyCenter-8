@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="ProducerCodeSearchDV">
+    <Require
+      name="searchCriteria"
+      type="gw.product.ProducerCodeSearchCriteria"/>
+    <Variable
+      initialValue="gw.api.system.PCDependenciesGateway.getPCGroupFinder().findBranchGroups().toList()"
+      name="allBranches"/>
+    <Variable
+      initialValue="new gw.globalization.AddressAreaAdapter(searchCriteria.Address)"
+      name="addrAreaAdapter"
+      recalculateOnRefresh="true"/>
+    <InputColumn>
+      <Input
+        editable="true"
+        id="Code"
+        label="displaykey.Web.ProducerCodeSearchDV.Code"
+        value="searchCriteria.Code"/>
+      <Input
+        editable="true"
+        id="Description"
+        label="displaykey.Web.ProducerCodeSearchDV.Description"
+        value="searchCriteria.Description"/>
+      <Input
+        editable="true"
+        id="ParentCode"
+        label="displaykey.Web.ProducerCodeSearchDV.ParentCode"
+        value="searchCriteria.ParentCode"/>
+      <TypeKeyInput
+        editable="true"
+        id="Status"
+        label="displaykey.Web.ProducerCodeSearchDV.Status"
+        value="searchCriteria.Status"/>
+      <RangeInput
+        editable="true"
+        id="BranchCode"
+        label="displaykey.Web.ProducerCodeSearchDV.BranchCode"
+        optionLabel="VALUE.BranchCode + &quot; -- &quot; + VALUE"
+        value="searchCriteria.Branch"
+        valueRange="allBranches"/>
+      <OrgInput
+        editable="not User.util.CurrentUser.ExternalUser"
+        id="Organization"
+        label="displaykey.Web.ProducerCodeSearchDV.Organization"
+        pickLocation="OrganizationSearchPopup.push(null, true)"
+        value="searchCriteria.Producer">
+        <PostOnChange/>
+      </OrgInput>
+      <Input
+        editable="true"
+        id="User"
+        label="displaykey.Web.ProducerCodeSearchDV.User"
+        value="searchCriteria.ProducerUser"/>
+      <CheckBoxInput
+        editable="perm.System.prodcodeviewprefuw"
+        id="MissingPrefUW"
+        label="displaykey.Web.ProducerCodeSearchDV.MissingPrefUW"
+        value="searchCriteria.MissingPrefUW"
+        visible="perm.System.prodcodeviewprefuw">
+        <PostOnChange/>
+      </CheckBoxInput>
+      <Input
+        editable="perm.System.prodcodeviewprefuw"
+        id="PrefUW"
+        label="displaykey.Web.ProducerCodeSearchDV.PrefUW"
+        value="searchCriteria.PrefUW"
+        visible="perm.System.prodcodeviewprefuw and searchCriteria.MissingPrefUW != true"/>
+      <TypeKeyInput
+        editable="true"
+        id="Currency"
+        label="displaykey.Web.ProducerCodeSearchDV.Currency"
+        value="searchCriteria.Currency"
+        visible="gw.api.util.CurrencyUtil.isMultiCurrencyMode()"/>
+      <InputSetRef
+        def="AddressOwnerAddressInputSet(new gw.pcf.contacts.AddressAreaOwner(addrAreaAdapter))"
+        mode="searchCriteria.Address.Country.Code"/>
+    </InputColumn>
+    <InputFooterSection>
+      <InputSetRef
+        def="SearchAndResetInputSet()"/>
+    </InputFooterSection>
+  </DetailViewPanel>
+</PCF>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" desc="The table holds metadata information for a rate table" entity="RateTableDefinition" loadable="false" platform="false" subpackage="rating" table="ratetabledefinition" type="retireable">
+  <column desc="The rate table code" name="TableCode" nullok="false" type="shorttext"/>
+  <column desc="The logical name of the rate table. Note: The rating data is stored in a separate physical table" name="TableName" nullok="false" type="shorttext">
+    <localization nullok="false" tableName="rtdef_name_l10n"/>
+  </column>
+  <column desc="Description of the rate data that is stored by this table" name="TableDesc" nullok="true" type="shorttext">
+    <localization nullok="true" tableName="rtdef_desc_l10n"/>
+  </column>
+  <column desc="Code of the Policy Line that the rate table belongs to" name="PolicyLine" nullok="false" type="patterncode"/>
+  <column default="DefaultRateFactorRow" desc="Name of the physical table that will hold the data for this table.        This may be empty when using the generic physical table rather than a custom one,      although this field can optionally contain the generic physical table's name when using it." name="EntityName" nullok="false" type="shorttext"/>
+  <array arrayentity="RateTableColumn" arrayfield="DefinitionForFactor" cascadeDelete="true" desc="The list of factor definitions for this table" name="Factors" owner="true"/>
+  <array arrayentity="RateTableMatchOp" cascadeDelete="true" desc="The list of matching operations for this rate table" name="MatchOps" owner="true"/>
+  <array arrayentity="RateTableArgumentSourceSet" cascadeDelete="true" desc="The Parameter Sets for this Table." name="ArgumentSourceSets" owner="true"/>
+  <index desc="Index ensuring the uniqueness of rate table definitions." name="RTDefU1" unique="true">
+    <indexcol keyposition="1" name="TableCode"/>
+    <indexcol keyposition="2" name="PolicyLine"/>
+    <indexcol keyposition="3" name="Retired"/>
+  </index>
+  <index desc="Index for search by TableCode." name="TableCodeSearch" unique="false">
+    <indexcol keyposition="1" name="TableCode"/>
+    <indexcol keyposition="2" name="Retired"/>
+  </index>
+</entity>

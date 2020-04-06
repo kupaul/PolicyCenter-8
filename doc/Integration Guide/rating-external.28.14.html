@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Cost Data APIs That You Can Call</title>
+    <link rel="StyleSheet" href="css/rating-external.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-forms.html#3042434">Policy-related Integrations</a> : <a class="WebWorks_Breadcrumb_Link" href="rating-external.28.01.html#3042434">Rating Integration</a> : <a class="WebWorks_Breadcrumb_Link" href="rating-external.28.08.html#3042434">Implementing Rating for a New Line of Business</a> : Cost Data APIs That You Can Call</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h4 class="H2B_-_Heading_2_Break"><a name="3042434">Cost Data APIs That You Can Call</a></h4>
+      <div class="B_-_Body"><a name="3042438">Every cost data class inherits some built-in APIs from the </a><span class="cv_-_computer_voice">CostData</span> class. If you use the built-in default rating architecture (the Guidewire recommendation), the <span class="cv_-_computer_voice">AbstractRatingEngine</span> that calls these. In that case, you might not need to call these APIs. If you do not use the built-in abstract rating engine or if you modify it, use these APIs as needed to implement your rating integration code.</div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="3043752">You can call the following API methods, but do not attempt to modify or override them.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="3042439">Debugging</a></h6>
+      <div class="B_-_Body"><a name="3042440">For debugging use, it may be helpful to use the cost data object method </a><span class="cv_-_computer_voice">debugString</span>. It generates a debug string containing the core rate/amount/basis properties on the <span class="cv_-_computer_voice">CostData</span> for debug purposes.</div>
+      <h6 class="HS_-_Head_Sub"><a name="3042441">APIs for Merging Costs</a></h6>
+      <div class="B_-_Body"><a name="3042442">To merge two rate-scalable cost data objects together, use the </a><span class="cv_-_computer_voice">mergeIfCostEqual</span> method. If two cost data objects are adjacent in effective time and equal, then this method sets the expiration of the earlier cost to the expiration date of the later cost. The caller discards the later cost. Costs are equal if the <span class="cv_-_computer_voice">isCostEqual</span> method returns true. It checks that the two costs have the same basis, rates, and term amounts, along with a few other things.</div>
+      <div class="B_-_Body"><a name="3036636">To merge two basis-scalable cost data objects together, use the </a><span class="cv_-_computer_voice">mergeAsBasisScalableIfCostEqual</span> method. This method is similar to <span class="cv_-_computer_voice">mergeIfCostEqual</span>, but handles basis-scalable costs. However, this method is more complicated because merging basis-scalable costs requires adding together the basis and amount properties. Also, the criteria for equality are slightly looser, and defined by <span class="cv_-_computer_voice">isBasisScalableCostEqual</span>.</div>
+      <h6 class="HS_-_Head_Sub"><a name="3042589">Getting Cost Entity Instances for This Cost Data Object</a></h6>
+      <div class="B_-_Body"><a name="3042652">There are several related cost data APIs for getting (and optionally creating) corresponding cost entity instances for this cost data object.</a></div>
+      <div class="B_-_Body"><a name="3044120">To simply get a reference to the corresponding </a><span class="cv_-_computer_voice">Cost</span> entity instance, call the cost data object method <span class="cv_-_computer_voice">getExistingCost</span>. This method takes the <span class="cv_-_computer_voice">PolicyLine</span> to search. This method does not modify the effective window of the returned cost. It merely finds the matching cost object, if any, that is effective as of the effective date of this cost data object. If there is no existing cost, this method returns <span class="cv_-_computer_voice">null</span>. </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3043683">Internally, this method calls the </a><span class="cv_-_computer_voice">getVersionedCosts</span> method, which each cost data must override. See <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.13.html#3037074', '');" title="Cost Data Object Methods and Constructors to Override">“Get Versioned Costs That Match This Cost Data Object”</a>.</div>
+      <div class="B_-_Body"><a name="3044517">For example:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="3044518">var c = getExistingCost(myPolicyLine)</a></div>
+      <div class="B_-_Body"><a name="3042823">In some cases, you might want to actually create a new </a><span class="cv_-_computer_voice">Cost</span> row or modify an existing one. This choice depends on whether there is an existing <span class="cv_-_computer_voice">Cost</span> instance that corresponds to this cost data with the appropriate effective dates. The cost data object method <span class="cv_-_computer_voice">getPopulatedCost</span> implements this logic. </div>
+      <div class="B_-_Body"><a name="3043923">There are several possibly outcomes of </a><span class="cv_-_computer_voice">getOrCreateCost</span>:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3044048">If there is an existing </a><span class="cv_-_computer_voice">Cost</span> at the effective date of this cost data object, this method returns it. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3044102">If there is an existing </a><span class="cv_-_computer_voice">Cost</span> but none at the effective date of this cost data object, this method creates a new cost entity cloned from an existing cost. If there are multiple to choose from, the rating engine chooses the one with earliest effective date. Among other properties cloned, the fixed ID value for the new cost entity is always the same as cloned cost. This is important to remember. The fixed IDs must be the same because both costs represent the cost for a specific thing, just at different effective dates. The method returns the new cost object.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3044180">If there is no existing </a><span class="cv_-_computer_voice">Cost</span>, even at other dates, the method creates a new cost entity. The new cost object has an entirely new auto-generated fixed ID. The method returns the new cost object.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3044257">Unlike the </a><span class="cv_-_computer_voice">getExistingCost</span> method, the <span class="cv_-_computer_voice">getOrCreateCost</span> method never returns <span class="cv_-_computer_voice">null</span>. </div>
+      <div class="B_-_Body"><a name="3044549">For example:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="3044550">var c = getOrCreateCost(myPolicyLine)</a></div>
+      <div class="B_-_Body"><a name="3044258">Finally, there is another method called </a><span class="cv_-_computer_voice">getPopulatedCost</span>. It does the following:</div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="3044279">Calls the public method </a><span class="cv_-_computer_voice">getOrCreateCost</span> to get the matching cost object, or creates a new one. See the earlier description of this method in this section.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3044313">Calls an internal method </a><span class="cv_-_computer_voice">populateCostEntity</span> that populates the entity with the core cost properties from this cost data object. See <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.10.html#2983434', '');" title="Cost Core Properties">“Cost Core Properties”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3044314">Calls the public method </a><span class="cv_-_computer_voice">setSpecificFieldsOnCost</span>, which each cost data class implements to copy all the non-core (line-specific) cost properties from the cost data object to the <span class="cv_-_computer_voice">Cost</span> entity instance. See <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.10.html#2983434', '');" title="Cost Core Properties">“Cost Core Properties”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3044459">For example:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="3044473">var c = getPopulatedCost(myPolicyLine)</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

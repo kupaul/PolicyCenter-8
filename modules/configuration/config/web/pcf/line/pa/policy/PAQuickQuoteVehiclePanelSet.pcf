@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <PanelSet
+    id="PAQuickQuoteVehiclePanelSet">
+    <Require
+      name="paLine"
+      type="entity.PersonalAutoLine"/>
+    <Require
+      name="vehicle"
+      type="PersonalVehicle"/>
+    <Require
+      name="vehicleNum"
+      type="int"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="vehicle &lt;&gt; null ? vehicle.Drivers*.PolicyDriver.first() : null"
+      name="primaryDriver"
+      recalculateOnRefresh="true"
+      type="PolicyDriver"/>
+    <PanelRef>
+      <Toolbar
+        id="DriverToolbar"
+        visible="openForEdit">
+        <ToolbarButton
+          action="paLine.addAndNumberVehicle(vehicle, vehicleNum)"
+          available="true"
+          hideIfReadOnly="true"
+          id="AddVehicleButton"
+          label="displaykey.Web.PersonalAuto.QuickQuote.AddNewVehicle"/>
+        <ToolbarButton
+          action="vehicle.remove()"
+          available="vehicle &lt;&gt; null"
+          hideIfReadOnly="true"
+          id="RemoveVehicleButton"
+          label="displaykey.Button.Remove"/>
+      </Toolbar>
+      <DetailViewPanel>
+        <InputColumn/>
+      </DetailViewPanel>
+    </PanelRef>
+    <PanelRef
+      def="PreferredCoverageCurrencyPanelSet(vehicle, openForEdit, jobWizardHelper)"
+      visible="vehicle &lt;&gt; null"/>
+    <PanelRef>
+      <DetailViewPanel
+        visible="vehicle &lt;&gt; null">
+        <InputColumn>
+          <Input
+            editable="openForEdit"
+            id="Year"
+            label="displaykey.Web.PolicyLine.Vehicle.Year"
+            numCols="24"
+            required="vehicle &lt;&gt; null"
+            value="vehicle.Year"/>
+          <Input
+            editable="openForEdit"
+            id="Make"
+            label="displaykey.Web.PolicyLine.Vehicle.Make"
+            numCols="24"
+            required="vehicle &lt;&gt; null"
+            value="vehicle.Make"/>
+          <Input
+            editable="openForEdit"
+            id="Model"
+            label="displaykey.Web.PolicyLine.Vehicle.Model"
+            numCols="24"
+            required="vehicle &lt;&gt; null"
+            value="vehicle.Model"/>
+          <MonetaryAmountInput
+            currency="vehicle.PreferredCoverageCurrency"
+            editable="openForEdit"
+            formatType="currency"
+            id="CostNew"
+            label="displaykey.Web.PolicyLine.Vehicle.CostNew"
+            numCols="24"
+            required="vehicle &lt;&gt; null"
+            value="vehicle.CostNew"/>
+          <RangeInput
+            editable="openForEdit"
+            id="PrimaryDriver"
+            label="displaykey.Web.PolicyLine.Vehicle.PrimaryDriver"
+            optionLabel="VALUE.QuickQuoteNumber.toString()"
+            value="vehicle.QuickQuotePrimaryDriver"
+            valueRange="paLine.DriversForQuickQuote"
+            visible="openForEdit"/>
+          <Input
+            id="PrimaryDriverName"
+            label="displaykey.Web.PolicyLine.Vehicle.PrimaryDriver"
+            value="vehicle.QuickQuotePrimaryDriver"
+            visible="not openForEdit"/>
+        </InputColumn>
+      </DetailViewPanel>
+    </PanelRef>
+  </PanelSet>
+</PCF>

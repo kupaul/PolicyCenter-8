@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="false"
+    id="ReinstatementWizard_QuoteScreen">
+    <Require
+      name="reinstatement"
+      type="Reinstatement"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="isEditable"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="new gw.document.DocumentProduction()"
+      name="documentProduction"
+      type="gw.document.DocumentProduction"/>
+    <Variable
+      initialValue="policyPeriod.RepresentativePolicyLines.first()"
+      name="line"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, reinstatement, jobWizardHelper)"/>
+      <ToolbarButton
+        action="policyPeriod.printDocument(&quot;ReinstatementQuote&quot;, &quot;Reinstatement Quote&quot;)"
+        download="true"
+        id="ReinstateQuote"
+        label="displaykey.Button.PrintQuote"
+        shortcut="P"/>
+    </Toolbar>
+    <PanelRef
+      def="WarningsPanelSet(policyPeriod.getWizardQuoteScreenWarnings())"/>
+    <PanelRef
+      def="Quote_SummaryDV(policyPeriod)">
+      <Toolbar/>
+    </PanelRef>
+    <CardViewPanel>
+      <Card
+        id="ReinstatementWizard_Quote_CumulativeCard"
+        title="displaykey.Web.ReinstatementWizard.QuoteScreen.Cumulative">
+        <PanelRef
+          def="RatingCumulDetailsPanelSet(policyPeriod, jobWizardHelper, isEditable)"
+          mode="line.Pattern.Code">
+          <TitleBar
+            title="line.Pattern.DisplayName"
+            visible="policyPeriod.RepresentativePolicyLines.Count &gt; 1"/>
+        </PanelRef>
+      </Card>
+      <Card
+        id="ReinstatementWizard_Quote_TransactionCard"
+        title="displaykey.Web.ReinstatementWizard.QuoteScreen.Transaction">
+        <PanelRef
+          def="RatingTxDetailsPanelSet(policyPeriod, displaykey.Web.Quote.TotalPremLabel.Total, displaykey.Web.Quote.TotalCostLabel.Total, isEditable, jobWizardHelper)"
+          mode="line.Pattern.Code">
+          <TitleBar
+            title="line.Pattern.DisplayName"
+            visible="policyPeriod.RepresentativePolicyLines.Count &gt; 1"/>
+        </PanelRef>
+      </Card>
+    </CardViewPanel>
+  </Screen>
+</PCF>

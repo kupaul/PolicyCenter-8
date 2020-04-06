@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <!-- WARNING: Internal Guidewire file. DO NOT EDIT. -->
+  <ListDetailPanel
+    id="StackSummaryLDV"
+    selectionName="selectedStackSummary"
+    selectionType="gw.api.profiler.StackAggregatedQuerySummary">
+    <Require
+      name="stacks"
+      type="gw.api.profiler.StackAggregatedQuerySummary[]"/>
+    <PanelRef>
+      <TitleBar
+        title="displaykey.Web.Profiler.CallStackDetails"/>
+      <Toolbar/>
+      <ListViewPanel
+        id="StackDetailsLV">
+        <RowIterator
+          editable="false"
+          elementName="stack"
+          value="stacks">
+          <Row>
+            <Cell
+              footerLabel="displaykey.Web.Profiler.Total"
+              id="SummarizedStack"
+              label="displaykey.Web.Profiler.CallStack"
+              value="stack.getDomainStackTrace(70)"/>
+            <Cell
+              footerSumValue="stack.NumDistinctArgLists"
+              id="ArgsCount"
+              label="displaykey.Web.Profiler.DistinctArgs"
+              value="stack.NumDistinctArgLists"/>
+            <Cell
+              footerSumValue="stack.TotalTime"
+              id="TotalQueryTime"
+              label="displaykey.Web.Profiler.TotalQueryTime"
+              sortDirection="descending"
+              sortOrder="2"
+              value="stack.TotalTime"/>
+            <Cell
+              footerSumValue="stack.TotalRowCount"
+              id="TotalRowCount"
+              label="displaykey.Web.Profiler.TotalRowCount"
+              sortDirection="descending"
+              sortOrder="3"
+              value="stack.TotalRowCount"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </PanelRef>
+    <CardViewPanel>
+      <Card
+        id="FilteredStackTrace"
+        title="displaykey.Web.Profiler.FilteredStackTrace">
+        <TemplatePanel><![CDATA[
+            <div style="width:1040;height:500;overflow-x:scroll;overflow-y:scroll;">
+              <pre><%=selectedStackSummary.FilteredStackTrace %></pre>
+            </div>
+          
+        ]]></TemplatePanel>
+      </Card>
+      <Card
+        id="FullStackTrace"
+        title="displaykey.Web.Profiler.FullStackTrace">
+        <TemplatePanel><![CDATA[
+            <div style="width:1040;height:500;overflow-x:scroll;overflow-y:scroll;">
+              <pre><%=selectedStackSummary.FullStackTrace%></pre>
+            </div>
+          
+        ]]></TemplatePanel>
+      </Card>
+      <Card
+        id="SQL"
+        title="displaykey.Web.Profiler.SQL">
+        <TemplatePanel><![CDATA[
+            <div style="width:1040;height:500;overflow-x:scroll;overflow-y:scroll;">
+              <% printContent(selectedStackSummary.PrettyPrintedSQL, false) %>
+            </div>
+          
+        ]]></TemplatePanel>
+      </Card>
+      <Card
+        id="Args"
+        title="displaykey.Web.Profiler.Args">
+        <PanelRef>
+          <Toolbar/>
+          <ListViewPanel
+            id="ArgsLV">
+            <RowIterator
+              editable="false"
+              elementName="args"
+              value="selectedStackSummary.ArgsStackAggregatedQuerySummaries">
+              <Row>
+                <Cell
+                  id="AllArgs"
+                  label="displaykey.Web.Profiler.Args"
+                  value="args.Args"
+                  wrap="true"/>
+                <Cell
+                  footerSumValue="args.ExecutionCount"
+                  id="ArgsQueryCount"
+                  label="displaykey.Web.Profiler.TotalExecutions"
+                  sortDirection="descending"
+                  sortOrder="1"
+                  value="args.ExecutionCount"/>
+                <Cell
+                  footerSumValue="args.TotalTime"
+                  id="ArgsTotalQueryTime"
+                  label="displaykey.Web.Profiler.TotalQueryTime"
+                  sortDirection="descending"
+                  sortOrder="2"
+                  value="args.TotalTime"/>
+                <Cell
+                  id="ArgsAverageTime"
+                  label="displaykey.Web.Profiler.AverageQueryTime"
+                  outputConversion="formatAverage(VALUE)"
+                  value="args.AverageTime"/>
+                <Cell
+                  id="ArgsMaxQueryTime"
+                  label="displaykey.Web.Profiler.MaxQueryTime"
+                  value="args.MaxQueryTime"/>
+                <Cell
+                  footerSumValue="args.TotalRowCount"
+                  id="TotalRowCount"
+                  label="displaykey.Web.Profiler.TotalRowCount"
+                  sortDirection="descending"
+                  sortOrder="3"
+                  value="args.TotalRowCount"/>
+                <Cell
+                  id="AverageRowCount"
+                  label="displaykey.Web.Profiler.AverageRowCount"
+                  outputConversion="formatAverage(VALUE)"
+                  value="args.AverageRowCount"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </PanelRef>
+      </Card>
+    </CardViewPanel>
+    <Code><![CDATA[
+      function formatAverage(value: Number): String {
+        return gw.api.util.StringUtil.formatNumber(value, "#,##0.00")
+      }
+    ]]></Code>
+  </ListDetailPanel>
+</PCF>

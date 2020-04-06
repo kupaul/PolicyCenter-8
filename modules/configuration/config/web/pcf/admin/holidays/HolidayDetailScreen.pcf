@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    id="HolidayDetailScreen">
+    <Require
+      name="Holiday"
+      type="Holiday"/>
+    <Variable
+      initialValue="gw.api.admin.BaseAdminUtil.getDefaultCountry()"
+      name="country"
+      type="Country"/>
+    <Toolbar>
+      <EditButtons
+        editVisible="perm.Holiday.edit"/>
+    </Toolbar>
+    <PanelRef>
+      <DetailViewPanel
+        visible="true">
+        <InputColumn>
+          <Input
+            editable="true"
+            id="Name"
+            label="displaykey.Web.Admin.HolidayDetailDV.Name"
+            required="true"
+            value="Holiday.Name"/>
+          <Input
+            editable="true"
+            id="Date"
+            label="displaykey.Web.Admin.HolidayDetailDV.Date"
+            required="true"
+            value="Holiday.OccurrenceDate"/>
+          <BooleanRadioInput
+            editable="true"
+            id="AllZones"
+            label="displaykey.Web.Admin.HolidayDetailDV.AllZones"
+            required="false"
+            value="Holiday.AppliesToAllZones">
+            <PostOnChange/>
+          </BooleanRadioInput>
+          <TextAreaInput
+            id="Zones"
+            label="displaykey.Web.Admin.HolidayDetailDV.Zones"
+            numCols="50"
+            numRows="5"
+            value="Holiday.Zones"
+            visible="!Holiday.AppliesToAllZones"/>
+          <RangeInput
+            editable="true"
+            hideIfReadOnly="true"
+            id="Country"
+            label="displaykey.Web.Admin.HolidayDetailDV.Country"
+            required="false"
+            value="country"
+            valueRange="getPossibleCountries()"
+            visible="!Holiday.AppliesToAllZones">
+            <PostOnChange/>
+          </RangeInput>
+        </InputColumn>
+      </DetailViewPanel>
+    </PanelRef>
+    <PanelRef
+      def="HolidayDetailDV(Holiday)"
+      mode="country"
+      visible="!Holiday.AppliesToAllZones"/>
+    <DetailViewPanel
+      visible="true">
+      <InputColumn>
+        <TextAreaInput
+          editable="true"
+          hideIfEditable="true"
+          id="Tags"
+          label="displaykey.Web.Admin.HolidayDetailDV.Tags"
+          numRows="2"
+          value="Holiday.TagsString"/>
+        <RangeInput
+          editable="true"
+          hideIfReadOnly="true"
+          id="TagInput"
+          label="displaykey.Web.Admin.HolidayDetailDV.Tags"
+          numRows="4"
+          shuttleList="true"
+          value="Holiday.TagsArray"
+          valueRange="Holiday.getTagRange()"/>
+      </InputColumn>
+    </DetailViewPanel>
+    <PanelRef
+      def="LocalizedValuesDV(Holiday, { &quot;Name&quot;}, { displaykey.Web.Admin.HolidayDetailDV.Name })"/>
+    <Code><![CDATA[function getPossibleCountries() : List<Country> {
+  var org = User.util.CurrentUser.Organization
+  if (org == null) {
+    org = User.util.UnrestrictedUser.Organization
+  }
+  return org.Countries
+}]]></Code>
+  </Screen>
+</PCF>

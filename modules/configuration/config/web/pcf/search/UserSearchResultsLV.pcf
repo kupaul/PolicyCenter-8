@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    id="UserSearchResultsLV">
+    <Require
+      name="users"
+      type="UserQuery"/>
+    <Variable
+      initialValue="new gw.web.search.UserSearchResultsLVUIHelper()"
+      name="userSearchResultsLVUIHelper"/>
+    <RowIterator
+      editable="false"
+      elementName="user"
+      pickValue="user"
+      value="users">
+      <Variable
+        initialValue="userSearchResultsLVUIHelper.getSortedGroups(user)"
+        name="groups"/>
+      <ToolbarFlag
+        name="user"/>
+      <Row>
+        <Cell
+          action="UserDetailPage.go(user)"
+          id="DisplayName"
+          label="displaykey.Web.UserSearchResults.DisplayName"
+          value="user"
+          width="200"
+          wrap="true"/>
+        <Cell
+          id="Username"
+          label="displaykey.Web.UserSearchResults.Username"
+          value="user.Credential.UserName"
+          width="200"
+          wrap="true"/>
+        <Cell
+          action="OrganizationDetail.go(user.Organization)"
+          id="Organization"
+          label="displaykey.Web.UserSearchResults.Organization"
+          value="user.Organization"
+          width="200"
+          wrap="true"/>
+        <LinkCell
+          id="Groups"
+          label="displaykey.Web.UserSearchResults.GroupName"
+          width="400"
+          wrap="true">
+          <LinkIterator
+            elementName="grp"
+            type="Group"
+            value="groups">
+            <Link
+              action="GroupDetailPage.go(grp)"
+              available="grp.GroupType != &quot;root&quot;"
+              id="Link"
+              label="grp"/>
+            <Link
+              id="Filler"
+              label="&quot;,  &quot;"
+              visible="userSearchResultsLVUIHelper.isNotLastEntry(groups, grp)"/>
+          </LinkIterator>
+        </LinkCell>
+      </Row>
+    </RowIterator>
+  </ListViewPanel>
+</PCF>

@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ToolbarButtonSet
+    id="JobWizardToolbarButtonSet"
+    mode="PolicyChange">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="job as PolicyChange"
+      name="policyChange"
+      type="PolicyChange"/>
+    <Variable
+      initialValue="CurrentLocation as pcf.api.Wizard"
+      name="wizard"
+      type="pcf.api.Wizard"/>
+    <Variable
+      initialValue="policyPeriod.PolicyChangeProcess"
+      name="policyChangeProcess"/>
+    <Variable
+      initialValue="new gw.lob.common.SideBySideUIHelper(policyPeriod, wizard, jobWizardHelper)"
+      name="sideBySideHelper"
+      type="gw.lob.common.SideBySideUIHelper"/>
+    <Variable
+      initialValue="(not policyPeriod.UWLockedAndNoOverride) and policyChangeProcess.canMakeNewVersion().Okay"
+      name="canPerformNewVersion"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="sideBySideHelper.canAttemptSideBySide()"
+      name="canPerformSideBySide"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="perm.PolicyPeriod.view(policyPeriod) and policyPeriod.Job.hasMultiplePeriods()and policyPeriod.Job.SideBySide"
+      name="canViewSideBySide"/>
+    <Variable
+      initialValue="policyChangeProcess.canBind().Okay"
+      name="canBind"/>
+    <ToolbarButton
+      action="UWActivityPopup.push(policyPeriod, ActivityPattern.finder.getActivityPatternByCode(&quot;uw_review_approved&quot;), &quot;UWApproval&quot;)"
+      id="Unlock"
+      label="displaykey.Job.Operation.ReleaseLock"
+      shortcut="K"
+      visible="policyChangeProcess.canReleaseLock()"/>
+    <ToolbarButton
+      action="jobWizardHelper.invalidateIterators(); jobWizardHelper.requestQuote(policyPeriod, jobWizardHelper.getQuoteStep(policyPeriod))"
+      id="QuoteOrReview"
+      label="displaykey.Job.Operation.Quote"
+      shortcut="Q"
+      visible="policyChangeProcess.canRequestQuote().Okay"/>
+    <ToolbarButton
+      action="wizard.saveDraft(); policyChangeProcess.edit(); jobWizardHelper.goToVisibleStep(policyPeriod)"
+      confirmMessage="displaykey.Job.Operation.Edit.Confirm"
+      id="EditPolicy"
+      label="displaykey.Job.Operation.EditWorkOrder"
+      shortcut="E"
+      visible="policyChangeProcess.canEdit().Okay"/>
+    <ToolbarButton
+      action="wizard.saveDraft()"
+      hideIfReadOnly="true"
+      id="Draft"
+      label="displaykey.Button.SaveDraft"
+      shortcut="S"/>
+    <ToolbarButton
+      action="HandlePreemptionPopup.push(wizard, jobWizardHelper, policyPeriod, true)"
+      id="HandlePreemptions"
+      label="displaykey.Job.Operation.HandlePreemption"
+      shortcut="H"
+      visible="policyChangeProcess.canHandlePreemptions().Okay"/>
+    <ToolbarButton
+      action="jobWizardHelper.applyChangesToFutureBoundRenewal(policyPeriod)"
+      confirmMessage="displaykey.Job.Operation.ApplyToRenewal.ConfirmBound"
+      id="ApplyToBoundRenewal"
+      label="displaykey.Job.Operation.ApplyToRenewal"
+      shortcut="L"
+      visible="policyPeriod.JobProcess.canApplyChangesToFutureBoundRenewal()"/>
+    <ToolbarButton
+      action="jobWizardHelper.applyChangesToFutureUnboundRenewal(policyPeriod)"
+      confirmMessage="displaykey.Job.Operation.ApplyToRenewal.ConfirmUnbound"
+      id="ApplyToUnboundRenewal"
+      label="displaykey.Job.Operation.ApplyToRenewal"
+      shortcut="Y"
+      visible="policyPeriod.JobProcess.canApplyChangesToFutureUnboundRenewal()"/>
+    <ToolbarButton
+      id="Versions"
+      label="displaykey.Web.MultiQuoteWizardToolbar.Versions"
+      showConfirmMessage="false"
+      visible="canPerformNewVersion or canPerformSideBySide or canViewSideBySide">
+      <MenuItem
+        action="attemptNewVersion()"
+        id="NewVersion"
+        label="sideBySideHelper.getVersionLabel()"
+        shortcut="V"
+        visible="canPerformNewVersion"/>
+      <MenuItem
+        action="sideBySideHelper.attemptSideBySide(2)"
+        id="SideBySide"
+        label="displaykey.Web.Job.SideBySide.Go"
+        shortcut="X"
+        visible="canPerformSideBySide"/>
+      <MenuItem
+        action="jobWizardHelper.goToStep(&quot;SideBySide&quot;)"
+        id="ViewSideBySide"
+        label="displaykey.Web.Job.SideBySide.ViewSideBySide"
+        visible="canViewSideBySide"/>
+    </ToolbarButton>
+    <ToolbarButton
+      action="jobWizardHelper.requestIssueJob(policyPeriod)"
+      confirmMessage="displaykey.Job.Operation.IssuePolicy.Confirm"
+      id="BindPolicyChange"
+      label="displaykey.Job.Operation.IssuePolicy"
+      shortcut="I"
+      visible="canBind"/>
+    <ToolbarButton
+      action="jobWizardHelper.withdraw(policyPeriod); PolicyFileForward.go(policyPeriod.PolicyNumber);"
+      confirmMessage="displaykey.Job.Operation.Withdraw.Confirm"
+      id="WithdrawJob"
+      label="displaykey.Job.Operation.Withdraw"
+      shortcut="W"
+      visible="policyChangeProcess.canWithdraw().Okay"/>
+    <Code><![CDATA[function attemptNewVersion() {
+  wizard.saveDraft()
+  if (jobWizardHelper.revalidateModel()) {
+    if (job.SideBySide) {
+      gw.lob.common.SideBySideUtil.addNewSideBySidePeriod(policyPeriod)
+      wizard.saveDraft()
+      jobWizardHelper.goToStep("SideBySide")
+    } else {
+      jobWizardHelper.newPeriod()
+      wizard.saveDraft()
+      if ( !jobWizardHelper.isStepVisitable( jobWizardHelper.CurrentStep ) ) {
+        jobWizardHelper.goToStep( "PolicyInfo")
+      }
+    }
+  }
+}]]></Code>
+  </ToolbarButtonSet>
+</PCF>

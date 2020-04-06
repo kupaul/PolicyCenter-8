@@ -1,0 +1,167 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Handling Duplicates in Joins with Foreign Keys on the Right</title>
+    <link rel="StyleSheet" href="css/querybuilder.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>Gosu Reference Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="querybuilder.10.01.html#2238055">Query Builder APIs</a> : <a class="WebWorks_Breadcrumb_Link" href="querybuilder.10.04.html#2238055">Joining Related Entities to Queries</a> : Handling Duplicates in Joins with Foreign Keys on the Right</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h4 class="H2B_-_Heading_2_Break"><a name="2238055">Handling Duplicates in Joins with Foreign Keys on the Right</a></h4>
+      <div class="B_-_Body"><a name="2238060">It is easy to fetch duplicate instances of the primary entity when you use </a><span class="cv_-_computer_voice">join</span> or <span class="cv_-_computer_voice">outerJoin</span> with the foreign key on the right of the join. </div>
+      <PRE class="CF_-_Code_First_Line"><a name="2238061">var queryParent = Query.make(SampleParent)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2238062">var tableChild = queryParent.join(SampleChild, "Parent") </a></PRE>
+      <div class="B_-_Body"><a name="2238063">Using the previous example, if more than one </a><span class="cv_-_computer_voice">SampleChild</span> relates to the same <span class="cv_-_computer_voice">SampleParent</span>, that <span class="cv_-_computer_voice">SampleParent</span> is returned more than once. One instance exists in the result of the join query for each child object of type <span class="cv_-_computer_voice">SampleChild</span> that relates to that instance. </div>
+      <div class="B_-_Body"><a name="2238064">Duplicate instances of the primary entity in a query result is desirable in some cases. For example, if you intend to iterate across the result and extract properties from each child object that matches the query, this might be what you want. However, in many cases you likely want to return only maximum one row on the primary table and you must carefully design your query accordingly. </a></div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2238065">Using </a><span class="cv_-_computer_voice">join</span> and <span class="cv_-_computer_voice">outerJoin</span> with foreign keys on the right can return duplicate instances of the primary entity. This occurs if a primary instance on the left relates to multiple secondary instances on the right. To eliminate duplicates in a result, use the <span class="cv_-_computer_voice">withDistinct</span> method on your query. </div>
+      <div class="B_-_Body"><a name="2238066">Notice that duplicates can occur only with joins where the foreign key is on the right. When the foreign key for a join is on the left, the value for any primary instance is unique in the secondary table. So a primary instance on the left relates either to:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2238067">A value of </a><span class="cv_-_computer_voice">null</span>, which matches no instance on the right</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2238068">A single instance on the right</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2238069">For joins with the key on the right, try to reduce duplicates on the primary table. The best way is to ensure that the table you join to only has one row that matches the entity on the primary table. </a></div>
+      <div class="B_-_Body"><a name="2238070">If that is not possible, there are several approaches for limiting duplicates created because of a join:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2238071">Rewrite to use the </a><span class="cv_-_computer_voice">subselect</span> method approach. For reverse inner joins, the query optimizer often performs better with <span class="cv_-_computer_voice">subselect</span> than using <span class="cv_-_computer_voice">join</span> or <span class="cv_-_computer_voice">outerJoin</span>. However, every situation is different, and in some cases, using the <span class="cv_-_computer_voice">join</span> method might perform better. For example, if the secondary entity includes predicates that are not very selective. In other words, if the secondary clause returns lots of results, consider using <span class="cv_-_computer_voice">join</span>. For important queries, Guidewire recommends trying both approaches under performance testing. If you use <span class="cv_-_computer_voice">join</span> with the foreign key on the right, use the two-parameter method signature that includes the table name followed by the column name in the joined table.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2238072">Call the </a><span class="cv_-_computer_voice">withDistinct</span> method on <span class="cv_-_computer_voice">Query</span> to limit the results to distinct results from the join. Pass the value <span class="cv_-_computer_voice">true</span> as an argument to limit the query to distinct results. To turn off this behavior later, call the method again and pass <span class="cv_-_computer_voice">false</span> as a parameter. For example:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CF_-_Code_First_Line"><a name="2238073">var query = Query.make(SampleParent)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2238074">query.withDistinct(true)</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2238075">query.join("MyChildObjectProperty")</a></PRE>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2238076">If you add predicates to the subquery, use the </a><span class="cv_-_computer_voice">having</span> method. Suppose you add predicates to a subquery to limit what your query matches. For example, only matching entities on the primary table a related child object has a certain property match a specific value. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2238077">The following example adds predicates after the join using properties on the joined table: </a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2238078">var query = Query.make(SampleParent)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2238079">query.join("MyChildObjectProperty")</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2238080">query.compare("ChildPriority", Equals, 5)</a></PRE>
+      <div class="LP_-_List_Para"><a name="2238081">When you add predicates after the join, you can control whether the predicates added after the join create duplicates on the primary table using another approach. To do this, call the </a><span class="cv_-_computer_voice">having</span> method with no arguments. Next, add your predicates to the result of the <span class="cv_-_computer_voice">having</span> method. For example:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2238082">var query = Query.make(SampleParent)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2238083">query.join("MyChildObjectProperty")</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2238084">query.having().compare("ChildPriority", Equals, 5)</a></PRE>
+      <div class="LP_-_List_Para"><a name="2238085">The addition of the </a><span class="cv_-_computer_voice">having</span> method adds an SQL <span class="cv_-_computer_voice">HAVING</span> keyword. This tells the database that you are interested in determining the set of items on the primary table, not with each match on the secondary table. The result returns no additional duplicates on the primary table (the original query). As mentioned earlier, if you can rewrite to use the <span class="cv_-_computer_voice">subselect</span> method approach instead of using the <span class="cv_-_computer_voice">join</span> method, the query optimizer typically performs better. You can use this approach only if you add predicates to the join table.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

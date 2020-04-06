@@ -1,0 +1,212 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    id="LoadHistoryDetail"
+    parent="LoadHistoryInfo()"
+    showUpLink="true"
+    title="displaykey.Web.InternalTools.InfoPages.LoadHistoryDetail">
+    <LocationEntryPoint
+      signature="LoadHistoryDetail(PageHelper : gw.api.tools.LoadHistoryHelper, History : LoadCommand)"/>
+    <Variable
+      name="History"
+      type="LoadCommand"/>
+    <Variable
+      name="PageHelper"
+      type="gw.api.tools.LoadHistoryHelper"/>
+    <Variable
+      initialValue="History.ParameterNameValuePairs.length"
+      name="numParams"
+      type="Number"/>
+    <Variable
+      initialValue="History.Steps.length"
+      name="numSteps"
+      type="Number"/>
+    <Variable
+      initialValue="History.OrderedRowCounts.getCount()"
+      name="numRowCounts"
+      type="Number"/>
+    <Variable
+      initialValue="History.OrderedIntegrityChecks.getCount()"
+      name="numIntegrityChecks"
+      type="Number"/>
+    <Variable
+      initialValue="History.OrderedInserts.getCount()"
+      name="numInserts"
+      type="Number"/>
+    <Variable
+      initialValue="History.OrderedCallbacks.length"
+      name="numCallbacks"
+      type="Number"/>
+    <Variable
+      initialValue="History.UpdateDBStatisticsCommands.length"
+      name="numDBStatsCmds"
+      type="Number"/>
+    <Variable
+      initialValue="History.EncryptTables.length"
+      name="numEncrptTables"
+      type="Number"/>
+    <Screen
+      id="LoadHistoryDetailScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="null"
+          id="refresh"
+          label="displaykey.Button.Refresh"/>
+      </Toolbar>
+      <PanelRef
+        def="LoadHistoryLV(PageHelper, new LoadCommand[] {History} as entity.LoadCommandQuery, false)"/>
+      <CardViewPanel
+        id="loadhistoryCV">
+        <Card
+          id="ParametersCard"
+          title="displaykey.Web.InternalTools.InfoPages.LoadHistory.Parameters(util.StringUtil.formatNumber(numParams, &quot;####0&quot;))"
+          visible="numParams &gt; 0">
+          <PanelRef>
+            <Toolbar/>
+            <ListViewPanel
+              id="LoadHistoryParmPairsLV">
+              <RowIterator
+                editable="false"
+                elementName="Params"
+                value="History.ParameterNameValuePairs">
+                <Row>
+                  <Cell
+                    id="parmname"
+                    label="displaykey.Web.InternalTools.InfoPages.LoadHistory.ParameterName"
+                    value="Params.ParameterName"/>
+                  <Cell
+                    id="parmvalue"
+                    label="displaykey.Web.InternalTools.InfoPages.LoadHistory.ParameterValue"
+                    value="Params.ParameterValue"/>
+                </Row>
+              </RowIterator>
+            </ListViewPanel>
+          </PanelRef>
+        </Card>
+        <Card
+          id="StepsCard"
+          title="displaykey.Web.InternalTools.InfoPages.LoadHistory.Steps(util.StringUtil.formatNumber(numSteps, &quot;####0&quot;))"
+          visible="numSteps &gt; 0">
+          <PanelRef
+            def="LoadStepsLV(PageHelper, History, PageHelper.getStepsInHierarchicalOrder(History), true)">
+            <Toolbar/>
+          </PanelRef>
+        </Card>
+        <Card
+          id="RowCountsCard"
+          title="displaykey.Web.InternalTools.InfoPages.LoadHistory.RowCounts(util.StringUtil.formatNumber(numRowCounts, &quot;####0&quot;))"
+          visible="numRowCounts &gt; 0">
+          <PanelRef>
+            <Toolbar>
+              <IteratorButtons
+                iterator="LoadHistoryRowCountLV"/>
+            </Toolbar>
+            <ListViewPanel
+              id="LoadHistoryRowCountLV">
+              <RowIterator
+                editable="false"
+                elementName="RowCount"
+                pageSize="25"
+                value="History.OrderedRowCounts as LoadRowCountQuery">
+                <Row>
+                  <Cell
+                    id="stagingtablename"
+                    label="displaykey.Web.InternalTools.InfoPages.LoadHistory.StagingTableName"
+                    value="RowCount.StagingTableName"/>
+                  <Cell
+                    id="stagingtablerowcount"
+                    label="displaykey.Web.InternalTools.InfoPages.LoadHistory.StagingTableRowCount"
+                    value="RowCount.StagingRowCount"/>
+                  <Cell
+                    id="stagingtableblockcount"
+                    label="displaykey.Web.InternalTools.InfoPages.LoadHistory.StagingTableBlockCount"
+                    value="RowCount.StagingBlockCount"
+                    visible="PageHelper.supportsBlockCountReporting()"/>
+                  <Cell
+                    id="sourcetablename"
+                    label="displaykey.Web.InternalTools.InfoPages.LoadHistory.SourceTableName"
+                    value="RowCount.SourceTableName"/>
+                  <Cell
+                    id="sourcetablerowcount"
+                    label="displaykey.Web.InternalTools.InfoPages.LoadHistory.SourceTableRowCount"
+                    value="RowCount.SourceRowCount"/>
+                  <Cell
+                    id="sourcetableblockcount"
+                    label="displaykey.Web.InternalTools.InfoPages.LoadHistory.SourceTableBlockCount"
+                    value="RowCount.SourceBlockCount"
+                    visible="PageHelper.supportsBlockCountReporting()"/>
+                </Row>
+              </RowIterator>
+            </ListViewPanel>
+          </PanelRef>
+        </Card>
+        <Card
+          id="IntegrityChecksCard"
+          title="displaykey.Web.InternalTools.InfoPages.LoadHistory.IntegrityChecks(util.StringUtil.formatNumber(numIntegrityChecks, &quot;####0&quot;))"
+          visible="numIntegrityChecks &gt; 0">
+          <PanelRef
+            def="LoadIntegrityChecksLV(PageHelper, History.OrderedIntegrityChecks)">
+            <Toolbar/>
+          </PanelRef>
+        </Card>
+        <Card
+          id="InsertsCard"
+          title="displaykey.Web.InternalTools.InfoPages.LoadHistory.Inserts(util.StringUtil.formatNumber(numInserts, &quot;####0&quot;))"
+          visible="numInserts &gt; 0">
+          <PanelRef
+            def="LoadInsertSelectsLV(PageHelper, History.OrderedInserts)">
+            <Toolbar/>
+          </PanelRef>
+        </Card>
+        <Card
+          id="CallbacksCard"
+          title="displaykey.Web.InternalTools.InfoPages.LoadHistory.Callbacks(util.StringUtil.formatNumber(numCallbacks, &quot;####0&quot;))"
+          visible="numCallbacks &gt; 0">
+          <PanelRef
+            def="LoadCallbacksLV(PageHelper, History, History.OrderedCallbacks, true)">
+            <Toolbar/>
+          </PanelRef>
+        </Card>
+        <Card
+          id="StatisticsCmdsCard"
+          title="displaykey.Web.InternalTools.InfoPages.LoadHistory.StatisticsCmds(util.StringUtil.formatNumber(numDBStatsCmds, &quot;####0&quot;))"
+          visible="numDBStatsCmds &gt; 0">
+          <PanelRef>
+            <Toolbar/>
+            <ListViewPanel
+              id="loadhistorydbstatisticscmdsLV">
+              <RowIterator
+                editable="false"
+                elementName="Command"
+                pageSize="10"
+                value="History.UpdateDBStatisticsCommands">
+                <Row>
+                  <Cell
+                    id="cmdtablename"
+                    label="displaykey.Web.InternalTools.InfoPages.DatabaseTableInfo.Rows.Table"
+                    value="Command.TableName"/>
+                  <TextAreaCell
+                    id="cmdcommand"
+                    label="displaykey.Web.InternalTools.InfoPages.LoadHistory.SQLCommand"
+                    numCols="140"
+                    numRows="3"
+                    value="Command.StatsCommand"/>
+                </Row>
+              </RowIterator>
+            </ListViewPanel>
+          </PanelRef>
+        </Card>
+        <Card
+          id="TableEncryptsCard"
+          title="displaykey.Web.InternalTools.InfoPages.LoadHistory.TableEncrypt(util.StringUtil.formatNumber(numEncrptTables, &quot;####0&quot;))"
+          visible="numEncrptTables &gt; 0">
+          <PanelRef
+            def="LoadEncryptTable(PageHelper, History)"
+            id="LoadEncryptTablePanelRef"/>
+        </Card>
+      </CardViewPanel>
+    </Screen>
+  </Page>
+</PCF>

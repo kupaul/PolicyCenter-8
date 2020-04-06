@@ -1,0 +1,28 @@
+package rules.Assignment.GlobalActivityAssignmentRules_dir.Activitybasedonpattern_dir
+
+@gw.rules.RuleName("Requestor Activities")
+internal class RequestorActivities {
+  static function doCondition(activity : entity.Activity) : boolean {
+    
+/*start00rule*/
+return activity.ActivityPattern == ActivityPattern.finder.getActivityPatternByCode("notification")
+/*end00rule*/
+
+  }
+
+  static function doAction(activity : entity.Activity, actions : gw.rules.Action) {
+
+/*start00rule*/
+if( activity.Job != null ) {
+  if (activity.assignByJobRole( "requestor" )) {
+    actions.exit()
+  }
+} else {
+  if( activity.assignByContainerRole( "requestor" ) ) {
+    actions.exit()
+  }
+}
+/*end00rule*/
+
+  }
+}

@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" desc="A reinsurable risk." entity="RIRisk" final="false" loadable="false" subpackage="reinsurance" table="ririsk" type="retireable">
+  <implementsEntity name="Extractable"/>
+  <implementsEntity name="SimpleEffDated"/>
+  <implementsInterface iface="gw.api.reinsurance.MergeableAdapter" impl="gw.reinsurance.risk.RIRiskMergeableAdapter"/>
+  <implementsInterface iface="gw.api.reinsurance.Cedeable" impl="gw.reinsurance.risk.RIRiskCedeableAdapter"/>
+  <foreignkey desc="The version list of this RIRisk." fkentity="RIRiskVersionList" name="VersionList" nullok="false" setterScriptability="doesNotExist"/>
+  <foreignkey desc="Reinsurance program associated with this RIRisk on the date Policy was issued.   This is applicable for policy-attached reinsurance." fkentity="RIProgram" name="PolicyAttachmentProgram" nullok="true"/>
+  <foreignkey desc="Reinsurance program associated with this RIRisk, as of the RIRisk's slice date." fkentity="RIProgram" name="LossDateAttachmentProgram" nullok="true"/>
+  <column desc="Probable Maximum Loss Percentage." name="ProbableMaxLossPct" nullok="true" type="percentagedec"/>
+  <column desc="Probable Maximum Loss Reason." name="ProbableMaxLossReason" nullok="true" type="longtext"/>
+  <monetaryamount amountColumnName="GrossRetention" amountRange="nonnegative" desc="first layer of risk prior to ceding to any surplus treaty and which would be shared with a quota share treaty" name="GrossRetention" nullok="true" scaleToCurrency="true"/>
+  <monetaryamount amountColumnName="DefaultRetentionFromProgram" amountRange="nonnegative" currencyColumnName="RetentionFromProgramCurr" desc="De Facto Gross Retention in effect when program was attached." name="DefaultRetentionFromProgram" nullok="true"/>
+  <column desc="For grouping location risks. Placed on RIRisk instead of on the effDated LocationGroup so that it can be edited after the policy is locked." name="LocationRiskGroup" nullok="true" type="varchar">
+    <columnParam name="size" value="30"/>
+  </column>
+  <monetaryamount amountColumnName="TotalInsuredValue" amountRange="nonnegative" desc="Total insured value (property coverage) or sum insured (liability coverage) for the risk." name="TotalInsuredValue" nullok="true"/>
+  <array arrayentity="RIPolicyAttachment" cascadeDelete="true" desc="All reinsurance attachments of this risk." name="PolicyAttachments" owner="true" setterScriptability="doesNotExist"/>
+  <checkconstraint predicate="ExpirationDate IS NOT NULL"/>
+  <dbcheckbuilder className="com.guidewire.pc.domain.reinsurance.dbchecks.RIRiskAndReinsurableDBCheckBuilder"/>
+</entity>

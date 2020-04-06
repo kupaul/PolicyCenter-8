@@ -1,0 +1,30 @@
+package rules.Validation.AccountValidationRules_dir
+
+@gw.rules.RuleName("Related Accounts")
+internal class RelatedAccounts {
+  static function doCondition(account : entity.Account) : boolean {
+    
+/*start00rule*/
+return true
+/*end00rule*/
+
+  }
+
+  static function doAction(account : entity.Account, actions : gw.rules.Action) {
+
+/*start00rule*/
+// There mustn't be multiple relationships of the same type with the same other account.
+var allRelationships = account.getAllRelatedAccounts(User.util.CurrentUser).map(\ra -> ra.getRelationship(account))
+var relationshipMap = allRelationships.partition(\ r -> new gw.util.Pair<Account, AccountRelationshipType>(r.OtherAccount, r.RelationshipType))
+for (key in relationshipMap.Keys) {
+  if (relationshipMap[key].Count > 1) {
+    account.reject("loadsave", 
+      displaykey.Account.RelatedAccount.Error.Duplicate(key.Second, account, key.First), 
+      null, null)
+  }
+}
+
+/*end00rule*/
+
+  }
+}

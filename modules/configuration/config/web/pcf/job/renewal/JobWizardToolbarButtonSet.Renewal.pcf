@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ToolbarButtonSet
+    id="JobWizardToolbarButtonSet"
+    mode="Renewal">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="job as Renewal"
+      name="renewal"
+      type="Renewal"/>
+    <Variable
+      initialValue="CurrentLocation as pcf.api.Wizard"
+      name="wizard"
+      type="pcf.api.Wizard"/>
+    <Variable
+      initialValue="policyPeriod.RenewalProcess"
+      name="renewalProcess"/>
+    <Variable
+      initialValue="new gw.lob.common.SideBySideUIHelper(policyPeriod, wizard, jobWizardHelper)"
+      name="sideBySideHelper"
+      type="gw.lob.common.SideBySideUIHelper"/>
+    <Variable
+      initialValue="(not policyPeriod.UWLockedAndNoOverride) and renewalProcess.canMakeNewVersion().Okay"
+      name="canPerformNewVersion"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="sideBySideHelper.canAttemptSideBySide()"
+      name="canPerformSideBySide"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="perm.PolicyPeriod.view(policyPeriod) and policyPeriod.Job.hasMultiplePeriods()and policyPeriod.Job.SideBySide"
+      name="canViewSideBySide"/>
+    <ToolbarButton
+      action="UWActivityPopup.push(policyPeriod, ActivityPattern.finder.getActivityPatternByCode(&quot;uw_review_approved&quot;), &quot;UWApproval&quot;)"
+      id="Unlock"
+      label="displaykey.Job.Operation.ReleaseLock"
+      shortcut="K"
+      visible="renewalProcess.canReleaseLock()"/>
+    <ToolbarButton
+      action="jobWizardHelper.requestQuote(policyPeriod, jobWizardHelper.getQuoteStep(policyPeriod))"
+      id="RenewalQuote"
+      label="displaykey.Job.Operation.Quote"
+      shortcut="Q"
+      visible="renewalProcess.canManuallyQuote().Okay"/>
+    <ToolbarButton
+      action="renewalProcess.edit(); wizard.saveDraft();"
+      confirmMessage="displaykey.Job.Operation.Edit.Confirm"
+      id="EditPolicy"
+      label="displaykey.Job.Operation.EditWorkOrder"
+      shortcut="E"
+      visible="renewalProcess.canEdit().Okay"/>
+    <ToolbarButton
+      action="editRenewalFromWorkflow()"
+      confirmMessage="displaykey.Job.Operation.Edit.Confirm"
+      id="EditPolicyWorkflow"
+      label="displaykey.Job.Operation.EditWorkOrder"
+      shortcut="E"
+      showConfirmMessage="policyPeriod.ValidQuote"
+      visible="renewalProcess.ActiveRenewalWorkflow != null and renewalProcess.ActiveRenewalWorkflow.isTriggerAvailable(&quot;EditPolicy&quot;)"/>
+    <ToolbarButton
+      action="wizard.saveDraft()"
+      hideIfReadOnly="true"
+      id="Draft"
+      label="displaykey.Button.SaveDraft"
+      shortcut="S"/>
+    <ToolbarButton
+      id="Versions"
+      label="displaykey.Web.MultiQuoteWizardToolbar.Versions"
+      showConfirmMessage="false"
+      visible="canPerformNewVersion or canPerformSideBySide or canViewSideBySide">
+      <MenuItem
+        action="attemptNewVersion()"
+        id="NewVersion"
+        label="sideBySideHelper.getVersionLabel()"
+        shortcut="V"
+        visible="canPerformNewVersion"/>
+      <MenuItem
+        action="sideBySideHelper.attemptSideBySide(2)"
+        id="SideBySide"
+        label="displaykey.Web.Job.SideBySide.Go"
+        shortcut="X"
+        visible="canPerformSideBySide"/>
+      <MenuItem
+        action="jobWizardHelper.goToStep(&quot;SideBySide&quot;)"
+        id="ViewSideBySide"
+        label="displaykey.Web.Job.SideBySide.ViewSideBySide"
+        visible="canViewSideBySide"/>
+    </ToolbarButton>
+    <ToolbarButton
+      id="BindOptions"
+      label="displaykey.Job.Operation.BindOptions"
+      shortcut="B"
+      visible="renewalProcess.canPendingRenew().Okay or renewalProcess.canIssueNow().Okay">
+      <MenuItem
+        action="jobWizardHelper.requestRenewRenewal(policyPeriod)"
+        id="SendToRenewal"
+        label="displaykey.Job.Operation.SendToRenewal"
+        shortcut="R"
+        visible="renewalProcess.canPendingRenew().Okay"/>
+      <MenuItem
+        action="jobWizardHelper.requestIssueJob(policyPeriod)"
+        confirmMessage="displaykey.Job.Operation.IssueNow.Confirm"
+        id="IssueNow"
+        label="displaykey.Job.Operation.IssueNow"
+        shortcut="I"
+        visible="renewalProcess.canIssueNow().Okay"/>
+    </ToolbarButton>
+    <ToolbarButton
+      id="CloseOptions"
+      label="displaykey.Job.Operation.CloseOptions"
+      shortcut="C"
+      visible="renewalProcess.canWithdrawJob().Okay or renewalProcess.canPendingNonRenew().Okay or renewalProcess.canPendingNotTaken().Okay">
+      <MenuItem
+        action="jobWizardHelper.withdraw(policyPeriod); PolicyFileForward.go(policyPeriod.BasedOn, policyPeriod.BasedOn.PeriodStart);"
+        confirmMessage="displaykey.Job.Operation.Withdraw.Confirm"
+        id="Withdraw"
+        label="displaykey.Job.Operation.Withdraw"
+        shortcut="W"
+        visible="renewalProcess.canWithdraw().Okay"/>
+      <MenuItem
+        action="renewalProcess.assertNonRenewLeadTime(); RenewalWizard_NonRenewPopup.push(renewal, policyPeriod)"
+        id="SendToNonRenewal"
+        label="displaykey.Job.Operation.SendToNonRenewal"
+        shortcut="N"
+        visible="renewalProcess.canPendingNonRenew().Okay"/>
+      <MenuItem
+        action="if (jobWizardHelper.revalidateModel()) { renewalProcess.pendingNotTaken(); wizard.finish(); JobComplete.go(renewal, policyPeriod) }"
+        confirmMessage="displaykey.Job.Operation.SendToNotTaken.Confirm"
+        id="SendToNotTaken"
+        label="displaykey.Job.Operation.NotTaking"
+        shortcut="O"
+        visible="renewalProcess.canPendingNotTaken().Okay"/>
+    </ToolbarButton>
+    <Code><![CDATA[function attemptNewVersion() {
+  wizard.saveDraft()
+  if (job.SideBySide) {
+    gw.lob.common.SideBySideUtil.addNewSideBySidePeriod(policyPeriod)
+    wizard.saveDraft()
+    jobWizardHelper.goToStep("SideBySide")
+  } else {
+    jobWizardHelper.newPeriod()
+    wizard.saveDraft()
+    if ( !jobWizardHelper.isStepVisitable( jobWizardHelper.CurrentStep ) ) {
+      jobWizardHelper.goToStep( "PolicyInfo" )
+    }
+  }
+}
+
+function editRenewalFromWorkflow(){
+  if(policyPeriod.Status == TC_NEW){
+    gw.transaction.Transaction.runWithNewBundle(\ bundle -> {
+      var p = bundle.loadBean(policyPeriod.ID) as PolicyPeriod
+      p.RenewalProcess.ActiveRenewalWorkflow.invokeTrigger("EditPolicy")
+    })
+    JobForward.go(job)
+  }else{
+    renewalProcess.ActiveRenewalWorkflow.invokeTrigger("EditPolicy")
+    wizard.saveDraft()
+  }
+}]]></Code>
+  </ToolbarButtonSet>
+</PCF>

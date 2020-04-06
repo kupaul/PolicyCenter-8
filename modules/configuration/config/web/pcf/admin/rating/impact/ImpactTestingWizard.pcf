@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Wizard
+    canEdit="false"
+    canVisit="perm.System.rateimpacttesting &amp;&amp; !gw.api.system.PCDependenciesGateway.ServerMode.Production"
+    countsAsWork="false"
+    id="ImpactTestingWizard"
+    title="displaykey.Web.Rating.ImpactTesting.ImpactTestingWizard">
+    <Variable
+      initialValue="ImpactTestingTestCase.getSingletonTestCase()"
+      name="testCase"/>
+    <WizardStep
+      id="ChoosePoliciesStep"
+      onEnter="testCase.refresh()"
+      screen="ImpactTestingChoosePoliciesScreen(testCase)"
+      title="displaykey.Web.Rating.ImpactTesting.ChoosePolicies"/>
+    <WizardStep
+      id="CreateBaselineStep"
+      onEnter="testCase.refresh()"
+      screen="ImpactTestingCreateBaselineScreen(testCase)"
+      title="displaykey.Web.Rating.ImpactTesting.CreateBaseline"/>
+    <WizardStep
+      available="testCase.TestPrepUnprocessedCount == 0"
+      id="SelectRateBooksStep"
+      onEnter="testCase.refresh()"
+      screen="ImpactTestingSelectRatebooksScreen(testCase)"
+      title="displaykey.Web.Rating.ImpactTesting.SelectRateBook"/>
+    <WizardStep
+      available="testCase.TestPrepUnprocessedCount == 0 and testCase.Ratebooks.Count &gt; 0"
+      id="QuoteTestPeriodsStep"
+      onEnter="testCase.refresh()"
+      screen="ImpactTestingQuoteTestPeriodsScreen(testCase)"
+      title="displaykey.Web.Rating.ImpactTesting.TestingPeriods"/>
+    <WizardStep
+      available="testCase.IsTestRunComplete"
+      id="ExportToExcelStep"
+      onEnter="testCase.refresh()"
+      screen="ImpactTestingExportScreen(testCase)"
+      title="displaykey.Web.Rating.ImpactTesting.Results"/>
+  </Wizard>
+</PCF>

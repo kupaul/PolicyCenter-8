@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    beforeCommit="policyDriver.resetContactAndRoles(duplicateContactsPopupHelper.existingPCContactWithABContactMatch); policyDriver.initializeIncidentSummary();"
+    canEdit="true"
+    countsAsWork="false"
+    id="NewPolicyDriverPopup"
+    returnType="PolicyDriver"
+    startInEditMode="true"
+    title="displaykey.Web.Contact.NewContact(entity.PolicyDriver.Type.TypeInfo.DisplayName)">
+    <!-- brand new contact or new contact from AB search -->
+    <LocationEntryPoint
+      signature="NewPolicyDriverPopup(line: PersonalAutoLine, contactType : ContactType)"/>
+    <Variable
+      name="line"
+      type="PersonalAutoLine"/>
+    <Variable
+      name="contactType"
+      type="ContactType"/>
+    <Variable
+      initialValue="line.addNewPolicyDriverOfContactType(contactType)"
+      name="policyDriver"
+      type="PolicyDriver"/>
+    <Variable
+      initialValue="policyDriver.AccountContactRole.AccountContact.getRole(&quot;Driver&quot;) as Driver"
+      name="driver"/>
+    <Variable
+      initialValue="line.PolicyDrivers.map(\pd -&gt; pd.AccountContactRole.AccountContact.Contact)"
+      name="existingContacts"
+      type="Contact[]"/>
+    <Variable
+      initialValue="new gw.pcf.duplicatecontacts.DuplicateContactsPopupHelper(policyDriver.AccountContactRole.AccountContact.Contact, existingContacts)"
+      name="duplicateContactsPopupHelper"/>
+    <Screen
+      editable="true"
+      id="ContactDetailScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.checkForDuplicatesOrUpdate(\ -&gt; CurrentLocation.pickValueAndCommit(policyDriver))"
+          id="ForceDupCheckUpdate"
+          label="displaykey.Button.OK"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+        <EditButtons
+          pickValue="policyDriver"
+          updateVisible="not duplicateContactsPopupHelper.ShowButton"/>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.push()"
+          id="CheckForDuplicates"
+          label="displaykey.Web.Contact.CheckForDuplicates"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+      </Toolbar>
+      <DetailViewPanel
+        id="PolicyDriverInfoDV">
+        <InputColumn>
+          <DateInput
+            editable="true"
+            id="datecompletedtrainingclass"
+            label="displaykey.Web.Account.Contact.Driver.DateCompletedTrainingClass"
+            value="driver.DateCompletedTrainingClass"/>
+          <TypeKeyInput
+            editable="true"
+            id="trainingclasstype"
+            label="displaykey.Web.Account.Contact.Driver.TrainingClassType"
+            value="driver.TrainingClassType"/>
+          <TypeKeyInput
+            editable="true"
+            id="numberofaccidents"
+            label="displaykey.Web.Account.Contact.Driver.NumberOfAccidents"
+            value="driver.NumberofAccidents"/>
+          <TypeKeyInput
+            editable="true"
+            id="numberofviolations"
+            label="displaykey.Web.Account.Contact.Driver.NumberOfViolations"
+            value="driver.NumberofViolations"/>
+          <BooleanRadioInput
+            editable="true"
+            id="student"
+            label="displaykey.Web.Account.Contact.Driver.Student"
+            value="driver.Student"/>
+          <Input
+            editable="true"
+            id="yearlicensed"
+            label="displaykey.Web.Account.Contact.Driver.YearGotLicence"
+            value="driver.YearLicensed"/>
+          <BooleanRadioInput
+            editable="true"
+            id="gooddriverdiscount"
+            label="displaykey.Web.Account.Contact.Driver.GoodDriverDiscount"
+            value="driver.GoodDriverDiscount"/>
+          <InputDivider/>
+          <BooleanRadioInput
+            editable="true"
+            id="ApplicableGoodDriverDiscount"
+            label="displaykey.Web.PolicyLine.Drivers.ApplicableGoodDriverDiscount"
+            value="policyDriver.ApplicableGoodDriverDiscount"/>
+          <BooleanRadioInput
+            editable="true"
+            id="Excluded"
+            label="displaykey.Web.PolicyLine.Drivers.ExcludedDriver"
+            value="policyDriver.Excluded">
+            <PostOnChange/>
+          </BooleanRadioInput>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef
+        def="NewPolicyContactRoleDetailsCV(policyDriver, false)"/>
+    </Screen>
+  </Popup>
+</PCF>

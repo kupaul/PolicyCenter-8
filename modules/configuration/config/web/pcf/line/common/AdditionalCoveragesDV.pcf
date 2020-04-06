@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="AdditionalCoveragesDV">
+    <Require
+      name="coverable"
+      type="Coverable"/>
+    <Require
+      name="coverageCategories"
+      type="String[]"/>
+    <Variable
+      initialValue="coverable == null ? null : filteredCoverages().map(\c -&gt; c.Pattern)"
+      name="addedCoveragesToShow"
+      recalculateOnRefresh="true"/>
+    <Require
+      name="includeExclude"
+      type="boolean"/>
+    <InputColumn>
+      <InputSet
+        visible="addedCoveragesToShow.Count &gt; 0">
+        <InputIterator
+          desc="OK for toAdd to be null -- coverage is added by the popup"
+          elementName="coveragePattern"
+          forceRefreshDespiteChangedEntries="true"
+          id="AddedCovIterator"
+          value="addedCoveragesToShow">
+          <IteratorSort
+            sortBy="coveragePattern.CoverageCategory.Priority"
+            sortOrder="1"/>
+          <IteratorSort
+            sortBy="coveragePattern.Priority"
+            sortOrder="2"/>
+          <InputSetRef
+            def="CoverageInputSet(coveragePattern, coverable, CurrentLocation.InEditMode)"
+            mode="coveragePattern.Code"/>
+        </InputIterator>
+      </InputSet>
+    </InputColumn>
+    <Code><![CDATA[
+function filteredCoverages() : Coverage[] {
+  var covlist : Coverage[]
+  if (coverable == null) {
+    return null
+  }
+  if (includeExclude) {
+    return coverable.getCoveragesInCategories(coverageCategories) as Coverage[] 
+  }
+  else {
+    return coverable.getCoveragesNotInCategories(coverageCategories) as Coverage[]
+  }
+}
+      
+    ]]></Code>
+  </DetailViewPanel>
+</PCF>

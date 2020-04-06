@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<typelist xmlns="http://guidewire.com/typelists" desc="All available types of policies" final="false" subpackage="policy" name="PolicyPeriodStatus">
+  <!-- Priority is used to determine the status to display for an open job with multiple periods,
+    or a complete job that was not withdrawn and did not result in a bound period.
+    For an open job with multiple periods, we use the status with the highest priority. Draft is
+    the default status; it is returned if no period has a higher priority status.
+    For a complete, non-bound job, we use withdrawn as the default status.
+    For a complete bound job, we use Issued as the default status.
+    The result of a tie is that the typekeys are sorted by alphabetical order. -->
+  <typecode code="New" desc="Policy is brand new. Submission, Issuance and Renewal jobs initially set this status" name="New" priority="5"/>
+  <typecode code="Draft" desc="Policy is editable. Cancellation, PolicyChange, Reinstatement, Rewrite and RewriteNewAccount jobs initially set this status" name="Draft" priority="0"/>
+  <typecode code="Quoted" desc="Policy has been quoted. Quote process sets this status when complete" name="Quoted" priority="10"/>
+  <typecode code="Quoting" desc="Policy is in the process of being quoted. Quote process initially sets this status" name="Quoting" priority="15"/>
+  <typecode code="Bound" desc="Policy has been bound. Cancellation, Issuance, Reinstatement, Rewrite, RewriteNewAccount, Submission and PolicyChange jobs set this status" name="Bound" priority="20"/>
+  <typecode code="Withdrawn" desc="Policy has been withdrawn by agent or insured" name="Withdrawn" priority="0"/>
+  <typecode code="Declined" desc="Policy has been declined by carrier" name="Declined" priority="1"/>
+  <typecode code="Expired" desc="Policy has timed out. Job expiration work queue sets this status" name="Expired" priority="1"/>
+  <typecode code="NonRenewed" desc="Policy has been Non-Renewed" name="Non-renewed" priority="20"/>
+  <typecode code="NotTaken" desc="Policy was not-taken" name="Not-taken" priority="20"/>
+  <typecode code="Temporary" desc="Policy is in the process of being created" name="Temporary" priority="0"/>
+  <typecode code="LegacyConversion" desc="Policy is a Legacy SOR that is created for renewal conversion." name="LegacyConversion" priority="25"/>
+  <typefilter desc="What PolicyPeriodStatuses indicate that the PolicyPeriod can no longer change status" name="Closed">
+    <include code="Bound"/>
+    <include code="Withdrawn"/>
+    <include code="Declined"/>
+    <include code="NonRenewed"/>
+    <include code="NotTaken"/>
+    <include code="Expired"/>
+    <include code="LegacyConversion"/>
+  </typefilter>
+  <typefilter
+    desc="What PolicyPeriodStatuses indicate that the PolicyPeriod's total cost cannot be
+    considered towards footer sum calculations"
+    name="IneligibleForTotalCostCalculations">
+      <include code="NotTaken"/>
+      <include code="Withdrawn"/>
+      <include code="Declined"/>
+      <include code="Temporary"/>
+      <include code="Expired"/>
+  </typefilter>
+</typelist>

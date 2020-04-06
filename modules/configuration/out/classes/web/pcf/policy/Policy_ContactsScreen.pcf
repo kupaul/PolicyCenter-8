@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Screen
+    id="Policy_ContactsScreen">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="policyPeriod.AccountContactRoleMap"
+      name="acctContactRoleMap"/>
+    <TitleBar/>
+    <Toolbar/>
+    <ListDetailPanel
+      selectionName="selectedAccountContact"
+      selectionType="AccountContact">
+      <ListViewPanel
+        id="Policy_ContactsLV">
+        <RowIterator
+          editable="false"
+          elementName="accountContact"
+          value="acctContactRoleMap.keySet().toTypedArray()">
+          <IteratorSort
+            sortBy="accountContact.Contact.Name"
+            sortOrder="1"/>
+          <Row>
+            <Cell
+              id="Name"
+              label="displaykey.Web.PolicyFile.Contacts.Name"
+              value="acctContactRoleMap.get(accountContact).first().DisplayName"/>
+            <Cell
+              id="Roles"
+              label="displaykey.Web.PolicyFile.Contacts.Roles"
+              value="acctContactRoleMap.get(accountContact).map( \ p -&gt; (typeof p).TypeInfo.DisplayName ).join(&quot;, &quot;)"/>
+            <Cell
+              id="Phone"
+              label="displaykey.Web.PolicyFile.Contacts.Phone"
+              value="accountContact.Contact.PrimaryPhoneValue"/>
+            <Cell
+              id="Email"
+              label="displaykey.Web.PolicyFile.Contacts.Email"
+              value="accountContact.Contact.EmailAddress1"
+              width="300"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+      <CardViewPanel>
+        <Variable
+          initialValue="acctContactRoleMap.get(selectedAccountContact) == null ? null : acctContactRoleMap.get(selectedAccountContact).first()"
+          name="policyContactRole"
+          recalculateOnRefresh="true"/>
+        <Card
+          id="PolicyContactDetailCard"
+          title="displaykey.Web.AccountContacts.AccountDetail">
+          <PanelRef
+            def="PolicyContactDetailsDV(policyContactRole, false)"/>
+        </Card>
+        <Card
+          id="RolesCard"
+          title="displaykey.Web.Admin.UserDetailDV.Roles">
+          <PanelIterator
+            elementName="currentPolicyContactRole"
+            id="PolicyContactRoleIterator"
+            value="policyContactRole.Branch.PolicyContactRoles.where(\ pcr -&gt; pcr.AccountContactRole.AccountContact == policyContactRole.AccountContactRole.AccountContact)">
+            <IteratorSort
+              sortBy="currentPolicyContactRole.Subtype.DisplayName"
+              sortOrder="1"/>
+            <PanelRef
+              def="PolicyContactRolePanelSet(currentPolicyContactRole)"
+              mode="currentPolicyContactRole.Subtype"/>
+          </PanelIterator>
+        </Card>
+        <Card
+          id="AddressesCard"
+          title="displaykey.Web.Contact.Addresses.Title">
+          <PanelRef
+            def="AddressesPanelSet(selectedAccountContact.Contact,false,policyPeriod.Policy.Account, policyPeriod)"/>
+        </Card>
+      </CardViewPanel>
+    </ListDetailPanel>
+  </Screen>
+</PCF>

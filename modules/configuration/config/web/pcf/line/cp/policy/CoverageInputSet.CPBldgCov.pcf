@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <!-- The CP Building Coverage requires its own CoverageInputSet because the valuation method impacts the
+    available choices for co-insurance and auto increase. -->
+  <InputSet
+    id="CoverageInputSet"
+    mode="CPBldgCov"
+    visible="gw.web.line.cp.policy.CoverageInputSet.CPBldgCovUIHelper.isCoverageAvailable(coverable, coveragePattern)">
+    <Require
+      name="coveragePattern"
+      type="gw.api.productmodel.ClausePattern"/>
+    <Require
+      name="coverable"
+      type="Coverable"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="coverable as CPBuilding"
+      name="building"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="gw.web.line.cp.policy.CoverageInputSet.CPBldgCovUIHelper.getCoinsuranceValue(building, building.CPBldgCov.CPBldgCovValuationMethodTerm.Value)"
+      name="coinsuranceTerm"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="gw.web.line.cp.policy.CoverageInputSet.CPBldgCovUIHelper.getAutoIncreaseValue(building, building.CPBldgCov.CPBldgCovValuationMethodTerm.Value)"
+      name="autoIncreaseValue"
+      recalculateOnRefresh="true"/>
+    <HiddenInput
+      id="CovPatternDisplayName"
+      value="coveragePattern.DisplayName"/>
+    <InputGroup
+      allowToggle="coveragePattern.allowToggle(coverable)"
+      childrenVisible="coverable.getCoverageConditionOrExclusion(coveragePattern) != null"
+      id="CovPatternInputGroup"
+      label="coveragePattern.DisplayName"
+      onToggle="building.setCoverageConditionOrExclusionExists(coveragePattern, VALUE)">
+      <InputSetRef
+        def="CovTermDirectInputSet(building.CPBldgCov.CPBldgCovLimitTerm)"
+        id="CPBldgCovLimit"
+        visible="building.CPBldgCov.hasCovTerm(&quot;CPBldgCovLimit&quot;)"/>
+      <RangeInput
+        editable="true"
+        id="CPBldgCovCauseOfLoss"
+        label="building.CPBldgCov.CPBldgCovCauseOfLossTerm.DisplayName"
+        required="building.CPBldgCov.CPBldgCovCauseOfLossTerm.Pattern.Required"
+        value="building.CPBldgCov.CPBldgCovCauseOfLossTerm.Value"
+        valueRange="building.CPBldgCov.CPBldgCovCauseOfLossTerm?.Pattern.OrderedAvailableValues"
+        visible="building.CPBldgCov.hasCovTerm(&quot;CPBldgCovCauseOfLoss&quot;)">
+        <PostOnChange
+          onChange="building.createOrSyncCoverages()"/>
+      </RangeInput>
+      <BooleanRadioInput
+        editable="true"
+        id="CPBldgCovExcludeVandalism"
+        label="building.CPBldgCov.CPBldgCovExcludeVandalismTerm.Pattern.DisplayName"
+        required="building.CPBldgCov.CPBldgCovExcludeVandalismTerm.Pattern.Required"
+        value="building.CPBldgCov.CPBldgCovExcludeVandalismTerm.Value"
+        visible="building.CPBldgCov.hasCovTerm(&quot;CPBldgCovExcludeVandalism&quot;)"/>
+      <BooleanRadioInput
+        editable="true"
+        id="CPBldgCovExcludeSprinkler"
+        label="building.CPBldgCov.CPBldgCovExcludeSprinklerTerm.Pattern.DisplayName"
+        required="building.CPBldgCov.CPBldgCovExcludeSprinklerTerm.Pattern.Required"
+        value="building.CPBldgCov.CPBldgCovExcludeSprinklerTerm.Value"
+        visible="building.CPBldgCov.hasCovTerm(&quot;CPBldgCovExcludeSprinkler&quot;)"/>
+      <BooleanRadioInput
+        editable="true"
+        id="CPBldgCovExcludeTheft"
+        label="building.CPBldgCov.CPBldgCovExcludeTheftTerm.Pattern.DisplayName"
+        required="building.CPBldgCov.CPBldgCovExcludeTheftTerm.Pattern.Required"
+        value="building.CPBldgCov.CPBldgCovExcludeTheftTerm.Value"
+        visible="building.CPBldgCov.hasCovTerm(&quot;CPBldgCovExcludeTheft&quot;)"/>
+      <RangeInput
+        editable="openForEdit and gw.web.productmodel.ChoiceCovTermUtil.isEditable(building.CPBldgCov.CPBldgCovDeductibleTerm)"
+        id="CPBldgCovDeductible"
+        label="building.CPBldgCov.CPBldgCovDeductibleTerm.DisplayName"
+        required="building.CPBldgCov.CPBldgCovDeductibleTerm.Pattern.Required"
+        sortValueRange="false"
+        value="building.CPBldgCov.CPBldgCovDeductibleTerm.OptionValue"
+        valueRange="gw.web.productmodel.ChoiceCovTermUtil.getModelValueRange(building.CPBldgCov.CPBldgCovDeductibleTerm, openForEdit)"
+        visible="building.CPBldgCov.hasCovTerm(&quot;CPBldgCovDeductible&quot;)">
+        <PostOnChange/>
+      </RangeInput>
+      <RangeInput
+        editable="openForEdit and gw.web.productmodel.ChoiceCovTermUtil.isEditable(building.CPBldgCov.CPBldgCovWindDeductibleTerm)"
+        id="CPBldgCovWindDeductible"
+        label="building.CPBldgCov.CPBldgCovWindDeductibleTerm.DisplayName"
+        required="building.CPBldgCov.CPBldgCovWindDeductibleTerm.Pattern.Required"
+        sortValueRange="false"
+        value="building.CPBldgCov.CPBldgCovWindDeductibleTerm.OptionValue"
+        valueRange="gw.web.productmodel.ChoiceCovTermUtil.getModelValueRange(building.CPBldgCov.CPBldgCovWindDeductibleTerm, openForEdit)"
+        visible="building.CPBldgCov.hasCovTerm(&quot;CPBldgCovWindDeductible&quot;)"/>
+      <RangeInput
+        editable="true"
+        id="CPBldgCovValuationMethod"
+        label="building.CPBldgCov.CPBldgCovValuationMethodTerm.DisplayName"
+        required="building.CPBldgCov.CPBldgCovValuationMethodTerm.Pattern.Required"
+        value="building.CPBldgCov.CPBldgCovValuationMethodTerm.Value"
+        valueRange="building.CPBldgCov.CPBldgCovValuationMethodTerm?.Pattern.OrderedAvailableValues"
+        visible="building.CPBldgCov.hasCovTerm(&quot;CPBldgCovValuationMethod&quot;)">
+        <PostOnChange/>
+      </RangeInput>
+      <RangeInput
+        editable="openForEdit and gw.web.productmodel.ChoiceCovTermUtil.isEditable(coinsuranceTerm)"
+        id="CPBldgCovCoinsurance"
+        label="building.CPBldgCov.CPBldgCovCoinsuranceTerm.DisplayName"
+        required="building.CPBldgCov.CPBldgCovCoinsuranceTerm.Pattern.Required"
+        sortValueRange="false"
+        value="coinsuranceTerm.OptionValue"
+        valueRange="gw.web.productmodel.ChoiceCovTermUtil.getModelValueRange(coinsuranceTerm, openForEdit)"
+        visible="gw.web.line.cp.policy.CoverageInputSet.CPBldgCovUIHelper.isCoinsuranceAvailable(building)"/>
+      <RangeInput
+        editable="openForEdit and gw.web.productmodel.ChoiceCovTermUtil.isEditable(autoIncreaseValue)"
+        id="CPBldgCovAutoIncrease"
+        label="building.CPBldgCov.CPBldgCovAutoIncreaseTerm.DisplayName"
+        required="building.CPBldgCov.CPBldgCovAutoIncreaseTerm.Pattern.Required"
+        sortValueRange="false"
+        value="autoIncreaseValue.OptionValue"
+        valueRange="gw.web.productmodel.ChoiceCovTermUtil.getModelValueRange(autoIncreaseValue, openForEdit)"
+        visible="gw.web.line.cp.policy.CoverageInputSet.CPBldgCovUIHelper.isAutoIncreaseAvailable(building)"/>
+      <PostOnChange/>
+    </InputGroup>
+    <InputDivider
+      visible="openForEdit or coverable.getCoverageConditionOrExclusion(coveragePattern) != null"/>
+  </InputSet>
+</PCF>

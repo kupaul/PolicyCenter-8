@@ -1,0 +1,401 @@
+<SolrSchemaMapping
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="solr-search-config.xsd"
+        version="1">
+
+    <!--
+       The contents of this file should correspond to the schema file and bulk load instructions in
+           ...\app-pc\pc\config\solr\policy\schema.xml
+           ...\app-pc\pc\config\solr\policy\data-config.xml
+
+       ALL OF THESE FILES MUST BE CUSTOMER-EDITABLE (studio copy-on-write semantics)
+      -->
+
+    <!--
+      <Indexer>
+        <IndexField field="solr_field_name" mapper="mapper_class>
+          <DataProperty name="fq_bean_name" property="property_name"/>
+          ... additional entity properties, if any
+        </IndexField>
+
+        ... additional index entries as needed
+
+      </Indexer>
+    -->
+
+    <Indexer>
+
+        <Root name="root" type="entity.PolicyPeriod"/>
+
+        <IndexField field="urn" mapper="gw.solr.mapper.BuildURN" key="true">
+            <!-- do not include this in the unique key digest -->
+            <DataProperty path="root.Policy.PublicID"/>
+            <DataProperty path="root.SolrUniqueKey"/>
+        </IndexField>
+
+        <IndexField field="periodID">
+            <!-- do not include this in the unique key digest -->
+            <DataProperty path="root.PublicID"/>
+        </IndexField>
+
+        <IndexField field="policyPublicID">
+            <!-- do not include this in the unique key digest -->
+            <DataProperty path="root.Policy.PublicID"/>
+        </IndexField>
+
+        <IndexField field="periodStatus">
+            <!-- this MUST be included in the digest;
+                 its purpose is to prevent unbound periods from replacing bound ones -->
+            <DataProperty path="root.Status.Code"/>
+        </IndexField>
+
+        <IndexField field="policyNumber">
+            <DataProperty path="root.PolicyNumber"/>
+        </IndexField>
+
+        <IndexField field="fullName" mapper="gw.solr.mapper.BuildPersonName">
+            <DataProperty path="root.PrimaryNamedInsured"/>
+        </IndexField>
+
+        <IndexField field="companyName" mapper="gw.solr.mapper.BuildCompanyName">
+            <DataProperty path="root.PrimaryNamedInsured"/>
+        </IndexField>
+
+        <IndexField field="ANIcompanyName" mapper="gw.solr.mapper.BuildANICompanyName">
+            <!-- when digesting these, they must be put into a consistent order -->
+            <DataProperty path="root.PolicyContactRoles"/>
+        </IndexField>
+
+        <IndexField field="ANIfullName" mapper="gw.solr.mapper.BuildANIPersonName">
+            <!-- when digesting these, they must be put into a consistent order -->
+            <DataProperty path="root.PolicyContactRoles"/>
+        </IndexField>
+
+        <IndexField field="addressLine1">
+            <DataProperty path="root.PolicyAddress.AddressLine1"/>
+        </IndexField>
+
+        <IndexField field="city">
+            <DataProperty path="root.PolicyAddress.City"/>
+        </IndexField>
+
+        <IndexField field="state">
+            <DataProperty path="root.PolicyAddress.State.Code"/>
+        </IndexField>
+
+        <IndexField field="postalCode">
+            <DataProperty path="root.PolicyAddress.PostalCode"/>
+        </IndexField>
+
+        <IndexField field="product">
+            <DataProperty path="root.Policy.Product.Code"/>
+        </IndexField>
+
+        <IndexField field="jurisdiction">
+            <DataProperty path="root.BaseState.Code"/>
+        </IndexField>
+
+        <IndexField field="producer">
+            <DataProperty path="root.ProducerCodeOfRecord.Organization.Name"/>
+        </IndexField>
+
+        <IndexField field="producerCodeOfService">
+            <DataProperty path="root.Policy.ProducerCodeOfService.Code"/>
+        </IndexField>
+
+        <IndexField field="phone" mapper="gw.solr.mapper.BuildPNIPhones">
+            <!-- when digesting these, they must be put into a consistent order -->
+            <DataProperty name="_pniContact"/>
+        </IndexField>
+
+        <IndexField field="policyStart" mapper="gw.solr.mapper.BuildDate">
+            <DataProperty path="root.PolicyStartDate"/>
+        </IndexField>
+
+        <IndexField field="policyEnd" mapper="gw.solr.mapper.BuildDate">
+            <!-- do not include this in the unique key digest -->
+            <DataProperty path="root.PolicyEndDate"/>
+        </IndexField>
+
+        <IndexField field="periodStart" mapper="gw.solr.mapper.BuildDate">
+            <!-- do not include this in the unique key digest -->
+            <DataProperty path="root.PeriodStart"/>
+        </IndexField>
+
+        <IndexField field="periodEnd" mapper="gw.solr.mapper.BuildDate">
+            <!-- do not include this in the unique key digest -->
+            <DataProperty path="root.PeriodEnd"/>
+        </IndexField>
+
+        <IndexField field="sliceDate" mapper="gw.solr.mapper.BuildDate">
+            <!-- do not include this in the unique key digest -->
+            <DataProperty path="root.SliceDate"/>
+        </IndexField>
+
+        <IndexField field="officialId" mapper="gw.solr.mapper.BuildOfficialIds">
+            <!-- when digesting these, they must be put into a consistent order -->
+            <DataProperty name="_pniContact"/>
+        </IndexField>
+
+        <IndexField field="jobType" mapper="gw.solr.mapper.BuildTypeOf">
+            <DataProperty path="root.Job"/>
+        </IndexField>
+
+    </Indexer>
+
+    <!--
+      <Query>
+        <QueryTerm type="term/subquery/selection" required="t/f" mapper="pkg.mapper" tagger="pkg.taghandler" encoder="pkg.encoder">
+          <DataProperty name="fq_bean_name" property="property_name"/>
+          ... additional entity properties, if any
+          <QueryField field="solr_field" match="exact/prefix/synonym/phonetic" boost="#.#"/>
+          ... additional query fields, if any (e.g. subqueries)
+        </QueryTerm>
+
+        ... additional query terms as needed
+
+      </Query>
+    -->
+
+    <Query>
+
+        <Root name="root" type="gw.solr.SolrPolicySearchCriteria"/>
+
+        <QueryTerm type="subquery" encoder="gw.solr.mapper.query.PhraseEncoder"
+                   tagger="gw.solr.mapper.query.DefaultTagHandler"
+                   phraseSlop="4">
+            <DataProperty path="root.NameCriteria"/>
+
+            <QueryField field="fullName" match="exact" boost="8.0" phraseQuery="true"/>
+            <QueryField field="fullNamePrefix" match="prefix" boost="7.5" phraseQuery="true"/>
+            <QueryField field="fullNameSynonym" match="synonym" boost="4.0"/>
+            <QueryField field="fullNameSoundex" match="phonetic" boost="3.0" phraseQuery="true"/>
+            <!-- TODO: change Soundex to Phonetic, here and in schema.xml -->
+            <QueryField field="fullNamePartial" match="custom" boost="2.0" phraseQuery="true"/>
+
+            <QueryField field="companyName" match="exact" boost="6.0" phraseQuery="true"/>
+            <QueryField field="companyNamePrefix" match="prefix" boost="5.0" phraseQuery="true"/>
+            <QueryField field="companyNameSoundex" match="phonetic" boost="3.0" phraseQuery="true"/>
+            <QueryField field="companyNamePartial" match="custom" boost="2.0" phraseQuery="true"/>
+
+            <!-- match against ANI should be scored lower than match against PNI -->
+            <QueryField field="ANIfullName" match="exact" boost="4.0" phraseQuery="true"/>
+            <QueryField field="ANIfullNamePrefix" match="prefix" boost="3.0" phraseQuery="true"/>
+            <QueryField field="ANIfullNameSynonym" match="synonym" boost="2.0"/>
+            <QueryField field="ANIfullNameSoundex" match="phonetic" boost="1.0" phraseQuery="true"/>
+            <QueryField field="ANIfullNamePartial" match="custom" boost="1.0" phraseQuery="true"/>
+
+            <QueryField field="ANIcompanyName" match="exact" boost="4.0" phraseQuery="true"/>
+            <QueryField field="ANIcompanyNamePrefix" match="prefix" boost="3.0" phraseQuery="true"/>
+            <QueryField field="ANIcompanyNameSoundex" match="phonetic" boost="1.0" phraseQuery="true"/>
+            <QueryField field="ANIcompanyNamePartial" match="custom" boost="1.0" phraseQuery="true"/>
+        </QueryTerm>
+
+        <!-- OR -->
+
+        <QueryTerm type="subquery" tagger="gw.solr.mapper.query.DefaultTagHandler">
+            <DataProperty path="root.PolicyCriteria"/>
+
+            <QueryField field="policyNumber" match="exact" boost="4.0"/>
+            <QueryField field="policyNumberPrefix" match="prefix" boost="3.0"/>
+            <QueryField field="policyNumberPartial" match="custom" boost="1.0"/>
+        </QueryTerm>
+
+        <QueryTerm type="subquery" encoder="gw.solr.mapper.query.PhraseEncoder"
+                   tagger="gw.solr.mapper.query.DefaultTagHandler"
+                   phraseSlop="4">
+            <DataProperty path="root.StreetCriteria"/>
+
+            <QueryField field="addressLine1" match="exact" boost="4.0" phraseQuery="true"/>
+            <QueryField field="addressLine1Prefix" match="prefix" boost="3.2" phraseQuery="true"/>
+            <QueryField field="addressLine1Soundex" match="phonetic" boost="1.6" phraseQuery="true"/>
+            <QueryField field="addressLine1Partial" match="custom" boost="0.8" phraseQuery="true"/>
+        </QueryTerm>
+
+        <QueryTerm type="subquery" encoder="gw.solr.mapper.query.PhraseEncoder"
+                   tagger="gw.solr.mapper.query.DefaultTagHandler"
+                   phraseSlop="4">
+            <DataProperty path="root.CityCriteria"/>
+
+            <QueryField field="city" match="exact" boost="3.0" phraseQuery="true"/>
+            <QueryField field="cityPrefix" match="prefix" boost="2.4" phraseQuery="true"/>
+            <QueryField field="citySoundex" match="phonetic" boost="1.2" phraseQuery="true"/>
+            <QueryField field="cityPartial" match="custom" boost="0.6" phraseQuery="true"/>
+        </QueryTerm>
+
+        <QueryTerm type="term" mapper="gw.solr.mapper.BuildPhones">
+            <DataProperty path="root.PhoneCriteria"/>
+            <QueryField field="phone" match="exact" boost="8.0"/>
+        </QueryTerm>
+
+        <QueryTerm type="term">
+            <DataProperty path="root.OfficialIdCriteria"/>
+            <QueryField field="officialId" match="exact" boost="8.0"/>
+        </QueryTerm>
+
+        <QueryFilter>
+
+            <FilterTerm>
+                <DataProperty path="root.StateCriteria.Code"/>
+                <QueryField field="state" match="exact" boost="4.0"/>
+            </FilterTerm>
+
+            <FilterTerm>
+                <DataProperty path="root.PostalCodeCriteria"/>
+
+                <QueryField field="postalCode" match="exact" boost="4.0"/>
+            </FilterTerm>
+
+            <FilterTerm>
+                <DataProperty path="root.ProductCriteria.Code"/>
+
+                <QueryField field="product" match="exact" boost="4.0"/>
+            </FilterTerm>
+
+            <FilterTerm>
+                <DataProperty path="root.JurisdictionCriteria.Code"/>
+
+                <QueryField field="jurisdiction" match="exact" boost="4.0"/>
+            </FilterTerm>
+
+            <FilterTerm>
+                <DataProperty path="root.ProducerCodeCriteria.Code"/>
+                <QueryField field="producerCodeOfService" match="exact" boost="4.0"/>
+                <QueryField field="producerCode" match="exact" boost="4.0"/>
+            </FilterTerm>
+
+            <FilterTerm>
+                <DataProperty path="root.ProducerCriteria.Name"/>
+
+                <QueryField field="producer" match="exact" boost="4.0"/>
+            </FilterTerm>
+
+
+            <!-- We should query InForceDate Larger Than StartDate-->
+            <FilterTerm mapper="gw.solr.mapper.DateRangeMapper">
+                <DataProperty name="IShouldProduceANullValue"/>
+                <DataProperty path="root.InForceOnDateCriteria"/>
+                <QueryField field="policyStart" match="range" boost="1.0"/>
+            </FilterTerm>
+
+            <!-- We should query InForceDate Less Than EndDate -->
+            <FilterTerm mapper="gw.solr.mapper.DateRangeMapper">
+                <DataProperty path="root.InForceOnDateCriteria"/>
+                <DataProperty name="IShouldProduceAnotherNullValue"/>
+                <QueryField field="policyEnd" match="range" boost="1.0"/>
+            </FilterTerm>
+
+            <FilterTerm mapper="gw.solr.mapper.ProducerCodeSecurityMapper" encoder="">
+                <DataProperty/>
+                <QueryField field="producerCodeOfService" match="exact"/>
+            </FilterTerm>
+
+        </QueryFilter>
+
+
+    </Query>
+
+    <!--
+      <QueryResult>
+        <ResultProperty name="property_name" mapper="pkg.mapper">
+          <ResultField field="solr_field_name"/>
+          ... additional result fields, if any
+          <DataProperty name="fq_bean_name" property="property_name"/>
+          ... additional entity properties, if any
+        </ResultProperty>
+      </QueryResult>
+    -->
+
+    <QueryResult>
+
+        <ResultProperty name="URN">
+            <ResultField name="urn"/>
+        </ResultProperty>
+
+        <ResultProperty name="PeriodID">
+            <ResultField name="periodID"/>
+        </ResultProperty>
+
+        <ResultProperty name="Score">
+            <ResultField name="score"/>
+        </ResultProperty>
+
+        <ResultProperty name="PolicyNumber">
+            <ResultField name="policyNumber"/>
+        </ResultProperty>
+
+        <ResultProperty name="ProductCode">
+            <ResultField name="product"/>
+        </ResultProperty>
+
+        <ResultProperty name="Producer">
+            <ResultField name="producer"/>
+        </ResultProperty>
+
+        <ResultProperty name="ProducerCodeOfService">
+            <ResultField name="producerCodeOfService"/>
+        </ResultProperty>
+
+        <ResultProperty name="FullName">
+            <ResultField name="fullName"/>
+        </ResultProperty>
+
+        <ResultProperty name="Company">
+            <ResultField name="companyName"/>
+        </ResultProperty>
+
+        <ResultProperty name="AddressLine1">
+            <ResultField name="addressLine1"/>
+        </ResultProperty>
+
+        <ResultProperty name="City">
+            <ResultField name="city"/>
+        </ResultProperty>
+
+        <ResultProperty name="State">
+            <ResultField name="state"/>
+        </ResultProperty>
+
+        <ResultProperty name="PostalCode">
+            <ResultField name="postalCode"/>
+        </ResultProperty>
+
+        <ResultProperty name="PeriodStart" mapper="gw.solr.mapper.DateResultMapper">
+            <ResultField name="periodStart"/>
+        </ResultProperty>
+
+        <ResultProperty name="PeriodEnd" mapper="gw.solr.mapper.DateResultMapper">
+            <ResultField name="periodEnd"/>
+        </ResultProperty>
+
+        <ResultProperty name="SliceDate" mapper="gw.solr.mapper.DateResultMapper">
+            <ResultField name="sliceDate"/>
+        </ResultProperty>
+
+        <ResultProperty name="OfficialId">
+            <ResultField name="officialId"/>
+        </ResultProperty>
+
+        <ResultProperty name="ANICompanies" mapper="gw.solr.mapper.MultivalueResultMapper">
+            <ResultField name="ANIcompanyName"/>
+        </ResultProperty>
+
+        <ResultProperty name="ANIPersons" mapper="gw.solr.mapper.MultivalueResultMapper">
+            <ResultField name="ANIfullName"/>
+        </ResultProperty>
+
+        <ResultProperty name="Phones" mapper="gw.solr.mapper.MultivalueResultMapper">
+            <ResultField name="phone"/>
+        </ResultProperty>
+
+        <ResultProperty name="PeriodStatus">
+            <ResultField name="periodStatus"/>
+        </ResultProperty>
+
+        <ResultProperty name="JobType">
+            <ResultField name="jobType"/>
+        </ResultProperty>
+
+    </QueryResult>
+
+</SolrSchemaMapping>

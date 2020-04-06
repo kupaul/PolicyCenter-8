@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://api.webservices.pc.guidewire.com/" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://api.webservices.pc.guidewire.com/" xmlns:intf="http://api.webservices.pc.guidewire.com/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns1="http://fault.webservices.pc.guidewire.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><wsdl:types><schema targetNamespace="http://fault.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="SOAPException"><xsd:annotation><xsd:documentation>A generic SOAP exception.</xsd:documentation></xsd:annotation><sequence><element name="Message" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>The message associated with this exception</xsd:documentation></xsd:annotation></element><element name="OtherMessages" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>Other messages attached to this exception.  This message may contain information
+related to other exceptions that occurred during a SOAP call, but not directly
+associated with this particular exception.</xsd:documentation></xsd:annotation></element></sequence></complexType><complexType name="SOAPSenderException"><xsd:annotation><xsd:documentation>SOAPSenderException is the base class for all exceptions that resulted from
+a sender error. This usually means that required data was not properly encoded
+or was absent. Senders should not send the message again unless some steps have
+been taken to make the encoded data valid.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="DataConversionException"><xsd:annotation><xsd:documentation>Thrown by many APIs when they encounter a problem translating a SOAP data object into
+an internal system object.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="BadIdentifierException"><xsd:annotation><xsd:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect).</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="PermissionException"><xsd:annotation><xsd:documentation>Thrown when the authenticated SOAP user does not have permission to
+perform the requested operation</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="SOAPServerException"><xsd:annotation><xsd:documentation>SOAPServerException is the base class for all exceptions that resulted from
+a server error. This is something of a catch-all exception type insofar as
+some things which might in fact be considered SOAPSenderExceptions are reported
+as SOAPServerExceptions. Perhaps a rule failed or something else. Generally it
+indicates a problem in the server that is likely retryable at some future time.
+The database being down, an unavailable plugin, etc would fall into this catagory.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="ServerStateException"><xsd:annotation><xsd:documentation>ServerStateException is thrown when a request is made at a time the
+server is in a state that disallows the request. An example is if
+an attempt is made to add a claim and the server is in maintenance
+mode.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPServerException"><sequence/></extension></complexContent></complexType><complexType name="SOAPRetryableException"><xsd:annotation><xsd:documentation>SOAPRetryableException is the class for all exceptions that are retryable
+immediately.  The primary example of this is ConcurrentDataChangeException.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="LoginException"><xsd:annotation><xsd:documentation>Class of exceptions thrown when a user tries to log in and an authentication failure occurs.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:PermissionException"><sequence/></extension></complexContent></complexType><complexType name="EntityStateException"><xsd:annotation><xsd:documentation>Thrown when an attempt is made to manipulate an object that is in a state
+that prevents the operation from being performed. An example is trying to
+modify a Claim that is marked as closed.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="DuplicateKeyException"><xsd:annotation><xsd:documentation>Throws if a duplicate data exception is detected in the database.  I.e. a unique index violation.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="FieldConversionException"><xsd:annotation><xsd:documentation>Thrown when a data type cannot be converted into the native data type.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="FieldFormatException"><xsd:annotation><xsd:documentation>Thrown when the input type does not match the format specified in the metadata.  I.e. a string is too long.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="RequiredFieldException"><xsd:annotation><xsd:documentation>Thrown when required data is missing from a bean.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="UnknownTypeKeyException"><xsd:annotation><xsd:documentation>Thrown when a typekey value isn't available on the server.  This exception can only
+happen if the SOAP WSDL that is being used on the remote side is invalid.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="BatchProcessException"><xsd:annotation><xsd:documentation>SOAP Exception specific to batch process operations</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPServerException"><sequence/></extension></complexContent></complexType><complexType name="AlreadyExecutedException"><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType></schema></wsdl:types>
+  <wsdl:message name="BadIdentifierException">
+    <wsdl:part name="fault" type="tns1:BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="callRequest">
+    <wsdl:part name="strServiceClass" type="soapenc:string">
+<wsdl:documentation/>
+    </wsdl:part>
+    <wsdl:part name="strMethodName" type="soapenc:string">
+<wsdl:documentation/>
+    </wsdl:part>
+    <wsdl:part name="strParamTypes" type="soapenc:string">
+<wsdl:documentation/>
+    </wsdl:part>
+    <wsdl:part name="strArgValuesArray" type="soapenc:string">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ServerStateException">
+    <wsdl:part name="fault" type="tns1:ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="callResponse">
+    <wsdl:part name="callReturn" type="soapenc:string">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PermissionException">
+    <wsdl:part name="fault" type="tns1:PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="IJavaRpcAPI">
+<wsdl:documentation>&lt;em&gt;This class is for Guidewire internal use only.&lt;/em&gt;
+&lt;p&gt;
+Ever need to make remote Java calls, but don't want to deal with the overhead
+and limitations of Soap, but still want the benefits of Soap? Read on...
+&lt;p&gt;
+An api inteface facilitating remote calls to Java classes via Soap.
+Remotable Java classes implement com.guidewire.pl.system.service.Service -
+a marker interface to prevent remote access to unsafe classes. The only other
+requirement for a remotable class is that it's parameters and return type
+must be Serializable.
+&lt;p&gt;
+Remotable classes must also be registered in &lt;code&gt;LocalServiceFactory&lt;/code&gt;.
+This accomplishes two things:
+&lt;ul&gt;
+  &lt;li&gt; Enables transparent remote and local calls to the class's methods.
+  &lt;li&gt; Enables caching of the proxy responsible for wrapping the class.
+&lt;/ul&gt;</wsdl:documentation>
+    <wsdl:operation name="call" parameterOrder="strServiceClass strMethodName strParamTypes strArgValuesArray">
+<wsdl:documentation/>
+      <wsdl:input message="impl:callRequest" name="callRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:callResponse" name="callResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="IJavaRpcAPISoapBinding" type="impl:IJavaRpcAPI">
+    <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="call">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="callRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="callResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="IJavaRpcAPIService">
+<wsdl:documentation>&lt;em&gt;This class is for Guidewire internal use only.&lt;/em&gt;
+&lt;p&gt;
+Ever need to make remote Java calls, but don't want to deal with the overhead
+and limitations of Soap, but still want the benefits of Soap? Read on...
+&lt;p&gt;
+An api inteface facilitating remote calls to Java classes via Soap.
+Remotable Java classes implement com.guidewire.pl.system.service.Service -
+a marker interface to prevent remote access to unsafe classes. The only other
+requirement for a remotable class is that it's parameters and return type
+must be Serializable.
+&lt;p&gt;
+Remotable classes must also be registered in &lt;code&gt;LocalServiceFactory&lt;/code&gt;.
+This accomplishes two things:
+&lt;ul&gt;
+  &lt;li&gt; Enables transparent remote and local calls to the class's methods.
+  &lt;li&gt; Enables caching of the proxy responsible for wrapping the class.
+&lt;/ul&gt;</wsdl:documentation>
+    <wsdl:port binding="impl:IJavaRpcAPISoapBinding" name="IJavaRpcAPI">
+      <wsdlsoap:address location="http://dontuse.defaultvalue.com/IJavaRpcAPI"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

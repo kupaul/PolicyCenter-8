@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SecurityConfig
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="./security-config.xsd">
+
+  <NotePermissions>
+    <NoteAccessProfile securitylevel="unrestricted"/>
+    <NoteAccessProfile securitylevel="internalonly">
+      <NoteViewPermission permission="viewintnote"/>
+      <NoteEditPermission permission="editintnote"/>
+      <NoteDeletePermission permission="delintnote"/>
+    </NoteAccessProfile>
+    <NoteAccessProfile securitylevel="sensitive">
+      <NoteViewPermission permission="viewsensnote"/>
+      <NoteEditPermission permission="editsensnote"/>
+      <NoteDeletePermission permission="delsensnote"/>
+    </NoteAccessProfile>
+  </NotePermissions>
+
+  <DocumentPermissions>
+    <DocumentAccessProfile securitylevel="unrestricted"/>
+    <DocumentAccessProfile securitylevel="internalonly">
+      <DocumentViewPermission permission="viewintdoc"/>
+      <DocumentEditPermission permission="editintdoc"/>
+      <DocumentDeletePermission permission="delintdoc"/>
+    </DocumentAccessProfile>
+    <DocumentAccessProfile securitylevel="sensitive">
+      <DocumentViewPermission permission="viewsensdoc"/>
+      <DocumentEditPermission permission="editsensdoc"/>
+      <DocumentDeletePermission permission="delsensdoc"/>
+    </DocumentAccessProfile>
+  </DocumentPermissions>
+
+  <!--
+  ===============================                 Account        ==================================
+  -->
+  <AccountProducerCodeHandler permKey="createForProducerCode" desc="Permission to create account for a particular producer code">
+    <SystemPermType code="accountcreate"/>
+  </AccountProducerCodeHandler>
+  <AccountProducerCodeHandler permKey="newSubmission" desc="Permission to create a new submission on account">
+    <SystemPermType code="createsubmission"/>
+  </AccountProducerCodeHandler>
+  <AccountProducerCodeHandler permKey="viewSubmissionGroup" desc="Permission to view a submission group">
+    <SystemPermType code="viewaccount"/>
+  </AccountProducerCodeHandler>
+  <AccountProducerCodeHandler permKey="viewRenewalGroup" desc="Permission to view a renewal group">
+    <SystemPermType code="viewaccount"/>
+    <ProducerStatus code="Limited"/>
+  </AccountProducerCodeHandler>
+  <AccountProducerCodeHandler permKey="withdraw" desc="Permission to withdraw an unused account">
+    <SystemPermType code="accountwithdraw"/>
+  </AccountProducerCodeHandler>
+  <AccountProducerCodeHandler permKey="reopen" desc="Permission to reopen a withdrawn account">
+    <SystemPermType code="accountreopen"/>
+  </AccountProducerCodeHandler>
+  <AccountProducerCodeHandler permKey="movePolicies" desc="Permission to move policies between accounts">
+    <SystemPermType code="accountmovepolicies"/>
+  </AccountProducerCodeHandler>
+  <AccountProducerCodeHandler permKey="mergeAccounts" desc="Permission to merge an account into the current account">
+    <SystemPermType code="mergeaccounts"/>
+  </AccountProducerCodeHandler>
+  <AccountProducerCodeHandler permKey="rewritePolicies" desc="Permission to rewrite policies between accounts">
+    <SystemPermType code="accountrewritepolicies"/>
+  </AccountProducerCodeHandler>
+  <AccountProducerCodeHandler permKey="view" desc="Permission to view an account">
+    <SystemPermType code="viewaccount"/>
+    <ProducerStatus code="Limited"/>
+    <ProducerStatus code="Suspended"/>
+    <ProducerStatus code="Terminating"/>
+  </AccountProducerCodeHandler>
+  <AccountProducerCodeHandler permKey="edit" desc="Permission to edit an account">
+    <SystemPermType code="editaccountsummary"/>
+    <ProducerStatus code="Limited"/>
+  </AccountProducerCodeHandler>
+
+  <StaticHandler entity="Account" permKey="viewBilling" desc="Permission to view an account's billing information">
+    <SystemPermType code="accountbilling"/>
+  </StaticHandler>
+  <StaticHandler entity="Account" permKey="create" desc="Permission to create an account">
+    <SystemPermType code="accountcreate"/>
+  </StaticHandler>
+
+  <!--
+  ===============================         PolicyPeriod         ==================================
+  -->
+
+  <PolicyPeriodProducerCodeHandler permKey="view" desc="Permission to view the policy file"
+                                   isAllowedForPCOfRecord="true">
+    <SystemPermType code="viewpolicyfile"/>
+    <ProducerStatus code="Limited"/>
+    <ProducerStatus code="Suspended"/>
+    <ProducerStatus code="Terminating"/>
+  </PolicyPeriodProducerCodeHandler>
+
+  <!-- this is created so that it is possible to restrict some fields to the producer of service
+       if you don't allow producer of record policy period view access then this is not needed -->
+  <PolicyPeriodProducerCodeHandler permKey="producerOfServiceOnlyView"
+                                   desc="Permission to view the policy file as active producer of service">
+    <SystemPermType code="viewpolicyfile"/>
+    <ProducerStatus code="Limited"/>
+  </PolicyPeriodProducerCodeHandler>
+
+  <PolicyPeriodProducerCodeHandler permKey="bind" desc="Permission to bind a policy">
+    <SystemPermType code="bindcancellation"/>
+    <SystemPermType code="bindreinstate"/>
+    <SystemPermType code="bindrewrite"/>
+    <SystemPermType code="bindrewrnewacct"/>
+    <SystemPermType code="bindsubmission"/>
+    <SystemPermType code="bindpolchange"/>
+    <ProducerStatus code="Limited"/>
+  </PolicyPeriodProducerCodeHandler>
+  <PolicyPeriodProducerCodeHandler permKey="issue" desc="Permission to issue a policy">
+    <SystemPermType code="issue"/>
+    <ProducerStatus code="Limited"/>
+  </PolicyPeriodProducerCodeHandler>
+
+  <!-- new ones - add to PolicyPermissionKeys -->
+  <PolicyPeriodProducerCodeHandler permKey="cancel">
+    <SystemPermType code="createcancellation"/>
+    <ProducerStatus code="Limited"/>
+  </PolicyPeriodProducerCodeHandler>
+  <PolicyPeriodProducerCodeHandler permKey="renew">
+    <SystemPermType code="createrenewal"/>
+    <ProducerStatus code="Limited"/>
+  </PolicyPeriodProducerCodeHandler>
+  <PolicyPeriodProducerCodeHandler permKey="rewrite">
+    <SystemPermType code="createrewrite"/>
+    <ProducerStatus code="Limited"/>
+  </PolicyPeriodProducerCodeHandler>
+  <PolicyPeriodProducerCodeHandler permKey="rewritenewaccount">
+    <SystemPermType code="createrewrnewacct"/>
+    <ProducerStatus code="Limited"/>
+  </PolicyPeriodProducerCodeHandler>
+  <PolicyPeriodProducerCodeHandler permKey="change">
+    <SystemPermType code="createpolchange"/>
+    <ProducerStatus code="Limited"/>
+  </PolicyPeriodProducerCodeHandler>
+  <PolicyPeriodProducerCodeHandler permKey="reinstate">
+    <SystemPermType code="createreinstate"/>
+    <ProducerStatus code="Limited"/>
+  </PolicyPeriodProducerCodeHandler>
+  <PolicyPeriodProducerCodeHandler permKey="audit" desc="Permission to audit policy">
+    <SystemPermType code="editaudit"/>
+    <SystemPermType code="waiveaudit"/>
+    <SystemPermType code="completeaudit"/>
+  </PolicyPeriodProducerCodeHandler>
+  <PolicyPeriodProducerCodeHandler permKey="splitpolicy" desc="Permission to divide (e.g. split or spin) policies into other submissions">
+    <SystemPermType code="splitpolicy"/>
+  </PolicyPeriodProducerCodeHandler>
+
+  <!-- left these as static since they are primarily used by internal users -->
+  <StaticHandler entity="PolicyPeriod" permKey="evalissue" desc="Permission to create an UW Issue">
+    <SystemPermType code="createevalissue"/>
+  </StaticHandler>
+
+  <StaticHandler entity="PolicyPeriod" permKey="overridebilling" desc="Permission to override billing behaviors">
+    <SystemPermType code="overridebilling"/>
+  </StaticHandler>
+
+  <StaticHandler entity="PolicyPeriod" permKey="restorefromarchive" desc="Permission to retrieve a policy period from the archive.">
+    <SystemPermType code="restorefromarchive"/>
+  </StaticHandler>
+
+  <StaticHandler entity="PolicyPeriod" permKey="resetquotinglock" desc="Permission to reset the lock of a quoting policy.">
+    <SystemPermType code="resetquotinglock"/>
+  </StaticHandler>
+
+  <!--
+  ===============================             Job                ==================================
+  -->
+  <!-- all jobs -->
+  <JobProducerCodeHandler jobType="Job" permKey="view" desc="Permission to view jobs">
+    <SystemPermType code="viewpolicyfile"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Job" permKey="importPolicyData"
+                          desc="Permission to copy entities from one Policy to another">
+    <SystemPermType code="copypolicydata"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+
+  <!-- Audit -->
+  <StaticHandler entity="Audit" permKey="view" desc="Permission to view audits">
+    <SystemPermType code="viewaudit"/>
+  </StaticHandler>
+  <StaticHandler entity="Audit" permKey="complete" desc="Permission to complete audits">
+    <SystemPermType code="completeaudit"/>
+  </StaticHandler>
+  <StaticHandler entity="Audit" permKey="edit" desc="Permission to edit audits">
+    <SystemPermType code="editaudit"/>
+  </StaticHandler>
+  <StaticHandler entity="Audit" permKey="advance" desc="Permission to advance audits">
+    <SystemPermType code="advanceaudit"/>
+  </StaticHandler>
+  <StaticHandler entity="Audit" permKey="quote" desc="Permission to quote audits">
+    <SystemPermType code="quote"/>
+  </StaticHandler>
+  <StaticHandler entity="Audit" permKey="waive" desc="Permission to waive an audit">
+    <SystemPermType code="waiveaudit"/>
+  </StaticHandler>
+  <StaticHandler entity="Audit" permKey="revise" desc="Permission to revise an audit">
+    <SystemPermType code="reviseaudit"/>
+  </StaticHandler>
+  <StaticHandler entity="Audit" permKey="reschedule" desc="Permission to change the dates of an audit">
+    <SystemPermType code="rescheduleaudit"/>
+  </StaticHandler>
+  <StaticHandler entity="Audit" permKey="start" desc="Permission to start an audit job">
+    <SystemPermType code="startaudit"/>
+  </StaticHandler>
+  <StaticHandler entity="Audit" permKey="withdraw" desc="Permission to withdraw an audit">
+    <SystemPermType code="withdraw"/>
+  </StaticHandler>
+  <StaticHandler entity="Audit" permKey="reverse" desc="Permission to manually reverse an audit">
+    <SystemPermType code="reverseaudit"/>
+  </StaticHandler>
+  <StaticHandler entity="Audit" permKey="create" desc="Permission to create an ad-hoc audit">
+    <SystemPermType code="createaudit"/>
+  </StaticHandler>
+
+  <!-- Cancellation job -->
+  <StaticHandler entity="Cancellation" permKey="create" desc="Permission to create a cancellation">
+    <SystemPermType code="createcancellation"/>
+  </StaticHandler>
+
+  <JobProducerCodeHandler jobType="Cancellation" permKey="advance" desc="Permission to advance a cancellation">
+    <SystemPermType code="advancecancellation"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Cancellation" permKey="edit" desc="Permission to edit a cancellation">
+    <SystemPermType code="editcancellation"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Cancellation" permKey="quote" desc="Permission to quote a cancellation">
+    <SystemPermType code="quote"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Cancellation" permKey="bind" desc="Permission to bind a cancellation">
+    <SystemPermType code="bindcancellation"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Cancellation" permKey="issue" desc="Permission to issue a cancellation">
+    <SystemPermType code="issue"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Cancellation" permKey="view" desc="Permission to view a cancellation">
+    <SystemPermType code="viewcancellation"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Cancellation" permKey="rescind" desc="Permission to rescind a cancellation">
+    <SystemPermType code="cancelrescind"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Cancellation" permKey="reschedule" desc="Permission to reschedule a cancellation">
+    <SystemPermType code="cancelreschedule"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Cancellation" permKey="withdraw" desc="Permission to withdraw a cancellation">
+    <SystemPermType code="withdraw"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <!-- Deprecated: this permission is unused in the base configuration and will be removed in a later version -->
+  <JobProducerCodeHandler jobType="Cancellation" permKey="review" desc="Permission to review a cancellation">
+    <SystemPermType code="reviewcancellation"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+
+  <!-- PolicyChange -->
+  <StaticHandler entity="PolicyChange" permKey="create" desc="Permission to create a policy change job">
+    <SystemPermType code="createpolchange"/>
+  </StaticHandler>
+
+  <JobProducerCodeHandler jobType="PolicyChange" permKey="view" desc="Permission to view a policy change">
+    <SystemPermType code="viewpolchange"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="PolicyChange" permKey="advance" desc="Permission to advance a policy change">
+    <SystemPermType code="advancepolchange"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="PolicyChange" permKey="edit" desc="Permission to edit a policy change">
+    <SystemPermType code="editpolchange"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="PolicyChange" permKey="quote" desc="Permission to quote a policy change">
+    <SystemPermType code="quote"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="PolicyChange" permKey="bind" desc="Permission to bind a policy change">
+    <SystemPermType code="bindpolchange"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="PolicyChange" permKey="issue" desc="Permission to issue a policy change">
+    <SystemPermType code="issue"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="PolicyChange" permKey="withdraw" desc="Permission to withdraw a policy change">
+    <SystemPermType code="withdraw"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <!-- Deprecated: this permission is unused in the base configuration and will be removed in a later version -->
+  <JobProducerCodeHandler jobType="PolicyChange" permKey="review" desc="Permission to review a policy change">
+    <SystemPermType code="reviewpolchange"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <!-- Deprecated: this permission is unused in the base configuration and will be removed in a later version -->
+  <JobProducerCodeHandler jobType="PolicyChange" permKey="decline" desc="Permission to review a policy change">
+    <SystemPermType code="declinepolchange"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+
+  <!-- Reinstatement -->
+  <StaticHandler entity="Reinstatement" permKey="create" desc="Permission to create a reinstatement job">
+    <SystemPermType code="createreinstate"/>
+  </StaticHandler>
+
+  <JobProducerCodeHandler jobType="Reinstatement" permKey="advance" desc="Permission to advance a reinstatement">
+    <SystemPermType code="advancereinstate"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Reinstatement" permKey="edit" desc="Permission to edit a reinstatement">
+    <SystemPermType code="editreinstate"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Reinstatement" permKey="view" desc="Permission to view a reinstatement">
+    <SystemPermType code="viewreinstate"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Reinstatement" permKey="quote" desc="Permission to quote a reinstatement">
+    <SystemPermType code="quote"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Reinstatement" permKey="bind" desc="Permission to bind a reinstatement">
+    <SystemPermType code="bindreinstate"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Reinstatement" permKey="issue" desc="Permission to issue a reinstatement">
+    <SystemPermType code="issue"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Reinstatement" permKey="withdraw" desc="Permission to withdraw a reinstatement">
+    <SystemPermType code="withdraw"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <!-- Deprecated: this permission is unused in the base configuration and will be removed in a later version -->
+  <JobProducerCodeHandler jobType="Reinstatement" permKey="review" desc="Permission to review a reinstatement">
+    <SystemPermType code="reviewreinstate"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+
+  <!-- Renewal -->
+  <StaticHandler entity="Renewal" permKey="create" desc="Permission to create a renewal job">
+    <SystemPermType code="createrenewal"/>
+  </StaticHandler>
+
+  <JobProducerCodeHandler jobType="Renewal" permKey="advance" desc="Permission to advance a renewal">
+    <SystemPermType code="advancerenewal"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Renewal" permKey="edit" desc="Permission to edit a renewal">
+    <SystemPermType code="editrenewal"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Renewal" permKey="view"
+                          desc="Permission to view any of the pages in the renewal wizard">
+    <SystemPermType code="viewrenewal"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Renewal" permKey="quote" desc="Permission to quote a renewal">
+    <SystemPermType code="quote"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Renewal" permKey="renew" desc="Permission to issue a renewal">
+    <SystemPermType code="issuerenewal"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Renewal" permKey="withdraw" desc="Permission to withdraw a renewal">
+    <SystemPermType code="withdraw"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Renewal" permKey="nonrenew" desc="Permission to non-renew">
+    <SystemPermType code="nonrenew"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Renewal" permKey="nottaken" desc="Permission to non-renew">
+    <SystemPermType code="nottakerenewal"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <!-- Deprecated: this permission is unused in the base configuration and will be removed in a later version -->
+  <JobProducerCodeHandler jobType="Renewal" permKey="review" desc="Permission to review a renewal">
+    <SystemPermType code="reviewrenewal"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+
+  <!-- Rewrite -->
+  <StaticHandler entity="Rewrite" permKey="create" desc="Permission to create a rewrite job">
+    <SystemPermType code="createrewrite"/>
+    <SystemPermType code="reviewrewrite"/>
+  </StaticHandler>
+
+  <JobProducerCodeHandler jobType="Rewrite" permKey="advance" desc="Permission to advance a rewrite">
+    <SystemPermType code="advancerewrite"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Rewrite" permKey="edit" desc="Permission to edit a rewrite">
+    <SystemPermType code="editrewrite"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Rewrite" permKey="view" desc="Permission to view the rewrite wizard pages">
+    <SystemPermType code="viewrewrite"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Rewrite" permKey="bind" desc="Permission to bind a rewrite">
+    <SystemPermType code="bindrewrite"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Rewrite" permKey="quote" desc="Permission to quote a rewrite">
+    <SystemPermType code="quote"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Rewrite" permKey="issue" desc="Permission to issue a rewrite">
+    <SystemPermType code="issue"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Rewrite" permKey="withdraw" desc="Permission to withdraw a rewrite">
+    <SystemPermType code="withdraw"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <!-- Deprecated: this permission is unused in the base configuration and will be removed in a later version -->
+  <JobProducerCodeHandler jobType="Rewrite" permKey="review" desc="Permission to review a rewrite">
+    <SystemPermType code="reviewrewrite"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+
+  <!-- Rewrite New Account -->
+  <StaticHandler entity="RewriteNewAccount" permKey="create" desc="Permission to create a rewrite new account job">
+    <SystemPermType code="createrewrnewacct"/>
+  </StaticHandler>
+
+  <JobProducerCodeHandler jobType="RewriteNewAccount" permKey="advance" desc="Permission to advance a rewrite new account">
+    <SystemPermType code="advancerewrnewacct"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="RewriteNewAccount" permKey="edit" desc="Permission to edit a rewrite new account">
+    <SystemPermType code="editrewrnewacct"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="RewriteNewAccount" permKey="view" desc="Permission to view the rewrite new account wizard pages">
+    <SystemPermType code="viewrewrnewacct"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="RewriteNewAccount" permKey="bind" desc="Permission to bind a rewrite new account">
+    <SystemPermType code="bindrewrnewacct"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="RewriteNewAccount" permKey="quote" desc="Permission to quote a rewrite new account">
+    <SystemPermType code="quote"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="RewriteNewAccount" permKey="issue" desc="Permission to issue a rewrite new account">
+    <SystemPermType code="issue"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="RewriteNewAccount" permKey="withdraw" desc="Permission to withdraw a rewrite new account">
+    <SystemPermType code="withdraw"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+
+  <!-- Submission -->
+  <StaticHandler entity="Submission" permKey="create" desc="Permission to create a submission job">
+    <SystemPermType code="createsubmission"/>
+  </StaticHandler>
+
+  <JobProducerCodeHandler jobType="Submission" permKey="view" desc="Permission to view a submission">
+    <SystemPermType code="viewsubmission"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Submission" permKey="advance" desc="Permission to advance a submission">
+    <SystemPermType code="advancesubmission"/>
+    <SystemPermType code="reviewsubmission"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Submission" permKey="edit" desc="Permission to edit a submission">
+    <SystemPermType code="editsubmission"/>
+    <SystemPermType code="reviewsubmission"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Submission" permKey="nottaken" desc="Permission to set not-taken on a submission">
+    <SystemPermType code="nottakensubmission"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Submission" permKey="quote" desc="Permission to quote a submission">
+    <SystemPermType code="quote"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Submission" permKey="decline" desc="Permission to decline a submission">
+    <SystemPermType code="declinesubmission"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Submission" permKey="bind" desc="Permission to bind a submission">
+    <SystemPermType code="bindsubmission"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Submission" permKey="issue" desc="Permission to issue a submission">
+    <SystemPermType code="issue"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Submission" permKey="withdraw" desc="Permission to withdraw a submission">
+    <SystemPermType code="withdraw"/>
+  </JobProducerCodeHandler>
+  <!-- Deprecated: this permission is unused in the base configuration and will be removed in a later version -->
+  <JobProducerCodeHandler jobType="Submission" permKey="review" desc="Permission to review a submission">
+    <SystemPermType code="reviewsubmission"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+
+  <!-- Issuance -->
+  <StaticHandler entity="Issuance" permKey="create" desc="Permission to create an issuance job">
+    <SystemPermType code="createissuance"/>
+  </StaticHandler>
+  <JobProducerCodeHandler jobType="Issuance" permKey="view" desc="Permission to view an issuance">
+    <SystemPermType code="viewissuance"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Issuance" permKey="advance" desc="Permission to advance an issuance">
+    <SystemPermType code="advanceissuance"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Issuance" permKey="edit" desc="Permission to edit an issuance">
+    <SystemPermType code="editissuance"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Issuance" permKey="quote" desc="Permission to quote an issuance">
+    <SystemPermType code="quote"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Issuance" permKey="bind" desc="Permission to bind an issuance">
+    <SystemPermType code="bindissuance"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Issuance" permKey="issue" desc="Permission to issue an issuance">
+    <SystemPermType code="issue"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+  <JobProducerCodeHandler jobType="Issuance" permKey="withdraw" desc="Permission to withdraw an issuance">
+    <SystemPermType code="withdraw"/>
+    <ProducerStatus code="Limited"/>
+  </JobProducerCodeHandler>
+
+  <StaticHandler entity="User" permKey="ViewInfo">
+     <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsInfoview"/>
+  </StaticHandler>
+
+  <StaticHandler entity="User" permKey="ViewMBeans">
+     <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsJMXBeansview"/>
+  </StaticHandler>
+
+  <WrapHandler entity="User" permKey="EditMBeans" wrapPermKey="ViewMBeans">
+    <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsJMXBeansEdit"/>
+  </WrapHandler>
+
+  <StaticHandler entity="User" permKey="EditJProfiler">
+     <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsJProfileredit"/>
+  </StaticHandler>
+
+  <StaticHandler entity="User" permKey="ViewBatchProcess">
+     <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsBatchProcessview"/>
+  </StaticHandler>
+  <WrapHandler entity="User" permKey="EditBatchProcess" wrapPermKey="ViewBatchProcess">
+    <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsBatchProcessedit"/>
+  </WrapHandler>
+
+  <StaticHandler entity="User" permKey="ViewWorkQueue">
+     <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsWorkQueueview"/>
+  </StaticHandler>
+  <WrapHandler entity="User" permKey="EditWorkQueue" wrapPermKey="ViewWorkQueue">
+    <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsWorkQueueedit"/>
+  </WrapHandler>
+
+  <StaticHandler entity="User" permKey="ViewProfiler">
+     <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsProfilerview"/>
+  </StaticHandler>
+  <WrapHandler entity="User" permKey="EditProfiler" wrapPermKey="ViewProfiler">
+    <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsProfileredit"/>
+  </WrapHandler>
+
+  <StaticHandler entity="User" permKey="ViewCacheInfo">
+    <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsCacheinfoview"/>
+  </StaticHandler>
+
+  <StaticHandler entity="User" permKey="ViewPlugin">
+     <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsPluginview"/>
+  </StaticHandler>
+  <WrapHandler entity="User" permKey="EditPlugin" wrapPermKey="ViewPlugin">
+    <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsPluginedit"/>
+  </WrapHandler>
+
+  <StaticHandler entity="User" permKey="ViewLog">
+     <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsLogview"/>
+  </StaticHandler>
+
+  <StaticHandler entity="User" permKey="EditLog">
+    <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsLogedit"/>
+  </StaticHandler>
+
+  <StaticHandler entity="User" permKey="ViewCluster">
+    <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsClusterview"/>
+  </StaticHandler>
+  <WrapHandler entity="User" permKey="EditCluster" wrapPermKey="ViewCluster">
+    <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsClusteredit"/>
+  </WrapHandler>
+
+  <StaticHandler entity="User" permKey="ViewProductModelInfo">
+    <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsProductModelInfoview"/>
+  </StaticHandler>
+
+  <StaticHandler entity="User" permKey="ViewDataChange">
+    <SystemPermType code="admindatachangeview"/>
+  </StaticHandler>
+  <WrapHandler entity="User" permKey="ExecuteDataChange" wrapPermKey="ViewDataChange">
+    <SystemPermType code="admindatachangeexec"/>
+  </WrapHandler>
+
+  <StaticHandler entity="User" permKey="ServerTools" noPermissionDisplayKey="Web.ServerTools.NoPermission">
+    <SystemPermType code="internaltools"/>
+    <SystemPermType code="toolsInfoview"/>
+    <SystemPermType code="toolsJMXBeansview"/>
+    <SystemPermType code="toolsJProfileredit"/>
+    <SystemPermType code="toolsBatchProcessview"/>
+    <SystemPermType code="toolsWorkQueueview"/>
+    <SystemPermType code="toolsProfilerview"/>
+    <SystemPermType code="toolsPluginview"/>
+    <SystemPermType code="toolsLogview"/>
+    <SystemPermType code="toolsLogedit"/>
+    <SystemPermType code="toolsClusterview"/>
+    <SystemPermType code="toolsProductModelInfoview"/>
+  </StaticHandler>
+
+</SecurityConfig>

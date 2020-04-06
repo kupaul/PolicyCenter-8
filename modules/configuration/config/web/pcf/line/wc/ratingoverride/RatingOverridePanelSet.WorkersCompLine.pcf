@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <PanelSet
+    id="RatingOverridePanelSet"
+    mode="WorkersCompLine">
+    <Require
+      name="period"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="period.WorkersCompLine.Costs.cast( WCCost )"
+      name="lineCosts"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="lineCosts.partition(\ c -&gt; c.JurisdictionState).toAutoMap(\ st -&gt; java.util.Collections.emptySet&lt;WCCost&gt;())"
+      name="partitionCosts"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="period.WorkersCompLine.RepresentativeJurisdictions.sortBy(\ juris -&gt; juris.State)"
+      name="jurisdictions"
+      recalculateOnRefresh="true"/>
+    <PanelIterator
+      elementName="jurisdiction"
+      value="jurisdictions">
+      <IteratorSort
+        sortBy="jurisdictions"
+        sortOrder="1"/>
+      <Variable
+        initialValue="partitionCosts.get(jurisdiction.State)"
+        name="stateCosts"
+        recalculateOnRefresh="true"/>
+      <Variable
+        initialValue="jurisdiction.RatingPeriods"
+        name="ratingPeriods"
+        recalculateOnRefresh="true"/>
+      <PanelRef
+        visible="not stateCosts.Empty">
+        <TitleBar
+          title="jurisdiction.DisplayName"
+          visible="jurisdictions.Count &gt; 1"/>
+        <PanelSet
+          id="JurisdictionPanelSet">
+          <PanelIterator
+            elementName="ratingPeriod"
+            value="ratingPeriods.toTypedArray()">
+            <Variable
+              initialValue="stateCosts.byRatingPeriod( ratingPeriod )"
+              name="periodCosts"
+              recalculateOnRefresh="true"/>
+            <PanelRef
+              visible="!periodCosts.Empty">
+              <DetailViewPanel
+                id="PeriodDetailDV">
+                <InputColumn>
+                  <Label
+                    label="standardPremLabel(ratingPeriods.Count &gt; 1, ratingPeriod)"/>
+                  <ListViewInput
+                    def="WCRatingOverrideCostLV(period, periodCosts, jurisdiction, ratingPeriod.RatingStart, ratingPeriod.RatingEnd)"
+                    labelAbove="true">
+                    <Toolbar/>
+                  </ListViewInput>
+                </InputColumn>
+              </DetailViewPanel>
+            </PanelRef>
+          </PanelIterator>
+          <PanelRef>
+            <DetailViewPanel
+              id="StateSummaryDetailDV">
+              <InputColumn>
+                <Label
+                  label="displaykey.Web.SubmissionWizard.Quote.WC.OtherPremiumAndTax"/>
+                <ListViewInput
+                  def="WCRatingOverrideStateCostLV(stateCosts, jurisdiction)"
+                  labelAbove="true"
+                  mode="period.Job.Subtype">
+                  <Toolbar/>
+                </ListViewInput>
+              </InputColumn>
+            </DetailViewPanel>
+          </PanelRef>
+        </PanelSet>
+      </PanelRef>
+    </PanelIterator>
+    <Code><![CDATA[function standardPremLabel(splitPeriod : boolean, ratingPeriod : gw.lob.wc.rating.WCRatingPeriod ) : String {
+  if (splitPeriod) {
+    return displaykey.Web.Quote.WC.StandardPremium.SplitPeriod( gw.api.util.StringUtil.formatDate(ratingPeriod.RatingStart, "short"),
+      gw.api.util.StringUtil.formatDate(ratingPeriod.RatingEnd, "short") )
+  } else {
+    return displaykey.Web.Quote.WC.StandardPremium.OnePeriod
+  }
+}
+
+function sortedDates(jurisdiction : WCJurisdiction) : java.util.Date[] {
+  var rpsds = jurisdiction.getSortedRPSDs().toList().map(\ r -> r.StartDate)
+  rpsds.add(period.PeriodStart)
+  java.util.Collections.sort(rpsds)
+  return rpsds.toTypedArray()
+}]]></Code>
+  </PanelSet>
+</PCF>

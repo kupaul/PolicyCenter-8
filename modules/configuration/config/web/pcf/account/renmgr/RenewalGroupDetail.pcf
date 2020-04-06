@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    canEdit="false"
+    canVisit="perm.Account.viewRenewalGroup(renewalGroup.Account)"
+    id="RenewalGroupDetail"
+    parent="UnderwritingFiles(renewalGroup.Account)"
+    showUpLink="true"
+    title="displaykey.Web.RenewalGroup.Title(renewalGroup.Name)">
+    <LocationEntryPoint
+      signature="RenewalGroupDetail(renewalGroup : RenewalGroup)"/>
+    <Variable
+      name="renewalGroup"
+      type="RenewalGroup"/>
+    <Screen
+      id="RenewalGroupDetailScreen">
+      <DetailViewPanel>
+        <InputColumn>
+          <Label
+            label="displaykey.Web.RenewalGroup.Info"/>
+          <Input
+            id="Name"
+            label="displaykey.Web.RenewalGroup"
+            value="renewalGroup.Name"/>
+          <Input
+            id="NumJobs"
+            label="displaykey.Web.RenewalGroup.NumRenewals"
+            value="renewalGroup.Renewals.length"/>
+          <MonetaryAmountInput
+            formatType="currency"
+            id="TotalCost"
+            label="displaykey.Web.RenewalGroup.TotalCost"
+            value="renewalGroup.AmountSum"/>
+          <Input
+            id="FirstEffDate"
+            label="displaykey.Web.SubmissionGroup.FirstEffDate"
+            value="renewalGroup.Jobs.minBy( \ j -&gt; j.LatestPeriod.EditEffectiveDate ).LatestPeriod.EditEffectiveDate"/>
+          <Input
+            id="LastExpDate"
+            label="displaykey.Web.SubmissionGroup.LastExpDate"
+            value="renewalGroup.Jobs.maxBy( \ j -&gt; j.LatestPeriod.PeriodEnd ).LatestPeriod.PeriodEnd"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <CardViewPanel>
+        <Card
+          id="RenewalsCard"
+          title="displaykey.Web.RenewalGroup.Renewals">
+          <PanelRef
+            def="RenewalGroupJobsLV(renewalGroup)">
+            <Toolbar/>
+          </PanelRef>
+        </Card>
+        <Card
+          id="RiskAnalysisCard"
+          title="displaykey.Web.RenewalGroup.RiskAnalysis">
+          <PanelRef
+            def="JobGroupRiskAnalysisLV( renewalGroup )">
+            <Toolbar/>
+          </PanelRef>
+        </Card>
+        <Card
+          id="ActivitiesCard"
+          title="displaykey.Web.RenewalGroup.Activities">
+          <PanelRef
+            def="DesktopActivitiesLV( Activity.finder.findActivitiesByJobGroup( renewalGroup ) as ActivityQuery )">
+            <Toolbar/>
+          </PanelRef>
+        </Card>
+      </CardViewPanel>
+    </Screen>
+  </Page>
+</PCF>

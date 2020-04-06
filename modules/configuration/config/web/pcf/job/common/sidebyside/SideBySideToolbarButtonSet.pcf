@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <ToolbarButtonSet
+    id="SideBySideToolbarButtonSet">
+    <Require
+      name="basePeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="gw.api.web.job.JobWizardHelper"/>
+    <Require
+      name="periodInfos"
+      type="gw.job.sxs.SideBySidePolicyPeriodInfo[]"/>
+    <Variable
+      initialValue="CurrentLocation as pcf.api.Wizard"
+      name="wizard"
+      type="pcf.api.Wizard"/>
+    <Variable
+      initialValue="basePeriod.Job"
+      name="job"
+      type="entity.Job"/>
+    <Variable
+      initialValue="basePeriod.JobProcess"
+      name="jobProcess"
+      type="gw.job.JobProcess"/>
+    <Variable
+      initialValue="job.ActivePeriods"
+      name="periods"
+      recalculateOnRefresh="true"
+      type="PolicyPeriod[]"/>
+    <ToolbarButton
+      action="gw.web.job.common.SideBySideUIHelper.quoteAll(wizard, jobWizardHelper, periodInfos, periods)"
+      id="QuoteAll"
+      label="displaykey.Web.Job.SideBySide.QuoteAll"
+      visible="(!gw.lob.common.SideBySideUtil.hasOOSorPreemption(basePeriod.Job)) and basePeriod.Job.ActivePeriods.hasMatch(\ p -&gt; p.JobProcess.canRequestQuote().Okay)"/>
+    <ToolbarButton
+      action="periodInfos.each(\ i -&gt; i.validateWithoutQuote()); periodInfos.first().refreshSideBySideStep();"
+      id="ValidateAll"
+      label="displaykey.Web.Job.SideBySide.ValidateAll"
+      visible="(!gw.lob.common.SideBySideUtil.hasOOSorPreemption(basePeriod.Job)) and basePeriod.Job.ActivePeriods.hasMatch(\ p -&gt; p.JobProcess.canRequestQuote().Okay)"/>
+    <ToolbarButton
+      action="gw.lob.common.SideBySideUtil.duplicateVersion(basePeriod, wizard, jobWizardHelper)"
+      id="NewVersion"
+      label="displaykey.Web.Job.SideBySide.AddSideBySide"
+      shortcut="V"
+      visible="(not basePeriod.UWLockedAndNoOverride) and jobProcess.canMakeNewVersion().Okay"/>
+    <ToolbarButton
+      action="jobWizardHelper.convertQuickQuoteToFullApp(jobProcess as gw.job.SubmissionProcess, basePeriod);"
+      id="FullApp"
+      label="displaykey.Java.Submission.Button.FullApp"
+      shortcut="U"
+      visible="gw.web.job.common.SideBySideUIHelper.fullAppVisible(jobProcess)"/>
+    <ToolbarButton
+      action="wizard.saveDraft()"
+      hideIfReadOnly="true"
+      id="SaveAll"
+      label="displaykey.Button.SaveAll"
+      shortcut="S"/>
+  </ToolbarButtonSet>
+</PCF>

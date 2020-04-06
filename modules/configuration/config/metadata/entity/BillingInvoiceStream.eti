@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  desc="Billing invoice stream, used to set up a new policy term and does not need to be revisioned."
+  entity="BillingInvoiceStream"
+  exportable="true"
+  loadable="false"
+  subpackage="billing"
+  table="billinginvoicestream"
+  type="retireable">
+  <implementsEntity
+    name="Extractable"/>
+  <typekey
+    default="monthly"
+    desc="The Periodicity of Invoices in the stream -- Weekly, Monthly, Quarterly, etc."
+    name="Interval"
+    nullok="true"
+    typelist="BillingPeriodicity"/>
+  <column
+    desc="A date that determines the invoicing day of month, day of week, etc.  This date should fall on the           desired invoicing day of month or day of week.           Invoices in the stream are billed (sent) DaysBeforeAnchorDatesForInvoiceBilling days before the invoicing           day of month, day of week, etc. that is specified by the anchor dates.           If the invoice payer chooses not to send invoices on a non-business day, the target bill (send) date will be           adjusted to be a business day, depending upon the payer's method of adjusting for business day."
+    name="FirstAnchorDate"
+    nullok="true"
+    type="dateonly"/>
+  <column
+    desc="A date that determines the second invoicing day for periodicities that need two anchor dates.           This determines the second invoicing day of month for twice-per-month BillingPeriodicity.  This date should fall on the           desired second invoicing day of month.  If the BillingPeriodicity is twice-per-month and the second anchor date is           not set, then the stream will invoice on the day determined by the FirstAnchorDate and one-half month from then."
+    name="SecondAnchorDate"
+    nullok="true"
+    type="dateonly"/>
+  <column
+    default="1"
+    desc="First day (of two) of the month for twice-per-month invoicing."
+    name="FirstDayOfMonth"
+    nullok="true"
+    type="integer"/>
+  <column
+    default="15"
+    desc="Second day (of two) of the month for twice-per-month invoicing."
+    name="SecondDayOfMonth"
+    nullok="true"
+    type="integer"/>
+  <typekey
+    default="Friday"
+    desc="For Every Week payment plans, this is the day of the week that the invoice should fall on."
+    name="DayOfWeek"
+    nullok="true"
+    typelist="DayOfWeek"/>
+  <column
+    default="false"
+    desc="Whether or not the account's invoice date(s) are the date the invoice is sent or due.                 If false the date is the date the invoice is sent (EventDate),                 If true the date is the date the invoice is due (PaymentDueDate)"
+    name="DueDateBilling"
+    nullok="true"
+    type="bit"/>
+  <typekey
+    default="responsive"
+    desc="Payment Method (e.g. Credit Card, Send Invoice...)"
+    name="PaymentMethod"
+    nullok="true"
+    typelist="AccountPaymentMethod"/>
+  <column
+    desc="The Public ID of the payment instrument.  May be null."
+    name="PaymentInstrumentID"
+    nullok="true"
+    type="shorttext"/>
+  <foreignkey
+    desc="The associated policy period."
+    fkentity="PolicyPeriod"
+    name="PolicyPeriod"
+    nullok="false"/>
+  <column
+    desc="The description of a new unapplied fund for this invoice stream. Null if there is no new unapplied fund being created."
+    name="UnappliedFundDescription"
+    nullok="true"
+    type="shorttext"/>
+  <column
+    desc="The Public ID of the existing unapplied fund which has been selected for this invoice stream. Null if there is no existing unapplied fund."
+    name="UnappliedFundID"
+    nullok="true"
+    type="shorttext"/>
+  <column
+    name="Description"
+    nullok="true"
+    type="mediumtext"/>
+</entity>

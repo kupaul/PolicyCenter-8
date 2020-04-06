@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <!-- WARNING: Internal Guidewire file. DO NOT EDIT. -->
+  <PanelSet
+    id="EnableWebProfilerPanelSet">
+    <Require
+      name="disableProfilingActions"
+      type="block()"/>
+    <Variable
+      initialValue="new WebProfilerConfig()"
+      name="profilerConfig"
+      recalculateOnRefresh="true"/>
+    <PanelRef
+      def="ProfilerOptionsLV(profilerConfig)"
+      editable="true"
+      visible="!gw.api.profiler.WebSessionProfilerPageHelper.isWebProfilerEnabledInCurrentSession()">
+      <TitleBar
+        title="displaykey.Web.Profiler.WebProfiler"/>
+    </PanelRef>
+    <DetailViewPanel>
+      <InputColumn>
+        <ButtonInput
+          action="gw.api.profiler.WebSessionProfilerPageHelper.enableProfiler( null, profilerConfig.HiResClock, profilerConfig.StackTraceTracking, profilerConfig.QueryOptimizerTracing, profilerConfig.ExtendedQueryTracing, profilerConfig.DbmsCounterThresholdMs, profilerConfig.DiffDbmsCounters)"
+          id="TurnProfilingOn"
+          labelAbove="true"
+          value="displaykey.Web.Profiler.TurnOnWebProfiling"
+          visible="!gw.api.profiler.WebSessionProfilerPageHelper.isWebProfilerEnabledInCurrentSession()"/>
+        <ButtonInput
+          action="disableProfiling(disableProfilingActions)"
+          id="TurnProfilingOff"
+          labelAbove="true"
+          value="displaykey.Web.Profiler.TurnOffWebProfiling"
+          visible="gw.api.profiler.WebSessionProfilerPageHelper.isWebProfilerEnabledInCurrentSession()"/>
+      </InputColumn>
+    </DetailViewPanel>
+    <Code><![CDATA[function disableProfiling(b : block()) {
+   gw.api.profiler.WebSessionProfilerPageHelper.disableProfiler()
+   b()
+}]]></Code>
+  </PanelSet>
+</PCF>

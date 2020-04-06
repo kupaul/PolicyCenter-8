@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  cacheable="false"
+  entity="ClusterMemberData"
+  exportable="false"
+  extendable="false"
+  final="true"
+  instrumentationtable="true"
+  loadable="false"
+  platform="true"
+  subpackage="clusterinfo"
+  table="clustermemberdata"
+  type="keyable">
+  <column
+    desc="Node logical name"
+    name="LogicalName"
+    nullok="false"
+    type="shorttext"/>
+  <column
+    desc="Server ID"
+    name="ServerId"
+    nullok="false"
+    type="shorttext"/>
+  <column
+    desc="UUID"
+    name="Uuid"
+    nullok="false"
+    type="varchar">
+    <columnParam
+      name="size"
+      value="36"/>
+  </column>
+  <column
+    desc="Data"
+    getterScriptability="doesNotExist"
+    name="Data"
+    nullok="true"
+    setterScriptability="doesNotExist"
+    type="blob"/>
+  <column
+    desc="Time server started"
+    name="ServerStarted"
+    nullok="false"
+    type="datetime"/>
+  <column
+    desc="Time connection started"
+    name="ConnectionStarted"
+    nullok="false"
+    type="datetime"/>
+  <column
+    desc="Time connection stopped"
+    name="ConnectionStopped"
+    nullok="true"
+    type="datetime"/>
+  <column
+    desc="Run level"
+    name="RunLevel"
+    nullok="false"
+    type="shorttext"/>
+  <column
+    desc="Last update"
+    name="LastUpdate"
+    nullok="false"
+    type="decimal">
+    <columnParam
+      name="scale"
+      value="0"/>
+    <columnParam
+      name="precision"
+      value="19"/>
+  </column>
+  <index
+    desc="Index to speed up the selection of records of the running server (because records are not deleted after server goes down)"
+    name="clustermember1">
+    <indexcol
+      keyposition="1"
+      name="LastUpdate"/>
+  </index>
+  <index
+    desc="Index to quickly find node record by unique JGroups address (which is UUID)"
+    name="clustermember2">
+    <indexcol
+      keyposition="1"
+      name="UUID"/>
+  </index>
+  <index
+    desc="Index to select history for given server id"
+    name="clustermember3">
+    <indexcol
+      keyposition="1"
+      name="ServerId"/>
+    <indexcol
+      keyposition="2"
+      name="ServerStarted"
+      sortascending="false"/>
+  </index>
+</entity>

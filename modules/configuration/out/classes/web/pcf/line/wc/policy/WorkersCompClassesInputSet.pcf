@@ -1,0 +1,224 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <InputSet
+    id="WorkersCompClassesInputSet">
+    <Require
+      name="jurisdiction"
+      type="WCJurisdiction"/>
+    <Require
+      name="wcLine"
+      type="WorkersCompLine"/>
+    <Variable
+      initialValue="wcLine.Branch.Job.NewTerm"
+      name="isNewTerm"/>
+    <Variable
+      initialValue="jurisdiction.SplitDates"
+      name="splitDates"
+      recalculateOnRefresh="true"/>
+    <ListViewInput
+      editable="true"
+      labelAbove="true">
+      <Toolbar>
+        <IteratorButtons
+          addLabel="displaykey.Web.Policy.WC.AddClass"
+          addShortcut="l"
+          iterator="EmployeeVersionList"/>
+      </Toolbar>
+      <ListViewPanel
+        id="WCCovEmpLV">
+        <RowIterator
+          autoAdd="false"
+          editable="true"
+          elementName="wcEmployee"
+          hasCheckBoxes="true"
+          hideCheckBoxesIfReadOnly="true"
+          id="EmployeeVersionList"
+          numEntriesRequired="0"
+          numEntriesToAdd="1"
+          toCreateAndAdd="wcLine.addCoveredEmployeeWM(gw.api.util.StateJurisdictionMappingUtil.getStateMappingForJurisdiction(jurisdiction.State))"
+          toRemove="wcEmployee.removeWM()"
+          validationLabel="displaykey.Web.Policy.WC.CovEmp"
+          value="wcLine.getWCCoveredEmployeesWM(jurisdiction.State)">
+          <Variable
+            initialValue="isNewTerm ? null : wcEmployee.BasedOn.ClassCode"
+            name="previousWCClassCode"/>
+          <Row>
+            <Cell
+              enableSort="false"
+              id="Period1"
+              label="displaykey.Web.Policy.WC.PeriodHeader"
+              value="getPeriodNumbers(wcEmployee)"
+              visible="splitDates.Count &gt; 2"/>
+            <RangeCell
+              align="left"
+              editable="true"
+              id="SpecialCoverage"
+              label="displaykey.Web.Policy.WC.CovEmp.SpecialCoverage"
+              required="true"
+              value="wcEmployee.SpecialCov"
+              valueRange="jurisdiction.getPossibleGoverningLaws()"
+              width="200"
+              wrap="true"/>
+            <RangeCell
+              align="left"
+              editable="wcEmployee.NewEmployee"
+              id="Loc"
+              label="displaykey.Web.Policy.WC.CovEmp.Loc"
+              required="true"
+              sortOrder="1"
+              value="wcEmployee.LocationWM"
+              valueRange="wcLine.Branch.getPolicyLocationWM(gw.api.util.StateJurisdictionMappingUtil.getStateMappingForJurisdiction(jurisdiction.State))"
+              width="300"
+              wrap="true">
+              <PostOnChange
+                target="WCCovEmpLV"/>
+            </RangeCell>
+            <PickerCell
+              available="wcEmployee.LocationWM != null"
+              editable="true"
+              id="ClassCode"
+              inputConversion="findFirstMatchingClassCode(VALUE, gw.api.util.JurisdictionMappingUtil.getJurisdiction(wcEmployee.LocationWM), gw.api.util.JurisdictionMappingUtil.getJurisdiction(wcEmployee.LocationWM).Code, previousWCClassCode)"
+              label="displaykey.Web.Policy.WC.CovEmp.ClassCode"
+              numCols="6"
+              outputConversion="VALUE == null ? &quot;&quot; : VALUE.Code"
+              pickLocation="WCClassCodeSearchPopup.push(wcEmployee.LocationWM, wcLine, previousWCClassCode)"
+              required="true"
+              sortOrder="2"
+              value="wcEmployee.ClassCode"
+              width="100">
+              <PostOnChange
+                target="WCCovEmpLV"/>
+            </PickerCell>
+            <TextCell
+              id="Description"
+              label="displaykey.Web.Policy.WC.CovEmp.Description"
+              numCols="32"
+              value="wcEmployee.ClassCode.ShortDesc"
+              width="300"
+              wrap="true"/>
+            <TextCell
+              align="right"
+              editable="true"
+              id="NumEmployees"
+              label="displaykey.Web.Policy.WC.CovEmp.NumEmployees"
+              numCols="8"
+              value="wcEmployee.NumEmployees"/>
+            <CheckBoxCell
+              editable="true"
+              id="IfAnyExposure"
+              label="displaykey.Web.Policy.WC.CovEmp.IfAnyExposure"
+              value="wcEmployee.IfAnyExposureAndClearBasisAmount">
+              <PostOnChange
+                target="WCCovEmpLV"/>
+            </CheckBoxCell>
+            <TextCell
+              align="right"
+              available="!wcEmployee.IfAnyExposureAndClearBasisAmount"
+              editable="true"
+              enableSort="false"
+              id="AnnualRenum"
+              label="displaykey.Web.Policy.WC.CovEmp.AnnualRenum"
+              numCols="8"
+              required="true"
+              value="wcEmployee.BasisAmount"
+              valueVisible="!wcEmployee.IfAnyExposureAndClearBasisAmount"/>
+          </Row>
+          <RowIterator
+            editable="true"
+            elementName="wcCoveredEmployee"
+            id="CoveredEmployee"
+            pageSize="0"
+            value="wcEmployee.AdditionalVersions.whereTypeIs(WCCoveredEmployee)">
+            <Variable
+              initialValue="isNewTerm ? null : wcCoveredEmployee.BasedOn.ClassCode"
+              name="previousWCCoveredClassCode"/>
+            <Row>
+              <Cell
+                enableSort="false"
+                id="Period2"
+                value="getPeriodNumbers(wcCoveredEmployee)"/>
+              <RangeCell
+                align="left"
+                editable="true"
+                id="SpecialCoverage"
+                required="true"
+                value="wcCoveredEmployee.SpecialCov"
+                valueRange="jurisdiction.getPossibleGoverningLaws()"
+                width="200"
+                wrap="true"/>
+              <RangeCell
+                align="left"
+                editable="wcCoveredEmployee.NewEmployee and wcCoveredEmployee.LocationWM.State != null"
+                id="Loc"
+                required="true"
+                sortOrder="1"
+                value="wcCoveredEmployee.LocationWM"
+                valueRange="wcLine.Branch.getPolicyLocationWM(gw.api.util.StateJurisdictionMappingUtil.getStateMappingForJurisdiction(jurisdiction.State))"
+                width="300"
+                wrap="true">
+                <PostOnChange
+                  target="WCCovEmpLV"/>
+              </RangeCell>
+              <PickerCell
+                editable="wcCoveredEmployee.LocationWM.State != null"
+                id="ClassCode"
+                inputConversion="findFirstMatchingClassCode(VALUE, gw.api.util.JurisdictionMappingUtil.getJurisdiction(wcEmployee.LocationWM), gw.api.util.JurisdictionMappingUtil.getJurisdiction(wcEmployee.LocationWM).Code, previousWCCoveredClassCode)"
+                numCols="6"
+                outputConversion="VALUE == null ? &quot;&quot; : VALUE.Code"
+                pickLocation="WCClassCodeSearchPopup.push(wcEmployee.LocationWM, wcLine, previousWCCoveredClassCode)"
+                required="true"
+                sortOrder="2"
+                value="wcCoveredEmployee.ClassCode"
+                width="100">
+                <PostOnChange
+                  target="WCCovEmpLV"/>
+              </PickerCell>
+              <TextCell
+                id="Description"
+                numCols="32"
+                value="wcCoveredEmployee.ClassCode.ShortDesc"
+                width="300"
+                wrap="true"/>
+              <TextCell
+                align="right"
+                editable="true"
+                id="NumEmployees"
+                numCols="8"
+                value="wcCoveredEmployee.NumEmployees"/>
+              <CheckBoxCell
+                editable="true"
+                id="IfAnyExposure"
+                value="wcCoveredEmployee.IfAnyExposureAndClearBasisAmount">
+                <PostOnChange
+                  target="WCCovEmpLV"/>
+              </CheckBoxCell>
+              <TextCell
+                align="right"
+                available="!wcCoveredEmployee.IfAnyExposureAndClearBasisAmount"
+                editable="true"
+                id="AnnualRenum"
+                numCols="8"
+                required="true"
+                validationLabel="displaykey.Web.Policy.WC.CovEmp.AnnualRenum"
+                value="wcCoveredEmployee.BasisAmount"
+                valueVisible="!wcCoveredEmployee.IfAnyExposureAndClearBasisAmount"/>
+            </Row>
+          </RowIterator>
+        </RowIterator>
+      </ListViewPanel>
+    </ListViewInput>
+    <Code><![CDATA[function findFirstMatchingClassCode(code : String, refDateState : Jurisdiction, wcDomain: String, peviousCode : WCClassCode) : WCClassCode{
+  var classCode = wcLine.firstMatchingClassCode( code,refDateState, wcDomain, peviousCode )
+  if (classCode == null) {
+    util.LocationUtil.addRequestScopedErrorMessage(displaykey.Java.ClassCodePickerWidget.WCInvalidCode(code, refDateState))
+  }
+  return classCode
+}
+
+function getPeriodNumbers(wcEmployee : WCCoveredEmployee) : String{
+  return web.util.DateRangeUtil.getPeriodNumbers(wcEmployee.EffectiveDateRange, splitDates )
+}]]></Code>
+  </InputSet>
+</PCF>

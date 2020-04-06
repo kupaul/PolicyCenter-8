@@ -1,0 +1,86 @@
+<!-- LVStart.vm START -->
+<fo:table
+#if (!$embedded)
+  border-style="solid"
+#end
+  table-layout="fixed"
+  font-size="$settings.ListViewFontSize"
+  inline-progression-dimension.optimum="100%"
+#if (!$altcolor)
+  background-color="#FFFFFF"
+#else
+  background-color="#EDEBE9"
+#end
+
+#if (!$embedded)
+  space-after.optimum="0.5in"
+#else
+  space-after.optimum="10px"
+#end
+  >
+
+#foreach ($column in $columns)
+  #if ($column.Visible)
+    <fo:table-column
+       #if ($column.PrintWidth)
+            column-width="proportional-column-width($column.PrintWidth)"
+       #end
+       />
+  #else
+    <fo:table-column column-width="proportional-column-width(0.1)"/>
+  #end
+#end
+
+
+#if (!$ghostheader)
+    <fo:table-header border-style="solid">
+    #if ($columnGroups && !$columnGroups.Empty)
+        <fo:table-row>
+      #foreach ($columnGroup in $columnGroups)
+          <fo:table-cell
+            number-columns-spanned="$columnGroup.ColumnsSpanned"
+            border-bottom-style="solid"
+            padding-top=".1em"
+            padding-bottom=".1em"
+          #if ($velocityCount > 1)
+              border-left-style="solid"
+          #end
+            >
+            <fo:block font-weight="bold" text-align="center">
+              $columnGroup.Label
+            </fo:block>
+          </fo:table-cell>
+      #end
+        </fo:table-row>
+    #end
+
+    #if ($columns && !$columns.Empty)
+        <fo:table-row>
+      #foreach ($column in $columns)
+        #if ($column.Visible)
+          <fo:table-cell
+            padding-top=".1em"
+            padding-bottom=".1em"
+          #if ($velocityCount > 1)
+              border-left-style="solid"
+          #end
+            >
+            #if ($column.Icon)
+              <fo:block text-align="center">
+                <fo:external-graphic src="$column.Label"/>
+              </fo:block>
+            #else
+              <fo:block font-weight="bold" text-align="center">
+                $column.Label
+              </fo:block>
+            #end
+          </fo:table-cell>
+        #end
+      #end
+        </fo:table-row>
+    #end
+</fo:table-header>
+#end
+
+<fo:table-body>
+<!-- LVStart.vm END -->

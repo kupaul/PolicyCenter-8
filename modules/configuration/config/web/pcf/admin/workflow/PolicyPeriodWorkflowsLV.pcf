@@ -1,0 +1,137 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ListViewPanel
+    id="PolicyPeriodWorkflowsLV">
+    <ExposeIterator
+      valueType="entity.Workflow"
+      widget="PolicyPeriodWorkflowsLV"/>
+    <Require
+      name="workflows"
+      type="WorkflowQuery"/>
+    <Require
+      name="isParent"
+      type="boolean"/>
+    <RowIterator
+      checkBoxVisible="workflow.State != &quot;completed&quot;"
+      editable="false"
+      elementName="workflow"
+      hasCheckBoxes="true"
+      id="workflowIterator"
+      value="workflows">
+      <!-- <ToolbarFlag
+        condition="Workflow.State == &quot;Error&quot; || Workflow.State == &quot;Suspended&quot;"
+        name="canResume"/> -->
+      <!-- <ToolbarFlag
+        condition="Workflow.isTriggerAvailable(&quot;Withdraw&quot;)"
+        name="canWithdraw"/> -->
+      <Row>
+        <Cell
+          action="JobForward.go((workflow as PolicyPeriodWorkflow).PolicyPeriod.Job)"
+          actionAvailable="User.util.CurrentUser.canView( (workflow as PolicyPeriodWorkflow).PolicyPeriod.Job )"
+          align="left"
+          id="JobNumber"
+          label="displaykey.Web.Admin.Workflows.JobNumber"
+          value="(workflow as PolicyPeriodWorkflow).PolicyPeriod.Job.JobNumber"/>
+        <Cell
+          action="PolicyFileForward.go((workflow as PolicyPeriodWorkflow).PolicyPeriod, (workflow as PolicyPeriodWorkflow).PolicyPeriod.EditEffectiveDate)"
+          actionAvailable="User.util.CurrentUser.canView( (workflow as PolicyPeriodWorkflow).PolicyPeriod )"
+          align="left"
+          id="PolicyNumber"
+          label="displaykey.Web.Admin.Workflows.PolicyNumber"
+          sortBy="(workflow as PolicyPeriodWorkflow).PolicyPeriod.PolicyNumber"
+          value="(workflow as PolicyPeriodWorkflow).PolicyPeriod.PolicyNumberDisplayString"/>
+        <Cell
+          align="left"
+          id="Product"
+          label="displaykey.Web.Admin.Workflows.Product"
+          sortBy="(workflow as PolicyPeriodWorkflow).PolicyPeriod.Policy.ProductCode"
+          value="(workflow as PolicyPeriodWorkflow).PolicyPeriod.Policy.Product"/>
+        <Cell
+          action="JobForward.go((workflow as PolicyPeriodWorkflow).PolicyPeriod.Job)"
+          actionAvailable="User.util.CurrentUser.canView( (workflow as PolicyPeriodWorkflow).PolicyPeriod.Job )"
+          align="left"
+          enableSort="false"
+          id="JobType"
+          label="displaykey.Web.Admin.Workflows.JobType"
+          value="(workflow as PolicyPeriodWorkflow).PolicyPeriod.Job.DisplayType"/>
+        <Cell
+          action="WorkflowDetail.go(workflow)"
+          align="left"
+          id="Type"
+          label="displaykey.Web.Admin.Workflows.Type"
+          value="workflow.Subtype"/>
+        <Cell
+          align="left"
+          id="ProcessVersion"
+          label="displaykey.Web.Admin.Workflows.ProcessVersion"
+          value="workflow.ProcessVersion"/>
+        <DateCell
+          align="left"
+          dateFormat="medium"
+          id="StartTime"
+          label="displaykey.Web.Admin.Workflows.StartTime"
+          sortDirection="descending"
+          sortOrder="1"
+          timeFormat="medium"
+          value="workflow.CreateTime"/>
+        <DateCell
+          align="left"
+          dateFormat="medium"
+          id="UpdateTime"
+          label="displaykey.Web.Admin.Workflows.UpdateTime"
+          timeFormat="medium"
+          value="workflow.UpdateTime"/>
+        <Cell
+          align="left"
+          enableSort="false"
+          id="Insured"
+          label="displaykey.Web.Admin.Workflows.Insured"
+          value="(workflow as PolicyPeriodWorkflow).PolicyPeriod.Policy.Account.AccountHolder.AccountContact.DisplayName"/>
+        <Cell
+          action="WorkflowDetail.go(workflow.Caller)"
+          actionAvailable="workflow.Caller != null"
+          align="left"
+          id="Parent"
+          label="displaykey.Web.Admin.Workflows.Parent"
+          sortBy="workflow.Caller.PublicID"
+          value="workflow.Caller"
+          visible="!isParent"/>
+        <Cell
+          align="left"
+          id="CurrentStep"
+          label="displaykey.Web.Admin.Workflows.Step"
+          value="Workflow.CurrentStep"/>
+        <Cell
+          align="left"
+          id="Status"
+          label="displaykey.Web.Admin.Workflows.Status"
+          value="workflow.State"/>
+        <Cell
+          align="left"
+          id="ActiveState"
+          label="displaykey.Web.Admin.Workflows.ActiveState"
+          value="workflow.ActiveState"/>
+        <Cell
+          align="left"
+          enableSort="false"
+          id="WorkItemState"
+          label="displaykey.Web.Admin.Workflows.WorkItem"
+          value="workItemDisplayValue(workflow)"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function workItemDisplayValue(wf : Workflow) : String {
+        if (wf.State == "Active") {
+          var wi = wf.ActiveWorkflowWorkItem
+          if (wi != null) {
+            if (wi.Status == "checkedout") {
+                return wi.CheckedOutBy
+            }
+            return wi.Status as String
+          }
+        }
+        return null
+      }]]></Code>
+  </ListViewPanel>
+</PCF>

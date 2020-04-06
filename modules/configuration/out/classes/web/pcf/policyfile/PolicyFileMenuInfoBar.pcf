@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InfoBar
+    id="PolicyFileMenuInfoBar">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <InfoBarElement
+      icon="&quot;infobar_PolicyFile.png&quot;"
+      id="PolicyFileLabel"
+      label="displaykey.Web.PolicyFile.InfoBar.PolicyFile"/>
+    <InfoBarElement
+      icon="displaykey.Web.Wizard.InfoBar.LOBIcon(policyPeriod.Policy.Product.Abbreviation)"
+      id="LOBLabel"
+      label="policyPeriod.Policy.Product"/>
+    <InfoBarElement
+      id="AccountName"
+      value="policyPeriod.PrimaryInsuredName"/>
+    <InfoBarElement
+      action="AccountFileForward.go(policyPeriod.Policy.Account)"
+      id="AccountNumber"
+      label="displaykey.Web.PolicyFile.InfoBar.AccountNumber"
+      value="policyPeriod.Policy.Account.AccountNumber"/>
+    <InfoBarElement
+      id="PolicyNumber"
+      label="displaykey.Web.PolicyFile.InfoBar.PolicyNumber"
+      value="policyPeriod.PolicyNumberDisplayString"/>
+    <InfoBarElement
+      id="StatusAndExpDate"
+      label="formatStatusLabel(policyPeriod)"/>
+    <Code><![CDATA[
+function formatStatusLabel(pp : PolicyPeriod) : String {
+  if (pp.Canceled) {
+    var cancDate = pp.CancellationDate
+    var cancDateStr = gw.api.util.StringUtil.formatDate(cancDate,"short")
+    if (cancDate == pp.PeriodStart) {
+     return displaykey.Web.Wizard.InfoBar.CanceledFlatStatus(cancDateStr) 
+    }
+    else {
+     return displaykey.Web.Wizard.InfoBar.CanceledStatus(cancDateStr) 
+    }
+  }
+  else {
+    var endDateStr = gw.api.util.StringUtil.formatDate(pp.PeriodEnd,"short")
+    return displaykey.Web.Wizard.InfoBar.StatusAndExpDate(pp.PeriodDisplayStatus,endDateStr)
+  }
+}
+    ]]></Code>
+  </InfoBar>
+</PCF>

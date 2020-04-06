@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Popup
+    id="ContactSearchPopup"
+    returnType="Contact"
+    title="displaykey.Web.AddressBook.ContactSearchPage.Title">
+    <LocationEntryPoint
+      signature="ContactSearchPopup(accountContactRoleTypeToGetContactFor : typekey.AccountContactRole, product : gw.api.productmodel.Product)"/>
+    <LocationEntryPoint
+      signature="ContactSearchPopup(accountContactRoleTypeToGetContactFor : typekey.AccountContactRole)"/>
+    <LocationEntryPoint
+      signature="ContactSearchPopup(availableSubtypes : typekey.Contact[])"/>
+    <Variable
+      name="accountContactRoleTypeToGetContactFor"
+      type="typekey.AccountContactRole"/>
+    <Variable
+      initialValue="gw.plugin.Plugins.get(gw.plugin.contact.IContactConfigPlugin)"
+      name="contactConfigPlugin"/>
+    <Variable
+      initialValue="accountContactRoleTypeToGetContactFor == null ? typekey.ContactType.getTypeKeys(false).toTypedArray() : contactConfigPlugin.getAllowedContactTypesForAccountContactRoleType(accountContactRoleTypeToGetContactFor)"
+      name="contactTypes"
+      type="ContactType[]"/>
+    <Variable
+      initialValue="gw.web.admin.shared.SharedUIHelper.getAvailableSubtypes(availableSubtypes,contactTypes, product, accountContactRoleTypeToGetContactFor )"
+      name="availableSubtypes"
+      type="typekey.Contact[]"/>
+    <Variable
+      name="product"
+      type="gw.api.productmodel.Product"/>
+    <ScreenRef
+      def="ContactSearchScreen(availableSubtypes, null, false)"/>
+    <Code><![CDATA[function getAvailableSubtypes() : typekey.Contact[] {
+  if (availableSubtypes != null) {
+    return availableSubtypes 
+  }
+  var subTypes = contactTypes.map( \ c -> c == "Company" ?
+    typekey.Contact.TC_COMPANY : typekey.Contact.TC_PERSON)
+    .sortBy(\ c -> c.DisplayName)  // make the order deterministic
+  if (product != null and accountContactRoleTypeToGetContactFor == "NamedInsured") {
+    subTypes = subTypes.where(\ c -> product.isContactTypeSuitableForProductAccountType(c == "Company" ? Company : Person))
+  }
+  return subTypes
+}]]></Code>
+  </Popup>
+</PCF>

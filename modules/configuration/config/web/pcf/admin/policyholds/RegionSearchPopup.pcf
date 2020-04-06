@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Popup
+    id="RegionSearchPopup"
+    returnType="entity.Zone[]"
+    title="displaykey.Web.Admin.PolicyHold.SearchForRegions">
+    <LocationEntryPoint
+      signature="RegionSearchPopup(policyHold : PolicyHold)"/>
+    <Variable
+      name="policyHold"
+      type="PolicyHold"/>
+    <Screen
+      id="RegionSearchScreen">
+      <SearchPanel
+        cachingEnabled="false"
+        criteriaName="searchCriteria"
+        resultsName="zones"
+        search="searchCriteria.performSearch()"
+        searchCriteria="new gw.api.admin.PCZoneSearchCriteria()"
+        searchOnEnter="false"
+        searchResultsType="Zone[]">
+        <PanelRef>
+          <DetailViewPanel
+            hideIfReadOnly="true"
+            id="ZoneSearchDV">
+            <InputColumn>
+              <InputSetRef
+                def="RegionSearchInputSet(searchCriteria, policyHold)"
+                mode="searchCriteria.Country.Code"/>
+            </InputColumn>
+            <InputFooterSection>
+              <InputSetRef
+                def="SearchAndResetInputSet()"/>
+            </InputFooterSection>
+          </DetailViewPanel>
+        </PanelRef>
+        <PanelRef>
+          <Toolbar>
+            <CheckedValuesToolbarButton
+              allCheckedRowsAction="CurrentLocation.pickValueAndCommit(CheckedValues)"
+              id="ZonesAddButton"
+              iterator="ZoneSearchResultsLV"
+              label="displaykey.Web.Admin.PolicyHold.AddSelectedRegions"/>
+          </Toolbar>
+          <ListViewPanel
+            id="ZoneSearchResultsLV">
+            <RowIterator
+              checkBoxVisible="true"
+              editable="true"
+              elementName="zone"
+              hasCheckBoxes="true"
+              value="gw.web.admin.policyholds.PolicyHoldsUIHelper.getUnaddedZones(policyHold, zones)">
+              <Row>
+                <Cell
+                  id="ZoneCode"
+                  label="displaykey.Web.Admin.PolicyHold.ZoneCode"
+                  value="zone.Code"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+  </Popup>
+</PCF>

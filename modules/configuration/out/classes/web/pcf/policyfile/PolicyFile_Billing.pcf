@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    afterEnter="gw.api.web.PebblesUtil.addWebMessages(CurrentLocation, policyPeriod.PolicyFileMessages)"
+    canVisit="perm.PolicyPeriod.view(policyPeriod) and perm.System.pfilebilling"
+    countsAsWork="false"
+    id="PolicyFile_Billing"
+    onResume="billingSummary = gw.web.policy.PolicyBillingUIHelper.retrieveBillingSummary(billingPlugin, uiHelper.CurrentPolicyTermInfo)"
+    title="displaykey.Web.PolicyFile.Billing">
+    <LocationEntryPoint
+      signature="PolicyFile_Billing(policyPeriod : PolicyPeriod, asOfDate : DateTime)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="asOfDate"
+      type="DateTime"/>
+    <Variable
+      initialValue="gw.plugin.Plugins.get( gw.plugin.billing.IBillingSummaryPlugin )"
+      name="billingPlugin"/>
+    <Variable
+      initialValue="gw.web.policy.PolicyBillingUIHelper.retrieveBillingSummary(billingPlugin, policyPeriod)"
+      name="billingSummary"/>
+    <Variable
+      initialValue="billingSummary.PolicyTermInfos"
+      name="policyTermInfos"
+      type="gw.plugin.billing.BillingTermInfo[]"/>
+    <Variable
+      initialValue="new gw.web.policy.PolicyBillingUIHelper(policyPeriod, policyTermInfos)"
+      name="uiHelper"
+      type="gw.web.policy.PolicyBillingUIHelper"/>
+    <ScreenRef
+      def="Policy_BillingScreen(policyPeriod, billingPlugin, policyTermInfos, billingSummary, uiHelper)"/>
+  </Page>
+</PCF>

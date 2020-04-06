@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <InputSet
+    id="CreateAccountContactInputSet"
+    mode="default">
+    <Require
+      name="contact"
+      type="Contact"/>
+    <Variable
+      initialValue="contact as Company"
+      name="company"
+      type="Company"/>
+    <Variable
+      initialValue="new gw.api.name.ContactNameDelegate(company)"
+      name="contactNameDelegate"
+      recalculateOnRefresh="true"/>
+    <InputSetRef
+      def="GlobalContactNameInputSet(new gw.contact.ContactNameNoSummaryOwner(contactNameDelegate))"
+      mode="gw.api.name.NameLocaleSettings.PCFMode"/>
+    <InputSetRef
+      def="GlobalPhoneInputSet(new gw.api.phone.BasicPhoneOwner(new gw.api.phone.ContactPhoneDelegate(company, Contact#WorkPhone),displaykey.Web.SubmissionWizard.Account.Applicant.Company.Phone ))"
+      editable="true"
+      id="Phone"/>
+    <InputSetRef
+      def="GlobalPhoneInputSet(new gw.api.phone.BasicPhoneOwner(new gw.api.phone.ContactPhoneDelegate(company, Contact#FaxPhone), displaykey.Web.ContactDetail.Company.FaxPhone))"
+      editable="true"
+      id="FaxPhone"/>
+    <Input
+      editable="true"
+      id="EmailAddress1"
+      label="displaykey.Web.ContactDetail.Company.EmailAddress1"
+      value="company.EmailAddress1"/>
+    <Input
+      editable="true"
+      id="EmailAddress2"
+      label="displaykey.Web.ContactDetail.Company.EmailAddress2"
+      value="company.EmailAddress2"/>
+  </InputSet>
+</PCF>

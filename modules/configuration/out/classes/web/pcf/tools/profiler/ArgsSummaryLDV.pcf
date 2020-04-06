@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <!-- WARNING: Internal Guidewire file. DO NOT EDIT. -->
+  <ListDetailPanel
+    id="ArgsSummaryLDV"
+    selectionName="selectedArgsSummary"
+    selectionType="gw.api.profiler.ArgsAggregatedQuerySummary">
+    <Require
+      name="argsSummaries"
+      type="gw.api.profiler.ArgsAggregatedQuerySummary[]"/>
+    <PanelRef>
+      <TitleBar
+        title="displaykey.Web.Profiler.ArgumentDetails"/>
+      <Toolbar/>
+      <ListViewPanel
+        id="StackDetailsLV">
+        <RowIterator
+          editable="false"
+          elementName="argsSummary"
+          value="argsSummaries">
+          <Row>
+            <Cell
+              footerLabel="displaykey.Web.Profiler.Total"
+              id="ShortArgs"
+              label="displaykey.Web.Profiler.Arguments"
+              value="argsSummary.getShortArgs(80)"/>
+            <Cell
+              footerSumValue="argsSummary.ExecutionCount"
+              id="QueryCount"
+              label="displaykey.Web.Profiler.TotalExecutions"
+              sortDirection="descending"
+              sortOrder="1"
+              value="argsSummary.ExecutionCount"/>
+            <Cell
+              footerSumValue="argsSummary.TotalTime"
+              id="TotalQueryTime"
+              label="displaykey.Web.Profiler.TotalQueryTime"
+              sortDirection="descending"
+              sortOrder="2"
+              value="argsSummary.TotalTime"/>
+            <Cell
+              id="AverageTime"
+              label="displaykey.Web.Profiler.AverageQueryTime"
+              outputConversion="formatAverage(VALUE)"
+              value="argsSummary.AverageTime"/>
+            <Cell
+              id="MaxQueryTime"
+              label="displaykey.Web.Profiler.MaxQueryTime"
+              value="argsSummary.MaxQueryTime"/>
+            <Cell
+              footerSumValue="argsSummary.TotalRowCount"
+              id="TotalRowCount"
+              label="displaykey.Web.Profiler.TotalRowCount"
+              sortDirection="descending"
+              sortOrder="3"
+              value="argsSummary.TotalRowCount"/>
+            <Cell
+              id="AverageRowCount"
+              label="displaykey.Web.Profiler.AverageRowCount"
+              outputConversion="formatAverage(VALUE)"
+              value="argsSummary.AverageRowCount"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </PanelRef>
+    <CardViewPanel>
+      <Card
+        id="SQL"
+        title="displaykey.Web.Profiler.SQL">
+        <TemplatePanel><![CDATA[<div style="width:1040;height:500;overflow-x:scroll;overflow-y:scroll;">
+              <% printContent(selectedArgsSummary.PrettyPrintedSQL, false) %>
+            </div>
+        ]]></TemplatePanel>
+      </Card>
+      <Card
+        id="Args"
+        title="displaykey.Web.Profiler.Args">
+        <TemplatePanel><![CDATA[<div style="width:1040;height:500;overflow-x:scroll;overflow-y:scroll;">
+              <% printContent(selectedArgsSummary.Args, false) %>
+            </div>
+        ]]></TemplatePanel>
+      </Card>
+    </CardViewPanel>
+    <Code><![CDATA[
+function formatAverage(value: Number): String {
+        return gw.api.util.StringUtil.formatNumber(value, "#,##0.00")
+      }
+    ]]></Code>
+  </ListDetailPanel>
+</PCF>

@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<internalExtension
+  xmlns="http://guidewire.com/datamodel"
+  entityName="User">
+  <column
+    name="UseOrgAddress"
+    type="bit"
+    desc="If true, user's address is the same as the address of their organization."
+    default="true"
+    exportable="false"
+    nullok="true"/>
+  <column
+    name="UseProducerCodeSecurity"
+    type="bit"
+    desc="Is the user subject to ProducerCode security. This defaults to true for external users and false for internal users."
+    default="false"
+    nullok="false"/>
+  <typekey
+    name="UserType"
+    typelist="UserType"
+    desc="Indicates type of the user.  Primarily used for assignments."
+    default="other"
+    exportable="false"
+    nullok="false"/>
+  <array
+    name="RelatedAgencies"
+    desc="External organizations that an underwriter deals with."
+    arrayentity="OrganizationUnderwriter"
+    arrayfield="Underwriter"
+    exportable="false"
+    owner="true"
+    setterScriptability="hidden"
+    deprecated="true"/>
+  <array
+    name="UserProducerCodes"
+    desc="Available producer codes to a user."
+    arrayentity="UserProducerCode"
+    owner="true"/>
+  <array
+    name="UserAuthorityProfiles"
+    desc="Authority profiles assigned to the user."
+    arrayentity="UserAuthorityProfile"
+    owner="true"/>
+  <checkconstraint
+    desc="In PolicyCenter, every User must be associated with an Organization."
+    predicate="OrganizationID IS NOT NULL"/>
+  <!-- UserBase-related consistency checks and loader validations. -->
+  <dbcheckbuilder
+    className="com.guidewire.pc.domain.community.dbchecks.UserDBCheckBuilder"/>
+  <description>System users and related attributes. User personal attributes include language, experience level, contact information and vacation status. User business attributes include org, department, title and type (internal or external).</description>
+  <events/>
+</internalExtension>

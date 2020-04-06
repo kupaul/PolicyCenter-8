@@ -1,0 +1,76 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           targetNamespace="http://guidewire.com/config/webservicecollection"
+           xmlns="http://guidewire.com/config/webservicecollection"
+           elementFormDefault="qualified">
+  
+  <xs:element name="webservice-collection">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="resources" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="resource" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+        <xs:element name="settings" minOccurs="0">
+          <xs:complexType>
+            <xs:sequence>
+              <xs:element ref="setting" minOccurs="0" maxOccurs="unbounded"/>
+            </xs:sequence>
+          </xs:complexType>
+        </xs:element>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="resource">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="url" type="xs:string"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="setting" type="setting" abstract="true"/>
+
+  <xs:complexType name="setting" abstract="true">
+    <xs:sequence>
+      <xs:element name="env" type="xs:string" minOccurs="0"/>
+      <xs:element name="server" type="xs:string" minOccurs="0"/>
+      <xs:element name="service" minOccurs="0">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="serviceName" type="xs:QName"/>
+            <xs:element name="portName" type="xs:QName" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="override-url" substitutionGroup="setting">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="setting">
+          <xs:sequence>
+            <xs:element name="url" type="xs:string"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="configuration-provider" substitutionGroup="setting">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="setting">
+          <xs:sequence>
+            <xs:element name="type-name" type="xs:string"/>
+          </xs:sequence>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

@@ -1,0 +1,877 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Custom Inbound Integrations</title>
+    <link rel="StyleSheet" href="css/inbound-integration.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-plugins.html#2293646">Plugins</a> : <a class="WebWorks_Breadcrumb_Link" href="inbound-integration.24.1.html#2293646">Multi-threaded Inbound Integration</a> : Custom Inbound Integrations</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2293646">Custom Inbound Integrations</a></h3>
+      <div class="B_-_Body"><a name="2293650">PolicyCenter includes built-in inbound integrations of file-based input and JMS messages. If these built-in integrations do not serve your needs, write your own integration based on the plugin interfaces in the </a><span class="cv_-_computer_voice">gw.plugin.integration.inbound</span>&nbsp;package:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2304083">InboundIntegrationMessageReply</a></span> – message reply plugin</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2296980">InboundIntegrationStartablePlugin</a></span> – startable plugin for other non-messaging contexts</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="2287887">You must write your plugin implementation for this plugin interface in Java, not Gosu. </a></div>
+      <div class="B_-_Body"><a name="2297395">The </a><span class="cv_-_computer_voice">InboundIntegrationStartablePlugin</span> plugin interface extends several other interfaces:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2297077">InitializablePlugin</a></span> – This interface requires on method that passes plugin parameters. The plugin parameters are passed to the <span class="cv_-_computer_voice">setup</span> method in the <span class="cv_-_computer_voice">WorkAgent</span> interface, which your plugin must implement.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2297078">WorkAgent</a></span> – This <span class="e_-_emphasis">work agent</span> interface defines the core behavior of the inbound integration framework. This is the most complex part of writing your own custom inbound integration. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.6.html#2245005', '');" title="Custom Inbound Integrations">“Writing a Work Agent Implementation”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2304234">IStartablePlugin</a></span> – The startable plugin interface defines methods such as <span class="cv_-_computer_voice">start</span>, <span class="cv_-_computer_voice">stop</span>, and <span class="cv_-_computer_voice">getState</span>. See <a href="javascript:WWHClickedPopup('integration', 'plugins-startable.23.2.html#2422299', '');" title="What are Startable Plugins?">“What are Startable Plugins?”</a>. Be aware that the main <span class="cv_-_computer_voice">WorkAgent</span> interface defines <span class="cv_-_computer_voice">start</span> and <span class="cv_-_computer_voice">stop</span> methods with no arguments. <span class="cv_-_computer_voice">IStartablePlugin</span> adds additional method signatures of those methods that take arguments.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2297097">The </a><span class="cv_-_computer_voice">InboundIntegrationMessageReply</span> plugin interface extends several other interfaces:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2297383">MessageReply</a></span> – The interface for classes that handle replies from messages sent by a <span class="cv_-_computer_voice">MessageTransport</span> implementation. See <a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.11.html#3807598', '');" title="Implementing Messaging Plugins">“Implementing Messaging Plugins”</a> for the relationship between the interfaces <span class="cv_-_computer_voice">MessageTransport</span>, <span class="cv_-_computer_voice">MessageRequest</span>, and <span class="cv_-_computer_voice">MessageReply</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2297387">WorkAgent</a></span> – This <span class="e_-_emphasis">work agent</span> interface defines the core behavior of the inbound integration framework. This is the most complex part of writing your own custom inbound integration. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.6.html#2245005', '');" title="Custom Inbound Integrations">“Writing a Work Agent Implementation”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2245358">There are no other methods on </a><span class="cv_-_computer_voice">InboundIntegrationStartablePlugin</span> not defined in one of those other interfaces. </div>
+      <div class="B_-_Body"><a name="2259446">After you write your own custom implementation of </a><span class="cv_-_computer_voice">InboundIntegrationStartablePlugin</span>, use the PolicyCenter Studio Plugins Registry to register your plugin implementation with PolicyCenter. See <a href="javascript:WWHClickedPopup('config', 'studio_plugins.11.1.html#3595679', '');" title="Using the Plugins Registry Editor">“Using the Plugins Registry Editor” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('config', 'studio_plugins.11.1.html#3595679', '');" title="Using the Plugins Registry Editor">Configuration Guide</a></span>.</div>
+      <h4 class="H2_-_Heading_2"><a name="2245005">Writing a Work Agent Implementation</a></h4>
+      <div class="B_-_Body"><a name="2245543">The </a><span class="cv_-_computer_voice">gw.api.integration.inbound.WorkAgent</span> interface defines methods that coordinate and process work. You must write your own class that implements this interface. In addition to the primary functions of each method, you may also want to perform some logging to help debug your code.</div>
+      <div class="B_-_Body"><a name="2288413">To write a complete work agent implementation, you must write multiple related classes that work together. Refer to the following table for a summary of each class</a></div>
+      <div class="T_-_Table"><a name="2288812">&nbsp;</a></div>
+      <table class="withHeading" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2289876">Class that you write</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2289878">Implements this interface</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2289880">Description</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2290634">A work agent </a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2290852">WorkAgent</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2290638">Your plugin is the top level class that coordinates work for this service. Instantiates your class that implements the interface </a><span class="cvt_-_computer_voice_table">Factory</span>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="background-color: #F2F7FC; border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom" colspan="3">
+            <div class="TH_-_Table_Heading"><a name="2290542">Finding and preparing work during each polling interval</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2289888">A factory</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2289890">Factory</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2290347">A factory is a class that for each polling interval. Instantiates your class that implements the interface </a><span class="cvt_-_computer_voice_table">WorkSetProcessor</span>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2289894">A work set processor</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2289896">WorkSetProcessor</a></span></div>
+            <div class="TT_-_Table_Text"><a name="2289897">If your plugin supports the optional feature of being </a><span class="e_-_emphasis">transactional</span>, implement the subinterface <span class="cvt_-_computer_voice_table">TransactionalWorkSetProcessor</span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2290401">An object that knows how to acquire and divide resources. Instantiates your class that implements the interface </a><span class="cvt_-_computer_voice_table">Inbound</span>.</div>
+            <div class="TT_-_Table_Text"><a name="2290531">The main method for processing one unit of work within a </a><span class="cvt_-_computer_voice_table">WorkData</span> object is the process method within this object.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2289931">Inbound</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2289933">Inbound</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2290432">A class that knows how to find work in its </a><span class="cvt_-_computer_voice_table">findWork</span> method and return new work data sets. Instantiates your class that implements the interface <span class="cvt_-_computer_voice_table">WorkDataSet</span>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="background-color: #F2F7FC; border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom" colspan="3">
+            <div class="TH_-_Table_Heading"><a name="2290584">Representing the work itself</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2289901">A work data set</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2289903">WorkDataSet</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2290465">Represents the set of all data found in this polling interval. Encapsulates a set of work data (</a><span class="cvt_-_computer_voice_table">WorkData</span>) objects and any necessary context information to operate on the data. Instantiates your class that implements the interface <span class="cvt_-_computer_voice_table">WorkData</span>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2289907">Work data</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2289909">WorkData</a></span></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2289911">Represents one unit of work</a></div>
+          </td>
+        </tr>
+      </table>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2246259">Setup and Teardown the Work Agent</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2246263">In your </a><span class="cv_-_computer_voice">WorkAgent</span> implementation class, write a <span class="cv_-_computer_voice">setup</span> method that initializes your resources. PolicyCenter calls the <span class="cv_-_computer_voice">setup</span> method before the <span class="cv_-_computer_voice">start</span> method. The method signature is:</div>
+      <div class="CS_-_Code_Single_Line"><a name="2245806">	public void setup(Map&lt;String, Object&gt; properties);</a></div>
+      <div class="B_-_Body"><a name="2246102">The </a><span class="cv_-_computer_voice">java.util.Map</span> object that is the method argument is the set of plugin parameters from the Studio Plugins Editor for your plugin implementation.</div>
+      <div class="B_-_Body"><a name="2262095">Implement the </a><span class="cv_-_computer_voice">teardown</span> method to release resources acquired in the <span class="cv_-_computer_voice">start</span> method. PolicyCenter calls the <span class="cv_-_computer_voice">teardown</span> method before the <span class="cv_-_computer_voice">stop</span> method. </div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="2304653">If you use the startable plugin variant of in the inbound integration plugin (</a><span class="cv_-_computer_voice">InboundIntegrationStartablePlugin</span>), be aware that the main <span class="cv_-_computer_voice">WorkAgent</span> interface defines <span class="cv_-_computer_voice">start</span> and <span class="cv_-_computer_voice">stop</span> methods with no arguments. The startable plugin variant also implements <span class="cv_-_computer_voice">IStartablePlugin</span>, which means you must add additional method signatures of those methods that take arguments. See related topic <a href="javascript:WWHClickedPopup('integration', 'plugins-startable.23.2.html#2422299', '');" title="What are Startable Plugins?">“What are Startable Plugins?”</a>. </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2245802">Start and Stop the Plugin</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2246007">In your </a><span class="cv_-_computer_voice">WorkAgent</span> implementation class, implement the plugin method <span class="cv_-_computer_voice">start</span> to start the work listener and perform any necessary initialization that must happen each time you start the work agent.</div>
+      <div class="B_-_Body"><a name="2246043">Implement the plugin method </a><span class="cv_-_computer_voice">stop</span> and perform any necessary logic to stop your work agent.</div>
+      <div class="B_-_Body"><a name="2278516">Compare and contrast the </a><span class="cv_-_computer_voice">start</span> and <span class="cv_-_computer_voice">stop</span> methods with the different methods <span class="cv_-_computer_voice">setup</span> and <span class="cv_-_computer_voice">teardown</span>. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.6.html#2246259', '');" title="Custom Inbound Integrations">“Setup and Teardown the Work Agent”</a>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2235794">Declare Whether Your Work Agent is Transactional</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2279084">PolicyCenter calls the plugin method </a><span class="cv_-_computer_voice">transactional</span> to determine whether your agent is <span class="e_-_emphasis">transactional</span>. A transactional work agent creates work items with a slightly different interface. There are additional method that you must implement to begin work, to commit work, and to roll back transactional changes to partially finished work. To specify your work agent is transactional, return <span class="cv_-_computer_voice">true</span> from the <span class="cv_-_computer_voice">transactional</span> method. Otherwise, return <span class="cv_-_computer_voice">false</span>.</div>
+      <div class="B_-_Body"><a name="2277984">If your work agent is transactional, your implementation of </a><span class="cv_-_computer_voice">Factory.createWorkUnit()</span> must return an instance of <span class="cv_-_computer_voice">TransactionalWorkSetProcessor</span> instead of <span class="cv_-_computer_voice">WorkSetProcessor</span>. The <span class="cv_-_computer_voice">TransactionalWorkSetProcessor</span> interface is a subinterface of (extends from) <span class="cv_-_computer_voice">WorkSetProcessor</span>. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.6.html#2235802', '');" title="Custom Inbound Integrations">“Get a Factory for the Work Agent”</a>. </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2235802">Get a Factory for the Work Agent</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2246995">In your </a><span class="cv_-_computer_voice">WorkAgent</span> implementation class, implement the <span class="cv_-_computer_voice">factory</span> method. This method must return a <span class="cv_-_computer_voice">Factory</span> object, which represents an object that creates work data sets.</div>
+      <div class="B_-_Body"><a name="2244934">The </a><span class="cv_-_computer_voice">Factory</span> interface has only one method, which is called <span class="cv_-_computer_voice">createWorkProcessor</span>. It takes no arguments and returns an instance of your own custom class that implements the <span class="cv_-_computer_voice">WorkSetProcessor</span> interface.</div>
+      <div class="B_-_Body"><a name="2278016">If your agent is transactional, your implementation of </a><span class="cv_-_computer_voice">Factory.createWorkProcessor()</span> must return an instance of <span class="cv_-_computer_voice">TransactionalWorkSetProcessor</span> instead of <span class="cv_-_computer_voice">WorkSetProcessor</span>. The <span class="cv_-_computer_voice">TransactionalWorkSetProcessor</span> interface is a subinterface of <span class="cv_-_computer_voice">WorkSetProcessor</span>. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.6.html#2235794', '');" title="Custom Inbound Integrations">“Declare Whether Your Work Agent is Transactional”</a>. Both interfaces are in the <span class="cv_-_computer_voice">gw.api.integration.inbound</span> package.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2253737">Writing a Work Set Processor</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2278034">Most of your actual work happens in code called a work set processor, which is a class that you create that implements the </a><span class="cv_-_computer_voice">WorkSetProcessor</span> interface or its subinterface <span class="cv_-_computer_voice">TransactionalWorkSetProcessor</span>. Both interfaces are in the <span class="cv_-_computer_voice">gw.api.integration.inbound</span> package. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.6.html#2235794', '');" title="Custom Inbound Integrations">“Declare Whether Your Work Agent is Transactional”</a></div>
+      <div class="B_-_Body"><a name="2254247">The basic </a><span class="cv_-_computer_voice">WorkSetProcessor</span> interface defines two methods</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2254248">getInbound</a></span> – Gets an object that knows how to acquire and divide resources to create work items. This method returns an object of type <span class="cv_-_computer_voice">Inbound</span>, which is an interface with only one method, called <span class="cv_-_computer_voice">findWork</span>. Define your own class that implements the <span class="cv_-_computer_voice">Inbound</span> interface. The <span class="cv_-_computer_voice">findWork</span> method must get the <span class="e_-_emphasis">work data set</span>, which represent multiple work items. If your plugin supports unordered multi-threaded work, each work item represents work that can be done by its own thread. For example, for the inbound file integration, a work data set is a list of newly-added files. Each file is a separate work item. The <span class="cv_-_computer_voice">findWork</span> method returns the data set encapsulated in a <span class="cv_-_computer_voice">WorkDataSet</span> object. The polling process of the inbound integration framework calls the <span class="cv_-_computer_voice">findWork</span> method to do the main work of getting new data to process. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.6.html#2264555', '');" title="Custom Inbound Integrations">“Error Handling”</a>. From Gosu, this method appears as a getter for the <span class="cv_-_computer_voice">Inbound</span> property rather than as a method.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2255007">process</a></span> – Processes one work data item within a work data set. The method takes two arguments of type <span class="cv_-_computer_voice">WorkContext</span> and <span class="cv_-_computer_voice">WorkData</span>. The <span class="cv_-_computer_voice">WorkData</span> is one work item in the work data set. The <span class="cv_-_computer_voice">WorkContext</span> that you can optionally use to declare a resource or other context necessary to process the data item. Your own implementation of the work data set (<span class="cv_-_computer_voice">WorkDataSet</span>) is responsible for populating this context information if you need it. For example, if your inbound integration is listening to a message queue, you might store the connection or queue information in the <span class="cv_-_computer_voice">WorkContext</span> object. Your <span class="cv_-_computer_voice">WorkSetProcessor</span> can then access this connection information in the <span class="cv_-_computer_voice">process</span> method when processing one message on the queue. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.6.html#2264555', '');" title="Custom Inbound Integrations">“Error Handling”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2255989">Only if your agent is transactional, your implementation of </a><span class="cv_-_computer_voice">Factory.createWorkUnit()</span> must return an instance of <span class="cv_-_computer_voice">TransactionalWorkSetProcessor</span> instead of <span class="cv_-_computer_voice">WorkSetProcessor</span>. The <span class="cv_-_computer_voice">TransactionalWorkSetProcessor</span> interface is a subinterface of <span class="cv_-_computer_voice">WorkSetProcessor</span>. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.6.html#2235794', '');" title="Custom Inbound Integrations">“Declare Whether Your Work Agent is Transactional”</a>. </div>
+      <div class="B_-_Body"><a name="2262428">The </a><span class="cv_-_computer_voice">TransactionalWorkSetProcessor</span> interface defines several additional methods:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2254082">begin</a></span> – Begin any necessary transactional context. You are responsible for management of any transactions.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2256118">commit</a></span> – Commit any changes. You are responsible for management of any transactions.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2256266">rollback</a></span> – Rollback any changes. You are responsible for management of any transactions.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2256550">All three methods take a single argument of type </a><span class="cv_-_computer_voice">TxContext</span>. The <span class="cv_-_computer_voice">TxContext</span> interface is a subinterface of <span class="cv_-_computer_voice">WorkContext</span>. Use it to represent customer-specific work context information that also contains transaction-specific information. Create your own implementation of this class in your <span class="cv_-_computer_voice">getContext</span> method of your <span class="cv_-_computer_voice">WorkDataSet</span>. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.6.html#2244958', '');" title="Custom Inbound Integrations">“Creating a Work Data Set”</a>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2264555">Error Handling</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2264770">Any exceptions in </a><span class="cv_-_computer_voice">WorkDataSet.findWork()</span> causes PolicyCenter to immediately stop processing until the plugin is restarted or the server is restarted.</div>
+      <div class="B_-_Body"><a name="2264782">Any exceptions in the </a><span class="cv_-_computer_voice">WorkSetProcessor</span> in the <span class="cv_-_computer_voice">process</span> method are logged and the item is skipped. </div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="2265006">It is important to catch any exceptions in the </a><span class="cv_-_computer_voice">process</span> method to ensure that you correctly handle error conditions. For example, you may need to notify administrators or place the work item in a special location for special handling.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2244958">Creating a Work Data Set</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2244967">You must implement your own class that encapsulates knowledge about a work data set, which represents the set of all data found in this polling interval. The work data set is created by your own implementation of the </a><span class="cv_-_computer_voice">Inbound.findWork()</span> method. For example, an inbound file integration creates a work data set representing a list of all new files in an incoming directory. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.6.html#2235802', '');" title="Custom Inbound Integrations">“Get a Factory for the Work Agent”</a>.</div>
+      <div class="B_-_Body"><a name="2244969">Create a class that implements the </a><span class="cv_-_computer_voice">gw.api.integration.inbound.WorkDataSet</span> interface. Your class must implement the following methods:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2279426">getData</a></span> – Get the next work item and move any iterator that you maintain forward one item so that the next call returns the next item after this one. Return a <span class="cv_-_computer_voice">WorkData</span> object if there are more items to process. Return <span class="cv_-_computer_voice">null</span> to indicate no more items. For example, an inbound file integration might return the next item in a list of files. The <span class="cv_-_computer_voice">WorkData</span> interface is a marker interface, so it has no methods. Write your own implementation of a class that implements this interface. Add any object variables necessary to store information to represent one work item. It is the <span class="cv_-_computer_voice">WorkDataSet.getData()</span> method that is responsible for instantiating the appropriate class that you write and populating any appropriate data fields. For example, for an inbound file integration, one <span class="cv_-_computer_voice">WorkData</span> item might represent one new file to process. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2279427">From Gosu, the </a><span class="cv_-_computer_voice">getData</span> method appears as a getter for the <span class="cv_-_computer_voice">Data</span> property, not a method.</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2279428">hasNext</a></span> – Return <span class="cv_-_computer_voice">true</span> if there are any unprocessed items, otherwise return <span class="cv_-_computer_voice">false</span>. In other words, if this same object’s <span class="cv_-_computer_voice">getData</span> method would return a non-null value if called immediately, return <span class="cv_-_computer_voice">true</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2265350">getContext</a></span> – Your implementation of a work data set can optionally declare a resource or other context necessary to process the data item. You are responsible for populating this context information if you need it. For example, if your inbound integration listens to a message queue, store the connection or queue information in an instance of a class that you write that implements <span class="cv_-_computer_voice">gw.api.integration.inbound.WorkContext</span>. In your code that processes each item (your <span class="cv_-_computer_voice">WorkSetProcessor</span> implementation), you can access this connection information from the <span class="cv_-_computer_voice">WorkSetProcessor</span> object’s <span class="cv_-_computer_voice">process</span> method when processing each new message. If your plugin supports transactional work items (the <span class="cv_-_computer_voice">transactional</span> plugin parameter), your class must implement a subinterface called <span class="cv_-_computer_voice">TxContext</span>, which requires two additional methods:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2263074">isRollback</a></span> – Returns a <span class="cv_-_computer_voice">boolean</span> value that indicates the transaction will be rolled back.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2263075">setRollbackOnly</a></span> – Set your own <span class="cv_-_computer_voice">boolean</span> value to indicate that a rollback will occur.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2258592">close</a></span> – Close and release any resources acquired by your work data set.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2294203">Getting Parameters</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2294230">Like all other plugin types, your plugin implementation can get parameter values. See </a><a href="javascript:WWHClickedPopup('integration', 'plugins.14.02.html#2839945', '');" title="Overview of PolicyCenter Plugins">“Plugin Parameters”</a>. The <span class="cv_-_computer_voice">Map</span> argument to the <span class="cv_-_computer_voice">setup</span> method includes all parameters that you set in the <span class="cv_-_computer_voice">inbound-integration-config.xml</span> file for that integration. Save the map or the values of important parameters in private variables in your plugin implementation.</div>
+      <div class="B_-_Body"><a name="2294594">The map argument to the </a><span class="cv_-_computer_voice">setup</span> method also includes any arbitrary parameters that you set in the <span class="cv_-_computer_voice">&lt;parameters&gt;</span> configuration element. See the parameter called <span class="cv_-_computer_voice">parameters</span> in <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.6.html#2260381', '');" title="Custom Inbound Integrations">“Installing a New Custom Inbound Integration”</a>.</div>
+      <h4 class="H2_-_Heading_2"><a name="2260381">Installing a New Custom Inbound Integration</a></h4>
+      <h6 class="HS_-_Head_Sub"><a name="2290931">To create and register a new custom inbound integration</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2291014">Design and write all required implementation Java classes as described in </a><a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.6.html#2260381', '');" title="Custom Inbound Integrations">“Installing a New Custom Inbound Integration”</a>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="2291443">You must write your plugin implementation for this plugin interface in Java, not Gosu. </a></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2291367">In the </a><span class="ui_-_UI_element">Project</span> window, navigate to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">config</span> → <span class="ui_-_UI_element">integration</span> and click <span class="cv_-_computer_voice">inbound-integration-config.xml</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2291018">Configure the thread pools. See </a><a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.3.html#2269843', '');" title="Inbound Integration Configuration XML File">“Thread Pool Configuration”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2291019">In the list of integrations, create one </a><span class="cv_-_computer_voice">&lt;integration&gt;</span> element of type <span class="cv_-_computer_voice">&lt;custom-integration&gt;</span>. Follow the pattern in the file to correctly set the XML/XSD namespace for the element. Set the <span class="cv_-_computer_voice">name</span> and <span class="cv_-_computer_voice">disabled</span> attributes as described in <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.3.html#2276560', '');" title="Inbound Integration Configuration XML File">“Configuring a List of Inbound Integrations”</a>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2291023">Set configuration parameter subelements as follows:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="T_-_Table"><a name="2293605">&nbsp;</a></div>
+      <table class="withHeadingIndent" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2293501">Plugin parameters in Plugins editor, description</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2293503">Required</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2293505">Description</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2293507">Example value</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2293509">workagentimpl</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2293511">Required</a></div>
+            <div class="TT_-_Table_Text"><a name="2293512">&nbsp;</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296274">Set this parameter to the fully-qualified name of your </a><span class="cvt_-_computer_voice_table">InboundIntegrationStartablePlugin</span> or <span class="cvt_-_computer_voice_table">InboundIntegrationMessageReply</span> implementation<span style="font-family: &quot;Lucida Sans Typewriter&quot;; font-size: 7.0pt">.</span></div>
+            <div class="TT_-_Table_Text"><span class="s_-_strong"><a name="2293515">IMPORTANT: </a></span>You must write your plugin implementation for this plugin interface in Java, not Gosu. </div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2293517">mycompany.integ.MyInboundPlugin</a></span></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2293519">pluginhandler</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2293521">n/a</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: Arial; font-style: italic; font-variant: normal; font-weight: normal; text-transform: none; vertical-align: baseline"><span class="e_-_emphasis"><a name="2293523">his parameter is unused in custom inbound integrations. This parameter is used only for file and JMS integrations.</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2293525">n/a</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2293527">transactional</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2293529">Optional</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2293531">Always set this </a><span class="cvt_-_computer_voice_table">boolean</span> value to the same value returned by your plugin implementation’s <span class="cvt_-_computer_voice_table">transactional</span> method. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.6.html#2235794', '');" title="Custom Inbound Integrations">“Declare Whether Your Work Agent is Transactional”</a>.</div>
+            <div class="TT_-_Table_Text"><a name="2293535">If not set, defaults to </a><span class="cvt_-_computer_voice_table">false</span>.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2293537">true</a></span></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2293539">threadpool</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2293541">Optional</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2293543">The unique name of a thread pool as configured earlier in the file. See </a><a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.3.html#2269843', '');" title="Inbound Integration Configuration XML File">“Thread Pool Configuration”</a><span style="font-family: &quot;Times New Roman&quot;; font-size: 10.0pt">.</span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2293548">gw_default</a></span></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2293550">stoponerror</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2293552">Required</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2295246">If true, PolicyCenter stops the integration if an error occurs. Otherwise, PolicyCenter just skips that item. Be sure to log any errors or notify an administrator.</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2293557">true</a></span></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2293559">ordered</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2293561">Optional</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2293563">Set to </a><span class="cvt_-_computer_voice_table">true</span> to process in a single thread.</div>
+            <div class="TT_-_Table_Text"><a name="2293564">Set to false to process items in multiple threads, as managed by the thread pool.</a></div>
+            <div class="TT_-_Table_Text"><a name="2293565">The behavior of the </a><span class="cvt_-_computer_voice_table">ordered</span> flag interacts with the behavior of the polling interval and throttle interval. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.7.html#2273887', '');" title="Understanding the Polling Interval and Throttle Interval">“Understanding the Polling Interval and Throttle Interval”</a>.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2293570">true</a></span></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2293572">pollinginterval</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2293574">Optional</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296081">The time interval in seconds between polls, though the algorithm interacts with the throttle interval and the </a><span class="cvt_-_computer_voice_table">ordered</span> parameter. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.7.html#2273887', '');" title="Understanding the Polling Interval and Throttle Interval">“Understanding the Polling Interval and Throttle Interval”</a>. The default is 60 seconds. </div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2293581">60</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2293583">throttleinterval</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2293585">Optional</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296086">The time interval in seconds after polling, though the algorithm interacts with the polling interval and the </a><span class="cvt_-_computer_voice_table">ordered</span> parameter. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.7.html#2273887', '');" title="Understanding the Polling Interval and Throttle Interval">“Understanding the Polling Interval and Throttle Interval”</a>. The default is 60 seconds.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2293592">60</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2293594">parameters</a></span></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2293596">Optional</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2293598">Arbitrary parameters that you can define, for example to store server names and port numbers. Define subelements that alternate between key and value elements, contain key/value pairs. For example:</a></div>
+            <div class="TT_-_Table_Text"><a name="2293599">The plugin interface has a </a><span class="cvt_-_computer_voice_table">setup</span> method. These parameters are in the <span class="cvt_-_computer_voice_table">java.util.Map</span> that PolicyCenter passes to that initialization method.</div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2293604">&lt;parameters&gt;<br />&nbsp;&nbsp;&lt;key&gt;key1&lt;/key&gt;<br />&nbsp;&nbsp;&lt;value&gt;myvalue&lt;/value&gt;<br />&lt;/parameters&gt;</a></span></div>
+          </td>
+        </tr>
+      </table>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2293608">In Studio, within the Plugins registry, add a new </a><span class="cv_-_computer_voice">.gwp</span> file. For related information, see <a href="javascript:WWHClickedPopup('integration', 'plugins.14.02.html#2475371', '');" title="Overview of PolicyCenter Plugins">“Registering a Plugin Implementation Class”</a> and <a href="javascript:WWHClickedPopup('config', 'studio_plugins.11.1.html#3595679', '');" title="Using the Plugins Registry Editor">“Using the Plugins Registry Editor” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('config', 'studio_plugins.11.1.html#3595679', '');" title="Using the Plugins Registry Editor">Configuration Guide</a></span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	7.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2296269">Studio prompts for a plugin name and plugin interface. For the name, use a name that represents the purpose of this specific inbound integration. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	8.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2296270">For the </a><span class="ui_-_UI_element">Interface</span> field, type the plugin interface you implemented, either <span class="cv_-_computer_voice">InboundIntegrationStartablePlugin</span> or <span class="cv_-_computer_voice">InboundIntegrationMessageReply</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	9.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2296271">Click the plus (+) symbol to add a plugin implementation and choose </a><span class="ui_-_UI_element">Add Java plugin</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	10.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2291181">In the </a><span class="ui_-_UI_element">Java class</span> field, type the fully-qualified name of your plugin implementation.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	11.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2291183">Add a plugin parameter with the key </a><span class="cv_-_computer_voice">integrationservice</span>. For the value, type the unique name for your integration that you used in <span class="cv_-_computer_voice">inbound-integration-config.xml</span> for this integration.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	12.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2293739">Start the server and test your new inbound integration. Add logging code as appropriate to confirm the integration.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

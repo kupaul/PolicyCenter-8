@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <PanelSet
+    id="PolicyLineSummaryPanelSet"
+    mode="BOPLine">
+    <Require
+      name="line"
+      type="PolicyLine"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="line as BusinessOwnersLine"
+      name="bopline"/>
+    <!-- Line-level clauses -->
+    <DetailViewPanel
+      id="LineDV">
+      <InputColumn>
+        <Label
+          label="displaykey.Web.Policy.BOP.Quote.Coverages.Line.Title"/>
+        <ListViewInput
+          def="CoverageSummaryLV((bopline).BOPLineCoverages.toList(), bopline)"
+          labelAbove="true">
+          <Toolbar/>
+        </ListViewInput>
+        <Label
+          label="displaykey.Web.Policy.Coverages.Exclusions"
+          visible="not bopline.BOPLineExclusions.IsEmpty"/>
+        <ListViewInput
+          def="CoverageSummaryLV(bopline.BOPLineExclusions.toList(), bopline)"
+          id="ExclusionSummaryLV"
+          labelAbove="true"
+          visible="not bopline.BOPLineExclusions.IsEmpty">
+          <Toolbar/>
+        </ListViewInput>
+        <Label
+          label="displaykey.Web.Policy.Coverages.PolicyConditions"
+          visible="not bopline.BOPLineConditions.IsEmpty"/>
+        <ListViewInput
+          def="CoverageSummaryLV(bopline.BOPLineConditions.toList(), bopline)"
+          id="ConditionSummaryLV"
+          labelAbove="true"
+          visible="not bopline.BOPLineConditions.IsEmpty">
+          <Toolbar/>
+        </ListViewInput>
+      </InputColumn>
+    </DetailViewPanel>
+    <!-- Each location is displayed in a separate Panel -->
+    <PanelIterator
+      elementName="bopLocation"
+      type="BOPLocation"
+      value="(line as BOPLine).BOPLocations">
+      <IteratorSort
+        sortBy="bopLocation.Location.LocationNum"
+        sortOrder="1"/>
+      <DetailViewPanel
+        id="LocationsDV">
+        <InputColumn>
+          <Label
+            label="displaykey.Web.Policy.BOP.Quote.Location.Title(bopLocation.Location.LocationNum, bopLocation.Location.CompactName)"/>
+          <InputDivider/>
+          <ListViewInput
+            def="CoverageSummaryLV(bopLocation.SortedCoverages.toList(), bopLocation)"
+            labelAbove="true">
+            <Toolbar/>
+          </ListViewInput>
+        </InputColumn>
+      </DetailViewPanel>
+      <!-- Each building is displayed in a separate DetailView -->
+      <DetailViewPanel
+        id="BuildingsDV">
+        <InputColumn>
+          <InputIterator
+            elementName="bOPBuildingEU"
+            type="BOPBuilding"
+            value="bopLocation.Buildings">
+            <IteratorSort
+              sortBy="bOPBuildingEU.Building.BuildingNum"
+              sortOrder="1"/>
+            <ContentInput
+              id="LinkToBuilding">
+              <Link
+                action="BOPBuildingPopup.push(line as BOPLine, bopLocation, bOPBuildingEU, false, false, jobWizardHelper)"
+                id="BuildingDetails"
+                label="displaykey.Web.Policy.BOP.Quote.Building.Title(bOPBuildingEU.Building.BuildingNum)"/>
+            </ContentInput>
+            <ListViewInput
+              def="CoverageSummaryLV(bOPBuildingEU.SortedCoverages.toList(), bOPBuildingEU)"
+              labelAbove="true">
+              <Toolbar/>
+            </ListViewInput>
+          </InputIterator>
+        </InputColumn>
+      </DetailViewPanel>
+    </PanelIterator>
+  </PanelSet>
+</PCF>

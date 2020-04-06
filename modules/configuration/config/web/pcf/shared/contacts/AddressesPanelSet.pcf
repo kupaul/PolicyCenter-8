@@ -1,0 +1,140 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <PanelSet
+    desc="Provides a reusable panel displaying a Contact's Addresses in a ListDetailPanel."
+    id="AddressesPanelSet">
+    <Require
+      name="contact"
+      type="Contact"/>
+    <Require
+      name="showAddressTools"
+      type="boolean"/>
+    <Require
+      name="account"
+      type="entity.Account"/>
+    <Require
+      name="period"
+      type="entity.PolicyPeriod"/>
+    <Variable
+      initialValue="gw.util.concurrent.LockingLazyVar.make(\ -&gt; period.OpenForEdit)"
+      name="openForEditInit"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="period != null ? openForEditInit.get() : CurrentLocation.InEditMode"
+      name="openForEdit"
+      recalculateOnRefresh="true"/>
+    <ListDetailPanel
+      selectionName="selectedAddress"
+      selectionType="Address">
+      <PanelRef>
+        <TitleBar
+          title="displaykey.Web.ContactDetail.AddressDetail"/>
+        <Toolbar>
+          <IteratorButtons
+            iterator="AddressesLV"/>
+        </Toolbar>
+        <ListViewPanel
+          desc="List of addresses"
+          id="AddressesLV">
+          <RowIterator
+            checkBoxVisible="address != contact.PrimaryAddress &amp;&amp; address != period?.PolicyAddress.Address"
+            editable="true"
+            elementName="address"
+            hasCheckBoxes="true"
+            hideCheckBoxesIfReadOnly="true"
+            pageSize="4"
+            toAdd="contact.addAddress(address)"
+            toRemove="if (address != contact.PrimaryAddress &amp;&amp; address != period?.PolicyAddress.Address) contact.safeRemoveAddress(address) "
+            value="contact.AllAddresses">
+            <Row>
+              <RadioButtonCell
+                action="contact.makePrimaryAddress(address)"
+                align="center"
+                editable="true"
+                id="Primary"
+                label="displaykey.Web.Addresses.Primary"
+                radioButtonGroup="PrimaryAddress"
+                value="address == contact.PrimaryAddress">
+                <PostOnChange/>
+              </RadioButtonCell>
+              <Cell
+                id="AddressType"
+                label="displaykey.Web.Addresses.AddressType"
+                value="address.AddressType"/>
+              <Cell
+                id="DisplayedName"
+                label="displaykey.Web.Addresses.Address"
+                value="address.addressString(&quot;,&quot;, false, false)"
+                width="500"
+                wrap="true"/>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+      </PanelRef>
+      <CardViewPanel>
+        <Card
+          id="AddressDetailCard"
+          title="displaykey.Web.ContactDetail.AddressDetail">
+          <DetailViewPanel
+            id="AddressDetailDV">
+            <InputColumn>
+              <Label
+                label="displaykey.Web.Policy.Address.SelectionIsPolicyAddress"
+                visible="selectedAddress == period?.PolicyAddress.Address"/>
+              <InputSetRef
+                def="LinkedAddressInputSet(selectedAddress, contact, period, account, openForEdit)"/>
+              <InputSetRef
+                def="AddressInputSet(new gw.pcf.contacts.AddressInputSetAddressOwner(selectedAddress, false, true))"
+                editable="selectedAddress.LinkedAddress == null"/>
+              <TypeKeyInput
+                editable="selectedAddress.LinkedAddress == null"
+                id="AddressType"
+                label="displaykey.Web.ContactDetail.AddressDetail.AddressType"
+                required="true"
+                value="selectedAddress.AddressType"/>
+              <Input
+                editable="selectedAddress.LinkedAddress == null"
+                id="Description"
+                label="displaykey.Web.ContactDetail.AddressDetail.Description"
+                value="selectedAddress.Description"/>
+              <Input
+                editable="selectedAddress.LinkedAddress == null"
+                id="ValidUntil"
+                label="displaykey.Web.ContactDetail.AddressDetail.ValidUntil"
+                value="selectedAddress.ValidUntil"/>
+            </InputColumn>
+          </DetailViewPanel>
+        </Card>
+        <Card
+          id="AddressToolsCard"
+          title="displaykey.Web.ContactDetail.AddressTools"
+          visible="showAddressTools and contact.PrimaryAddress &lt;&gt; selectedAddress and not selectedAddress.New">
+          <PanelRef
+            id="AddressTools">
+            <TitleBar
+              title="displaykey.Web.ContactDetail.AddressTools.MergeAddress"/>
+            <Toolbar>
+              <ToolbarButton
+                available="showAddressTools and contact.PrimaryAddress &lt;&gt; selectedAddress and not selectedAddress.New"
+                id="MergeAddresses"
+                label="displaykey.Web.ContactDetail.AddressTools.MergeAddressInto">
+                <MenuItemIterator
+                  elementName="survivorAddress"
+                  value="contact.AllAddresses.subtract({selectedAddress}).where(\ a -&gt; not a.New).toTypedArray()">
+                  <MenuItem
+                    action="contact.mergeAddresses(survivorAddress, selectedAddress);gw.api.web.PebblesUtil.invalidateIterators(CurrentLocation, entity.Address)"
+                    confirmMessage="displaykey.Web.ContactDetail.AddressTools.MergeAddress.Confirm(survivorAddress, selectedAddress)"
+                    id="survivorAddress"
+                    label="survivorAddress.DisplayName"/>
+                </MenuItemIterator>
+              </ToolbarButton>
+            </Toolbar>
+            <PanelRow/>
+          </PanelRef>
+        </Card>
+      </CardViewPanel>
+    </ListDetailPanel>
+  </PanelSet>
+</PCF>

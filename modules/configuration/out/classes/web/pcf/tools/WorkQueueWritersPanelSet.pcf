@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <PanelSet
+    id="WorkQueueWritersPanelSet">
+    <Require
+      name="Page"
+      type="gw.api.web.tools.WorkQueueInfoPage"/>
+    <Require
+      name="Queue"
+      type="gw.api.web.tools.WorkQueueDisplayInfo"/>
+    <Variable
+      initialValue="Page.getWorkItemByWriterForQueue(Queue)"
+      name="Writers"
+      recalculateOnRefresh="true"/>
+    <Verbatim
+      label="getMaxNumberOfRecordsShownText()"
+      labelStyleClass="alertBar"
+      visible="isMaximumNumberOfRunsShown()"/>
+    <ListViewPanel
+      id="WorkQueueItemByWriterLV">
+      <RowIterator
+        editable="false"
+        elementName="item"
+        pageSize="0"
+        type="gw.api.web.tools.WorkItemDisplayInfo"
+        value="Writers">
+        <Row>
+          <Cell
+            enableSort="false"
+            id="ProcessId"
+            label="displaykey.Web.WorkQueueItemsByWriterLv.ProcessId"
+            value="item.ProcessId"/>
+          <DateCell
+            dateFormat="short"
+            enableSort="false"
+            id="CreationTime"
+            label="displaykey.Web.WorkQueueItemsByWriterLv.CreationItem"
+            timeFormat="short"
+            value="item.CreationTime"/>
+          <Cell
+            enableSort="false"
+            id="WasScheduled"
+            label="displaykey.Web.WorkQueueItemsByWriterLv.Scheduled"
+            value="item.Scheduled"/>
+          <Cell
+            enableSort="false"
+            id="NumberOfItems"
+            label="displaykey.Web.WorkQueueItemsByWriterLv.ItemCount"
+            value="item.NumberOfItems"/>
+          <DateCell
+            dateFormat="short"
+            enableSort="false"
+            id="LastWorkerEndTime"
+            label="displaykey.Web.WorkQueueItemsByWriterLv.LastWorkerEndTime"
+            timeFormat="long"
+            value="item.MaxWorkerEndTime"/>
+          <Cell
+            enableSort="false"
+            id="ExecutionTime"
+            label="displaykey.Web.WorkQueueItemsByWriterLv.ExecutionTime"
+            outputConversion="VALUE.getDisplayString()"
+            value="item.ExecutionTime"/>
+          <Cell
+            enableSort="false"
+            id="AilableCount"
+            label="displaykey.Web.WorkQueueItemsByWriterLv.AvailableItemCount"
+            value="item.AvailableCount"/>
+          <Cell
+            enableSort="false"
+            id="CheckedOutCount"
+            label="displaykey.Web.WorkQueueItemsByWriterLv.CheckedOutItemCount"
+            value="item.CheckedOutCount"/>
+          <Cell
+            enableSort="false"
+            id="SucceededItemCount"
+            label="displaykey.Web.WorkQueueItemsByWriterLv.SucceededItemCount"
+            value="item.SucceededCount"/>
+          <Cell
+            enableSort="false"
+            id="FailedCount"
+            label="displaykey.Web.WorkQueueItemsByWriterLv.FailedCount"
+            value="item.FailedCount"/>
+        </Row>
+      </RowIterator>
+    </ListViewPanel>
+    <Code><![CDATA[function isMaximumNumberOfRunsShown() : boolean {
+  if (Writers == null) {
+    return false
+  }
+  return Writers.Count == Page.MaxSizeOfWriterRunsArray
+}
+
+function getMaxNumberOfRecordsShownText() : String {
+  if (Writers == null) {
+    return ""
+  }
+  return displaykey.Web.InternalTools.WorkQueueInfo.OnlyLastNRecordsAreShown(Writers.Count)
+}]]></Code>
+  </PanelSet>
+</PCF>

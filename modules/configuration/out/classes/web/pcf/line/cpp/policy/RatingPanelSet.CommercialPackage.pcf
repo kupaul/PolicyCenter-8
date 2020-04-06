@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <PanelSet
+    id="RatingPanelSet"
+    mode="CommercialPackage">
+    <Require
+      name="period"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="isEditable"
+      type="boolean"/>
+    <Variable
+      initialValue="gw.lob.multiline.CPPQuotePage.cppQuotePageLength(period)"
+      name="pageLength"/>
+    <Variable
+      initialValue="checkViewMode()"
+      name="viewMode"/>
+    <PanelRef
+      def="CPPRatingCumulPanelSet(period, jobWizardHelper, isEditable)"
+      mode="viewMode">
+      <Toolbar>
+        <ToolbarButton
+          action="viewMode = &quot;drilldown&quot;"
+          available="(viewMode != &quot;drilldown&quot;)"
+          id="compactViewButton"
+          label="displaykey.Web.Quote.CompactView"/>
+        <ToolbarButton
+          action="viewMode = &quot;scroll&quot;"
+          available="(viewMode != &quot;scroll&quot;) and pageLength &lt; 5000"
+          id="extendedViewButton"
+          label="displaykey.Web.Quote.ExtendedView"/>
+      </Toolbar>
+    </PanelRef>
+    <Code><![CDATA[function checkViewMode() : String {
+  return (pageLength > 50) ? "drilldown" : "scroll" 
+}]]></Code>
+  </PanelSet>
+</PCF>

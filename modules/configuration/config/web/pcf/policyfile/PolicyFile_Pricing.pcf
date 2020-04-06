@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    afterEnter="gw.api.web.PebblesUtil.addWebMessages(CurrentLocation, thePeriod.PolicyFileMessages)"
+    canVisit="perm.PolicyPeriod.view(refPeriod) and perm.System.pfilepricing"
+    id="PolicyFile_Pricing"
+    parent="PolicyFile(refPeriod, asOfDate)"
+    title="displaykey.Web.PolicyFile.Pricing">
+    <LocationEntryPoint
+      signature="PolicyFile_Pricing(refPeriod : PolicyPeriod, asOfDate : DateTime)"/>
+    <Variable
+      name="refPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="asOfDate"
+      type="DateTime"/>
+    <Variable
+      initialValue="thePeriod.OpenForEdit"
+      name="isEditable"
+      type="boolean"/>
+    <Variable
+      initialValue="refPeriod.PeriodDisplayStatus == displaykey.PolicyPeriod.PeriodDisplayStatus.Expired"
+      name="isExpired"/>
+    <Variable
+      initialValue="refPeriod.PeriodDisplayStatus == displaykey.PolicyPeriod.PeriodDisplayStatus.Scheduled"
+      name="isScheduled"/>
+    <Variable
+      initialValue="(isExpired or isScheduled) ? refPeriod : refPeriod.getSlice(asOfDate)"
+      name="thePeriod"/>
+    <Screen
+      editable="false"
+      id="PolicyFile_PricingScreen">
+      <TitleBar/>
+      <Toolbar/>
+      <PanelRef
+        def="CostOverridesWarningPanelSet(thePeriod)"/>
+      <PanelRef
+        def="PolicyFile_Quote_SummaryDV(thePeriod)"/>
+      <CardViewPanel>
+        <Card
+          id="PolicyFile_Pricing_CumulativeCard"
+          title="displaykey.Web.PolicyFile.Pricing.Cumulative">
+          <PanelIterator
+            elementName="line"
+            id="cumul"
+            value="thePeriod.RepresentativePolicyLines">
+            <PanelRef
+              def="RatingCumulDetailsPanelSet(thePeriod, null, isEditable)"
+              mode="line.Pattern.Code">
+              <TitleBar
+                title="line.Pattern as java.lang.String"
+                visible="thePeriod.RepresentativePolicyLines.length &gt; 1"/>
+            </PanelRef>
+          </PanelIterator>
+        </Card>
+      </CardViewPanel>
+    </Screen>
+  </Page>
+</PCF>

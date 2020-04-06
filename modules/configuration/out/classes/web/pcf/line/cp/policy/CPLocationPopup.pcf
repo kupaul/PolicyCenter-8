@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Popup
+    afterCommit="gw.api.web.PebblesUtil.invalidateIterators(TopLocation, entity.CPLocation)"
+    canEdit="openForEdit"
+    countsAsWork="false"
+    id="CPLocationPopup"
+    returnType="CPLocation"
+    startEditing="initialize()"
+    startInEditMode="startInEdit"
+    title="displaykey.Web.Policy.LocationContainer.Location.LocationInformation.Title">
+    <LocationEntryPoint
+      signature="CPLocationPopup(cpLine : CommercialPropertyLine, openForEdit : boolean, startInEdit : boolean, jobWizardHelper : web.job.JobWizardHelper)"/>
+    <LocationEntryPoint
+      signature="CPLocationPopup(cpLocation : CPLocation, openForEdit : boolean, startInEdit : boolean, jobWizardHelper : web.job.JobWizardHelper)"/>
+    <LocationEntryPoint
+      signature="CPLocationPopup(cpLine : CommercialPropertyLine, acctLocation : AccountLocation, openForEdit : boolean, startInEdit : boolean, jobWizardHelper : web.job.JobWizardHelper)"/>
+    <Variable
+      name="cpLocation"
+      type="CPLocation"/>
+    <Variable
+      name="acctLocation"
+      type="AccountLocation"/>
+    <Variable
+      name="cpLine"
+      type="CommercialPropertyLine"/>
+    <Variable
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      name="startInEdit"
+      type="boolean"/>
+    <Variable
+      name="period"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="new contact.AddressAutocompleteHandler(&quot;city&quot;,&quot;Country,City,County,State,PostalCode&quot;,true)"
+      name="cityHandler"/>
+    <Variable
+      initialValue="new contact.AddressAutocompleteHandler(&quot;county&quot;,&quot;Country,City,County,State,PostalCode&quot;,true)"
+      name="countyHandler"
+      type="contact.AddressAutocompleteHandler"/>
+    <Variable
+      initialValue="new contact.AddressAutocompleteHandler(&quot;postalcode&quot;,&quot;Country,City,County,State,PostalCode&quot;,true)"
+      name="pchandler"
+      type="contact.AddressAutocompleteHandler"/>
+    <Variable
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Screen>
+      <Toolbar>
+        <EditButtons
+          hideIfReadOnly="true"
+          pickValue="cpLocation"/>
+      </Toolbar>
+      <PanelRef
+        def="PreferredCoverageCurrencyPanelSet(cpLocation, openForEdit, jobWizardHelper)"
+        id="PreferredCoverageCurrencySelectorRef"/>
+      <DetailViewPanel
+        id="LocationDetailDV">
+        <InputColumn>
+          <InputSetRef
+            def="LocationDetailInputSet(cpLocation.Location, cpLine.SupportsNonSpecificLocations, openForEdit)"/>
+        </InputColumn>
+        <InputColumn>
+          <Label
+            label="displaykey.Web.Policy.LocationContainer.Location.GeneralInfoTitle"/>
+          <TextAreaInput
+            editable="true"
+            id="PrincipleOps"
+            label="displaykey.Web.Policy.CP.Location.Building.PrincipleOps"
+            labelAbove="true"
+            numRows="6"
+            value="cpLocation.PrincipalOpsDesc"/>
+          <InputDivider/>
+          <Input
+            editable="true"
+            id="FireProtectionClass"
+            label="displaykey.Web.Policy.PolicyLocation.FireProtectionClass"
+            labelAbove="true"
+            value="cpLocation.Location.FireProtectClass"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <DetailViewPanel
+        id="AccountLocationUpToDateDV"
+        visible="cpLocation.CPLine.Branch.Promoted and !cpLocation.Location.isUpToDate()">
+        <InputColumn>
+          <ContentInput
+            boldLabel="true"
+            id="SynchronizedMessage"
+            label="displaykey.Web.Account.Locations.IsSynchronized.Policy.Message">
+            <Link
+              action="AccountLocationPopup.push(cpLocation.Location.AccountLocation, cpLocation.CPLine.Branch.Policy.Account, false)"
+              id="SynchronizedLink"
+              label="displaykey.Web.Account.Locations.IsSynchronized.Policy.Link"/>
+          </ContentInput>
+        </InputColumn>
+      </DetailViewPanel>
+    </Screen>
+    <Code><![CDATA[function initialize() {
+  if (cpLine != null and cpLocation == null and acctLocation == null) {  // brand new location
+    cpLocation = cpLine.addNewLineSpecificLocation() as CPLocation
+  } else if (cpLocation != null) {  // existing cp location
+    cpLine = cpLocation.CPLine
+  } else if (acctLocation != null and cpLine != null) {  // new cp location for given account location
+    cpLocation = cpLine.addToLineSpecificLocations(acctLocation) as CPLocation
+    cpLocation.Location.TerritoryCodes.each( \ tc -> tc.fillWithFirst() )
+  } else {
+    throw "Do not pass null values into popup."
+  }
+}]]></Code>
+  </Popup>
+</PCF>

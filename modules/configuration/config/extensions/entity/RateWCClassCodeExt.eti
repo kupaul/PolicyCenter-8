@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" entity="RateWCClassCodeExt" exportable="true" ignoreForEvents="true" loadable="false" platform="false" readOnly="true" table="sample_RateWCClassCode" type="keyable">
+  <fulldescription>
+    A sample lookup table storing Workers Comp class code rates and minimum premiums.  Rates can be jurisdiction-specific
+      or be a default for all jurisdictions, jurisdiction=null, with jurisdiction-specific rates overriding defaults.  Lastly, all factors
+      have an effective period, [effDate-expDate) where a null date means that side of the range is unbounded.
+  </fulldescription>
+  <column desc="This field indicates the class code we are doing a rate lookup on." name="classcode" nullok="false" type="varchar">
+    <columnParam name="size" value="10"/>
+  </column>
+  <column desc="Indicates a rate is applicable to a given jurisdiction.  Null indicates a default rate which can be overridden by a rate specific to a jurisdiction. This should be the string value of a typecode in the Jurisdiction typelist. For example, if this is a typecode allowed in the US state of California, the value should be 'CA'." name="rateState" nullok="true" type="varchar">
+    <columnParam name="size" value="10"/>
+  </column>
+  <column desc="The date on which this factor becomes effective (inclusive).  A null date means this has always been effective." name="effDate" nullok="true" type="datetime"/>
+  <column desc="The date on which this factor expires (exclusive).  A null date means this will always be effective." name="expDate" nullok="true" type="datetime"/>
+  <column desc="The base rate to be used" name="rate" nullok="false" type="decimal">
+    <columnParam name="scale" value="4"/>
+    <columnParam name="precision" value="8"/>
+  </column>
+  <column desc="The minimum premium associated with a classcode" name="minPremium" nullok="true" type="integer"/>
+  <index desc="Performance index including every non-decimal field." name="RWCCCExtInd1">
+    <indexcol keyposition="1" name="classcode"/>
+    <indexcol keyposition="2" name="rateState"/>
+    <indexcol keyposition="3" name="effDate"/>
+    <indexcol keyposition="4" name="expDate"/>
+  </index>
+</entity>

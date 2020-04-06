@@ -1,0 +1,772 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Analyzing Server Memory Management</title>
+    <link rel="StyleSheet" href="css/mngservers.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter System Administration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="mngservers.07.01.html#1618365">Managing PolicyCenter Servers</a> : Analyzing Server Memory Management</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1618365">Analyzing Server Memory Management</a></h3>
+      <div class="B_-_Body"><a name="1618637">Java provides platform-side memory management that significantly simplifies coding. The JVM (Java Virtual Machine) periodically identifies unused objects and reclaims associated memory. This process is called garbage collection. Garbage collection can have a significant impact on application server performance.</a></div>
+      <div class="B_-_Body"><a name="1618654">This topic describes Java platform garbage collection analysis.</a></div>
+      <div class="B_-_Body"><a name="1673281">This topic includes:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('admin', 'mngservers.07.12.html#1666636', '');" title="Analyzing Server Memory Management" name="1673292">Memory Usage Logging</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('admin', 'mngservers.07.12.html#1618450', '');" title="Analyzing Server Memory Management" name="1673306">Enabling Garbage Collection</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('admin', 'mngservers.07.12.html#1654485', '');" title="Analyzing Server Memory Management" name="1673316">Analyzing a Possible Memory Leak</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('admin', 'mngservers.07.12.html#1618414', '');" title="Analyzing Server Memory Management" name="1673327">Profiling</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('admin', 'mngservers.07.12.html#1659065', '');" title="Analyzing Server Memory Management" name="1673338">Tracking Large Objects</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="1666636">Memory Usage Logging</a></h4>
+      <div class="B_-_Body"><a name="1666658">The memory usage logging message looks like the following:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="1666660">serverName 2007-04-09 16:44:14,423 INFO Memory usage: 80.250 MB used, 173.811 MB free, 254.062 MB</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1666727">&nbsp;&nbsp;total, 2048.000 MB max</a></PRE>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1666662">used</a></span> – memory allocated to objects. This includes active objects which are still in use, and stale objects which will eventually be garbage collected.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1666663">free</a></span> – unallocated memory.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1666664">total</a></span> – amount of memory that the JVM process has reserved from the operating system.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1666665">max</a></span> – the maximum total memory that the JVM is allowed to use.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1666667">PolicyCenter writes this logging message if the parameter </a><span class="cv_-_computer_voice">MemoryUsageMonitorIntervalMins</span> in <span class="cv_-_computer_voice">config.xml</span> is set to a value other than the default of <span class="cv_-_computer_voice">0</span>.</div>
+      <div class="B_-_Body"><a name="1673387">It is common for the server to use up the maximum amount of memory fairly quickly, so that </a><span class="cv_-_computer_voice">used</span> and <span class="cv_-_computer_voice">total</span> are at or near the <span class="cv_-_computer_voice">max</span> value. This indicates normal operation. When the server needs more memory, it triggers garbage collection to free up the memory used by stale objects. The memory values printed in this logging line do not provide enough information to detect or analyze memory problems.</div>
+      <div class="B_-_Body"><a name="1666669">You only need to worry about memory issues if the server throws an </a><span class="cv_-_computer_voice">OutOfMemoryError</span> exception. If that happens, see the remaining sections in this topic to configure the garbage collector to print out detailed memory information.</div>
+      <div class="B_-_Body"><a name="1666671">This logging line cannot provide more detailed information, such as "used active" versus "used stale", without actually running the garbage collector. To do so just for the sake of more detailed logging would interfere with the optimal pattern of garbage collection and is not supported. Turn on garbage collector logging to get more detailed information on the memory usage of the application, as it is currently configured. See </a><a href="javascript:WWHClickedPopup('admin', 'mngservers.07.12.html#1618450', '');" title="Analyzing Server Memory Management">“Enabling Garbage Collection”</a>.</div>
+      <div class="B_-_Body"><a name="1666647">The logging line is provided "as is" and is not configurable. The values provided by this logging line are not detailed enough to indicate or warn of memory issues. Only by turning on garbage collection logging can you get an accurate picture of memory usage. </a></div>
+      <h4 class="H2_-_Heading_2"><a name="1618450">Enabling Garbage Collection</a></h4>
+      <div class="B_-_Body"><a name="1618372">The garbage collector can provide additional information on collection statistics. Careful analysis helps understand garbage collector behavior. </a></div>
+      <div class="B_-_Body"><a name="1618373">Enable verbose garbage collection by adding the </a><span class="cv_-_computer_voice">-verbose:gc</span> option to the Java Virtual Machine (JVM). Additional details can be found on the site of each JVM vendor.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1618374">IBM JVM</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1618375">Enable verbose garbage collection by adding the </a><span class="cv_-_computer_voice">-verbose:gc</span> flag to the JVM options. Other options exist for the same functionality.</div>
+      <div class="B_-_Body"><a name="1618376">IBM estimates that the overhead associated with verbose garbage collection is minimal and estimated to be 2% of the garbage collection time. In other words, if the JVM spends 5% of its time garbage collecting without verbose garbage collection, it would spend 5.1% of the time garbage collecting with verbose garbage collection.</a></div>
+      <div class="B_-_Body"><a name="1618377">The output provided is in XML format. This output is generally rich enough for a thorough analysis, and no additional levels of logging are needed.</a></div>
+      <div class="B_-_Body"><a name="1618378">Used with WebSphere, the IBM JVM outputs garbage collection logs into a file called </a><span class="cv_-_computer_voice">native_stderr.log</span>.</div>
+      <div class="B_-_Body"><a name="1618379">IBM provides the IBM Support Assistant. You can install multiple plugins within this tool. Several plugins are available for the IBM JVM and WebSphere. These tools provide deep analysis of JVM behavior, spot issues, and recommend how to tune the JVM.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1618381">Oracle Java Hotspot VM</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1623674">Enable verbose garbage collection by adding the </a><span class="cv_-_computer_voice">-verbose:gc</span> flag to the Java HotSpot VM options. Several levels of logging exist, providing more or less output.</div>
+      <div class="B_-_Body"><a name="1654121">The garbage collection time logs can time stamp the various entries with the exact date. Guidewire recommends the following options:</a></div>
+      <div class="B_-_Body"><span class="cv_-_computer_voice"><a name="1654113">-XX:+PrintGCDetails -XX:+PrintGCDateStamps -XX:+PrintHeapAtGC -XX:+PrintGCApplicationConcurrentTime -XX:+PrintGCApplicationStoppedTime</a></span> </div>
+      <div class="B_-_Body"><a name="1654144">These options provide the following:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1618384">Nature of the garbage collection (minor or full)</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1618385">Amount of memory reclaimed</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1618386">Time elapsed since JVM start or date corresponding to the event, depending on available options</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1618387">Before and after state of the different memory pools (nursery, tenured and permanent)</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1618388">Amount of time the application runs between collection pauses</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1618389">Duration of the collection pause</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1618391">The level of information can be overwhelming, though it is necessary in some cases.</a></div>
+      <div class="B_-_Body"><a name="1654171">Add the </a><span class="cv_-_computer_voice">-Xloggc:</span><span class="pc_-_parameter_in_code">file</span> option to redirect output to the specified file.</div>
+      <h6 class="HS_-_Head_Sub"><a name="1618393">Analyzing Garbage Collector Behavior</a></h6>
+      <div class="B_-_Body"><a name="1674325">Verify that the performance analysis tool you choose supports the version of the JVM that you use for PolicyCenter. For supported JVM versions, see the </a><span class="e_-_emphasis">Guidewire Platform Support Matrix</span>, available from the <a href="http://guidewire.custhelp.com" target="external_window">Guidewire Resource Portal at </a><span class="cv_-_computer_voice">http://guidewire.custhelp.com</span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1655171">IBM Support Assistant</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1654242">IBM provides the IBM Support Assistant Workbench. Multiple plugin tools can be installed within the workbench. The “IBM Monitoring and Diagnostic Tools for Java – Garbage Collection and Memory Visualizer” is the tool to use to analyze garbage collection logs.</a></div>
+      <div class="B_-_Body"><a name="1654289">The tool provides some tuning recommendations. The recommendations are more adapted for the IBM JDK than the HotSpot JDK. Additionally, the tool provides graphs with hints on JVM behavior that help identify issues such as memory shortages or excessive pauses.</a></div>
+      <div class="B_-_Body"><a name="1654380">Refer to </a><span class="cv_-_computer_voice"><a href="http://www.ibm.com/software/support/isa/" target="external_window">http://www.ibm.com/software/support/isa/</a></span> for more information about the IBM Support Assistant.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1654334">HPjmeter and GCViewer</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1654335">HPjmeter and GCViewer are tools that enable you to visually analyze the HotSpot JDK garbage collection logs. Both tools generate:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1654337">Key metrics about the period (number of minor/major collections, percent of time spent paused, and so forth)</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1654338">Visual representation of the different garbage collections</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1654339">These tools might require different verbose garbage collection options. Otherwise, HPjmeter or GCViewer might not be able to analyze the corresponding output.</a></div>
+      <div class="B_-_Body"><a name="1654406">Refer to the following URLs for more information:</a></div>
+      <div class="B_-_Body"><span class="ri_-_run_in_header"><a name="1654413">HPjmeter</a></span> – <span class="cv_-_computer_voice"><a href="http://h20000.www2.hp.com/bizsupport/TechSupport/Home.jsp" target="external_window">http://h20000.www2.hp.com/bizsupport/TechSupport/Home.jsp</a></span> </div>
+      <div class="B_-_Body"><span class="ri_-_run_in_header"><a name="1654432">GCViewer</a></span> – <span class="cv_-_computer_voice"><a href="http://www.tagtraum.com/gcviewer.html" target="external_window">http://www.tagtraum.com/gcviewer.html</a></span></div>
+      <h4 class="H2_-_Heading_2"><a name="1654485">Analyzing a Possible Memory Leak</a></h4>
+      <div class="B_-_Body"><a name="1655221">Guidewire applications are memory-intensive. Guidewire applications generally require larger heaps than most other Java applications. </a></div>
+      <div class="B_-_Body"><a name="1654489">Garbage collection logs might show that memory usage grows significantly over time, resulting in a lack of available memory. This condition is commonly described as a memory leak. A dump of all used objects, called a “heap dump”, must collected to identify all objects in the heap. This heap dump is then analyzed by developers familiar with PolicyCenter or additional code. Such analysis helps identify excessive memory usage, identify its root cause and possibly find a change that will avoid such issues.</a></div>
+      <div class="B_-_Body"><a name="1654494">Investigation of memory leaks differs slightly per JVM platform.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1654495">Common approach</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1654496">Various options exist to generate a heap dump:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1654497">Specific flags can be set to force the following behaviors:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="1654498">Heap dump generation when the heap is full and an out-of-memory condition occurs</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="1654499">Heap dump generation when a </a><span class="cv_-_computer_voice">CTRL-BREAK</span> or SIGQUIT is issued to the JVM process.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="1654500">These options are combined with options instructing the JVM to generate the heap dump at a specific directory location.</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1654502">Tools can connect to a running JVM. Such tools provide the option to trigger a heap dump.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1654503">Generating Heap Dumps with IBM JDK</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1654504">The IBM JVM capabilities to generate heap dumps are satisfactory for all release levels that Guidewire has worked with. For information on generating heap dumps for IBM JDK 1.6, refer to "</a><span class="bt_-_book_title">IBM Developer Kit and Runtime Environment, Java Technology Edition, Version 6</span>" at <span class="cv_-_computer_voice"><a href="http://public.dhe.ibm.com/software/dw/jdk/diagnosis/diag60.pdf" target="external_window">http://public.dhe.ibm.com/software/dw/jdk/diagnosis/diag60.pdf</a></span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1654507">Generating Heap Dumps with Oracle HotSpot JDK</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1655280">Flags </a><span class="cv_-_computer_voice">HeapDumpOnOutOfMemoryError</span> and <span class="cv_-_computer_voice">HeapDumpOnCtrlBreak</span> can be used for heap dump generation.</div>
+      <div class="B_-_Body"><a name="1655292">For more information about analyzing heap dumps refer to Oracle document </a><span class="bt_-_book_title">Troubleshooting Guide for Java SE 6 with HotSpotVM</span> at <span class="cv_-_computer_voice"><a href="http://www.oracle.com/technetwork/java/javase/tsg-vm-149989.pdf" target="external_window">http://www.oracle.com/technetwork/java/javase/tsg-vm-149989.pdf</a></span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1654694">Additional Recommendations</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1654695">When generating heap dumps, pay attention to the following facts:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1654696">Heap dump generation frequently fails because the single file generated is very large and the supporting environment is configured to prevent regular accounts to create such large files. Therefore, some configuration is generally required to allow the account running the node to create such large files.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1654700">The generation of a heap dump during out-of-memory conditions is sometimes challenging. As a JVM is reaching maximum memory utilization, it generally experiences severely degraded performance. As the pace of the leak decreases gradually, the occurrence of the out-of-memory condition might take an inordinate amount of time. This length of time might be incompatible with the need to restore performance for users or processes.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1654705">Windows only: Windows does not support signals. Therefore, generating a heap by starting the JVM with a heap dump on </a><span class="cv_-_computer_voice">CTRL-BREAK</span>, depends on the capacity to send a <span class="cv_-_computer_voice">CTRL-BREAK</span>. You cannot send a <span class="cv_-_computer_voice">CTRL-BREAK</span> to a JVM started as a background process. Therefore, for the time of the investigation, start the JVM from a command line rather than as a background process.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1654710">The JVM generally provides optional flags that prevent it from listening to signals. Disable these flags while trying to generate a heap dump through signals.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1654712">Heap dump analysis is very memory intensive. Assume that the tool used to analyze the heap dump might need a heap two to three times larger than the amount of objects captured in the heap dump. Host the heap dump analyzer on a server with a 64-bit JVM and a significant amount of memory. If such a configuration is not available, you might want to reduce the heap size so that the memory leak reaches an identifiable threshold sooner. This method allows the generation of smaller, easier to analyze heap dumps.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1654718">Heap dump analysis tools generally point to the </a><span class="cv_-_computer_voice">CacheImpl</span> class as the largest memory consumer. This class corresponds to the Guidewire cache. It is normal that the cache consumes a few hundred megabytes. In this case, the memory issue is likely not caused by cache growth. If the cache consumes significantly more memory, you might need to be downsize the cache. See <a href="javascript:WWHClickedPopup('admin', 'mngservers.07.11.html#1612208', '');" title="Application Server Caching">“Application Server Caching”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1654722">Heap Dump Generation and Analysis Tools</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1654723">Several tools are available for heap dump generation and analysis. IBM and Oracle provide some tools to assist with these tasks on their respective JVMs. Some tools are provided by other vendors and aim to assist with these tasks on the most common JVM platforms.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="1655331">IBM-only Tools</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1655332">IBM Support Assistant provides some plug-in tools that can assist with heap dump analysis. Refer to </a><span class="cv_-_computer_voice"><a href="http://www.ibm.com/software/support/isa/" target="external_window">http://www.ibm.com/software/support/isa/</a></span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1655333">IBM DTJF adapter for Eclipse Memory Analyzer allows the Eclipse Memory Analyzer to analyze IBM JVM heap dumps. You can tune that tool to use a larger heap, which is frequently necessary to analyze very large heap dumps. Refer to </a><span class="cv_-_computer_voice"><a href="http://www.ibm.com/developerworks/java/jdk/tools/mat.html" target="external_window">http://www.ibm.com/developerworks/java/jdk/tools/mat.html</a></span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h6 class="HS_-_Head_Sub"><a name="1654727">Oracle-only Tools</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1654989">jConsole is a management tool that connects to a running Java HotSpot VM. You can trigger a heap dump by using jConsole. Refer to </a><span class="bt_-_book_title">Using JConsole to Monitor Applications</span> at <span class="cv_-_computer_voice"><a href="http://java.sun.com/developer/technicalArticles/J2SE/jconsole.html" target="external_window">http://java.sun.com/developer/technicalArticles/J2SE/jconsole.html</a></span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1654730">Oracle bundles the Java Heap Analysis Tool (jhat) with Java HotSpot VM 1.6. Therefore, if you want to analyze a heap with jhat, you can install Java HotSpot VM 1.6 and use the jhat release provided. Refer to the article </a><span class="bt_-_book_title">Java Heap Analysis Tool</span> at <span class="cv_-_computer_voice"><a href="http://docs.oracle.com/javase/6/docs/technotes/tools/share/jhat.html" target="external_window">http://docs.oracle.com/javase/6/docs/technotes/tools/share/jhat.html</a></span> for more information.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1655032">jVisualVM is another multi-purpose tool that you can use to analyze heap dumps. Refer to </a><span class="bt_-_book_title">JVisualVM </span>at <span class="cv_-_computer_voice"><a href="http://docs.oracle.com/javase/6/docs/technotes/guides/visualvm/index.html" target="external_window">http://docs.oracle.com/javase/6/docs/technotes/guides/visualvm/index.html</a></span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h6 class="HS_-_Head_Sub"><a name="1654744">Generic tools</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1654745">YourKit is a commercial product that provides many functions. You can use YourKit to connect to the JVM, analyze the JVM and trigger heap dumps. It also provides some very interesting heap dump analysis tools.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1654748">JProbe is another commercial product providing many capabilities, including heap dump analysis.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1654750">Guidewire development mainly uses YourKit with good success. Guidewire Support uses YourKit and several other products like jVisualVM, IBM DTJF adapter and JProbe.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1618414">Profiling</a></h4>
+      <div class="B_-_Body"><a name="1618415">Java profilers are available for two main purposes:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1618416">Memory profiling: profilers allow identifying memory usage and more specifically memory leaks due to referenced but unused objects.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1618417">CPU profiling: profilers help identify programmatic hot spots/bottlenecks. This analysis might help remove the corresponding bottlenecks thereby increasing performance.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1659073">Guidewire has internally used two profiling tools that it found to be of good quality. Both tools provide both memory and CPU profiling:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1659074">YourKit is preferred for memory profiling.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1659075">JProfiler is preferred for CPU profiling.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1732574">To profile PolicyCenter, load the profiler agent into the PolicyCenter JVM either when starting PolicyCenter or by attaching the profiler agent to a running JVM. Refer to instructions for your profiler for instructions.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1659065">Tracking Large Objects</a></h4>
+      <div class="B_-_Body"><a name="1618423">Large Java objects cause an extra strain on the JVM for various reasons. If garbage collection analysis shows that the JVM is allocating very large objects, investigate this further and understand the source of the objects.</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

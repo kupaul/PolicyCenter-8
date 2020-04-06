@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<CoveragePattern
+  coverageCategory="BOPContractorCat"
+  coverageSubtype="BusinessOwnersCov"
+  coveredPartyType="FirstParty"
+  existence="Electable"
+  lookupTableName="BOPCov"
+  owningEntityType="BusinessOwnersLine"
+  priority="-1"
+  public-id="BOPToolsSchedCov"
+  rICoverageGroupType="Property"
+  referenceDateByType="DefinedObject">
+  <AvailabilityScript><![CDATA[
+return (BusinessOwnersLine.SmallBusinessType.Code == "contractor_land" 
+    or BusinessOwnersLine.SmallBusinessType.Code == "contractor")
+    
+  ]]></AvailabilityScript>
+  <InitializeScript/>
+  <OnRemovalScript><![CDATA[
+var equipmentarray = BOPToolsSchedCov.BOPLine.BOPScheduledEquipments
+for (item in equipmentarray) {
+  BOPToolsSchedCov.BOPLine.removeScheduledEquip( item )
+}
+    
+  ]]></OnRemovalScript>
+  <CovTerms>
+    <DirectCovTermPattern
+      aggregationModel="pi"
+      coverageColumn="DirectTerm1"
+      lookupTableName="BOPCovTerm"
+      modelType="Limit"
+      priority="-1"
+      public-id="BOPToolsSchedLim"
+      required="true"
+      restrictionModel="prp"
+      valueType="money">
+      <AvailabilityScript/>
+      <LimitsSet>
+        <CovTermLimits
+          currency="usd"
+          defaultValue="1000"
+          minVal="1"
+          public-id="BOPToolsSchedLimusd"/>
+      </LimitsSet>
+    </DirectCovTermPattern>
+  </CovTerms>
+</CoveragePattern>

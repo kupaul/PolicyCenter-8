@@ -1,0 +1,29 @@
+package rules.EventMessage.EventFired_dir.ContactSystem_dir.Contact_dir
+uses gw.plugin.Plugins
+uses gw.plugin.contact.ContactSystemPlugin
+
+@gw.rules.RuleName("Remove")
+internal class Remove {
+  static function doCondition(messageContext : entity.MessageContext) : boolean {
+    
+/*start00rule*/
+return messageContext.EventName == "ContactRemoved"
+/*end00rule*/
+
+  }
+
+  static function doAction(messageContext : entity.MessageContext, actions : gw.rules.Action) {
+
+/*start00rule*/
+var contact = messageContext.Root as Contact
+if (!contact.IsLocalOnly) {
+  var plugin = Plugins.get(ContactSystemPlugin)
+  if (plugin != null) {
+    plugin.createAsyncMessage(messageContext, contact, false)
+  }
+}
+
+/*end00rule*/
+
+  }
+}

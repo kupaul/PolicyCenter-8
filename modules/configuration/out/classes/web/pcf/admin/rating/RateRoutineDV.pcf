@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="RateRoutineDV">
+    <Require
+      name="rateroutine"
+      type="CalcRoutineDefinition"/>
+    <Require
+      name="newRateRoutine"
+      type="boolean"/>
+    <Require
+      name="copyVersionType"
+      type="gw.rating.flow.util.CopyVersionType"/>
+    <Require
+      name="highlightedRows"
+      type="java.util.Map&lt;CalcStepDefinition, java.util.List&lt;java.lang.Integer&gt;&gt;"/>
+    <Require
+      name="costDataUsages"
+      type="java.util.List&lt;gw.rating.flow.util.InScopeUsage&gt;"/>
+    <Variable
+      initialValue="new gw.pcf.rating.flow.RateRoutineEditScreenHelper( rateroutine, CurrentLocation )"
+      name="helper"/>
+    <Variable
+      initialValue="helper.getParamSets()"
+      name="paramSets"
+      recalculateOnRefresh="true"
+      type="List&lt;CalcRoutineParameterSet&gt;"/>
+    <Variable
+      initialValue="false"
+      name="showParamTypes"
+      type="boolean"/>
+    <Variable
+      initialValue="rateroutine.canEditIdentifyingFields()"
+      name="canEditIdentifyingFields"
+      type="boolean"/>
+    <InputColumn>
+      <Input
+        editable="canEditIdentifyingFields and copyVersionType &lt;&gt; BRANCH"
+        id="Code"
+        label="displaykey.Web.Rating.RateRoutines.Code"
+        required="true"
+        value="rateroutine.Code"/>
+      <Input
+        editable="canEditIdentifyingFields or copyVersionType == BRANCH"
+        id="Name"
+        label="displaykey.Web.Rating.RateRoutines.Name"
+        required="true"
+        value="rateroutine.Name"/>
+      <TypeKeyInput
+        align="left"
+        editable="canEditIdentifyingFields or copyVersionType == BRANCH"
+        id="Jurisdiction"
+        label="displaykey.Web.Rating.RateRoutines.Branch.Jurisdiction"
+        value="rateroutine.Jurisdiction"/>
+      <Input
+        id="Version"
+        label="displaykey.Web.Rating.RateRoutines.Version"
+        required="true"
+        value="rateroutine.Version"/>
+      <Input
+        editable="true"
+        id="Description"
+        label="displaykey.Web.Rating.RateRoutines.Description"
+        value="rateroutine.Description"/>
+      <RangeInput
+        confirmMessage="displaykey.Web.Rating.RateRoutines.StepRemovalWarning"
+        editable="canEditIdentifyingFields"
+        id="RoutineLOB"
+        label="displaykey.Web.Rating.RateRoutines.LineOfBusiness"
+        optionLabel="productmodel.PolicyLinePatternLookup.getByCode(VALUE) as String"
+        required="true"
+        showConfirmMessage="rateroutine.Steps.Count &gt; 0"
+        value="rateroutine.PolicyLinePatternCode"
+        valueRange="helper.getAllLOBsWithParamSets()">
+        <PostOnChange
+          onChange="helper.resetCalcRoutine(true);"/>
+      </RangeInput>
+      <RangeInput
+        editable="canEditIdentifyingFields"
+        id="RoutineParamSet"
+        label="displaykey.Web.Rating.RateRoutines.ParameterSet"
+        optionLabel="VALUE.Name"
+        required="true"
+        validationExpression="helper.getParamSetValidation()"
+        value="rateroutine.ParameterSet"
+        valueRange="paramSets"
+        visible="paramSets.Count &gt; 0">
+        <PostOnChange
+          onChange="helper.changeParameterSet(highlightedRows)"/>
+      </RangeInput>
+      <ContentInput
+        available="rateroutine.ParameterSet != null"
+        label="displaykey.Web.Rating.RateRoutines.Parameters">
+        <Link
+          id="ParamInfo"
+          label="helper.getStringForParamTypes()"
+          styleClass="none"
+          tooltip="helper.getHelpStringForParamTypes()"/>
+      </ContentInput>
+      <Input
+        action="UserDetailPage.go(rateroutine.UpdateUser)"
+        actionAvailable="rateroutine.UpdateUser != null"
+        id="LastUpdatedBy"
+        label="displaykey.Web.Rating.RateRoutines.LastUpdatedBy"
+        value="rateroutine.UpdateUser"/>
+      <DateTimeInput
+        id="LastUpdateTime"
+        label="displaykey.Web.Rating.RateRoutines.LastUpdateTime"
+        timeEditable="true"
+        timeVisible="true"
+        value="rateroutine.UpdateTime"/>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

@@ -1,0 +1,176 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Popup
+    afterEnter="operand.changeToOperandType(TC_RATETABLE)"
+    canEdit="true"
+    id="RateRoutineRateTablePopup"
+    startInEditMode="true"
+    title="displaykey.Web.Rating.Flow.CalcRoutine.EditRateTableOperand">
+    <LocationEntryPoint
+      signature="RateRoutineRateTablePopup(operand : CalcStepDefinitionOperand, routine: CalcRoutineDefinition, paramInScopeUsageMap : java.util.Map&lt;CalcRoutineParamName,List&lt;gw.rating.flow.util.InScopeUsage&gt;&gt;, targetDataTypes : java.util.Set&lt;gw.lang.reflect.IType&gt;)"/>
+    <Variable
+      name="operand"
+      recalculateOnRefresh="true"
+      type="CalcStepDefinitionOperand"/>
+    <Variable
+      name="routine"
+      recalculateOnRefresh="true"
+      type="CalcRoutineDefinition"/>
+    <Variable
+      initialValue="operand.CalcStep.CalcRoutineDefinition.availableTables()"
+      name="rateTabDefs"
+      type="List&lt;RateTableDefinition&gt;"/>
+    <Variable
+      initialValue="gw.pcf.rating.flow.RateRoutineRateTablePopupHelper.parseRateTables(rateTabDefs)"
+      name="tableCodeNameMap"
+      type="java.util.Map&lt;String,String&gt;"/>
+    <Variable
+      initialValue="gw.pcf.rating.flow.RateRoutineRateTablePopupHelper.parseRateTablesForArgSrcSets(rateTabDefs)"
+      name="tableArgSrcCodeNameMap"
+      type="java.util.Map&lt;String,java.util.Map&lt;String,String&gt;&gt;"/>
+    <Variable
+      name="targetDataTypes"
+      type="java.util.Set&lt;gw.lang.reflect.IType&gt;"/>
+    <Variable
+      name="tableCode"
+      type="String"/>
+    <Variable
+      initialValue="gw.pcf.rating.flow.RateRoutineRateTablePopupHelper.initTableCodeFactorColNamesMap(rateTabDefs)"
+      name="tableCodeFactorColNamesMap"
+      type="java.util.Map&lt;String, java.util.List&lt;String&gt;&gt;"/>
+    <Variable
+      initialValue="{}"
+      name="paramInScopeUsageMap"
+      type="java.util.Map&lt;CalcRoutineParamName,List&lt;gw.rating.flow.util.InScopeUsage&gt;&gt;"/>
+    <Variable
+      initialValue="new gw.pcf.rating.flow.RateRoutineRateTablePopupHelper(CurrentLocation, rateTabDefs, routine, operand, tableCodeFactorColNamesMap)"
+      name="popupHelper"
+      recalculateOnRefresh="true"
+      type="gw.pcf.rating.flow.RateRoutineRateTablePopupHelper"/>
+    <Variable
+      initialValue="operand.CalcStep.getAllExistingVariableNames(true)"
+      name="availLocalVariables"
+      type="List&lt;gw.rating.flow.LocalVariable&gt;"/>
+    <Variable
+      initialValue="popupHelper.getTargetableTables(targetDataTypes)"
+      name="targetableTableTypes"
+      type="String[]"/>
+    <Variable
+      initialValue="not gw.web.rating.RateRoutineRateTablePopupUIHelper.performValidation(operand, popupHelper, targetDataTypes)"
+      name="hasValidationError"
+      recalculateOnRefresh="true"
+      type="boolean"/>
+    <Screen
+      editable="true">
+      <Toolbar>
+        <ToolbarButton
+          action="popupHelper.commitTableChanges()"
+          id="RateRoutineRateTableEditUpdate"
+          label="displaykey.Web.ActivityDetail.Button.Update"
+          visible="targetableTableTypes.Count &gt; 0"/>
+        <ToolbarButton
+          action="CurrentLocation.cancel()"
+          id="RateRoutineRateTableEditCancel"
+          label="displaykey.Web.ActivityDetail.Button.Cancel"/>
+      </Toolbar>
+      <AlertBar
+        id="NoTargetableRateTableAlert"
+        label="displaykey.Web.Rating.Errors.UnableToFindRateTableWithFactorType(targetDataTypes?.join(&quot;,&quot;))"
+        visible="targetableTableTypes.Count == 0"/>
+      <PanelRef>
+        <DetailViewPanel>
+          <InputColumn>
+            <TextInput
+              id="Usage"
+              label="displaykey.Web.Rating.Flow.CalcRoutine.Usage"
+              value="gw.pcf.rating.flow.RateRoutineUsageHelper.getValueDelegateUsage(operand)"/>
+            <RangeInput
+              editable="true"
+              id="RateTable"
+              label="displaykey.Web.Rating.Flow.CalcRoutine.RateTable"
+              optionLabel="tableCodeNameMap.get(VALUE)"
+              required="true"
+              value="operand.TableCode"
+              valueRange="targetableTableTypes"
+              visible="targetableTableTypes.Count &gt; 0">
+              <PostOnChange
+                onChange="popupHelper.onTableChange(targetDataTypes)"/>
+            </RangeInput>
+            <RangeInput
+              editable="true"
+              id="RateTableArgSrcSet"
+              label="displaykey.Web.Rating.Flow.CalcRoutine.RateTableArgumentSourceSet"
+              optionLabel="tableArgSrcCodeNameMap?.get(operand.TableCode)?.get(VALUE)"
+              required="true"
+              value="operand.ArgumentSourceSetCode"
+              valueRange="popupHelper.getArgumentSourceSetRange()"
+              visible="popupHelper?.getArgumentSourceSetRange().Count &gt; 1 // Only expose if there's a choice to be made //tableArgSrcCodeNameMap?.get(operand.TableCode)?.get(VALUE)">
+              <PostOnChange
+                onChange="popupHelper.onArgumentSourceSetChange()"/>
+            </RangeInput>
+            <RangeInput
+              editable="true"
+              id="RateFactor"
+              label="displaykey.Web.Rating.Flow.CalcRoutine.RateTableReturnValue"
+              optionLabel="popupHelper.getColumnFactorLabel(VALUE)"
+              required="true"
+              value="operand.RateFactorColName"
+              valueRange="popupHelper.getFactorRange(operand.TableCode, targetDataTypes)"
+              visible="operand.TableCode.length &gt; 0">
+              <PostOnChange
+                onChange="//gw.api.web.PebblesUtil.invalidateIterators(CurrentLocation, entity.CalcStepDefinition)"/>
+            </RangeInput>
+          </InputColumn>
+        </DetailViewPanel>
+      </PanelRef>
+      <PanelRef
+        id="panelRef"
+        visible="targetableTableTypes.Count &gt; 0">
+        <TitleBar
+          title="displaykey.Web.Rating.Flow.CalcRoutine.EditRateTableArguments"/>
+        <ListViewPanel>
+          <RowIterator
+            editable="true"
+            elementName="arg"
+            id="ArgSources"
+            pageSize="0"
+            value="operand.ArgumentSources"
+            visible="operand.TableCode != null">
+            <IteratorSort
+              sortBy="arg.FirstMatchingRateTableColumn.SortOrder"
+              sortOrder="1"/>
+            <Row>
+              <Cell
+                id="Parameter"
+                label="displaykey.Web.Rating.Flow.CalcRoutine.Parameter"
+                required="false"
+                value="arg.RateTableMatchOp.DisplayText"/>
+              <Cell
+                id="DefaultSource0"
+                label="displaykey.Web.Rating.Flow.CalcRoutine.ParameterDefaultSource"
+                required="false"
+                value="arg.ArgumentSourceFromTableDefs.ArgumentSourceWrapper.Label"/>
+              <TextCell
+                editable="gw.pcf.rating.flow.RateRoutineFunctionPopupHelper.sourceValueEditable(arg)"
+                enableSort="false"
+                hideChildrenIfReadOnly="false"
+                id="SubstituteSourceValue"
+                label="displaykey.Web.Rating.Flow.CalcRoutine.SubstituteSourceValue"
+                required="false"
+                validationExpression="gw.pcf.rating.flow.RateRoutinePopupHelper.untypedConstantValidationExpression(arg)"
+                value="arg.ArgumentSource">
+                <PostOnChange
+                  onChange="arg.OverrideSource = true"/>
+                <MenuItemSetRef
+                  def="RateTableArgumentsMenuItemSet(operand.TableCode, arg, paramInScopeUsageMap,routine.PolicyLinePatternCode,availLocalVariables)"
+                  mode="&quot;RateTable&quot;"/>
+              </TextCell>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+      </PanelRef>
+    </Screen>
+  </Popup>
+</PCF>

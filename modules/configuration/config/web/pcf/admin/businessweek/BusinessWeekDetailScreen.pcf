@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    id="BusinessWeekDetailScreen">
+    <Require
+      name="businessWeek"
+      type="BusinessWeek"/>
+    <Variable
+      initialValue="gw.api.admin.BaseAdminUtil.getDefaultCountry()"
+      name="country"
+      type="Country"/>
+    <Toolbar>
+      <EditButtons
+        editVisible="perm.BusinessWeek.edit"/>
+    </Toolbar>
+    <PanelRef>
+      <DetailViewPanel
+        visible="true">
+        <InputColumn>
+          <Input
+            editable="true"
+            id="Name"
+            label="displaykey.Web.Admin.BusinessWeekDetailDV.Name"
+            required="true"
+            value="businessWeek.Name"/>
+          <BooleanRadioInput
+            editable="true"
+            id="AppliesToAllZones"
+            label="displaykey.Web.Admin.BusinessWeekDetailDV.AppliesToAllZones"
+            validationExpression="businessWeek.validateOnlyOneBusinessWeekAppliesToAll()"
+            value="businessWeek.AppliesToAllZones"
+            visible="true">
+            <PostOnChange/>
+          </BooleanRadioInput>
+          <TextAreaInput
+            id="Zones"
+            label="displaykey.Web.Admin.BusinessWeekDetailDV.Zones"
+            numCols="50"
+            numRows="5"
+            value="businessWeek.Zones"
+            visible="!businessWeek.AppliesToAllZones"/>
+          <RangeInput
+            editable="true"
+            hideIfReadOnly="true"
+            id="Country"
+            label="displaykey.Web.Admin.BusinessWeekDetailDV.Country"
+            required="true"
+            value="country"
+            valueRange="getPossibleCountries()"
+            visible="!businessWeek.AppliesToAllZones">
+            <PostOnChange/>
+          </RangeInput>
+        </InputColumn>
+      </DetailViewPanel>
+    </PanelRef>
+    <PanelRef
+      def="BusinessWeekDetailDV(businessWeek)"
+      mode="country"
+      visible="!businessWeek.AppliesToAllZones"/>
+    <PanelRef
+      def="BusinessWeekDayDetailDV(businessWeek)"/>
+    <PanelRef
+      def="LocalizedValuesDV(businessWeek, { &quot;Name&quot;}, { displaykey.Web.Admin.BusinessWeekDetailDV.Name })"/>
+    <Code><![CDATA[function getPossibleCountries() : List<Country> {
+  var org = User.util.CurrentUser.Organization
+  if (org == null) {
+    org = User.util.UnrestrictedUser.Organization
+  }
+  return org.Countries
+}]]></Code>
+  </Screen>
+</PCF>

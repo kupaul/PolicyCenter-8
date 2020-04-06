@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    countsAsWork="false"
+    id="MessageSearch"
+    title="displaykey.Web.Admin.MessageSearch">
+    <LocationEntryPoint
+      signature="MessageSearch()"/>
+    <Screen
+      id="MessageSearchScreen">
+      <SearchPanel
+        cachingEnabled="false"
+        criteriaName="searchCriteria"
+        resultsName="messages"
+        search="searchCriteria.performSearch()"
+        searchCriteria="createMessageSearchCriteria()"
+        searchResultsType="MessageQuery">
+        <PanelRef
+          def="MessageSearchDV(searchCriteria)"/>
+        <PanelRef
+          def="MessageResultsLV(messages)">
+          <TitleBar
+            appendListViewPaging="true"
+            title="displaykey.Web.Admin.MessageSearch.Results"/>
+          <Toolbar>
+            <CheckedValuesToolbarButton
+              allCheckedRowsAction="CheckedValues.each( \ message -&gt; message.retry() )"
+              confirmMessage="displaykey.Web.Admin.MessageSearch.RetryConfirm"
+              flags="all retryableMessage"
+              id="RetryButton"
+              iterator="MessageResultsLV.MessageResultsLV"
+              label="displaykey.Button.Retry"
+              shortcut="Y"
+              tooltip="displaykey.Button.Retry.Tooltip"
+              visible="perm.System.retrymessage"/>
+            <CheckedValuesToolbarButton
+              allCheckedRowsAction="CheckedValues.each( \ message -&gt; message.skip() )"
+              confirmMessage="displaykey.Web.Admin.MessageSearch.SkipConfirm"
+              id="SkipButton"
+              iterator="MessageResultsLV.MessageResultsLV"
+              label="displaykey.Button.SkipBlocking"
+              shortcut="P"
+              tooltip="displaykey.Button.SkipBlocking.Tooltip"
+              visible="perm.System.skipmessage"/>
+          </Toolbar>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+    <Code><![CDATA[function createMessageSearchCriteria() : gw.system.messaging.MessageSearchCriteria {
+        var criteria = new gw.system.messaging.MessageSearchCriteria()
+        criteria.MessageStatus = MessageSearchStatus.TC_UNFINISHED
+        return criteria
+      }]]></Code>
+  </Page>
+</PCF>

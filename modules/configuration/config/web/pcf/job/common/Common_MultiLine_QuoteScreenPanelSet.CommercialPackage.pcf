@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <PanelSet
+    id="Common_MultiLine_QuoteScreenPanelSet"
+    mode="CommercialPackage">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="isEditable"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="showTransactionCard"
+      type="boolean"/>
+    <PanelRef
+      def="WarningsPanelSet(policyPeriod.getWizardQuoteScreenWarnings())"/>
+    <PanelRef
+      def="Quote_SummaryDV(policyPeriod)">
+      <Toolbar/>
+    </PanelRef>
+    <CardViewPanel>
+      <Card
+        id="JobWizard_Quote_CumulativeCard"
+        title="displaykey.Web.SubmissionWizard.QuoteScreen.Cumulative">
+        <PanelRef
+          def="RatingPanelSet(policyPeriod, jobWizardHelper, isEditable)"
+          mode="policyPeriod.Policy.ProductCode">
+          <TitleBar
+            title="policyPeriod.Policy.Product.DisplayName"
+            visible="policyPeriod.RepresentativePolicyLines.Count &gt; 1"/>
+        </PanelRef>
+      </Card>
+      <Card
+        id="JobWizard_Quote_TransactionCard"
+        title="displaykey.Web.SubmissionWizard.QuoteScreen.Transaction"
+        visible="showTransactionCard">
+        <PanelIterator
+          elementName="linePattern"
+          id="tx"
+          value="policyPeriod.Policy.Product.LinePatterns">
+          <IteratorSort
+            sortBy="linePattern.Priority"
+            sortOrder="1"/>
+          <PanelRef
+            def="RatingTxDetailsPanelSet(policyPeriod, displaykey.Web.Quote.TotalPremLabel.Change, displaykey.Web.Quote.TotalCostLabel.Change, isEditable, jobWizardHelper)"
+            mode="linePattern.Code"/>
+        </PanelIterator>
+      </Card>
+    </CardViewPanel>
+  </PanelSet>
+</PCF>

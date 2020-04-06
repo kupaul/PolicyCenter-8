@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <InputSet
+    id="LocationDetailInputSet">
+    <Require
+      name="polLocation"
+      type="PolicyLocation"/>
+    <Require
+      name="supportsNonSpecificLocation"
+      type="boolean"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <BooleanRadioInput
+      editable="polLocation.AccountLocation.New"
+      id="NonSpecificLocation"
+      label="displaykey.Web.Account.Locations.LocationIsNonSpecific"
+      value="polLocation.AccountLocation.NonSpecific"
+      visible="not polLocation.AccountLocation.New or supportsNonSpecificLocation">
+      <PostOnChange/>
+    </BooleanRadioInput>
+    <Input
+      editable="true"
+      id="LocationCode"
+      label="displaykey.Web.Policy.LocationContainer.Location.LocationCode"
+      value="polLocation.AccountLocation.LocationCode"
+      visible="polLocation.Branch.Policy.Product.Commercial"/>
+    <Input
+      editable="true"
+      id="LocationName"
+      label="displaykey.Web.Policy.LocationContainer.Location.LocationName"
+      value="polLocation.AccountLocation.LocationName"
+      visible="polLocation.Branch.Policy.Product.Commercial"/>
+    <InputSetRef
+      def="TargetedAddressInputSet(new gw.pcf.policylocation.PolicyLocationAddressOwner(polLocation))"
+      mode="polLocation.CountryCode"
+      visible="polLocation.SyncedToAccount"
+      widgets="LocationDetailInputSet"/>
+    <InputSet
+      id="UnsyncedAddressInputSet"
+      visible="not polLocation.SyncedToAccount">
+      <TextInput
+        id="unsyncedAddressString"
+        label="displaykey.Web.Policy.LocationContainer.Location.Address"
+        value="polLocation.addressString(&quot;\n&quot;, false, false)"/>
+      <TextInput
+        editable="true"
+        id="UnsyncedCounty"
+        label="displaykey.Web.ContactDetail.AddressDetail.County"
+        value="polLocation.County"/>
+      <TypeKeyInput
+        editable="polLocation.canChangeState()"
+        id="UnsyncedCountry"
+        label="displaykey.Web.ContactDetail.AddressDetail.Country"
+        required="true"
+        value="polLocation.Country">
+        <PostOnChange/>
+      </TypeKeyInput>
+    </InputSet>
+    <InputSetRef
+      def="GlobalPhoneInputSet(new gw.api.phone.BasicPhoneOwner(new gw.api.phone.EntityPhoneDelegate(polLocation.AccountLocation, AccountLocation#Phone), displaykey.Web.Policy.LocationContainer.Location.Phone, openForEdit))"
+      editable="true"
+      id="Phone"
+      visible="true"/>
+    <PickerInput
+      available="gw.api.domain.StateSet.get(&quot;TaxLocation&quot;).contains(polLocation.State)"
+      editable="true"
+      id="TaxLocation"
+      inputConversion="getTaxLocation(VALUE, polLocation)"
+      label="displaykey.Web.Policy.LocationContainer.Location.TaxLocation"
+      pickLocation="TaxLocationSearchPopup.push(polLocation.Branch, gw.api.util.JurisdictionMappingUtil.getJurisdiction(polLocation))"
+      value="polLocation.TaxLocation"
+      visible="polLocation.Branch.Lines.hasMatch(\ l -&gt; l.EmergencyServiceFunding)"/>
+    <InputSet
+      editable="true"
+      id="TerritoryCodeInputSet"
+      visible="polLocation.TerritoryCodes.length != 0 and !polLocation.Branch.HasWorkersComp and polLocation.Country.UsesTerritoryCodes">
+      <ContentInput>
+        <Link
+          action="polLocation.TerritoryCodes.each(\ c -&gt; c.fillWithFirst())"
+          hideIfReadOnly="true"
+          id="AutofillLink"
+          label="displaykey.Web.Policy.LocationContainer.Location.TerritoryCode.Autofill"
+          styleClass="miniButton"/>
+      </ContentInput>
+      <InputIterator
+        elementName="territoryCode"
+        value="polLocation.TerritoryCodes">
+        <IteratorSort
+          sortBy="territoryCode.PolicyLinePattern.Priority"
+          sortOrder="1"/>
+        <PickerInput
+          available="polLocation.State != null"
+          editable="true"
+          id="TerritoryCode"
+          label="displaykey.Web.Policy.LocationContainer.Location.TerritoryCode(territoryCode.PolicyLinePattern.DisplayName)"
+          pickLocation="TerritoryCodeSearchPopup.push(polLocation.Branch, territoryCode)"
+          required="true"
+          validationExpression="territoryCode.prelimValidate()"
+          value="territoryCode.Code"/>
+        <ContentInput
+          hideIfReadOnly="true"
+          id="AutofillButton"/>
+      </InputIterator>
+    </InputSet>
+    <Code><![CDATA[uses gw.api.util.DisplayableException
+
+function getTaxLocation(code : String, policyLocation : PolicyLocation) : TaxLocation {
+  if (code == null) {
+    return null
+  } else {
+    var state = gw.api.util.JurisdictionMappingUtil.getJurisdiction(policyLocation)
+    var locs = new gw.lob.common.TaxLocationQueryBuilder()
+        .withCodeStarting(code)
+        .withState(state)
+        .withEffectiveOnDate(policyLocation.Branch.PeriodStart)
+        .build().select() as gw.api.database.IQueryBeanResult<TaxLocation>
+    if (locs.Count == 1) {
+      return locs.FirstResult
+    } else {
+      throw new DisplayableException(displaykey.TaxLocation.Search.Error.InvalidCode(code, state.Description))
+    }
+  }
+}]]></Code>
+  </InputSet>
+</PCF>

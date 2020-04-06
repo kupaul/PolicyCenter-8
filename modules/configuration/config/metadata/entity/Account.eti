@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity xmlns="http://guidewire.com/datamodel" desc="An account is an entity (person or company) that applies for or purchases one or more policies from the carrier. Account attributes include years in business, industry code (SIC, NAICS, etc) and nature of ops, FEIN identifier, Bureau (WC) number and business entity type (e.g. individual, corp., partenership, etc.)" entity="Account" exportable="true" extendable="true" loadable="false" lockable="true" platform="false" subpackage="account" table="account" type="retireable">
+  <implementsInterface iface="gw.api.history.CustomHistory" impl="gw.api.history.AccountCustomHistoryImpl"/>
+  <implementsEntity name="Validatable"/>
+  <column desc="The account number of this account." name="AccountNumber" nullok="true" supportsLinguisticSearch="true" type="shorttext"/>
+  <column desc="Business and operations description." name="BusOpsDesc" nullok="true" type="varchar">
+    <columnParam name="size" value="240"/>
+  </column>
+  <column default="false" desc="Indicates that this Account will sync Contacts with an external Contact Management System." name="LinkContacts" nullok="false" setterScriptability="doesNotExist" type="bit">
+  </column>
+  <column createhistogram="true" default="false" desc="If true then no Policy may be created or retrieved on this Account" name="Frozen" nullok="false" setterScriptability="doesNotExist" type="bit"/>
+  <!-- create histogram because most accounts are not frozen, heavy data skew -->
+  <column desc="The date the account became a client of the carrier." name="OriginationDate" nullok="true" type="datetime"/>
+  <column desc="If AccountOrgType is 'other', this value must be filled in" name="OtherOrgTypeDescription" nullok="true" type="varchar">
+    <columnParam name="size" value="40"/>
+  </column>
+  <column desc="State Bureau number of this account." name="StateBureauNum" nullok="true" type="shorttext"/>
+  <column desc="What year was the business started?" name="YearBusinessStarted" nullok="true" type="year"/>
+  <typekey desc="Organization type of this account" name="AccountOrgType" nullok="true" typelist="AccountOrgType"/>
+  <typekey default="Active" desc="The status of this account" name="AccountStatus" nullok="false" typelist="AccountStatus"/>
+  <typekey createhistogram="true" desc="The account's preferred language" name="PrimaryLanguage" nullok="true" typelist="LanguageType"/>
+  <typekey createhistogram="true" desc="The account's preferred locale" name="PrimaryLocale" nullok="true" typelist="LocaleType"/>
+  <!-- create histogram because most accounts will have same language, creating significant data skew -->
+  <foreignkey columnName="IndustryCodeID" desc="Industry Code of Account" exportasid="true" fkentity="IndustryCode" name="IndustryCode" nullok="true"/>
+  <foreignkey desc="Sequence to autonumber account locations" fkentity="AutoNumberSequence" name="LocationAutoNumberSeq" nullok="true"/>
+  <edgeForeignKey desc="Account Holder Contact denormalized onto Account for performance." edgeTableName="acctholderedge" fkentity="Contact" name="AccountHolderContact" nullok="false" setterScriptability="doesNotExist"/>
+  <edgeForeignKey desc="The primary Location for this Account." edgeTableName="PrimaryAcctLoc" exportasid="true" fkentity="AccountLocation" name="PrimaryLocation" nullok="false"/>
+  <typekey desc="Preferred Coverage Currency" name="PreferredCoverageCurrency" nullok="false" typelist="Currency"/>
+  <typekey desc="Preferred Settlement Currency" name="PreferredSettlementCurrency" nullok="false" typelist="Currency"/>
+  <typekey desc="Customer Service Tier" name="ServiceTier" nullok="true" typelist="CustomerServiceTier"/>
+  <array arrayentity="AccountContact" cascadeDelete="true" desc="All the contacts related to this account, including inactive ones." name="AccountContacts"/>
+  <array arrayentity="AccountLocation" cascadeDelete="true" desc="The list of account locations for this Account" name="AccountLocations"/>
+  <array arrayentity="JobGroup" cascadeDelete="true" desc="The list of Job Groups of this Account" exportable="false" name="JobGroups" owner="true"/>
+  <array arrayentity="Note" cascadeDelete="true" desc="Notes associated with this account." name="Notes"/>
+  <array arrayentity="AccountProducerCode" cascadeDelete="true" desc="Producer Codes associated with this account." name="ProducerCodes"/>
+  <array arrayentity="AccountUserRoleAssignment" cascadeDelete="true" desc="Role Assignments for this account." exportable="false" name="RoleAssignments" triggersValidation="true"/>
+  <array arrayentity="AccountAccount" arrayfield="SourceAccount" desc="Relationships from this account to another one." name="SourceRelatedAccounts" owner="true"/>
+  <array arrayentity="AccountAccount" arrayfield="TargetAccount" cascadeDelete="true" desc="Relationships from another account to this one." name="TargetRelatedAccounts"/>
+  <dbcheckbuilder className="com.guidewire.pc.domain.account.dbchecks.AccountDBCheckBuilder"/>
+  <events>
+    <event description="Event fired manually to force regeneration of messages for an account." name="ResyncAccount"/>
+  </events>
+  <index desc="Index ensuring the uniqueness of account numbers.  Also used for looking up accounts by account number." name="accountu1" unique="true">
+    <indexcol keyposition="1" name="AccountNumber"/>
+    <indexcol keyposition="2" name="Retired"/>
+  </index>
+  <index desc="Index for partial-match search by AccountNumber." name="AccountNumSearch" unique="false">
+    <indexcol keyposition="1" name="AccountNumberDenorm"/>
+    <indexcol keyposition="2" name="Retired"/>
+  </index>
+  <index desc="Used to speed up account searches, since they always filter out frozen accounts." name="AccountFrozen" unique="true">
+    <indexcol keyposition="1" name="Frozen"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="ID"/>
+  </index>
+  <index desc="Index for performance of desktop account pages for recent accounts." name="accountp1" unique="true">
+    <indexcol keyposition="1" name="CreateTime"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="ID"/>
+  </index>
+  <index desc="Index for performance of desktop account pages for pending accounts." name="accountp2" unique="true">
+    <indexcol keyposition="1" name="AccountStatus"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="ID"/>
+  </index>
+  <index desc="Index for performance of desktop account." name="accountp3" unique="true">
+    <indexcol keyposition="1" name="ID"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="CreateTime"/>
+  </index>
+</entity>

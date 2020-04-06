@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Popup
+    id="ContactSearchExternalPopup"
+    title="displaykey.Web.ContactDetail">
+    <LocationEntryPoint
+      signature="ContactSearchExternalPopup(contactSearchResult : gw.plugin.contact.ContactResult)"/>
+    <Variable
+      name="contactSearchResult"
+      recalculateOnRefresh="true"
+      type="gw.plugin.contact.ContactResult"/>
+    <Variable
+      initialValue="new gw.globalization.ContactResultAddressAdapter(contactSearchResult)"
+      name="contactResultAddrAdapter"
+      recalculateOnRefresh="true"/>
+    <Screen
+      id="ContactSearchExternalScreen">
+      <CardViewPanel
+        id="ExternalDetailsCardPanelCV">
+        <Card
+          id="ContactSearchResultDetailCard"
+          title="displaykey.Web.AccountContacts.AccountDetail">
+          <DetailViewPanel>
+            <InputColumn>
+              <Label
+                id="TypeOfContact"
+                label="contactSearchResult.ContactType.DisplayName"/>
+              <Input
+                id="DisplayName"
+                label="displaykey.Web.ContactDetail.Name"
+                value="contactSearchResult.DisplayName"/>
+              <Input
+                id="Phone"
+                label="displaykey.Web.ContactDetail.Person.PrimaryPhone"
+                value="contactSearchResult.PrimaryPhoneValue"/>
+              <Input
+                id="Fax"
+                label="displaykey.Web.ContactDetail.Person.FaxPhone"
+                value="contactSearchResult.FaxPhone"/>
+              <Input
+                id="Email"
+                label="displaykey.Web.ContactDetail.Person.EmailAddress1"
+                value="contactSearchResult.EmailAddress1"/>
+              <InputDivider/>
+              <Label
+                label="displaykey.Web.ContactDetail.Address"/>
+              <InputSetRef
+                def="AddressOwnerAddressInputSet(new gw.pcf.contacts.ContactResultAddressSearchOwner (contactResultAddrAdapter))"/>
+              <InputDivider/>
+              <Label
+                label="displaykey.Web.Contact.Associations.OfficialIDs"/>
+              <Input
+                id="TaxID"
+                label="contactSearchResult.ContactType.equals(typekey.ContactType.TC_COMPANY) ? displaykey.Web.SubmissionWizard.Account.FEIN : displaykey.Web.SubmissionWizard.Account.SSN"
+                value="null"/>
+            </InputColumn>
+          </DetailViewPanel>
+        </Card>
+      </CardViewPanel>
+    </Screen>
+  </Popup>
+</PCF>

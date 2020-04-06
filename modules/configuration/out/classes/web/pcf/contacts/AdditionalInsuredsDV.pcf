@@ -1,0 +1,150 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="AdditionalInsuredsDV">
+    <Require
+      name="policyLine"
+      type="PolicyLine"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="displayLabel"
+      type="boolean"/>
+    <Variable
+      initialValue="null"
+      name="existingAdditionalInsureds"
+      recalculateOnRefresh="true"
+      type="AccountContactView[]"/>
+    <Variable
+      initialValue="null"
+      name="otherContacts"
+      recalculateOnRefresh="true"
+      type="AccountContactView[]"/>
+    <Variable
+      initialValue="gw.plugin.Plugins.get(gw.plugin.contact.IContactConfigPlugin)"
+      name="contactConfigPlugin"/>
+    <InputColumn>
+      <Label
+        label="displaykey.Web.LineWizard.AdditionalInsured"
+        visible="displayLabel"/>
+      <ListViewInput
+        editable="!(Job typeis Submission) or perm.System.editsubmission"
+        labelAbove="true">
+        <Toolbar>
+          <AddButton
+            hideIfReadOnly="true"
+            id="AddContactsButton"
+            iterator="AdditionalInsuredLV"
+            label="displaykey.Web.Contact.Add"
+            subMenuOnDemand="true">
+          <AddMenuItemIterator
+              elementName="contactType"
+              value="contactConfigPlugin.getAllowedContactTypesForPolicyContactRoleType(typekey.PolicyContactRole.TC_POLICYADDLINSURED)">
+              <IteratorSort
+                sortBy="contactType.DisplayName"
+                sortOrder="1"/>
+              <AddMenuItem
+                id="ContactType"
+                iterator="AdditionalInsuredLV"
+                label="displaykey.Web.Contact.AddNewOfType(contactType)"
+                pickLocation="NewAdditionalInsuredPopup.push(policyLine, contactType)"/>
+            </AddMenuItemIterator>
+            <AddMenuItem
+              conversionExpression="policyLine.addNewAdditionalInsuredDetailForContact(PickedValue)"
+              id="AddFromSearch"
+              iterator="AdditionalInsuredLV"
+              label="displaykey.Web.Policy.Contact.FromAddressBook"
+              pickLocation="ContactSearchPopup.push(&quot;AdditionalInsured&quot;)"/>
+            <AddMenuItem
+              id="AddExistingContact"
+              iterator="AdditionalInsuredLV"
+              label="displaykey.Web.Policy.Contact.AddExisting(PolicyAddlInsured.Type.TypeInfo.DisplayName)"
+              visible="true">
+              <AddMenuItemIterator
+                elementName="additionalInsured"
+                id="ContactOfSameType"
+                value="getExistingAdditionalInsureds()">
+                <IteratorSort
+                  sortBy="additionalInsured.DisplayName"
+                  sortOrder="1"/>
+                <AddMenuItem
+                  id="ExistingAdditionalInsured"
+                  iterator="AdditionalInsuredLV"
+                  label="additionalInsured"
+                  toCreateAndAdd="policyLine.addNewAdditionalInsuredDetailForContact(additionalInsured.AccountContact.Contact)"/>
+              </AddMenuItemIterator>
+            </AddMenuItem>
+            <AddMenuItem
+              id="AddOtherContact"
+              iterator="AdditionalInsuredLV"
+              label="displaykey.Web.Policy.Contact.AddOtherContacts"
+              visible="getOtherContacts().Count &gt; 0">
+              <AddMenuItemIterator
+                elementName="otherContact"
+                id="ContactOfOtherType"
+                value="getOtherContacts()">
+                <IteratorSort
+                  sortBy="otherContact.DisplayName"
+                  sortOrder="1"/>
+                <AddMenuItem
+                  id="OtherContact"
+                  iterator="AdditionalInsuredLV"
+                  label="otherContact"
+                  toCreateAndAdd="policyLine.addNewAdditionalInsuredDetailForContact(otherContact.AccountContact.Contact)"/>
+              </AddMenuItemIterator>
+            </AddMenuItem>
+          </AddButton>
+          <IteratorButtons
+            addVisible="false"
+            id="IteratorButtons"
+            iterator="AdditionalInsuredLV"/>
+        </Toolbar>
+        <ListViewPanel
+          id="AdditionalInsuredLV">
+          <RowIterator
+            checkBoxVisible="openForEdit"
+            editable="true"
+            elementName="additionalInsuredDetail"
+            hasCheckBoxes="true"
+            hideCheckBoxesIfReadOnly="true"
+            toRemove="additionalInsuredDetail.PolicyAddlInsured.removeDetail(additionalInsuredDetail)"
+            value="policyLine.AdditionalInsureds*.PolicyAdditionalInsuredDetails">
+            <IteratorSort
+              sortBy="additionalInsuredDetail.PolicyAddlInsured"
+              sortOrder="1"/>
+            <Row>
+              <TextCell
+                action="EditPolicyContactRolePopup.push(additionalInsuredDetail.PolicyAddlInsured, openForEdit)"
+                id="Name"
+                label="displaykey.Web.LineWizard.AdditionalInsured.Name"
+                numCols="32"
+                value="additionalInsuredDetail.PolicyAddlInsured"/>
+              <TypeKeyCell
+                editable="true"
+                id="Type"
+                label="displaykey.Web.LineWizard.AdditionalInsured.Type"
+                required="true"
+                value="additionalInsuredDetail.AdditionalInsuredType"/>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+      </ListViewInput>
+    </InputColumn>
+    <Code><![CDATA[function getExistingAdditionalInsureds() : AccountContactView[] {
+  if (existingAdditionalInsureds == null) {
+    existingAdditionalInsureds = policyLine.ExistingAdditionalInsureds.asViews()
+  }
+  return existingAdditionalInsureds
+}
+
+function getOtherContacts() : AccountContactView[] {
+  if (otherContacts == null) {
+    otherContacts = policyLine.AdditionalInsuredOtherCandidates.asViews()
+  }
+  return otherContacts
+}]]></Code>
+  </DetailViewPanel>
+</PCF>

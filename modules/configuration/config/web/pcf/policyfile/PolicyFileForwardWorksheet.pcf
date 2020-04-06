@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Forward
+    canVisit="perm.PolicyPeriod.view(policyPeriod)"
+    id="PolicyFileForwardWorksheet"
+    parent="PolicyForward()">
+    <LocationEntryPoint
+      signature="PolicyFileForwardWorksheet(policyPeriod : PolicyPeriod, conditionType : String)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="conditionType"
+      type="String"/>
+    <Variable
+      initialValue="policyPeriod.EditEffectiveDate"
+      name="asOfDate"
+      type="DateTime"/>
+    <ForwardCondition
+      action="ArchivedLocationGroup.go(policyPeriod)"
+      condition="policyPeriod.PolicyTerm.Archived"/>
+    <ForwardCondition
+      action="NewNoteWorksheet.goInWorkspace(policyPeriod, asOfDate)"
+      condition="conditionType == &quot;NewNote&quot;"/>
+    <ForwardCondition
+      action="NewDocumentLinkedWorksheet.goInWorkspace(policyPeriod)"
+      condition="conditionType == &quot;NewDocumentLink&quot;"/>
+    <ForwardCondition
+      action="NewDocumentFromTemplateWorksheet.goInWorkspace(policyPeriod)"
+      condition="conditionType == &quot;NewDocumentCreate&quot;"/>
+  </Forward>
+</PCF>

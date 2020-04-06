@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ListViewPanel
+    id="RoleProducerCodesLV">
+    <ExposeIterator
+      valueType="entity.ProducerCodeRole"
+      widget="RoleProducerCodesLV"/>
+    <Require
+      name="role"
+      type="Role"/>
+    <Variable
+      initialValue="entity.User.util.CurrentUser"
+      name="user"/>
+    <Variable
+      initialValue="web.admin.ProducerCodeRoleUtil.findProducerCodeRoles(role)"
+      name="pcRoles"
+      recalculateOnRefresh="true"
+      type="ProducerCodeRoleQuery"/>
+    <RowIterator
+      conversionExpression="web.admin.ProducerCodeRoleUtil.create(role, PickedValue)"
+      editable="true"
+      elementName="pcr"
+      hasCheckBoxes="true"
+      hideCheckBoxesIfReadOnly="true"
+      pickLocation="AdminProducerCodeSearchPopup.push(user.Organization.Carrier ? null : user.Organization)"
+      toAdd="web.admin.ProducerCodeRoleUtil.add(role, pcr)"
+      toRemove="web.admin.ProducerCodeRoleUtil.remove(role, pcr)"
+      type="ProducerCodeRole"
+      value="pcRoles">
+      <Row>
+        <Cell
+          action="AdminProducerCodeDetail.go(pcr.ProducerCode)"
+          id="ProducerCode"
+          label="displaykey.Web.Admin.RoleProducerCodes.ProducerCode"
+          sortOrder="2"
+          unique="true"
+          value="pcr.ProducerCode.Code"/>
+        <Cell
+          action="OrganizationDetail.go(pcr.ProducerCode.Organization)"
+          id="Organization"
+          label="displaykey.Web.Admin.RoleProducerCodes.Organization"
+          sortOrder="1"
+          value="pcr.ProducerCode.Organization"/>
+      </Row>
+    </RowIterator>
+  </ListViewPanel>
+</PCF>

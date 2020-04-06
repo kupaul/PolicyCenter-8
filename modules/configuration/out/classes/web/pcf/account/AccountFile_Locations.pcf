@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    canEdit="perm.Account.edit(account)"
+    canVisit="perm.Account.view(account) and perm.System.accountcontacts"
+    handlesValidationIssue="VALUE typeis entity.AccountLocation"
+    id="AccountFile_Locations"
+    title="displaykey.Web.AccountFile.Locations.Title"
+    validationParameter="account">
+    <LocationEntryPoint
+      signature="AccountFile_Locations(account : Account)"/>
+    <Variable
+      name="account"
+      type="Account"/>
+    <Screen
+      editable="true"
+      id="AccountFile_LocationsScreen">
+      <ListDetailPanel
+        selectionName="accountLocation"
+        selectionType="AccountLocation">
+        <PanelRef
+          def="AccountFile_LocationsLV(account)"
+          editable="true">
+          <Toolbar
+            visible="perm.Account.edit(account)">
+            <ToolbarDivider/>
+            <CheckedValuesToolbarButton
+              checkedRowAction="CheckedValue.Active = !CheckedValue.Active"
+              flags="all canChangeActiveStatus"
+              id="changeActiveStatus"
+              iterator="AccountFile_LocationsLV.AccountFile_LocationsLV"
+              label="displaykey.Web.AccountFile.Locations.ChangeActiveStatus"/>
+            <CheckedValuesToolbarButton
+              checkedRowAction="setPrimaryLocation(CheckedValue)"
+              flags="all canSetToPrimary"
+              id="setToPrimary"
+              iterator="AccountFile_LocationsLV.AccountFile_LocationsLV"
+              label="displaykey.Web.AccountFile.Locations.SetAsPrimary"/>
+            <ToolbarDivider/>
+            <ToolbarButton
+              action="AccountLocationPopup.push(null, account, true)"
+              id="AddNewLocation"
+              label="displaykey.Web.AccountFile.Locations.AddNewLocation"
+              visible="true"/>
+            <CheckedValuesToolbarButton
+              allCheckedRowsAction="removeLocations(CheckedValues)"
+              flags="all canRemoveLocation"
+              id="removeLocation"
+              iterator="AccountFile_LocationsLV.AccountFile_LocationsLV"
+              label="displaykey.Web.Account.Location.RemoveLocation"/>
+            <IteratorButtons
+              iterator="AccountFile_LocationsLV.AccountFile_LocationsLV"/>
+          </Toolbar>
+        </PanelRef>
+        <CardViewPanel>
+          <Card
+            id="LocationInfoCard"
+            title="displaykey.Web.Account.Locations.Panel.GeneralInfo.Title">
+            <DetailViewPanel
+              editable="true">
+              <InputColumn>
+                <InputSetRef
+                  def="AccountLocationDetailInputSet(accountLocation)"
+                  editable="true"/>
+              </InputColumn>
+            </DetailViewPanel>
+            <PanelRef
+              def="AccountFile_Locations_PolicyTermsLV(accountLocation)">
+              <TitleBar
+                title="displaykey.Web.AccountFile.Summary.PolicyTerms"/>
+              <Toolbar/>
+            </PanelRef>
+            <PanelRef
+              def="AccountFile_Locations_WorkOrdersLV(accountLocation)">
+              <TitleBar
+                title="displaykey.Web.AccountFile.WorkOrders"/>
+              <Toolbar/>
+            </PanelRef>
+          </Card>
+        </CardViewPanel>
+      </ListDetailPanel>
+    </Screen>
+    <Code><![CDATA[function setPrimaryLocation(location : AccountLocation) {
+       gw.transaction.Transaction.runWithNewBundle(\bundle -> {
+          var account2 = bundle.add(account)
+          var l = bundle.add(location)
+          account2.PrimaryLocation = l
+        })
+      }
+      
+function removeLocations(locations : AccountLocation[]) {
+  gw.transaction.Transaction.runWithNewBundle(\bundle -> {
+    var localAccount = bundle.add(account)
+    for(location in locations) {
+      localAccount.removeLocation(location)
+    }
+  })
+}]]></Code>
+  </Page>
+</PCF>

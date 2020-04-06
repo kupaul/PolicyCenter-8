@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Late Binding Data in Your Payload</title>
+    <link rel="StyleSheet" href="css/eventsmessaging.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-messaging.html#3946497">Messaging</a> : <a class="WebWorks_Breadcrumb_Link" href="eventsmessaging.26.01.html#3946497">Messaging and Events</a> : Late Binding Data in Your Payload</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="3946497">Late Binding Data in Your Payload</a></h3>
+      <div class="B_-_Body"><a name="4262013">In your Event Fired messages, in general it is best to use the current state of entity data to create the message payload. In other words, generate the entire payload when the Event Fired rule set runs. For example, for </a><span class="cv_-_computer_voice">PolicyChanged</span> events, messages typically contain the latest information for the policy as of the time the messaging event triggers. This includes any changes in this database transaction (entity instance additions, removals, or changes). Generally this is the best approach for messaging. If you waited until messaging sending time (rather than creation time), the data might be partially different or even data removed from the database. This could disrupt the series of messages to a downstream system. Downstream systems typically need messages that match with data model changes as they happen. Creating the entire payload at Event Fired time is the standard recommended approach. This is called <span class="e_-_emphasis">early binding</span>.</div>
+      <div class="B_-_Body"><a name="4196978">However, this prevents </a><span class="e_-_emphasis">later</span> changes to an object appearing in an <span class="e_-_emphasis">earlier</span> message about that object. This is relevant if there is a large delay in sending the message for whatever reason. Sometimes you need the latest possible value on an entity as the message leaves the send queue on its way to the destination. For example, imagine sending a new policy to an external system. As part of the acknowledgement, the external system might send back its ID for the new policy. You can set the <span class="e_-_emphasis">public ID</span> in PolicyCenter to that external system’s ID for the policy. </div>
+      <div class="B_-_Body"><a name="4305250">Suppose the next message separately sends information related to that policy to the external system. In this message, you want to include the policy’s new public ID received from the external system in the acknowledgement. The external system knows which policy belongs with this second message. If the public ID were merely set during the original processing of the event, that message does not contain the new value from the external system. There would be no way to tell the external system which policy this second set of information goes with.</a></div>
+      <div class="B_-_Body"><a name="3946540">PolicyCenter solves this problem by permitting </a><span class="e_-_emphasis">late binding</span> of properties in the message payload. You can designate certain properties for late binding so you re-calculate values immediately before the messaging transport sends the message.</div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="3946543">Guidewire recommends exporting all data in the Event Fired rules into a message payload (early-bound) unless you have a specific reason why late binding is critical for that situation.</a></div>
+      <div class="B_-_Body"><a name="3946550">For newly-created entity instances, some customers send the entity instance’s </a><span class="e_-_emphasis">public ID property</span> as a late bound property. A message acknowledgement or external system (using web service APIs) could change the public ID between creating (submitting) the message and sending it.</div>
+      <div class="B_-_Body"><a name="3946555">For other properties, decide whether early binding or late binding is most appropriate. </a></div>
+      <div class="B_-_Body"><a name="3946556">At message creation time in Event Fired rules, add your own marker text within the message, for example </a><span class="cv_-_computer_voice">"&lt;AAAAAA&gt;"</span>. Your <span class="cv_-_computer_voice">MessageRequest</span> plugin code or <span class="cv_-_computer_voice">MessageTransport</span> plugin code can directly find the message root object or primary object and substitute the current value. If PolicyCenter calls your <span class="cv_-_computer_voice">MessageRequest</span> plugin, the current value of the property is a late bound value and you can replace the marker with the new value. </div>
+      <div class="B_-_Body"><a name="4197023">For example, a Gosu implementation of the </a><span class="cv_-_computer_voice">MessageRequest</span> plugin interface might do this using the following code in the <span class="cv_-_computer_voice">beforeSend</span> method. In this example, the transport assumes the message root object is a <span class="cv_-_computer_voice">Policy</span> and replaces the special marker in the payload with the value of extension property <span class="cv_-_computer_voice">SomeProperty</span>. This example assumes that the message contains the string <span class="cv_-_computer_voice">"&lt;AAAAAA&gt;"</span> as a special marker in the message text:	</div>
+      <PRE class="CF_-_Code_First_Line"><a name="4087587">function beforeSend(m : Message) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4087588">&nbsp;&nbsp;var c = m.MessageRoot as Policy</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4087589">&nbsp;&nbsp;var s = org.apache.commons.lang.StringUtils.replace(m.getPayload(),&nbsp;"&lt;AAAAAA&gt;",c.SomeProperty)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3946580">&nbsp;&nbsp;return s</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3946581">}</a></PRE>
+      <h6 class="HS_-_Head_Sub"><a name="4262106">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.02.html#4207620', '');" title="Messaging Overview" name="4263196">“Primary Entity and Primary Object”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.06.html#4348048', '');" title="Generating New Messages in Event Fired Rules" name="4263215">“Setting a Message Root Object or Primary Object”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

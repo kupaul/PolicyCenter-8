@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    afterCancel="PolicyFileForward.go(policyPeriod.PolicyNumber)"
+    autosaveable="false"
+    canEdit="true"
+    canVisit="perm.PolicyPeriod.view(policyPeriod) and perm.Cancellation.create"
+    countsAsWork="false"
+    id="StartCancellation"
+    parent="PolicyFile(policyPeriod, policyPeriod.EditEffectiveDate)"
+    startInEditMode="true"
+    title="displaykey.Web.Cancellation.StartCancellation(policyPeriod.PolicyNumberDisplayString)">
+    <LocationEntryPoint
+      signature="StartCancellation(policyPeriod : PolicyPeriod)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="policyPeriod.Policy"
+      name="policy"
+      type="Policy"/>
+    <Variable
+      initialValue="new Cancellation()"
+      name="job"
+      type="Cancellation"/>
+    <Variable
+      initialValue="null"
+      name="effectiveDate"
+      type="java.util.Date"/>
+    <Variable
+      initialValue="(effectiveDate != null) ? entity.Policy.finder.findPolicyPeriodByPolicyAndAsOfDate(policy, effectiveDate) : null"
+      name="inForcePeriod"
+      recalculateOnRefresh="true"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="inForcePeriod != null and inForcePeriod.hasFinalAuditFinished()"
+      name="hasFinalAuditFinished"
+      recalculateOnRefresh="true"
+      type="boolean"/>
+    <Variable
+      initialValue="effectiveDate != null and policy.isOOSChange(effectiveDate)"
+      name="isOOSChange"
+      recalculateOnRefresh="true"
+      type="boolean"/>
+    <Variable
+      initialValue="job.findValidRefundMethods(policyPeriod.PeriodStart)"
+      name="refundMethods"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="null"
+      name="refundCalcMethod"
+      type="CalculationMethod"/>
+    <Screen
+      id="StartCancellationScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="if (job.startJobAndCommit(policy, effectiveDate, refundCalcMethod, CurrentLocation)) {CancellationWizard.go(job, job.LatestPeriod)                         }"
+          available="policy.canStartCancellation(effectiveDate) == null"
+          confirmMessage="confirmationMessage()"
+          id="NewCancellation"
+          label="displaykey.Button.StartCancellation"/>
+        <ToolbarButton
+          action="CurrentLocation.cancel()"
+          id="Cancel"
+          label="displaykey.Button.Cancel"/>
+      </Toolbar>
+      <Verbatim
+        id="ErrorMessage"
+        label="displaykey.Web.Cancellation.Error.CannotStart(policy.canStartCancellation(effectiveDate))"
+        visible="effectiveDate != null and policy.canStartCancellation(effectiveDate) != null"
+        warning="true"/>
+      <Verbatim
+        id="WarningMessage"
+        label="displaykey.Web.PolicyChange.StartPolicyChange.Warning(getWarningMessage(policyPeriod))"
+        visible="getWarningMessage(policyPeriod) != null"
+        warning="true"/>
+      <DetailViewPanel
+        id="CancelPolicyDV">
+        <InputColumn>
+          <!-- The cancellation source determines which reason codes are available -->
+          <TypeKeyInput
+            editable="true"
+            filter="perm.System.cancelcarriersource or VALUE == &quot;Insured&quot;"
+            id="Source"
+            label="displaykey.Web.CancellationWizard.Source"
+            required="true"
+            value="job.Source">
+            <PostOnChange
+              onChange="job.CancelReasonCode = null; refundCalcMethod = null; effectiveDate = null"/>
+          </TypeKeyInput>
+          <!-- Setting the reason code can also set a default refund calculation method and effective date -->
+          <TypeKeyInput
+            editable="true"
+            id="Reason"
+            label="displaykey.Web.CancellationWizard.Reason"
+            required="true"
+            value="job.CancelReasonCode">
+            <PostOnChange
+              onChange="refundCalcMethod = job.calculateRefundCalcMethod(policyPeriod); effectiveDate = job.CancelReasonCode != null ? job.getDefaultEffectiveDate(policyPeriod, refundCalcMethod) : effectiveDate"/>
+          </TypeKeyInput>
+          <!-- The description field doesn't affect any other fields on this page -->
+          <TextAreaInput
+            editable="true"
+            id="ReasonDescription"
+            label="displaykey.Web.CancellationWizard.ReasonDescription"
+            numCols="30"
+            numRows="3"
+            value="job.Description"/>
+          <!-- Refund calculation method is not editable for rewrites -->
+          <RangeInput
+            editable="perm.System.canceloverrefund and job.CancelReasonCode != &quot;flatrewrite&quot; and job.CancelReasonCode != &quot;midtermrewrite&quot; and refundMethods.Count != 1"
+            id="CalcMethod"
+            label="displaykey.Web.CancellationWizard.CalcMethod"
+            required="true"
+            value="refundCalcMethod"
+            valueRange="refundMethods">
+            <PostOnChange
+              onChange="effectiveDate = job.CancelReasonCode != null ? job.getDefaultEffectiveDate(policyPeriod, refundCalcMethod) : effectiveDate"/>
+          </RangeInput>
+          <!-- Effective date is only editable if the refund method is not "flat" and the period is issued.  If date's time component is not editable, need to apply effective time plugin. -->
+          <DateTimeInput
+            editable="job.canEnterInitialEffectiveDate(policyPeriod, effectiveDate)"
+            id="CancelDate"
+            label="displaykey.Web.CancellationWizard.CancelDate"
+            onChange="if (effectiveDate != null) { effectiveDate = gw.api.job.EffectiveDateCalculator.instance().getCancellationEffectiveDate(effectiveDate, policyPeriod, job, refundCalcMethod) }"
+            required="true"
+            timeVisible="false"
+            validationExpression="job.validateEffectiveDate(policyPeriod, effectiveDate, refundCalcMethod)"
+            value="effectiveDate"/>
+        </InputColumn>
+      </DetailViewPanel>
+    </Screen>
+    <Code><![CDATA[function confirmationMessage() : String {
+  var result = ""
+  if(hasFinalAuditFinished){
+    result += (effectiveDate == inForcePeriod.PeriodStart
+      ? displaykey.Web.Job.FinalAuditCompletedFlatCancellation
+      : displaykey.Web.Job.FinalAuditCompletedCancellation)
+  }
+  return result
+}
+
+function getWarningMessage(pInForcePeriod : PolicyPeriod) : String {
+  var messages = new java.util.ArrayList<String>()
+  if (pInForcePeriod != null) {
+    if ( pInForcePeriod.Policy.RewrittenToNewAccountDestination != null){
+      messages.add(displaykey.Web.Job.ChangeRewriteNewAccountPolicy(pInForcePeriod.Policy.RewrittenToNewAccountDestination.LatestBoundPeriod.PolicyNumber))
+    }
+  }
+  return messages.Empty ? null : messages.join(", ")
+}
+]]></Code>
+  </Page>
+</PCF>

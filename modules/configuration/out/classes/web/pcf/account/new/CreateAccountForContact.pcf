@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    afterCancel="NewAccount.go()"
+    afterCommit="afterCommitNewAccount()"
+    beforeCommit="beforeCommitNewAccount()"
+    canEdit="true"
+    canVisit="perm.Account.create(null)"
+    id="CreateAccountForContact"
+    parent="NewAccount()"
+    startInEditMode="true"
+    title="displaykey.Web.CreateAccount">
+    <LocationEntryPoint
+      signature="CreateAccountForContact(contact : Contact, forNewSubmission: boolean)"/>
+    <Variable
+      initialValue="entity.Account.createAccountForContact(contact)"
+      name="account"
+      type="Account"/>
+    <Variable
+      initialValue="gw.web.job.submission.NewSubmissionUtil.getOrCreateProducerSelection(account)"
+      name="producerSelection"
+      type="ProducerSelection"/>
+    <Variable
+      name="forNewSubmission"
+      type="boolean"/>
+    <Variable
+      name="contact"
+      type="Contact"/>
+    <Variable
+      initialValue="new gw.pcf.duplicatecontacts.DuplicateContactsPopupHelper(account.AccountHolderContact)"
+      name="duplicateContactsPopupHelper"/>
+    <ScreenRef
+      def="CreateAccountScreen(account, producerSelection, duplicateContactsPopupHelper)"/>
+    <Code><![CDATA[/**
+ * Prepares to actually save the new Account to the database
+ */
+function beforeCommitNewAccount() {
+  account.modifyPrimaryLocationFromMainContact()
+  account.addProducerCode(producerSelection.ProducerCode)
+  var existingPCContactWithABContactMatch = duplicateContactsPopupHelper.existingPCContactWithABContactMatch
+  if (existingPCContactWithABContactMatch != null) {
+    // existing ab contact that matches the current new contact
+    account.changeAccountHolderTo(existingPCContactWithABContactMatch)
+  }
+}
+
+/**
+ * Wraps up after saving new Account to database
+ */
+function afterCommitNewAccount() {
+  web.job.submission.SubmissionUtil.setLastProducerSelection(producerSelection)
+  gw.api.web.util.SessionUtil.addAccountToHistory(account)
+  if (forNewSubmission) {
+    SubmissionManager.go(account)
+    NewSubmission.push(account)
+  } else {
+    AccountFile_Summary.go(account)
+  }
+}]]></Code>
+  </Page>
+</PCF>

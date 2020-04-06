@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <WizardStepSet
+    id="JobWizardToolsMenuWizardStepSet">
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <JobWizardStep
+      available="policyPeriod.Job.SideBySide and !jobWizardHelper.isInPicker() and !jobWizardHelper.hasActiveWorksheet()"
+      id="SideBySide"
+      independent="true"
+      save="true"
+      screen="SideBySideScreen(jobWizardHelper, policyPeriod)"
+      title="displaykey.Web.Job.SideBySide.Title"
+      visible="perm.PolicyPeriod.view(policyPeriod) and policyPeriod.Job.hasMultiplePeriods()"/>
+    <JobWizardStep
+      id="ManageBranches"
+      independent="true"
+      label="displaykey.Web.MultiQuoteWizardMenu.ManageBranches"
+      screen="ManageBranchesScreen(jobWizardHelper, policyPeriod)"
+      title="displaykey.Web.MultiQuoteWizardMenu.ManageBranches"
+      visible="perm.PolicyPeriod.view(policyPeriod) and policyPeriod.Job.ActivePeriods.Count &gt; 1 and !policyPeriod.Job.Complete"/>
+    <JobWizardStep
+      id="Notes"
+      independent="true"
+      label="displaykey.Web.PolicyFile.Notes"
+      screen="Policy_NotesScreen(policyPeriod, null)"
+      title="displaykey.Web.PolicyFile.Notes"
+      visible="policyPeriod.Policy.canViewNotes() and perm.PolicyPeriod.view(policyPeriod) and perm.System.noteview"/>
+    <JobWizardStep
+      id="Documents"
+      independent="true"
+      label="displaykey.Web.PolicyFile.Documents"
+      screen="Policy_DocumentsScreen(policyPeriod)"
+      title="displaykey.Web.PolicyFile.Documents"
+      visible="perm.PolicyPeriod.view(policyPeriod) and perm.System.docview"/>
+    <JobWizardStep
+      id="Participants"
+      independent="true"
+      label="displaykey.Web.PolicyFile.Participants"
+      save="true"
+      screen="ParticipantsScreen(policyPeriod)"
+      title="displaykey.Web.PolicyFile.Participants"
+      visible="perm.PolicyPeriod.view(policyPeriod) and perm.System.viewparticipants"/>
+    <JobWizardStep
+      id="PolicyVersions"
+      independent="true"
+      label="displaykey.Web.PolicyFile.PolicyVersions"
+      screen="ManageBranchesScreen(jobWizardHelper, policyPeriod)"
+      title="displaykey.Web.PolicyFile.PolicyVersions"
+      visible="perm.PolicyPeriod.view(policyPeriod) and policyPeriod.Job.ActivePeriods.Count &gt; 1 and policyPeriod.Job.Complete"/>
+    <JobWizardStep
+      id="Workplan"
+      independent="true"
+      label="displaykey.Web.PolicyFile.Workplan"
+      screen="WorkplanScreen(policyPeriod)"
+      title="displaykey.Web.PolicyFile.Workplan"
+      visible="perm.PolicyPeriod.view(policyPeriod) and perm.System.viewworkplan"/>
+    <JobWizardStep
+      id="RiskEvaluation"
+      independent="true"
+      label="displaykey.Web.PolicyFile.RiskAnalysis"
+      save="true"
+      screen="Job_RiskAnalysisScreen(policyPeriod, policyPeriod.OpenForEdit, jobWizardHelper )"
+      title="displaykey.Web.PolicyFile.RiskAnalysis"
+      visible="(jobWizardHelper.isRiskEvaluationVisible(policyPeriod.Job)) and perm.PolicyPeriod.view(policyPeriod) and (perm.System.viewriskevalissues or perm.System.viewriskclaims or perm.System.viewriskpriorpolicies or perm.System.viewriskpriorlosses)"/>
+    <JobWizardStep
+      beforeSave="policyPeriod.RIRiskVersionLists.each(\ v -&gt; v.AllVersions.each(\ r -&gt; gw.reinsurance.risk.RIRiskValidation.validateUI(r)))"
+      id="Reinsurance"
+      independent="true"
+      label="displaykey.Web.PolicyFile.Reinsurance"
+      onEnter="policyPeriod.reevalutateAttachments()"
+      save="true"
+      screen="PolicyReinsuranceScreen(policyPeriod, policyPeriod.EditEffectiveDate)"
+      title="displaykey.Web.PolicyFile.Reinsurance"
+      visible="perm.PolicyPeriod.view(policyPeriod) and policyPeriod.ValidQuote and policyPeriod.AllReinsurables.HasElements and (!policyPeriod.Promoted or policyPeriod.LatestPeriod == policyPeriod) and policyPeriod.ValidReinsurance"/>
+    <JobWizardStep
+      id="History"
+      independent="true"
+      label="displaykey.Web.PolicyFile.History"
+      screen="Job_HistoryScreen(policyPeriod, policyPeriod.EditEffectiveDate)"
+      title="displaykey.Web.PolicyFile.History"
+      visible="perm.PolicyPeriod.view(policyPeriod) and perm.System.viewhist"/>
+  </WizardStepSet>
+</PCF>

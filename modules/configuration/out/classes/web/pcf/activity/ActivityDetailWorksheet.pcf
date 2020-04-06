@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Worksheet
+    afterCommit="web.activity.ActivityUtil.markActivityAsViewed(activity)"
+    canEdit="getEditStatus(activity, activity.Account)"
+    canVisit="activity.Account != null ? perm.Account.view(activity.Account) : true"
+    id="ActivityDetailWorksheet"
+    startInEditMode="true"
+    tabLabel="displaykey.Web.Activity.ActivityDetailTab"
+    title="displaykey.Web.Activity.ActivityDetailTitle">
+    <LocationEntryPoint
+      signature="ActivityDetailWorksheet(activity : Activity)"/>
+    <LocationEntryPoint
+      signature="ActivityDetailWorksheet(activity : Activity, policyPeriod : PolicyPeriod)"/>
+    <Scope
+      location="JobForward(job)"/>
+    <Scope
+      location="AccountFile(activity.Account)"/>
+    <Scope
+      location="PolicyAccountForward(activity.Account)"/>
+    <Scope
+      location="PolicyFileForward(policyPeriod, policyPeriod.EditEffectiveDate)"/>
+    <Variable
+      name="activity"
+      type="Activity"/>
+    <Variable
+      initialValue="perm.Note.create ? activity.newNote() : null"
+      name="note"
+      type="Note"/>
+    <Variable
+      initialValue="activity.Job"
+      name="job"
+      type="Job"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <ScreenRef
+      def="ActivityDetailScreen(activity, note, policyPeriod)"/>
+    <Code><![CDATA[function getEditStatus(act : Activity, acc : Account) : boolean {
+  if (acc != null) {
+    return activity.AssignedUser == entity.User.util.CurrentUser
+  } 
+  return act.Status == "open" and 
+          (act.AssignedUser == User.util.CurrentUser or 
+          (perm.System.acteditunowned and activity.AssignedUser == null) or
+           perm.Activity.approveany)
+}
+
+function completeActivity() {
+  gw.api.web.activity.ActivityUtil.completeActivity(activity, note)
+  gw.api.web.workspace.WorkspaceUtil.closeWorksheetIfActiveAndRefreshTop(CurrentLocation)            
+  if (activity.Job != null) {
+    NewActivityWorksheet.goInWorkspace(policyPeriod, activity.ActivityPattern)
+  } else if (activity.Policy != null) {
+    NewActivityWorksheet.goInWorkspace(policyPeriod, activity.Policy, activity.ActivityPattern)
+  } else if (activity.Account != null) {
+    NewActivityWorksheet.goInWorkspace(activity.Account, activity.ActivityPattern)
+  } 
+}]]></Code>
+  </Worksheet>
+</PCF>

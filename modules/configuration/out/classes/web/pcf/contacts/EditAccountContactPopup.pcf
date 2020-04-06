@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    canEdit="true"
+    id="EditAccountContactPopup"
+    returnType="AccountContact"
+    startInEditMode="true"
+    title="accountContact.Contact.DisplayName">
+    <LocationEntryPoint
+      signature="EditAccountContactPopup(accountContact: AccountContact)"/>
+    <LocationEntryPoint
+      signature="EditAccountContactPopup(accountContact: AccountContact, resolvingConflict : boolean)"/>
+    <Variable
+      name="accountContact"
+      type="AccountContact"/>
+    <Variable
+      initialValue="false"
+      name="resolvingConflict"
+      type="boolean"/>
+    <Variable
+      initialValue="accountContact.Contact"
+      name="contact"
+      recalculateOnRefresh="true"/>
+    <Screen
+      editable="true"
+      id="ContactDetailScreen">
+      <Toolbar>
+        <EditButtons
+          pickValue="accountContact"/>
+        <ToolbarButton
+          action="copyFromAddressBook()"
+          confirmMessage="displaykey.Web.ContactManager.Info.OverrideWarning"
+          id="Sync"
+          label="displaykey.Button.Contact.CopyFromAddressBook"
+          visible="resolvingConflict"/>
+      </Toolbar>
+      <PanelRef
+        def="AccountContactCV(accountContact,true)"
+        editable="true"/>
+    </Screen>
+    <Code><![CDATA[function copyFromAddressBook(){
+  contact.syncWithAddressBook()
+  //BundleUtil.evict(contact)
+  CurrentLocation.cancel()
+  EditAccountContactPopup.push(accountContact)
+}]]></Code>
+  </Popup>
+</PCF>

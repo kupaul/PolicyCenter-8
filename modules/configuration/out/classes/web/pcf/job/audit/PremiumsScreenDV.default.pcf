@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="PremiumsScreenDV"
+    mode="default">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="audit"
+      type="Audit"/>
+    <Variable
+      initialValue="policyPeriod.BasedOn.Job typeis Cancellation"
+      name="isAfterCancellation"
+      type="boolean"/>
+    <InputColumn>
+      <Label
+        label="displaykey.Web.AuditWizard.Premiums.Summary.Results(audit.AuditInformation.AuditScheduleType)"/>
+      <MonetaryAmountInput
+        align="right"
+        formatType="currency"
+        id="TotalAuditPremium"
+        label="displaykey.Web.AuditWizard.Premiums.Summary.TotalAuditedPremium"
+        value="policyPeriod.TotalPremiumRPT"/>
+      <MonetaryAmountInput
+        align="right"
+        formatType="currency"
+        id="TaxAndSurcharge"
+        label="displaykey.Web.AuditWizard.Premiums.Summary.Taxes"
+        value="policyPeriod.AllCosts.TaxSurcharges.AmountSum(policyPeriod.PreferredSettlementCurrency)"/>
+      <MonetaryAmountInput
+        align="right"
+        formatType="currency"
+        id="TotalAuditCost"
+        label="displaykey.Web.AuditWizard.Premiums.Summary.TotalAuditedCost"
+        value="policyPeriod.TotalCostRPT"/>
+      <MonetaryAmountInput
+        align="right"
+        formatType="currency"
+        id="TotalEstCost"
+        label="totalCostLabel()"
+        value="policyPeriod.BasedOn.TotalCostRPT"
+        visible="not isAfterCancellation"/>
+      <MonetaryAmountInput
+        align="right"
+        formatType="currency"
+        id="TotalEstTermCost"
+        label="displaykey.Web.AuditWizard.Premiums.Summary.TotalEAP"
+        value="policyPeriod.BasedOn.TotalCostRPT"
+        visible="isAfterCancellation"/>
+      <MonetaryAmountInput
+        align="right"
+        formatType="currency"
+        id="TotalAuditAdj"
+        label="displaykey.Web.AuditWizard.Premiums.Summary.Difference"
+        value="policyPeriod.TotalCostRPT - policyPeriod.BasedOn.TotalCostRPT"/>
+      <Label
+        label="displaykey.Web.AuditWizard.Premiums.Summary.PreviouslyBilled"
+        visible="!policyPeriod.Archived and policyPeriod.IsReportingPolicy"/>
+      <MonetaryAmountInput
+        align="right"
+        formatType="currency"
+        id="PreviouslyCharged"
+        label="displaykey.Web.AuditWizard.Premiums.Summary.PreviouslyCharged"
+        value="totalPreviouslyCharged()"
+        visible="!policyPeriod.Archived and policyPeriod.IsReportingPolicy"/>
+      <MonetaryAmountInput
+        align="right"
+        formatType="currency"
+        id="NewCharges"
+        label="displaykey.Web.AuditWizard.Premiums.Summary.NewCharges"
+        value="policyPeriod.AllTransactions.where(\t -&gt; t.Charged).toSet().AmountSum(policyPeriod.PreferredSettlementCurrency)"
+        visible="!policyPeriod.Archived and policyPeriod.IsReportingPolicy"/>
+      <Label
+        label="displaykey.Web.AuditWizard.Premiums.Summary.Results.AdditionalInfo"/>
+      <TextAreaInput
+        editable="true"
+        id="Comment"
+        label="displaykey.Web.AuditWizard.Premiums.Summary.Comments"
+        numRows="5"
+        value="audit.Description"/>
+    </InputColumn>
+    <Code><![CDATA[function totalCostLabel() : String {
+  return policyPeriod.Audit.AuditInformation.IsRevision
+      ? displaykey.Web.AuditWizard.Premiums.Summary.TotalPriorAuditedCost
+      : displaykey.Web.AuditWizard.Premiums.Summary.TotalEstCost
+}
+
+function totalPreviouslyCharged() : gw.pl.currency.MonetaryAmount {
+  var transactions = gw.api.domain.financials.TransactionFinder.instance.findPreviouslyPostedTransactions( policyPeriod )  
+  return transactions.where(\ t -> t.Charged).toSet().AmountSum(policyPeriod.PreferredSettlementCurrency)
+}]]></Code>
+  </DetailViewPanel>
+</PCF>

@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="GroupDetailDV">
+    <Require
+      name="group"
+      type="Group"/>
+    <Variable
+      initialValue="User.util.CurrentUser"
+      name="currentUser"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="group.New and not currentUser.ExternalUser"
+      name="canSetAnyOrganization"
+      type="Boolean"/>
+    <Variable
+      initialValue="new gw.globalization.GroupNameAdapter(group)"
+      name="groupNameAdapter"/>
+    <InputColumn>
+      <InputSetRef
+        def="GlobalContactNameInputSet(new gw.search.GroupNameOwner(groupNameAdapter))"
+        mode="gw.api.name.NameLocaleSettings.PCFMode"/>
+      <OrgInput
+        action="OrganizationDetail.go(group.Organization)"
+        actionAvailable="group.Organization != null and not User.util.CurrentUser.ExternalUser"
+        editable="group.New and not User.util.CurrentUser.ExternalUser"
+        id="Organization"
+        label="displaykey.Web.Admin.GroupDetail.BasicDV.Organization"
+        onPick="gw.web.admin.GroupDetailDVUIHelper.clearGroupTypeIfNotInTypeList(group)"
+        pickLocation="OrganizationSearchPopup.push(null,true)"
+        required="true"
+        value="group.OrganizationWithSetParent">
+        <PostOnChange/>
+      </OrgInput>
+      <RangeInput
+        action="GroupDetailPage.go(group.Parent)"
+        actionAvailable="group.Parent != null and group.Parent.GroupType != &quot;root&quot;"
+        editable="gw.web.admin.GroupDetailDVUIHelper.isParentRequiredAndEditableForGroup(group)"
+        id="Parent"
+        label="displaykey.Web.Admin.GroupDetail.BasicDV.Parent"
+        onPick="gw.web.admin.GroupDetailDVUIHelper.clearGroupTypeIfNotInTypeList(group)"
+        required="gw.web.admin.GroupDetailDVUIHelper.isParentRequiredAndEditableForGroup(group)"
+        value="group.ParentWithCircularityCheck"
+        valueRange="gw.web.admin.GroupDetailDVUIHelper.GroupsForCurrentUserInSelectedOrg(group)"
+        visible="group.GroupType != &quot;root&quot;">
+        <MenuItem
+          action="GroupSearchPopup.push(group, group.Organization)"
+          id="GroupSearchMenuIcon"
+          label="displaykey.Java.GroupValueWidget.SearchGroup"/>
+        <MenuItem
+          action="OrganizationGroupTreePopup.push(group.makeOrganizationSelection())"
+          id="GroupPickerMenuIcon"
+          label="displaykey.Java.GroupValueWidget.SelectGroup"/>
+        <PostOnChange
+          onChange="gw.web.admin.GroupDetailDVUIHelper.clearGroupTypeIfNotInTypeList(group)"/>
+      </RangeInput>
+      <TypeKeyInput
+        editable="true"
+        filter="gw.web.admin.GroupDetailDVUIHelper.isValidType(group, VALUE)"
+        id="Type"
+        label="displaykey.Web.Admin.GroupDetail.BasicDV.Type"
+        required="true"
+        value="group.GroupType">
+        <PostOnChange/>
+      </TypeKeyInput>
+      <InputSetRef
+        def="GroupDetailInputSet(group, false, {})"/>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

@@ -1,0 +1,141 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <InputSet
+    editable="openForEditInit.get()"
+    id="PolicyInfoInputSet">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="showWrittenDate"
+      type="boolean"/>
+    <Require
+      name="showRewriteLinks"
+      type="boolean"/>
+    <Require
+      name="showSplitSource"
+      type="boolean"/>
+    <Variable
+      initialValue="gw.util.concurrent.LockingLazyVar.make(\ -&gt; policyPeriod.OpenForEdit)"
+      name="openForEditInit"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="policyPeriod.PeriodStart"
+      name="effectiveDate"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="policyPeriod.TermType"
+      name="termType"/>
+    <Variable
+      initialValue="policyPeriod.Policy.RewrittenToNewAccountSource"
+      name="rewriteSourcePolicy"
+      type="Policy"/>
+    <Variable
+      initialValue="policyPeriod.Policy.DividedSourcePolicy"
+      name="dividedSourcePolicy"
+      type="Policy"/>
+    <ReferencedWidget
+      widget="UWCompanyInputSet"/>
+    <Label
+      label="displaykey.Web.SubmissionWizard.PolicyInfo.PolicyPeriod"/>
+    <!-- Changing the term type updates the expiration date -->
+    <RangeInput
+      editable="policyPeriod.CanUpdatePeriodDates"
+      id="TermType"
+      label="displaykey.Web.SubmissionWizard.PolicyInfo.TermType"
+      required="true"
+      value="termType"
+      valueRange="gw.pcf.job.PolicyInfoHelper.getTermTypes(policyPeriod)">
+      <PostOnChange
+        onChange="policyPeriod.TermType = termType"/>
+    </RangeInput>
+    <Input
+      id="TermNumber"
+      label="displaykey.Web.SubmissionWizard.PolicyInfo.TermNumber"
+      value="policyPeriod.TermNumber"
+      visible="policyPeriod.TermNumberVisible"/>
+    <!-- Changing the effective date updates the expiration date when the term type is not "short" -->
+    <DateInput
+      editable="!(policyPeriod.Job typeis PolicyChange) and policyPeriod.CanUpdatePeriodDates"
+      id="EffectiveDate"
+      label="displaykey.Web.SubmissionWizard.PolicyInfo.EffectiveDate"
+      required="true"
+      validationExpression="gw.policy.PolicyPeriodValidation.validateDateForRewriteNewAccount(policyPeriod) "
+      value="effectiveDate">
+      <PostOnChange
+        onChange="gw.pcf.job.PolicyInfoHelper.setPeriodDates(policyPeriod, effectiveDate, termType)"
+        target="ExpirationDate"/>
+    </DateInput>
+    <!-- Changing the expiration date updates the term type -->
+    <DateInput
+      editable="gw.pcf.job.PolicyInfoHelper.isExpirationDateEditable(policyPeriod, termType)"
+      id="ExpirationDate"
+      label="displaykey.Web.SubmissionWizard.PolicyInfo.ExpirationDate"
+      required="true"
+      validationExpression="gw.policy.PolicyPeriodValidation.validatePeriodEndDoesNotOverlapRewrittenNewAccountPolicy(policyPeriod) "
+      value="policyPeriod.PeriodEnd">
+      <PostOnChange
+        onChange="termType = policyPeriod.TermType"/>
+    </DateInput>
+    <DateInput
+      editable="perm.System.editwrittendate"
+      id="WrittenDate"
+      label="displaykey.Web.SubmissionWizard.PolicyInfo.WrittenDate"
+      required="true"
+      value="policyPeriod.WrittenDate"
+      visible="showWrittenDate"/>
+    <DateInput
+      dateFormat="short"
+      editable="perm.System.editrateasofdate and not(policyPeriod.JobProcess typeis gw.job.NewTermProcess)"
+      id="RateAsOfDate"
+      label="displaykey.Web.SubmissionWizard.PolicyInfo.RateAsOfDate"
+      required="not(policyPeriod.JobProcess typeis gw.job.NewTermProcess)"
+      timeFormat="long"
+      validationExpression="policyPeriod.RateAsOfDate.beforeOrEqual(java.util.Date.CurrentDate) ? null : displaykey.Web.Rating.Errors.FutureRateAsOfDate"
+      value="policyPeriod.RateAsOfDate">
+      <PostOnChange
+        target="PolicyInfoInputSet"/>
+    </DateInput>
+    <TypeKeyInput
+      editable="true"
+      id="BaseState"
+      label="displaykey.Web.SubmissionWizard.PolicyInfo.BaseState"
+      required="policyPeriod.Lines.countWhere( \ line -&gt; line.BaseStateRequired == true) &gt; 0"
+      value="policyPeriod.BaseState"
+      visible="gw.web.policy.PolicyInfoUIHelper.getBaseStateVisibility(policyPeriod)">
+      <PostOnChange
+        target="UWCompanyInputSet"/>
+    </TypeKeyInput>
+    <Input
+      editable="true"
+      id="PrimaryLanguage"
+      label="displaykey.Web.EditAccount.PrimaryLanguage"
+      value="policyPeriod.Policy.PrimaryLanguage"
+      visible="gw.api.util.LocaleUtil.getAllLanguages().size() &gt; 1 and policyPeriod.Reinstatement == null"/>
+    <Input
+      action="if (perm.PolicyPeriod.view(rewriteSourcePolicy.LatestBoundPeriod)) {pcf.PolicyFileForward.go(rewriteSourcePolicy.LatestBoundPeriod.PolicyNumber)}"
+      id="RewrittenSourcePolicy"
+      label="displaykey.Web.PolicyFile.Summary.RewrittenSourcePolicy"
+      value="displaykey.Web.PolicyFile.Summary.PolicyNumOnAccount(rewriteSourcePolicy.LatestBoundPeriod.PolicyNumber, rewriteSourcePolicy.Account.AccountNumber)"
+      visible="rewriteSourcePolicy != null and showRewriteLinks"/>
+    <Input
+      action="pcf.PolicyFileForward.go(dividedSourcePolicy.LatestBoundPeriod.PolicyNumber)"
+      id="DividedSourcePolicy"
+      label="displaykey.Web.PolicyFile.Summary.DividedSourcePolicy"
+      value="displaykey.Web.PolicyFile.Summary.PolicyNumOnAccount(dividedSourcePolicy.LatestBoundPeriod.PolicyNumberDisplayString, dividedSourcePolicy.Account.AccountNumber)"
+      visible="dividedSourcePolicy != null and showSplitSource"/>
+    <InputDivider/>
+    <Label
+      label="displaykey.Web.Admin.AffinityGroup"/>
+    <PickerInput
+      editable="true"
+      id="AffinityGroup"
+      inputConversion="gw.web.policy.PolicyInfoUIHelper.performAffinityGroupSearch(VALUE, policyPeriod)"
+      label="displaykey.Web.Admin.AffinityGroup.Name"
+      pickLocation="AffinityGroupSearchPopup.push(policyPeriod)"
+      required="false"
+      value="policyPeriod.PolicyTerm.AffinityGroup"/>
+  </InputSet>
+</PCF>

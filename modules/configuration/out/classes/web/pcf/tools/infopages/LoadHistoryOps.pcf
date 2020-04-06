@@ -1,0 +1,167 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    id="LoadHistoryOps"
+    parent="LoadHistoryDetail(PageHelper, History)"
+    showUpLink="true"
+    title="displaykey.Web.InternalTools.InfoPages.LoadHistoryOpInfo">
+    <LocationEntryPoint
+      signature="LoadHistoryOpsDV(History : LoadCommand, DispStep : gw.api.tools.LoadStepDisplayable,             PageHelper : gw.api.tools.LoadHistoryHelper)"/>
+    <Variable
+      name="History"
+      type="LoadCommand"/>
+    <Variable
+      name="DispStep"
+      type="gw.api.tools.LoadStepDisplayable"/>
+    <Variable
+      name="PageHelper"
+      type="gw.api.tools.LoadHistoryHelper"/>
+    <Screen
+      id="LoadHistoryOpsScreen">
+      <TitleBar
+        id="loadhistoryopstitlebar"
+        title="displaykey.Web.InternalTools.InfoPages.LoadHistory.StepsAndOps"/>
+      <Toolbar>
+        <ToolbarButton
+          action="null"
+          id="refresh"
+          label="displaykey.Button.Refresh"/>
+      </Toolbar>
+      <PanelRef
+        def="LoadHistoryLV(PageHelper, new LoadCommand[] {History} as entity.LoadCommandQuery, false)">
+        <Toolbar/>
+      </PanelRef>
+      <PanelRef
+        def="LoadStepsLV(PageHelper, History, new gw.api.tools.LoadStepDisplayable[]{DispStep}, false)">
+        <Toolbar/>
+      </PanelRef>
+      <ListDetailPanel
+        selectionName="SelectedOp"
+        selectionType="LoadOperation">
+        <PanelRef>
+          <Toolbar/>
+          <ListViewPanel
+            id="LoadHistoryOpsLV">
+            <RowIterator
+              editable="false"
+              elementName="Op"
+              type="LoadOperation"
+              value="DispStep.LoadStep.OrderedOps as LoadOperationQuery">
+              <Row>
+                <Cell
+                  enableSort="false"
+                  id="opduration"
+                  label="displaykey.Web.InternalTools.InfoPages.LoadHistory.Duration"
+                  value="PageHelper.getDurationString(Op.StartTime, Op.EndTime)"
+                  wrapLabel="true"/>
+                <Cell
+                  id="opstarttime"
+                  label="displaykey.Web.InternalTools.InfoPages.LoadHistory.StartTime"
+                  sortBy="Op.StartTime"
+                  value="util.StringUtil.formatDate(Op.StartTime, &quot;MM/dd/yy HH:mm:ss.SSS&quot;)"/>
+                <Cell
+                  id="opendtime"
+                  label="displaykey.Web.InternalTools.InfoPages.LoadHistory.EndTime"
+                  sortBy="Op.EndTime"
+                  value="util.StringUtil.formatDate(Op.EndTime, &quot;MM/dd/yy HH:mm:ss.SSS&quot;)"/>
+                <Cell
+                  id="opexecuteorder"
+                  label="displaykey.Web.InternalTools.InfoPages.LoadHistory.ExecutionOrder"
+                  value="Op.ExecutionOrder"
+                  wrapLabel="true"/>
+                <Cell
+                  id="tablename"
+                  label="displaykey.Web.InternalTools.InfoPages.DatabaseTableInfo.Rows.Table"
+                  value="Op.TableName"
+                  wrapLabel="true"/>
+                <Cell
+                  id="affectedrowcount"
+                  label="displaykey.Web.InternalTools.InfoPages.LoadHistory.AffectedRowCount"
+                  value="Op.AffectedRowCount"/>
+                <Cell
+                  id="errorcount"
+                  label="displaykey.Web.InternalTools.InfoPages.LoadHistory.ErrorCount"
+                  value="Op.ErrorCount"
+                  wrapLabel="true"/>
+                <Cell
+                  id="lowestid"
+                  label="displaykey.Web.InternalTools.InfoPages.LoadHistory.LowestID"
+                  value="Op.LowestID"
+                  wrapLabel="true"/>
+                <Cell
+                  id="highestid"
+                  label="displaykey.Web.InternalTools.InfoPages.LoadHistory.HighestID"
+                  value="Op.HighestID"
+                  wrapLabel="true"/>
+                <Cell
+                  enableSort="false"
+                  id="numIC"
+                  label="displaykey.Web.InternalTools.InfoPages.LoadHistory.NumberIntegrityChecks"
+                  value="util.StringUtil.formatNumber(Op.IntegrityChecks.length, &quot;####0&quot;)"
+                  wrapLabel="true"/>
+                <Cell
+                  enableSort="false"
+                  id="numIS"
+                  label="displaykey.Web.InternalTools.InfoPages.LoadHistory.NumberInsertSelects"
+                  value="util.StringUtil.formatNumber(Op.InsertSelects.length, &quot;####0&quot;)"
+                  wrapLabel="true"/>
+                <Cell
+                  enableSort="false"
+                  id="numCB"
+                  label="displaykey.Web.InternalTools.InfoPages.LoadHistory.NumberCallbacks"
+                  value="util.StringUtil.formatNumber(Op.Callbacks.length, &quot;####0&quot;)"
+                  wrapLabel="true"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </PanelRef>
+        <CardViewPanel>
+          <Variable
+            initialValue="find(var integrityCheck in LoadIntegrityCheck where integrityCheck.LoadOperation == SelectedOp)"
+            name="IntegrityChecks"
+            recalculateOnRefresh="true"
+            type="LoadIntegrityCheckQuery"/>
+          <Variable
+            initialValue="SelectedOp.Callbacks"
+            name="Callbacks"
+            recalculateOnRefresh="true"
+            type="LoadCallback[]"/>
+          <Variable
+            initialValue="find(var insertSelect in LoadInsertSelect where insertSelect.LoadOperation == SelectedOp)"
+            name="InsertSelects"
+            recalculateOnRefresh="true"
+            type="LoadInsertSelectQuery"/>
+          <Card
+            id="IntegrityChecksCard"
+            title="displaykey.Web.InternalTools.InfoPages.LoadHistory.IntegrityChecksNoCount"
+            visible="IntegrityChecks.getCount() &gt; 0">
+            <PanelRef
+              def="LoadIntegrityChecksLV(PageHelper, IntegrityChecks)">
+              <Toolbar/>
+            </PanelRef>
+          </Card>
+          <Card
+            id="CallbacksCard"
+            title="displaykey.Web.InternalTools.InfoPages.LoadHistory.CallbacksNoCount"
+            visible="Callbacks.length &gt; 0">
+            <PanelRef
+              def="LoadCallbacksLV(PageHelper, History, Callbacks, false)">
+              <Toolbar/>
+            </PanelRef>
+          </Card>
+          <Card
+            id="InsertSelectsCard"
+            title="displaykey.Web.InternalTools.InfoPages.LoadHistory.InsertSelectsNoCount"
+            visible="InsertSelects.getCount() &gt; 0">
+            <PanelRef
+              def="LoadInsertSelectsLV(PageHelper, InsertSelects)">
+              <Toolbar/>
+            </PanelRef>
+          </Card>
+        </CardViewPanel>
+      </ListDetailPanel>
+    </Screen>
+  </Page>
+</PCF>

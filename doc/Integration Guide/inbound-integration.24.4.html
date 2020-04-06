@@ -1,0 +1,756 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Inbound File Integration</title>
+    <link rel="StyleSheet" href="css/inbound-integration.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-plugins.html#2212624">Plugins</a> : <a class="WebWorks_Breadcrumb_Link" href="inbound-integration.24.1.html#2212624">Multi-threaded Inbound Integration</a> : Inbound File Integration</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2212624">Inbound File Integration</a></h3>
+      <div class="B_-_Body"><a name="2235997">PolicyCenter includes built-in code that supports file-based input with high-performance multi-threaded processing. PolicyCenter provides this code in two variants, one for processing message replies, and one as a startable plugin.</a></div>
+      <div class="B_-_Body"><a name="2303109">You cannot modify the plugin implementation code in Studio, but you can use one or more instances of these integrations to work with your own file data. </a></div>
+      <div class="B_-_Body"><a name="2238029">The processing flow for file integration is as follows:</a></div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2238030">In response to some inbound event, your own integration code creates a new file in a specified incoming directory on the local file system.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2251137">The inbound file integration code polls the </a><span class="e_-_emphasis">incoming directory</span> at a specified interval and detects any new files since the last time checked. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="2275949">Any files that are in the incoming directory before the plugin initializes are never processed. For example, if you restart the server, files created after the server shuts down but before initialization are never processed. To process files that already existed, wait until the plugin is initialized, then move files outside the </a><span class="e_-_emphasis">incoming directory</span>, and then back to the incoming directory again.</div>
+      <div class="LP_-_List_Para"><a name="2251358">The order of the processing of individual files in the directory is undefined. Never rely on the order being any particular order, such as alphabetic or creation date.</a></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2236000">The inbound file integration code moves all found files to the </a><span class="e_-_emphasis">processing&nbsp;directory</span>, which stores inbound files in progress.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2236001">The inbound file integration code opens each new file using a specified character set. The default is UTF-8, but it is configurable.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2238143">The inbound file integration code reads one unit of work (one chunk of data) and dispatches it to your handler code. The </a><span class="cv_-_computer_voice">processingmode</span> parameter in the <span class="cv_-_computer_voice">inbound-integration-config.xml</span> file defines the type of data processed in one unit of work. If that parameter has the value <span class="cv_-_computer_voice">line</span>, PolicyCenter sends one line at a time to the handler as a <span class="cv_-_computer_voice">String</span> object. If that parameter has the value <span class="cv_-_computer_voice">file</span>, PolicyCenter sends the entire file to the handler as a <span class="cv_-_computer_voice">java.nio.file.Path</span> object.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2275622">If exceptions occur during processing, the plugin code moves the file to the </a><span class="e_-_emphasis">error directory.</span> The file name is changed to add a prefix that includes the time of the error, as expressed in milliseconds as returned from the Java time utilities. For example, if the file name <span class="cv_-_computer_voice">ABC.txt</span> has an error, it is renamed in the error directory with a name similar to <span class="cv_-_computer_voice">1864733246512.error.ABC.txt</span>.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2275623">After successfully reading and processing the complete file, the inbound file integration code moves the file to the </a><span class="e_-_emphasis">done&nbsp;directory</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	7.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2247809">If there were any other files detected in this polling interval in </a><a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.4.html#2251137', '');" title="Inbound File Integration">step 2</a>, the inbound file integration code repeats the process at <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.4.html#2236001', '');" title="Inbound File Integration">step 4</a>. Optionally, you can set the integration to operate on the most recent batch of files in parallel. For related information, see the <span class="cv_-_computer_voice">ordered</span> parameter, mentioned later in this section.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	8.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2238516">The inbound file integration waits until the next polling interval, and repeats this process at </a><a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.4.html#2236000', '');" title="Inbound File Integration">step 3</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h6 class="HS_-_Head_Sub"><a name="2276654">To create an inbound file integration</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2276655">In the </a><span class="ui_-_UI_element">Project</span> window, navigate to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">config</span> → <span class="ui_-_UI_element">integration</span> and click <span class="cv_-_computer_voice">inbound-integration-config.xml</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2279673">Configure the thread pools. See </a><a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.3.html#2269843', '');" title="Inbound Integration Configuration XML File">“Thread Pool Configuration”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2279568">In the list of integrations, create one </a><span class="cv_-_computer_voice">&lt;integration&gt;</span> element of type <span class="cv_-_computer_voice">&lt;file-integration&gt;</span>. Follow the pattern in the file to correctly set the XML/XSD namespace for the element. Set the <span class="cv_-_computer_voice">name</span> and <span class="cv_-_computer_voice">disabled</span> attributes as described in <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.3.html#2276560', '');" title="Inbound Integration Configuration XML File">“Configuring a List of Inbound Integrations”</a>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2279812">Set configuration parameter subelements as follows:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="T_-_Table"><a name="2280137">&nbsp;</a></div>
+      <table class="withHeadingIndent" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2295930">File integration configuration parameters </a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2295932">Required</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2295934">Description</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2295936">Example value</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2295946">pluginhandler</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2295948">Required</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2295950">The name in the Plugins registry for an implementation of the </a><span class="cvt_-_computer_voice_table">InboundIntegrationHandlerPlugin</span> plugin interface. Note that this is the <span class="cvt_-_computer_voice_table">.gwp</span> file name, not the implementation class name.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2295952">InboundFileIntegrationExample</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2295954">processingmode</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2295956">Required</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2295958">To process one line at a time, set to </a><span class="cvt_-_computer_voice_table">line</span>. In your handler class in the process method, you must downcast to <span class="cvt_-_computer_voice_table">String</span>.</div>
+            <div class="TT_-_Table_Text"><a name="2295959">To process one file at a time, set to </a><span class="cvt_-_computer_voice_table">file</span>. In your handler class in the process method, you must downcast to <span class="cvt_-_computer_voice_table">java.nio.file.Path</span>.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2295961">line</a></span></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2295963">threadpool</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2295965">Required</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2295967">The unique name of a thread pool as configured earlier in the file. See </a><a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.3.html#2269843', '');" title="Inbound Integration Configuration XML File">“Thread Pool Configuration”</a><span style="font-family: &quot;Times New Roman&quot;; font-size: 10.0pt">.</span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2295972">gw_default</a></span></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2295974">osgiservice</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2295976">Required</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2295978">Always set to </a><span class="cvt_-_computer_voice_table">true</span>. This is for internal use. This value is independent of whether you choose to register your handler class as an OSGi plugin.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2295980">true</a></span></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2295982">transactional</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2295984">Required</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2295986">You must always set this to </a><span class="cvt_-_computer_voice_table">false</span>.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2295988">false</a></span></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2295990">stoponerror</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2295992">Required</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2295997">If true, PolicyCenter stops the integration if an error occurs. Otherwise, PolicyCenter just skips that item. Be sure to log any errors or notify an administrator.</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2296002">true</a></span></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2296004">incoming</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296006">Required</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296008">The full path of the configured incoming events directory</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296010">/tmp/inbound/incoming</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2296012">processing</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296014">Required</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296016">The full path of the configured processing events directory</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296018">/tmp/inbound/processing</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2296020">done</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296022">Required</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296024">The full path of the configured done events directory</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296026">/tmp/inbound/done</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2296028">error</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296030">Required</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296032">The full path of the configured error events directory</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296034">/tmp/inbound/error</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2296036">pollinginterval</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296038">Optional</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296071">The time interval in seconds between polls, though the algorithm interacts with the throttle interval and the </a><span class="cvt_-_computer_voice_table">ordered</span> parameter. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.7.html#2273887', '');" title="Understanding the Polling Interval and Throttle Interval">“Understanding the Polling Interval and Throttle Interval”</a>. The default is 60 seconds. </div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296045">15</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2296047">throttleinterval</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296049">Optional</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296076">The time interval in seconds after polling, though the algorithm interacts with the polling interval and the </a><span class="cvt_-_computer_voice_table">ordered</span> parameter. See <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.7.html#2273887', '');" title="Understanding the Polling Interval and Throttle Interval">“Understanding the Polling Interval and Throttle Interval”</a>. The default is 60 seconds.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296056">15</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2296058">ordered</a></span></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296060">Optional</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2296062">By default, the inbound file integration handles multiple files at a time in parallel in multiple server threads. If you want files handled in a single thread sequentially, set this value to </a><span class="cvt_-_computer_voice_table">true</span>. The default is <span class="cvt_-_computer_voice_table">false</span>.</div>
+            <div class="TT_-_Table_Text"><span class="s_-_strong"><a name="2296063">WARNING: </a></span>The order of the processing of individual files in the directory is undefined. Never rely on the order being any particular order, such as alphabetic or creation date.</div>
+            <div class="TT_-_Table_Text"><a name="2296066">Also see </a><a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.7.html#2273887', '');" title="Understanding the Polling Interval and Throttle Interval">“Understanding the Polling Interval and Throttle Interval”</a>.</div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2296069">false</a></span></div>
+          </td>
+        </tr>
+      </table>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2282548">In Studio, within the Plugins registry, add a new </a><span class="cv_-_computer_voice">.gwp</span> file. For related information, see <a href="javascript:WWHClickedPopup('integration', 'plugins.14.02.html#2475371', '');" title="Overview of PolicyCenter Plugins">“Registering a Plugin Implementation Class”</a> and <a href="javascript:WWHClickedPopup('config', 'studio_plugins.11.1.html#3595679', '');" title="Using the Plugins Registry Editor">“Using the Plugins Registry Editor” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('config', 'studio_plugins.11.1.html#3595679', '');" title="Using the Plugins Registry Editor">Configuration Guide</a></span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2284495">Studio prompts for a plugin name and plugin interface. For the plugin name, use a name that represents the purpose of this specific inbound integration. For the </a><span class="ui_-_UI_element">Interface</span> field:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="2303382">For a message reply plugin, type </a><span class="cv_-_computer_voice">InboundIntegrationMessageReply</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="2303394">For a startable plugin for non-messaging use, type </a><span class="cv_-_computer_voice">InboundIntegrationStartablePlugin</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	7.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2282865">Click the plus (+) symbol to add a plugin implementation and choose </a><span class="ui_-_UI_element">Add Java plugin</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	8.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2284401">In the </a><span class="ui_-_UI_element">Java class</span> field, type:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="2303473">For a message reply plugin, type </a><span class="cv_-_computer_voice">com.guidewire.pl.integration.inbound.file.DefaultFileInboundIntegrationMessageReply</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="2303474">For a startable plugin for non-messaging use, type </a><span class="cv_-_computer_voice">com.guidewire.pl.integration.inbound.file.DefaultFileInboundIntegrationPlugin</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	9.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2283085">Add a plugin parameter with the key </a><span class="cv_-_computer_voice">integrationservice</span>. For the value, type the unique name for your integration that you used in <span class="cv_-_computer_voice">inbound-integration-config.xml</span> for this integration.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	10.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2282523">Write your own </a><span class="e_-_emphasis">inbound integration handler plugin</span> implementation. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="2303591">For a message reply plugin, your handler code must implement the plugin interface </a><span class="cv_-_computer_voice">gw.plugin.integration.inbound.InboundIntegrationHandlerPlugin</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="2303592">For a startable plugin for non-messaging use, your handler code must implement the plugin interface </a><span class="cv_-_computer_voice">gw.plugin.integration.inbound.InboundIntegrationMessageReply</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2276782">This interface has one method called </a><span class="cv_-_computer_voice">process</span>, which has a single argument of type <span class="cv_-_computer_voice">Object</span>. The method returns no value. The file integration calls that method to process one chunk of data. The data type depends on the value you set for the <span class="cv_-_computer_voice">processingmode</span> parameter:</div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="2281543">If you set the </a><span class="cv_-_computer_voice">processingmode</span> parameter to <span class="cv_-_computer_voice">line</span>, downcast the <span class="cv_-_computer_voice">Object</span> to <span class="cv_-_computer_voice">String</span> before using it.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="2295151">If you set the </a><span class="cv_-_computer_voice">processingmode</span> parameter to <span class="cv_-_computer_voice">file</span>, downcast the <span class="cv_-_computer_voice">Object</span> to <span class="cv_-_computer_voice">java.nio.file.Path</span> before using it.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2295152">If your code throws an exception, PolicyCenter moves the file to the error directory. Note the </a><span class="cv_-_computer_voice">stoponerror</span> parameter in the configuration file. If that value is <span class="cv_-_computer_voice">true</span>, PolicyCenter stops the integration if an error occurs. Otherwise, skips that item. Be sure to log any errors or notify an administrator.</div>
+      <div class="LP_-_List_Para"><a name="2295050">In Studio, within the Plugins registry, register your handler plugin implementation class. Add a row in the Plugins registry editor for your plugin implementation class. See </a><a href="javascript:WWHClickedPopup('integration', 'plugins.14.02.html#2475371', '');" title="Overview of PolicyCenter Plugins">“Registering a Plugin Implementation Class”</a> and <a href="javascript:WWHClickedPopup('config', 'studio_plugins.11.1.html#3595679', '');" title="Using the Plugins Registry Editor">“Using the Plugins Registry Editor” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('config', 'studio_plugins.11.1.html#3595679', '');" title="Using the Plugins Registry Editor">Configuration Guide</a></span>. Set the interface name to the handler interface that you implemented (see <a href="javascript:WWHClickedPopup('integration', 'inbound-integration.24.4.html#2282523', '');" title="Inbound File Integration">step 10</a>).</div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="2284528">Within the Plugins registry for your handler plugin implementation, the </a><span class="cv_-_computer_voice">Name</span> field must match the <span class="cv_-_computer_voice">pluginhandler</span> parameter you use in the <span class="cv_-_computer_voice">inbound-integration-config.xml</span> file for this integration.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	11.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2282294">Add a plugin parameter with the key </a><span class="cv_-_computer_voice">integrationservice</span>. For the value, type the unique name for your integration that you used in <span class="cv_-_computer_voice">inbound-integration-config.xml</span> for this integration.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	12.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2293847">Start the server and test your new inbound integration.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="2284704">Example File Integration</a></h4>
+      <div class="B_-_Body"><a name="2284733">The following is an example file integration configuration in the </a><span class="cv_-_computer_voice">inbound-integration-config.xml</span> file:</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2284848">&lt;cii:file-integration name="exampleFileIntegration" disabled="true"&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2284849">            &lt;pluginhandler&gt;InboundFileIntegrationHandler&lt;/pluginhandler&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2284850">            &lt;pollinginterval&gt;1&lt;/pollinginterval&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2284851">            &lt;throttleinterval&gt;5&lt;/throttleinterval&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2284852">            &lt;threadpool&gt;gw_default&lt;/threadpool&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2284853">            &lt;ordered&gt;true&lt;/ordered&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2284854">            &lt;stoponerror&gt;false&lt;/stoponerror&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2284855">            &lt;transactional&gt;false&lt;/transactional&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2284856">            &lt;osgiservice&gt;true&lt;/osgiservice&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2284857">            &lt;processingmode&gt;line&lt;/processingmode&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2284858">            &lt;incoming&gt;/tmp/incoming&lt;/incoming&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2284859">            &lt;processing&gt;/tmp/processing&lt;/processing&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2284860">            &lt;error&gt;/tmp/error&lt;/error&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2284861">            &lt;done&gt;/tmp/done&lt;/done&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2284862">            &lt;charset&gt;UTF-8&lt;/charset&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2284863">            &lt;createdirectories&gt;true&lt;/createdirectories&gt;</a></PRE>
+      <div class="B_-_Body"><a name="2285164">The following is a simple handler class called </a><span class="cv_-_computer_voice">mycompany.integration.SimpleFileIntegration</span>, which prints the lines in the file:</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285494">package mycompany.integration</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285495">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285496">uses gw.plugin.integration.inbound.InboundIntegrationHandlerPlugin</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285497">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285498">class SimpleFileIntegration implements InboundIntegrationHandlerPlugin</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285499">    {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285500">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285501">  // this example assumes the inbound-integration-config.xml file</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285502">  // sets this to use "line" not "entire file" processing</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285503">  // See the &lt;processingmode&gt; element</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285504">  construct(){</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285505">    print("***************** SimpleFileIntegration startup ");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285506">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285507">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285508">  override function process(obj: Object) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285509">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285510">    // downcast as needed (to String or java.nio.file.Path, depending on value of &lt;processingmode&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285511">    var line = obj as String</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285512">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285513">    print("***************** SimpleFileIntegration processing one line of file: ${line} (!)");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2285514">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2303689">}</a></PRE>
+      <div class="B_-_Body"><a name="2303690">For this example, in the plugin registry there are two plugin implementations in the Plugins registry:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2285165">InboundFileIntegration.gwp</a></span> – Registers an implementation of <span class="cv_-_computer_voice">InboundFileIntegrationPlugin</span> with the required Java class <span class="cv_-_computer_voice">com.guidewire.pl.integration.inbound.file.DefaultFileInboundIntegrationPlugin</span>. The <span class="cv_-_computer_voice">integrationservice</span> plugin parameter is set to <span class="cv_-_computer_voice">exampleFileIntegration</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2285583">InboundFileIntegrationHandler.gwp</a></span> – Registers an implementation of <span class="cv_-_computer_voice">InboundIntegrationHandlerPlugin</span> with the Gosu class <span class="cv_-_computer_voice">mycompany.integration.SimpleFileIntegration</span>. The <span class="cv_-_computer_voice">integrationservice</span> plugin parameter is set to <span class="cv_-_computer_voice">exampleFileIntegration</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2285604">When you start up the server, you will see the log line in the console for startup:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2285715">***************** SimpleFileIntegration startup</a></div>
+      <div class="B_-_Body"><a name="2285744">After the server starts, add files to the </a><span class="cv_-_computer_voice">/tmp/incoming</span> directory. You will see additional lines for each processed line. As mentioned earlier, do not add files to the directory until after the plugin is initialized. Files that are in the incoming directory on startup are never processed.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

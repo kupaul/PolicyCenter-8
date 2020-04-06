@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Configuring Multicurrency and Reinsurance</title>
+    <link rel="StyleSheet" href="css/multicurrency_config_pc.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Configuration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-PolicyCenter.html#1123449">Guidewire PolicyCenter Configuration</a> : <a class="WebWorks_Breadcrumb_Link" href="multicurrency_config_pc.52.1.html#1123449">Configuring Multicurrency</a> : Configuring Multicurrency and Reinsurance</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1123449">Configuring Multicurrency and Reinsurance</a></h3>
+      <div class="B_-_Body"><a name="1174277">PolicyCenter attaches a reinsurance program to a risk in a policy if the </a><span class="e_-_emphasis">total insured value/sum insured</span> (TIV/SI) for that risk has the same currency as the risk. In the base configuration, the TIV/SI currency is the currency associated with the jurisdiction of the risk. Through configuration, you can modify how PolicyCenter chooses the TIV/SI currency.</div>
+      <div class="B_-_Body"><a name="1140788">The reinsurance currency is independent of the coverage and settlement currencies. In the base configuration, PolicyCenter sets the reinsurance currency to the currency specified for the coverable’s jurisdiction in the </a><span class="cv_-_computer_voice">ReinsuranceConfigPlugin</span> plugin. This plugin implements the <span class="cv_-_computer_voice">IReinsuranceConfigPlugin</span> plugin interface. The plugin calculates the TIV/SI based on the coverage currency. If the coverage currency differs from the reinsurance currency, the plugin converts the TIV/SI to the reinsurance currency. The <span class="cv_-_computer_voice">Reinsurable</span> object stores the TIV/SI (<span class="cv_-_computer_voice">TotalInsuredValue</span>) and reinsurance currency (<span class="cv_-_computer_voice">ReinsuranceCurrency</span>). The <span class="cv_-_computer_voice">Reinsurable</span> is then used to create the reinsurable risk (<span class="cv_-_computer_voice">RIRisk</span>) objects. If an appropriate reinsurance program is available, PolicyCenter attaches the program to the reinsurable risk. The program has the same currency as the reinsurable risk. </div>
+      <div class="B_-_Body"><a name="1123451">In the </a><span class="cv_-_computer_voice">ReinsuranceConfigPlugin</span> plugin, the <span class="cv_-_computer_voice">getReinsuranceCurrency</span> method returns the currency that the <span class="cv_-_computer_voice">RIRisk</span> uses for TIV/SI. To change how PolicyCenter selects the reinsurance currency, you can override this method.</div>
+      <div class="B_-_Body"><a name="1123452">The input parameter to the </a><span class="cv_-_computer_voice">getReinsuranceCurrency</span> method is a list of all the coverages associated with a single <span class="cv_-_computer_voice">ReinsurableCoverable</span>. The <span class="cv_-_computer_voice">PolicyPeriodBaseEnhancement</span> Gosu class calls this method when creating <span class="cv_-_computer_voice">Reinsurables</span>. In the base configuration, the method gets the jurisdiction specified in the <span class="cv_-_computer_voice">Coverable.CoverableState</span> property and looks up the currency associated with that jurisdiction. That mapping is returned by the <span class="cv_-_computer_voice">RegionCurrencyMappingUtil</span> class and configured through the <span class="cv_-_computer_voice">Country</span>, <span class="cv_-_computer_voice">Jurisdiction</span>, <span class="cv_-_computer_voice">State</span>, and <span class="cv_-_computer_voice">Currency</span> typelists. </div>
+      <div class="B_-_Body"><a name="1123453">The reinsurance program and reinsurance contract entities, </a><span class="cv_-_computer_voice">RIProgram</span> and <span class="cv_-_computer_voice">RIAgreement</span> respectively, delegate to the reinsurance contract entity, <span class="cv_-_computer_voice">RIContract</span>. The <span class="cv_-_computer_voice">RIContract</span> entity has a non-nullable currency property, <span class="cv_-_computer_voice">Currency</span>, that the <span class="cv_-_computer_voice">RIProgram</span> and <span class="cv_-_computer_voice">RIAgreement</span> entities implement. The program and agreements associated with the program must have the same currency.</div>
+      <div class="B_-_Body"><a name="1136709">When PolicyCenter attaches an </a><span class="cv_-_computer_voice">RIProgram</span> or an <span class="cv_-_computer_voice">RIAgreement</span> to an <span class="cv_-_computer_voice">RIRisk</span>, the <span class="cv_-_computer_voice">Currency</span> properties must match.</div>
+      <div class="B_-_Body"><a name="1175555">The Premium Ceding batch process runs and calls the </a><span class="cv_-_computer_voice">PCCedingCalculator</span> class to process premium transactions. This class does the conversion from the reinsurance currency to the settlement currency.</div>
+      <h6 class="HS_-_Head_Sub"><a name="1174951">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'reinsurance-integration.29.7.html#2234886', '');" title="Reinsurance Configuration Plugin" name="1174975">“Reinsurance Configuration Plugin” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('integration', 'reinsurance-integration.29.7.html#2234886', '');" title="Reinsurance Configuration Plugin">Integration Guide</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1174609">Reinsurance Objects and Multicurrency</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1174610">The following illustration shows some of the multicurrency properties on reinsurance objects.</a></div>
+      <div class="F_-_Figure"><a name="1123457"><img class="Default" src="images/multicurrency_config_pc.52.5.1.png" style="display: block; float: none; left: 0.0; top: 0.0" alt="" /></a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

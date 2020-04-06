@@ -1,0 +1,1689 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Implementing the Billing System Plugin</title>
+    <link rel="StyleSheet" href="css/billing-pc.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-pc-suite.html#3461891">Billing, Claim, and Contact Integrations</a> : <a class="WebWorks_Breadcrumb_Link" href="billing-pc.33.01.html#3461891">Billing Integration</a> : Implementing the Billing System Plugin</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="3461891">Implementing the Billing System Plugin</a></h3>
+      <div class="B_-_Body"><a name="3461892">If you want to use a billing system other than BillingCenter, create your own class that implements the billing system plugin interface: </a><span class="cv_-_computer_voice">IBillingSystemPlugin</span>. The billing system plugin is the main interface between PolicyCenter and its billing system. For a comparison of the billing system plugin and the billing summary plugin, see <a href="javascript:WWHClickedPopup('integration', 'billing-pc.33.02.html#3423502', '');" title="Billing Integration Overview">“Billing Integration Overview”</a>.</div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3456648">If you use BillingCenter, the built-in plugin implementation handles these tasks. Skip this topic altogether, and see the </a><a href="javascript:WWHClickedPopup('install', 'postinstall.7.12.html#2588383', '');" title="Enabling Integration between BillingCenter and PolicyCenter">“Enabling Integration between BillingCenter and PolicyCenter” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('install', 'postinstall.7.12.html#2588383', '');" title="Enabling Integration between BillingCenter and PolicyCenter">Installation Guide</a></span>.</div>
+      <div class="B_-_Body"><a name="3456652">Your plugin implementation must implement all the methods defined by the plugin interface. This plugin handles a wide variety of billing-related tasks:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'billing-pc.33.17.html#3462890', '');" title="Implementing the Billing System Plugin" name="3412013">“Account Management”</a> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'billing-pc.33.17.html#3411198', '');" title="Implementing the Billing System Plugin" name="3412048">“Policy Period Management”</a> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'billing-pc.33.17.html#3428536', '');" title="Implementing the Billing System Plugin" name="3412129">“Producer Management”</a> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'billing-pc.33.17.html#3413151', '');" title="Implementing the Billing System Plugin" name="3412164">“Billing System Notifications of PolicyCenter Policy Actions”</a> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'billing-pc.33.17.html#3411349', '');" title="Implementing the Billing System Plugin" name="3412195">“Agency Bill Plan Availability Retrieval”</a> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'billing-pc.33.17.html#3411359', '');" title="Implementing the Billing System Plugin" name="3412264">“Commission Plan Management”</a> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'billing-pc.33.17.html#3411369', '');" title="Implementing the Billing System Plugin" name="3412295">“Installment Previews”</a> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'billing-pc.33.17.html#3416757', '');" title="Implementing the Billing System Plugin" name="3412326">“Payment Plans and Installment Previews”</a> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'billing-pc.33.17.html#3411584', '');" title="Implementing the Billing System Plugin" name="3412372">“Updating Contacts”</a> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3415205">The most important thing to know about implementing the billing system plugin is that PolicyCenter billing requests typically happen asynchronously. The typical flow of a billing request is as follows:</a></div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="3415238">A user changes something in PolicyCenter. This causes a messaging event to fire. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="3418582">This might happen because of a custom messaging event that some code triggers. For example, completing a policy change. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="3418601">This might happen due to automatic messaging events that trigger because of changes in Guidewire entities (for example, </a><span class="cv_-_computer_voice">PolicyPeriod</span> or <span class="cv_-_computer_voice">Contact</span>).</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3415258">As a consequence, PolicyCenter rule sets trigger.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3415265">The Event Fired rules detect what changed and creates event messages representing what type of change happened and submits them to the messaging event queue.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3415279">As the bundle for the original change commits, the messages commit to the database.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3415286">In a separate task on the batch server only, messaging plugins send messages. In the case of billing, message transports specific to billing attempt to send each message. The way it sends a message is to call methods on the currently enabled </a><span class="cv_-_computer_voice">IBillingSystemPlugin</span> plugin implementation.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3415335">Your billing system plugin method must perform its task synchronously with respect to the caller of the plugin method. However, the call typically happens inside messaging transport code, which runs asynchronously with respect to the original change in the PolicyCenter user interface and the application database.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="3415364">Your billing system plugin code is called as part of an asynchronous task that the messaging system manages. It is not called as part of the original database transaction for the change that triggers the call to the billing system.</a></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	7.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3462888">Your plugin code must always act on the </a><span class="cv_-_computer_voice">PolicyPeriod</span> passed to it. Because this is asynchronous, theoretically multiple changes might happen to a policy before all the messages are processed by the messaging system. By the time your plugin is called, it might actually not be the most recently bound version of the policy. However, you must always handle the requests in the order you receive them. Just use the <span class="cv_-_computer_voice">PolicyPeriod</span> reference that is the method parameter, and it is possible you might get additional updates or changes in future calls to your plugin.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h6 class="HS_-_Head_Sub"><a name="3462895">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'billing-pc.33.03.html#3452139', '');" title="How Billing Data Flows Between Applications" name="3508195">“Asynchronous Communication”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="3462890">Account Management</a></h4>
+      <div class="B_-_Body"><a name="3412400">The billing system plugin has several methods related to accounts. </a></div>
+      <div class="B_-_Body"><a name="3412481">Your </a><span class="cv_-_computer_voice">createAccount</span> method tells your billing system to create an account associated with the policy period for a particular transaction. As a method parameter, this plugin method gets the PolicyCenter <span class="cv_-_computer_voice">Account</span> entity that represents the new account. The <span class="cv_-_computer_voice">Account</span> entity properties contain the data for the new billing system account. </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3462926">PolicyCenter always calls this method asynchronously with respect to the user interface. The messaging code calls out to the plugin.</a></div>
+      <div class="B_-_Body"><a name="3430368">Use the account number of an account, not its public ID, to uniquely identify the account in both systems. The method contains a second parameter, which is the billing system transaction ID. </a></div>
+      <div class="B_-_Body"><a name="3625075">The transaction ID is a identifier that PolicyCenter creates. Your plugin must track this billing system transaction ID. If PolicyCenter requests the same transaction ID twice, the billing system or your plugin that represents it must detect that PolicyCenter requested it twice. If you receive the same transaction ID more than once, you must ignore the duplicate requests.</a></div>
+      <div class="B_-_Body"><a name="3430898">Your implementation of the </a><span class="cv_-_computer_voice">updateAccount</span> method likely is similar to your <span class="cv_-_computer_voice">createAccount</span> method. It takes the same method parameters, an <span class="cv_-_computer_voice">Account</span> entity and a transaction public ID <span class="cv_-_computer_voice">String</span>. However, instead of creating a new account, PolicyCenter calls this method to notify the billing system that some account information changed. Use the current properties on the Account entity to update the billing system version of the account. Use the account’s public ID (the <span class="cv_-_computer_voice">PublicID</span> property) to uniquely identify the account in both systems.</div>
+      <div class="B_-_Body"><a name="3412782">Your </a><span class="cv_-_computer_voice">accountExists</span> method asks your billing system whether an account exists, based on the account number. Return <span class="cv_-_computer_voice">true</span> if it exists, otherwise return <span class="cv_-_computer_voice">false</span>. PolicyCenter does not track whether the billing system already knows about an account, so it always asks and then creates it if necessary.</div>
+      <h4 class="H2_-_Heading_2"><a name="3411198">Policy Period Management</a></h4>
+      <div class="B_-_Body"><a name="3412795">The billing system plugin has several methods related to policy periods. </a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3413233">New Policy Periods</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3463104">Your plugin’s </a><span class="cv_-_computer_voice">createPolicyPeriod</span> method tells your billing system to create a policy period associated with a particular transaction. As a method parameter, this plugin method gets the PolicyCenter <span class="cv_-_computer_voice">PolicyPeriod</span> entity that represents data in the new policy period. However, the billing system view of a policy period typically is significantly simpler than the PolicyCenter view of it. </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3463115">PolicyCenter always calls this method asynchronously with respect to the user interface. The messaging code calls out to the plugin.</a></div>
+      <div class="B_-_Body"><a name="3463134">Use the policy period’s policy number and term number to uniquely identify the policy period in both systems. The method contains a second parameter, which is the billing system transaction ID. </a></div>
+      <div class="B_-_Body"><a name="3625081">The transaction ID is a identifier that PolicyCenter creates. Your plugin must track this billing system transaction ID. If PolicyCenter requests the same transaction ID twice, the billing system or your plugin that represents it must detect that PolicyCenter requested it twice. If you receive the same transaction ID more than once, you must ignore the duplicate requests.</a></div>
+      <div class="B_-_Body"><a name="3418697">If you have any data model extension properties on the PolicyCenter version of </a><span class="cv_-_computer_voice">PolicyPeriod</span>, consider whether any are appropriate for your billing system.</div>
+      <div class="B_-_Body"><a name="3418339">PolicyCenter calls this method as part of binding a new policy:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3465234">If you perform a bind and issue as one user interface action, PolicyCenter calls </a><span class="cv_-_computer_voice">createPolicyPeriod</span> only. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3418368">If you perform just a bind in the user interface, PolicyCenter simply creates the new </a><span class="cv_-_computer_voice">PolicyPeriod</span> locally and then calls the billing system plugin <span class="cv_-_computer_voice">createPolicyPeriod</span> method. For an issuance request that occurs&nbsp;later, PolicyCenter calls the plugin’s <span class="cv_-_computer_voice">issuePolicyChange</span> method. For more information about <span class="cv_-_computer_voice">issuePolicyChange</span>, see <a href="javascript:WWHClickedPopup('integration', 'billing-pc.33.17.html#3413151', '');" title="Implementing the Billing System Plugin">“Billing System Notifications of PolicyCenter Policy Actions”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3413247">Cancellation and Reinstatement</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3413490">PolicyCenter starts some types of cancellations:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3413399">Cancellation as part of a rewrite request.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3413400">Cancellation at the insured’s request</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3413401">Cancellation due to the insured lied in their application or violated the contract</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3413402">Cancellation because the insured chooses not to take a renewal and the renewal might already be bound</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3413005">To the billing integration code, all these cases are the same.</a></div>
+      <div class="B_-_Body"><a name="3465269">Your </a><span class="cv_-_computer_voice">IBillingSystemPlugin</span> plugin must handle these types of cancellations. </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3465282">PolicyCenter always calls this method asynchronously with respect to the user interface. The messaging code calls out to the plugin.</a></div>
+      <div class="B_-_Body"><a name="3465283">There are other types of cancellations that the billing system starts. For example, cancellation for non-payment. If the billing system detects overdue invoices, the billing system starts a delinquency process and eventually tells PolicyCenter to cancel the policy. However, the billing information flow is independent of which system starts the cancellation. In other words, whenever the cancellation completes, PolicyCenter sends the billing implications to BillingCenter.</a></div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3465322">BillingCenter starts cancellation by calling PolicyCenter web services. For more information, see </a><a href="javascript:WWHClickedPopup('integration', 'webservices-policy.12.04.html#3411322', '');" title="Policy Cancellation and Reinstatement Web Services">“Policy Cancellation and Reinstatement Web Services”</a>. </div>
+      <div class="B_-_Body"><a name="3413479">If you implement the </a><span class="cv_-_computer_voice">IBillingSystemPlugin</span> plugin, your plugin’s <span class="cv_-_computer_voice">cancelPolicyPeriod</span> method notifies your billing system of a policy cancellation. This method’s parameters are a policy period (as a <span class="cv_-_computer_voice">PolicyPeriod</span> entity) and a billing system transaction ID. </div>
+      <div class="B_-_Body"><a name="3625087">The transaction ID is a identifier that PolicyCenter creates. Your plugin must track this billing system transaction ID. If PolicyCenter requests the same transaction ID twice, the billing system or your plugin that represents it must detect that PolicyCenter requested it twice. If you receive the same transaction ID more than once, you must ignore the duplicate requests.</a></div>
+      <div class="B_-_Body"><a name="3418774">It is important to understand that PolicyCenter calls </a><span class="cv_-_computer_voice">cancelPolicyPeriod</span> for the actual cancellation. Cancellation can often be a complex process typically with legally-required notification delays. PolicyCenter does not call <span class="cv_-_computer_voice">cancelPolicyPeriod</span> at the time of a request to initiate cancellation. Instead, PolicyCenter calls this method after binding the cancellation transaction. Typically this plugin method sends a cancellation billing instruction or equivalent command to your billing system in whatever way is appropriate. This method returns no value. </div>
+      <div class="B_-_Body"><a name="3413700">To support reinstatement, your plugin’s </a><span class="cv_-_computer_voice">issueReinstatement</span> method notifies your billing system of a policy reinstatement. It takes the same arguments as <span class="cv_-_computer_voice">cancelPolicyPeriod</span> and returns no value.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3413267">Rewrite</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3462972">Your plugin must also prepare for a policy rewrite request and send that information to your billing system. PolicyCenter calls the </a><span class="cv_-_computer_voice">rewritePolicyPeriod</span> method to rewrite the policy period and <span class="cv_-_computer_voice">rewritePolicyPeriod</span> must send that information to your billing system. Its two method parameters are a policy period (<span class="cv_-_computer_voice">PolicyPeriod</span>) and a billing system transaction ID. </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3462986">PolicyCenter always calls this method asynchronously with respect to the user interface. The messaging code calls out to the plugin.</a></div>
+      <div class="B_-_Body"><a name="3625093">The transaction ID is a identifier that PolicyCenter creates. Your plugin must track this billing system transaction ID. If PolicyCenter requests the same transaction ID twice, the billing system or your plugin that represents it must detect that PolicyCenter requested it twice. If you receive the same transaction ID more than once, you must ignore the duplicate requests.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="3463047">Get Period Information from Billing System</a></h4>
+      <div class="B_-_Body"><a name="3414007">Your plugin must also be able to retrieve billing information to deliver to PolicyCenter whenever PolicyCenter needs the information. If PolicyCenter needs billing information, it calls this plugin’s </a><span class="cv_-_computer_voice">getPeriodInfo</span> method. This method is notably different from most other methods because PolicyCenter always calls this method synchronously with respect to the user interface. </div>
+      <div class="B_-_Body"><a name="3463011">Your plugin must retrieve this information from the billing system and encapsulate this information in a </a><span class="cv_-_computer_voice">PolicyPeriodBillingInfo</span> object.</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3418806">In Gosu, the fully-qualified class name of this class is </a><span class="cv_-_computer_voice">gw.api.billing.PolicyPeriodBillingInfo</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3418807">In Java, the fully-qualified class name of this class is </a><span class="cv_-_computer_voice">external.gw.api.billing.PolicyPeriodBillingInfo</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3418782">PolicyCenter uses this information as part of performing renewal. PolicyCenter tries to preserve the billing information for the period for the renewal period.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="3413151">Billing System Notifications of PolicyCenter Policy Actions</a></h4>
+      <div class="B_-_Body"><a name="3414092">There are various user actions in PolicyCenter that might have implications for an external billing system. For example, a policy change might change the premium for a billing account. PolicyCenter calls various methods for each action, and your plugin must notify the billing system to take the appropriate action.</a></div>
+      <div class="B_-_Body"><a name="3414114">Your plugin might simply populate properties in an object that represents the policy period and recent changes. Then, send that request to your billing system in a web service request. This is what the built-in billing system plugin does to notify Guidewire BillingCenter.</a></div>
+      <div class="B_-_Body"><a name="3414134">If you do not use BillingCenter, you must handle all of the events listed in the following table. This table includes the following information:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3414218">A PolicyCenter action.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3414219">The corresponding </a><span class="cv_-_computer_voice">IBillingSystemPlugin</span> method that PolicyCenter calls for this action.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3418116">A description of the action.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3418117">All methods take the same parameters: a policy period (</a><span class="cv_-_computer_voice">PolicyPeriod</span>) and a billing system transaction ID. </div>
+      <div class="B_-_Body"><a name="3625099">The transaction ID is a identifier that PolicyCenter creates. Your plugin must track this billing system transaction ID. If PolicyCenter requests the same transaction ID twice, the billing system or your plugin that represents it must detect that PolicyCenter requested it twice. If you receive the same transaction ID more than once, you must ignore the duplicate requests.</a></div>
+      <div class="B_-_Body"><a name="3419774">For each of the following actions, you probably need to send the following basic policy period data:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3419775">period.PeriodId.Value</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3419776">period.PolicyNumber</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3419777">period.EditEffectiveDate.toCalendar()</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3419778">ChargeInfoUtil.getChargeInfos(period)</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3420313">For some actions, the following table lists additional properties you might want to send to your billing system and other important information about each method.</a></div>
+      <div class="T_-_Table"><a name="3428533">&nbsp;</a></div>
+      <table class="withHeading" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="3428460">Action</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="3428462">Method name</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="3428464">Description</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3428466">policy&nbsp;change</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3428468">issuePolicyChange</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3428470">Issue a policy change in the billing system. It is important to understand that PolicyCenter does not notify the billing system about all changes to the policy. Specifically, PolicyCenter notifies the billing system about the following policy changes:</a></div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3428471">Premium changes</a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3428472">Base state changes</a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3428473">Primary insured changes</a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="TT_-_Table_Text"><a name="3428474">In addition to basic policy period data (see note before this table), you will probably need to send the following policy period data:</a></div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt; margin-bottom: 0.0pt; margin-top: 0.0pt; vertical-align: baseline">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap; color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cvt_-_computer_voice_table"><a name="3428475">period.PolicyChange.Description</a></span></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt; margin-bottom: 0.0pt; margin-top: 0.0pt; vertical-align: baseline">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap; color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cvt_-_computer_voice_table"><a name="3428476">period.BaseState.Code</a></span></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt; margin-bottom: 0.0pt; margin-top: 0.0pt; vertical-align: baseline">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap; color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cvt_-_computer_voice_table"><a name="3428477">period.PeriodStart.toCalendar()</a></span></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt; margin-bottom: 0.0pt; margin-top: 0.0pt; vertical-align: baseline">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap; color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cvt_-_computer_voice_table"><a name="3428478">period.PeriodEnd.toCalendar()</a></span></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><span class="cvt_-_computer_voice_table"><a name="3428479">period.PrimaryNamedInsured.AccountContactRole.AccountContact.Contact</a></span> (a <span class="cvt_-_computer_voice_table">Contact</span> entity)</div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3428481">issuance</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3428483">issuePolicyChange</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3428485">PolicyCenter also calls the </a><span class="cvt_-_computer_voice_table">issuePolicyChange</span> method for Issuance as well as policy changes. It is important to understand that PolicyCenter does not call this as part of the bind process, but calls it for issuance if it happens as a separate action. If the user performs just a bind, PolicyCenter simply creates the new <span class="cvt_-_computer_voice_table">PolicyPeriod</span> locally and then calls the billing system <span class="cvt_-_computer_voice_table">createPolicyPeriod</span> method (see <a href="javascript:WWHClickedPopup('integration', 'billing-pc.33.17.html#3413233', '');" title="Implementing the Billing System Plugin">“New Policy Periods”</a>). If the user performs a bind and issue as one user interface action, PolicyCenter calls <span class="cvt_-_computer_voice_table">createPolicyPeriod</span> only. If the user performs bind only, then PolicyCenter calls <span class="cvt_-_computer_voice_table">createPolicyPeriod</span> only. Any issuance request that occurs later results in PolicyCenter calling <span class="cvt_-_computer_voice_table">issuePolicyChange</span>.</div>
+            <div class="TT_-_Table_Text"><a name="3428489">See the Policy Change row for properties you might want to send to your billing system.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3428491">premium&nbsp;report</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3428493">issuePremiumReport</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3428495">Issue a Premium Report in Billing System</a></div>
+            <div class="TT_-_Table_Text"><a name="3428496">In addition to basic policy period data (see note before this table), you will probably need to send the following policy period data:</a></div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt; margin-bottom: 0.0pt; margin-top: 0.0pt; vertical-align: baseline">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap; color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cvt_-_computer_voice_table"><a name="3428497">period.Audit.AuditInformation</a></span></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt; margin-bottom: 0.0pt; margin-top: 0.0pt; vertical-align: baseline">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap; color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cvt_-_computer_voice_table"><a name="3428498">period.Audit.AuditInformation.AuditPeriodEndDate.toCalendar()</a></span></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt; margin-bottom: 0.0pt; margin-top: 0.0pt; vertical-align: baseline">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap; color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cvt_-_computer_voice_table"><a name="3428499">period.Audit.AuditInformation.AuditPeriodStartDate.toCalendar()</a></span></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt; margin-bottom: 0.0pt; margin-top: 0.0pt; vertical-align: baseline">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap; color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cvt_-_computer_voice_table"><a name="3428500">period.Audit.PaymentReceived</a></span></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3428502">renew</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3428504">renewPolicyPeriod</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3428506">Renew a policy period in Billing System. This plugin only notifies the billing system. This plugin does not change the fundamental logic within PolicyCenter for how a policy renews.</a></div>
+            <div class="TT_-_Table_Text"><a name="3428507">In addition to basic policy period data (see note before this table), you will probably need to send the following policy period data:</a></div>
+            <div class="TT_-_Table_Text"><a name="3428508">See the Policy Change row for properties you might want to send to your billing system.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3428510">final&nbsp;audit</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3428512">issueFinalAudit</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3428514">Issue a Final Audit in Billing System. You might need only the basic policy period data to send to the billing system. See the note before this table for the property list.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3428516">schedule&nbsp;final&nbsp;audit</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3428518">scheduleFinalAudit</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3428520">Schedule a final audit on a policy period in your billing system.</a></div>
+            <div class="TT_-_Table_Text"><a name="3428521">In addition to basic policy period data (see note before this table), you will probably need to send the following policy period data:</a></div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt; margin-bottom: 0.0pt; margin-top: 0.0pt; vertical-align: baseline">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap; color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cvt_-_computer_voice_table"><a name="3428522">period.PolicyNumber</a></span></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt; margin-bottom: 0.0pt; margin-top: 0.0pt; vertical-align: baseline">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap; color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cvt_-_computer_voice_table"><a name="3428523">period.PeriodId.Value</a></span></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3428525">waive&nbsp;final&nbsp;audit</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3428527">waiveFinalAudit</a></span></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3428529">Schedule a final audit on a policy period in your billing system. You might need only the basic policy period data to send to the billing system. See the note before this table for the property list.</a></div>
+            <div class="TT_-_Table_Text"><a name="3428530">In addition to basic policy period data (see note before this table), you will probably need to send the following policy period data:</a></div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt; margin-bottom: 0.0pt; margin-top: 0.0pt; vertical-align: baseline">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap; color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cvt_-_computer_voice_table"><a name="3428531">period.PolicyNumber</a></span></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt; margin-bottom: 0.0pt; margin-top: 0.0pt; vertical-align: baseline">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap; color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cvt_-_computer_voice_table"><a name="3428532">period.PeriodId.Value</a></span></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </tr>
+      </table>
+      <h4 class="H2_-_Heading_2"><a name="3428536">Producer Management</a></h4>
+      <div class="B_-_Body"><a name="3428537">PolicyCenter tracks various types of organizations with the Organization entity. Every organization has an organization type in its </a><span class="cv_-_computer_voice">OrganizationType</span> property, which holds a typecode. If the typecode of the organization type has the category (the <span class="cv_-_computer_voice">Category</span> property) called <span class="cv_-_computer_voice">Producer</span>, PolicyCenter considers this an external producer that has a corresponding entity in the billing system. PolicyCenter sends all new or changed producer organization records to the billing system. This includes PolicyCenter organizations such as Agency, Broker, or Managing General Agent.</div>
+      <div class="B_-_Body"><a name="3418897">Your billing system might use different terminology for this category of organization. For the purposes of the billing system integration, PolicyCenter and its documentation considers these </a><span class="e_-_emphasis">producers</span>. </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3415026">Producers</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3414780">To accommodate new producers, implement the </a><span class="cv_-_computer_voice">createProducer</span> method, which takes as arguments the <span class="cv_-_computer_voice">Organization</span> entity and the billing system transaction ID. </div>
+      <div class="B_-_Body"><a name="3625105">The transaction ID is a identifier that PolicyCenter creates. Your plugin must track this billing system transaction ID. If PolicyCenter requests the same transaction ID twice, the billing system or your plugin that represents it must detect that PolicyCenter requested it twice. If you receive the same transaction ID more than once, you must ignore the duplicate requests.</a></div>
+      <div class="B_-_Body"><a name="3431084">Your method must return the billing system version of the public ID for this </a><span class="cv_-_computer_voice">Organization</span>. Your method implementation must notify the external system of the new producer in whatever way is appropriate. </div>
+      <div class="B_-_Body"><a name="3415005">Your code would typically use the following </a><span class="cv_-_computer_voice">Organization</span> entity properties:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="3414920">Name</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="3414930">AgencyBillPlanID</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="3414939">PublicID</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="3414889">Tier.Code</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3414891">Contact</a></span> (copy all the properties on the <span class="cv_-_computer_voice">Contact</span> entity for this producer)</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3415044">Your code might use additional properties on </a><span class="cv_-_computer_voice">Organization</span>.</div>
+      <div class="B_-_Body"><a name="3415057">You also must prepare for changes to the producer within PolicyCenter. If it changes, PolicyCenter calls the billing system plugin to send updates to the billing system. Implement the </a><span class="cv_-_computer_voice">updateProducer</span> similar to your <span class="cv_-_computer_voice">createProducer</span> method. It takes the same parameters but return nothing. Use the PolicyCenter public ID to identify the producer in the external system.</div>
+      <div class="B_-_Body"><a name="3415711">You also must implement the simple method </a><span class="cv_-_computer_voice">producerExists</span>. It takes a producer public ID and returns <span class="cv_-_computer_voice">true</span> or <span class="cv_-_computer_voice">false</span> to indicate if the producer exists in the billing system.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3414839">Producer Codes</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3415491">Your plugin must also implement a method to notify the billing system of a new producer code. Implement the </a><span class="cv_-_computer_voice">createProducerCode</span> method. Its arguments are a producer code (<span class="cv_-_computer_voice">ProducerCode</span>) and a billing system transaction ID. </div>
+      <div class="B_-_Body"><a name="3625111">The transaction ID is a identifier that PolicyCenter creates. Your plugin must track this billing system transaction ID. If PolicyCenter requests the same transaction ID twice, the billing system or your plugin that represents it must detect that PolicyCenter requested it twice. If you receive the same transaction ID more than once, you must ignore the duplicate requests.</a></div>
+      <div class="B_-_Body"><a name="3431115">Your method must return the billing system version of the public ID for this producer code. </a></div>
+      <div class="B_-_Body"><a name="3415558">Your code would typically send the following </a><span class="cv_-_computer_voice">ProducerCode</span> entity properties:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="3415566">PublicID</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="3415567">Code</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="3415568">ProducerStatus</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="3415570">producerCode.Organization.PublicID</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="3415571">producerCode.CommissionPlanID</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3415629">Similarly, you must implement the </a><span class="cv_-_computer_voice">updateProducerCode</span> method, which takes the same arguments but returns nothing.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3418942">Getting Billing Methods Available for a Producer Code</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3415723">You also must implement the method </a><span class="cv_-_computer_voice">getAvailableBillingMethods</span>. It takes a producer code public ID and returns an array of <span class="cv_-_computer_voice">BillingMethod</span> entities that the producer code supports.</div>
+      <h4 class="H2_-_Heading_2"><a name="3411349">Agency Bill Plan Availability Retrieval</a></h4>
+      <div class="B_-_Body"><a name="3415766">Your billing plugin must be able to retrieve all the possible agency billing plans from your billing system. Implement the plugin method </a><span class="cv_-_computer_voice">retrieveAllAgencyBillPlans</span>, which takes no arguments. It returns an array of <span class="cv_-_computer_voice">AgencyBillPlanSummary</span> objects. </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3415869">In Gosu, the fully-qualified class name is </a><span class="cv_-_computer_voice">gw.api.billing.AgencyBillPlanSummary</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3415881">In Java, the fully-qualified class name is </a><span class="cv_-_computer_voice">external.gw.api.billing.AgencyBillPlanSummary</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3416618">This method is notably different from most other methods because PolicyCenter always calls this method synchronously with respect to the user interface. PolicyCenter uses this method to populate a drop down list for billing plans if using agency bill.</a></div>
+      <div class="B_-_Body"><a name="3463174">PolicyCenter allows the user to set this billing plan information initially only. For any later changes, you must directly change the information in the billing system.</a></div>
+      <div class="B_-_Body"><a name="3463167">Set the following properties on each </a><span class="cv_-_computer_voice">AgencyBillPlanSummary</span> object </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3416000">Name</a></span> – The name of the plan</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3416014">Id</a></span> – The ID for the plan</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="3411359">Commission Plan Management</a></h4>
+      <div class="B_-_Body"><a name="3416078">Your billing plugin must be able to retrieve all the commission plans from your billing system. Implement the plugin method </a><span class="cv_-_computer_voice">retrieveAllCommissionPlans</span>, which takes no arguments. It returns an array of <span class="cv_-_computer_voice">CommissionPlanSummary</span> objects. </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3416080">In Gosu, the fully-qualified class name is </a><span class="cv_-_computer_voice">gw.api.billing.CommissionPlanSummary</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3416081">In Java, the fully-qualified class name is </a><span class="cv_-_computer_voice">external.gw.api.billing.CommissionPlanSummary</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3463224">This method is notably different from most other methods because PolicyCenter always calls this method synchronously with respect to the user interface. PolicyCenter uses this method to populate a drop down list for commission plans if using agency bill.</a></div>
+      <div class="B_-_Body"><a name="3463225">PolicyCenter allows the user to set this commission plan information initially only. For any later changes, you must directly change the information in the billing system.</a></div>
+      <div class="B_-_Body"><a name="3416082">Set the following properties on each </a><span class="cv_-_computer_voice">CommissionPlanSummary</span> object </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3416083">Name</a></span> – The name of the plan</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3416084">Id</a></span> – The ID for the plan</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3416187">AllowedTiers</a></span> – An array of <span class="cv_-_computer_voice">Tier</span> typecodes that this commission plan supports</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="3416757">Payment Plans and Installment Previews</a></h4>
+      <h6 class="HS_-_Head_Sub"><a name="3416758">Payment Plans</a></h6>
+      <div class="B_-_Body"><a name="3420400">Your billing plugin must be able to retrieve all the allowed payment plans from your billing system for a quoted </a><span class="cv_-_computer_voice">PolicyPeriod</span>. PolicyCenter uses this information as part of the user interface. PolicyCenter displays the list of payment plans so the user can choose one of the payment plans for PolicyCenter jobs that create a new period (submission, renewal, rewrite).</div>
+      <div class="B_-_Body"><a name="3420402">Implement the following plugin methods:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3417182">retrieveIssuancePaymentPlans</a></span> – Retrieves payment plans for a new submission</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3417183">retrieveRenewalPaymentPlans</a></span> – Retrieves payment plans for a renewal</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3417113">retrieveRewritePaymentPlans</a></span> – Retrieves payment plans for a policy rewrite</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3417114">All three methods take a </a><span class="cv_-_computer_voice">PolicyPeriod</span> entity and return an array of <span class="cv_-_computer_voice">PaymentPlanSummary</span> entities. </div>
+      <div class="B_-_Body"><a name="3417264">Set the following properties on each </a><span class="cv_-_computer_voice">PaymentPlanSummary</span> entity:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3417351">BillingId</a></span> – The ID of the plan.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3417363">Name</a></span> – The name of the plan.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3417375">PaymentCode</a></span> – The payment code of the plan.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3617858">DownPayment</a></span> – The down payment of the plan. This is the largest installment. The amount must be a <span class="cv_-_computer_voice">nonnegativemoney</span> value.<span style="font-size: 12.0pt"> </span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3617859">Installment</a></span> – The installment payment of the plan. This is the sum of the down payment and all installments combined. The amount must be a <span class="cv_-_computer_voice">nonnegativemoney</span> value.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3617860">Total</a></span> – The total payment of the plan. The amount must be a <span class="cv_-_computer_voice">nonnegativemoney</span> value.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3417565">Notes</a></span> – Notes related to the plan.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3417577">PolicyPeriod</a></span> – A foreign key reference to the related <span class="cv_-_computer_voice">PolicyPeriod</span> entity.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3417025">These methods get the summary of the allowed plans. </a></div>
+      <h6 class="HS_-_Head_Sub"><a name="3411369">Installment Previews</a></h6>
+      <div class="B_-_Body"><a name="3416237">Similar to the earlier discussion about payment plans, your billing plugin must be able to retrieve installment previews from your billing system. Installment previews are an accurate calculation of billing installments for a given policy period with a given payment plan. PolicyCenter uses this information after a user selects a payment plan to show the user what the installments to expect. It is important to understand that by the time PolicyCenter calls your plugin, the payment plan is already set.</a></div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3463304">PolicyCenter always calls this method synchronously with respect to the user interface.</a></div>
+      <div class="B_-_Body"><a name="3617882">Implement the following plugin method:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3617883">retrieveInstallmentsPlanPreview</a></span> – Retrieves previews of installments for a new policy, renewal, or policy rewrite job. This method takes a <span class="cv_-_computer_voice">PolicyPeriod</span> entity and return an array of <span class="cv_-_computer_voice">PaymentPreviewItem</span> objects. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3617884">PolicyCenter always calls this method synchronously with respect to the user interface. </a></div>
+      <div class="B_-_Body"><a name="3617890">This method takes a </a><span class="cv_-_computer_voice">PolicyPeriod</span> entity and returns an array of <span class="cv_-_computer_voice">PaymentPreviewItem</span> objects. </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3617891">In Gosu, the fully-qualified class name of this class is </a><span class="cv_-_computer_voice">gw.api.billing.PaymentPreviewItem</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3617892">In Java, the fully-qualified class name of this class is </a><span class="cv_-_computer_voice">external.gw.api.billing.PaymentPreviewItem</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3617893">Your implementation of this method must set the following properties on each </a><span class="cv_-_computer_voice">PaymentPreviewItem</span> object: </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3416651">DueDate</a></span> – The due date</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3416652">Type</a></span> – A String that represents the type of payment</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3416653">Amount</a></span> – The amount of money, as a <span class="cv_-_computer_voice">BigDecimal</span> value</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3417062">The methods described in this section get installment previews, not actual payment plans on a policy period. To get actual payment plans, see </a><a href="javascript:WWHClickedPopup('integration', 'billing-pc.33.17.html#3416758', '');" title="Implementing the Billing System Plugin">“Payment Plans”</a>.</div>
+      <h4 class="H2_-_Heading_2"><a name="3411584">Updating Contacts</a></h4>
+      <div class="B_-_Body"><span style="color: #ff00ff; font-weight: bold"><a name="3514059"> </a></span>If a contact associated with billing information changes in PolicyCenter, PolicyCenter determines what system to notify by calling the billing system plugin method <span class="cv_-_computer_voice">getCompatibilityMode</span>. If you return <span class="cv_-_computer_voice">7.0.0</span>, PolicyCenter sends contact updates to the contact system, not to the billing system. If you return <span class="cv_-_computer_voice">4.0.0</span>, PolicyCenter sends contact updates directly to the billing system.</div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="3514060">The </a><span class="cv_-_computer_voice">getCompatibilityMode</span> method determines whether PolicyCenter sends contact updates to the billing system or the external contact system. Choose carefully how you want to configure this method.</div>
+      <div class="B_-_Body"><a name="3514036">This applies to the following:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3419006">New or changed contacts for a producer</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3419038">New or changed contact for an account holder</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3419071">New or changed contacts for a policy period billing contact</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3419083">New or changed contacts for an policy period primary insured.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3419100">Changes to non-primary insured contact information does not trigger this request.</a></div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3618125">PolicyCenter always calls this method asynchronously with respect to the user interface. The messaging code calls out to the plugin.</a></div>
+      <div class="B_-_Body"><a name="3618126">Your implementation of the </a><span class="cv_-_computer_voice">updateContact</span> method must update the contact information for a <span class="cv_-_computer_voice">Contact</span> entity. The parameters to the method are a <span class="cv_-_computer_voice">Contact</span> entity and the billing system transaction ID. </div>
+      <div class="B_-_Body"><a name="3625117">The transaction ID is a identifier that PolicyCenter creates. Your plugin must track this billing system transaction ID. If PolicyCenter requests the same transaction ID twice, the billing system or your plugin that represents it must detect that PolicyCenter requested it twice. If you receive the same transaction ID more than once, you must ignore the duplicate requests.</a></div>
+      <div class="B_-_Body"><a name="3618134">Use the public ID of the contact to uniquely identify the contact in the external billing system.</a></div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3463425">If you remove a role from a contact in the built-in implementation, PolicyCenter does not notify the billing system that the contact no longer has that role. </a></div>
+      <h6 class="HS_-_Head_Sub"><a name="3485347">Other Plugin Methods</a></h6>
+      <div class="B_-_Body"><a name="3485349">There are other methods on the billing plugin interface:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3485350">addPaymentInstrumentTo</a></span> – Adds a payment instrument to an account. and return a billing system instrument. For example, an insured’s credit card number or a token that represents it in an external payment system.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3485351">getExistingPaymentInstruments</a></span> – Returns an array of billing system instruments.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3485353">searchForAccounts</a></span> – Search for accounts in the billing system using a search criteria.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span style="font-family: &quot;Lucida Sans Typewriter&quot;; font-size: 7.0pt"><a name="3485357">getInvoiceStreams</a></span> – Retrieves all invoice streams for a given account. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span style="font-family: &quot;Lucida Sans Typewriter&quot;; font-size: 7.0pt"><a name="3485359">getSubAccounts</a></span> – Retrieves all subaccounts of the account with the given account number. If the account does not exist, returns an empty array. The search for subaccounts is recursive and returns subaccounts of subaccounts also.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

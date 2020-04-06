@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  entity="AccountContactRole"
+  type="retireable"
+  desc="A role that an contact has played on an account or its policies."
+  abstract="true"
+  exportable="true"
+  final="false"
+  subpackage="account"
+  platform="false"
+  loadable="false"
+  table="accountcontactrole">
+  <implementsInterface
+    iface="gw.api.domain.account.Mergeable"
+    impl="gw.account.AccountContactRoleMergeableImpl"/>
+  <implementsInterface
+    iface="gw.api.domain.archiving.MergeableReferenceable"
+    impl="gw.account.AccountContactRoleMergeableReferenceableImpl"/>
+  <implementsInterface
+    iface="gw.api.logicalmatch.LogicalMatcher"
+    impl="gw.account.AccountContactRoleMatcher"/>
+  <implementsInterface
+    iface="gw.api.domain.account.AccountContactRoleMethods"
+    impl="gw.api.domain.account.AccountContactRoleMethodsDefaultImpl"/>
+  <implementsEntity
+    name="Referenceable"/>
+  <foreignkey
+    name="AccountContact"
+    desc="The account contact that plays this role."
+    fkentity="AccountContact"
+    nullok="false"/>
+  <array
+    name="Replaces"
+    desc="The roles that this AccountContactRole has replaced through merges"
+    arrayentity="AccountContactRoleReplacement"
+    setterScriptability="hidden"
+    exportable="false"
+    cascadeDelete="true"/>
+  <index
+    name="acctcontsubtypeu"
+    desc="Ensures that an AccountContact has only one role of a specific subtype."
+    unique="true">
+    <indexcol
+      name="AccountContact"
+      keyposition="1"/>
+    <indexcol
+      name="Retired"
+      keyposition="2"/>
+    <indexcol
+      name="Subtype"
+      keyposition="3"/>
+  </index>
+</entity>

@@ -1,0 +1,206 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    afterCancel="PolicyFileForward.go(policyPeriod, asOfDate, &quot;PolicySummary&quot;)"
+    afterCommit="PolicyFileForward.go(policyPeriod, asOfDate, &quot;PolicySummary&quot;)"
+    beforeCommit="createCustomHistoryEvent()"
+    canEdit="perm.System.editprerenewal and policyPeriod.Policy.OpenRenewalJob == null"
+    canVisit="perm.System.viewprerenewal and perm.PolicyPeriod.view(policyPeriod)"
+    id="PreRenewalDirectionPage"
+    parent="PolicyFile(policyPeriod, asOfDate)"
+    title="displaykey.Web.PreRenewalDirection">
+    <LocationEntryPoint
+      signature="PreRenewalDirectionPage(policyPeriod : PolicyPeriod, policy : Policy, asOfDate : DateTime)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="policy"
+      type="Policy"/>
+    <Variable
+      name="asOfDate"
+      type="DateTime"/>
+    <Variable
+      initialValue="policyPeriod.PolicyTerm"
+      name="policyTerm"
+      type="PolicyTerm"/>
+    <Variable
+      initialValue="new String[]{&quot;&quot;}"
+      name="descriptions"
+      type="String[]"/>
+    <Variable
+      initialValue="policyTerm.PreRenewalDirection"
+      name="originalPreRenewalDirection"
+      type="typekey.PreRenewalDirection"/>
+    <Variable
+      initialValue="policyTerm.NonRenewReason"
+      name="originalNonRenewReason"
+      type="typekey.NonRenewalCode"/>
+    <Variable
+      initialValue="createPreRenewalNote()"
+      name="note"
+      type="Note"/>
+    <Screen
+      id="PreRenewalDirectionScreen">
+      <TitleBar
+        title="displaykey.Web.PreRenewalDirection.ScreenTitle(util.StringUtil.formatDate(policyPeriod.PeriodStart, &quot;short&quot;), util.StringUtil.formatDate(policyPeriod.PeriodEnd, &quot;short&quot;))"/>
+      <Toolbar>
+        <EditButtons/>
+        <ToolbarButton
+          action="removePrerenewal()"
+          confirmMessage="displaykey.Web.PreRenewalDirection.ConfirmDelete"
+          hideIfEditable="true"
+          id="PreRenewalDirectionScreen_DeleteButton"
+          label="displaykey.Web.PreRenewalDirection.Delete"
+          visible="originalPreRenewalDirection != null and policyPeriod.Policy.OpenRenewalJob == null and perm.System.editprerenewal"/>
+        <ToolbarDivider/>
+        <ToolbarButton
+          action="PreRenewalNotesPage.push(policyPeriod, &quot;prerenewal&quot;, asOfDate)"
+          id="PreRenewalDirectionScreen_ViewNotesButton"
+          label="displaykey.Web.PreRenewalDirection.ViewNotes"/>
+      </Toolbar>
+      <PanelRow>
+        <PanelColumn
+          id="PrerenewalPanelColumn">
+          <DetailViewPanel>
+            <InputColumn>
+              <Label
+                label="displaykey.Web.PreRenewalDirection.Details"/>
+              <TypeKeyInput
+                editable="true"
+                filter="filterPreRenewalDirection(VALUE)"
+                id="PreRenewalDirection"
+                label="displaykey.Web.PreRenewalDirection.Direction"
+                required="true"
+                value="policyTerm.PreRenewalDirection">
+                <PostOnChange
+                  onChange="descriptions[0] = descriptions[0] + policyTerm.createPreRenewalDirectionHistoryDescription(originalPreRenewalDirection) + &quot; &quot;"/>
+              </TypeKeyInput>
+              <RangeInput
+                editable="true"
+                id="PreRenewalOwner"
+                label="displaykey.Web.PreRenewalDirection.AssignTo"
+                onPick="policy.PreRenewalOwner = PickedValue as gw.api.assignment.Assignee"
+                required="true"
+                sortValueRange="false"
+                value="policy.PreRenewalOwner"
+                valueRange="policy.getSuggestedPreRenewalOwners(policyTerm.PreRenewalDirection)"
+                visible="policyTerm.PreRenewalDirection==&quot;nonrenewrefer&quot; or policyTerm.PreRenewalDirection==&quot;underwriter&quot; or policyTerm.PreRenewalDirection==&quot;assistant&quot; or policyTerm.PreRenewalDirection==&quot;custrep&quot;">
+                <MenuItem
+                  action="AssigneePickerPopup.push( new gw.assignment.UserAssigneePicker() )"
+                  icon="&quot;search.png&quot;"
+                  id="AssigneePicker"/>
+                <PostOnChange
+                  onChange="descriptions[0] = descriptions[0] + policyTerm.createPreRenewalAssignmentHistoryDescription(policy.getUserRoleAssignmentByRole(typekey.UserRole.TC_PRERENEWALOWNER)) + &quot; &quot;"/>
+              </RangeInput>
+              <Input
+                editable="true"
+                id="NonRenewReason"
+                label="displaykey.Web.PreRenewalDirection.NonRenewReason"
+                required="true"
+                value="policyTerm.NonRenewReason"
+                visible="policyTerm.PreRenewalDirection==&quot;nonrenew&quot; or policyTerm.PreRenewalDirection==&quot;nonrenewrefer&quot;">
+                <PostOnChange
+                  onChange="descriptions[0] = descriptions[0] + policyTerm.createNonRenewalReasonHistoryDescription(originalNonRenewReason) + &quot; &quot;"/>
+              </Input>
+              <TextAreaInput
+                editable="true"
+                id="NonRenewAddExpl"
+                label="displaykey.Web.PreRenewalDirection.NonRenewAddExplanation"
+                numRows="5"
+                required="false"
+                value="policyTerm.NonRenewAddExplanation"
+                visible="policyTerm.PreRenewalDirection==&quot;nonrenew&quot; or policyTerm.PreRenewalDirection==&quot;nonrenewrefer&quot;">
+                <PostOnChange
+                  onChange="descriptions[0] = descriptions[0] + policyTerm.createNonRenewalAdditionalExplanationHistoryDescription() + &quot; &quot;"/>
+              </TextAreaInput>
+            </InputColumn>
+          </DetailViewPanel>
+        </PanelColumn>
+        <PanelColumn
+          hideIfReadOnly="true"
+          id="NotePanelColumn">
+          <DetailViewPanel>
+            <InputColumn>
+              <Label
+                label="displaykey.Web.PreRenewalDirection.Note"/>
+              <TypeKeyInput
+                id="Topic"
+                label="displaykey.Web.NewNote.Topic"
+                value="note.Topic"/>
+              <Input
+                editable="true"
+                id="Subject"
+                label="displaykey.Web.NewNote.Subject"
+                value="note.Subject"/>
+              <RangeInput
+                id="RelatedTo"
+                label="displaykey.Web.NewNote.RelatedTo"
+                optionLabel="note.getLevelDisplayString(VALUE)"
+                required="true"
+                sortValueRange="false"
+                value="note.Level"
+                valueRange="note.generateLevels(null, policy, null)"
+                visible="policy != null"/>
+              <TypeKeyInput
+                editable="true"
+                filter="note.hasCreatePermission(VALUE)"
+                id="SecurityLevel"
+                label="displaykey.Web.NewNote.SecurityLevel"
+                required="true"
+                value="note.SecurityType"/>
+              <TextAreaInput
+                editable="true"
+                id="Text"
+                label="displaykey.Web.NewNote.Text"
+                numCols="60"
+                numRows="10"
+                required="true"
+                value="note.Body"/>
+            </InputColumn>
+          </DetailViewPanel>
+        </PanelColumn>
+      </PanelRow>
+      <PanelRef
+        def="SelectedNonRenewalExplanationsLV(policy, policyPeriod, descriptions)"
+        visible="policyTerm.PreRenewalDirection==&quot;nonrenew&quot; or policyTerm.PreRenewalDirection==&quot;nonrenewrefer&quot;">
+        <TitleBar
+          appendListViewPaging="true"
+          title="displaykey.Web.PreRenewalDirection.SelectedNonRenewalExplanations"/>
+        <Toolbar>
+          <IteratorButtons
+            iterator="SelectedNonRenewalExplanationsLV.SelectedNonRenewalExplanationsLV"
+            removeLabel="displaykey.Web.NonRenewalExplanationPattern.Remove"/>
+        </Toolbar>
+      </PanelRef>
+    </Screen>
+    <Code><![CDATA[function removePrerenewal() {
+  var _policyTerm = policyTerm
+  gw.transaction.Transaction.runWithNewBundle( \ b -> {
+    var thisTerm = b.loadBean(_policyTerm.ID) as PolicyTerm
+    thisTerm.removePreRenewalDirection()
+  })
+  CurrentLocation.cancel()
+}
+
+// Users with selectnonrenew permission can choose any PreRenewalDirection value
+// Other users cannot choose "nonrenew" and "nonrenewrefer"
+function filterPreRenewalDirection( code : PreRenewalDirection ) : boolean {
+  return perm.System.selectnonrenew or (code != "nonrenew" and code != "nonrenewrefer")
+}
+
+// Creates a new pre-renewal note on the policy with "internalonly" security
+function createPreRenewalNote() : Note {
+  var newNote = policy.newPrerenewalNote()
+  newNote.SecurityType = NoteSecurityType.TC_INTERNALONLY
+  return newNote
+}
+
+function createCustomHistoryEvent() {
+  var _description = descriptions[0]
+  policyTerm.createCustomHistoryEvent(CustomHistoryType.TC_PRERENEWAL, \ -> _description)
+}]]></Code>
+  </Page>
+</PCF>

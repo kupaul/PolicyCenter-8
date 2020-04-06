@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Screen
+    editable="openForEdit"
+    id="PersonalAutoScreen">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="policyPeriod.PersonalAutoLine"
+      name="paLine"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, policyPeriod.Job, jobWizardHelper)"/>
+    </Toolbar>
+    <PanelRef
+      def="PreferredCoverageCurrencyPanelSet(paLine, openForEdit, jobWizardHelper)"
+      id="PreferredCoverageCurrencySelectorRef"/>
+    <PanelSet>
+      <PanelRef
+        def="OOSEPanelSet(policyPeriod, jobWizardHelper)"/>
+      <CardViewPanel>
+        <Card
+          id="Coverages"
+          title="displaykey.Web.Policy.PA.Coverages">
+          <PanelRef
+            def="PersonalAuto_AllVehicleCoveragesDV(paLine, openForEdit)">
+            <TitleBar
+              title="displaykey.Web.Policy.PA.AllVehicleCoveragesTitle(paLine.BaseState)"/>
+          </PanelRef>
+          <PanelRef
+            def="PAPerVehiclePanelSet(policyPeriod, openForEdit,jobWizardHelper)"/>
+        </Card>
+        <Card
+          id="AdditionalCoverages"
+          title="displaykey.Web.Policy.PA.AdditionalCoverages">
+          <PanelRef
+            def="PALineAdditionalCoveragesDV(paLine, new String[]{&quot;PAMiscGrp&quot;}, openForEdit)">
+            <TitleBar
+              title="displaykey.Web.Policy.PA.AllVehicleCoveragesTitle(paLine.BaseState)"/>
+            <Toolbar/>
+          </PanelRef>
+          <PanelRef
+            def="PAVehicleAdditionalCoveragesDV(paLine, new String[]{&quot;PAMiscGrp&quot;}, openForEdit)">
+            <TitleBar
+              title="displaykey.Web.Policy.PA.PerVehicleCoveragesTitle(paLine.BaseState)"/>
+            <Toolbar/>
+          </PanelRef>
+        </Card>
+        <Card
+          id="exclusionsAndConditionsCard"
+          title="displaykey.Web.Policy.PA.ExclusionsAndConditions">
+          <PanelRef
+            def="AdditionalExclusionsAndConditionsPanelSet(policyPeriod.PersonalAutoLine, new String[] {&quot;PAPhysDamExcl&quot;, &quot;PALiabExcl&quot;, &quot;PAPhysDamCond&quot;, &quot;PALiabCond&quot;}, true)"
+            id="policyLevelExclusionsAndConditions"/>
+        </Card>
+      </CardViewPanel>
+    </PanelSet>
+    <Code><![CDATA[
+function getVehicleDescription(vehicle : PersonalVehicle) : String {
+        return vehicle.Year + " " + vehicle.Make + " " + vehicle.Model
+      }
+    ]]></Code>
+  </Screen>
+</PCF>

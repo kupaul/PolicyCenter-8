@@ -1,0 +1,204 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.guidewire.pl.web</groupId>
+  <artifactId>compass-compiler</artifactId>
+  <version>0.1.11</version>
+  <packaging>bundle</packaging>
+
+  <organization>
+    <name>Guidewire, Inc.</name>
+    <url>http://guidewire.com</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>Guidewire proprietary license</name>
+    </license>
+  </licenses>
+
+  <!-- configuration for maven release plugin-->
+  <scm>
+    <connection>scm:git://github.guidewire.com/webtools/compass-compiler.git</connection>
+    <developerConnection>scm:git:git@github.guidewire.com:webtools/compass-compiler.git</developerConnection>
+    <tag>0.1.5</tag>
+  </scm>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <sass.version>3.1.7</sass.version>
+    <compass.version>0.12.2</compass.version>
+    <jruby.version>1.7.3</jruby.version>
+    <slf4j.version>1.7.5</slf4j.version>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.jruby</groupId>
+      <artifactId>jruby</artifactId>
+      <version>${jruby.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.jruby</groupId>
+      <artifactId>jruby-stdlib</artifactId>
+      <version>${jruby.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>12.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>${slf4j.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-simple</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>4.11</version>
+      <scope>test</scope>
+    </dependency>
+  </dependencies>
+
+  <repositories>
+    <!-- Guidewire internal repositories -->
+    <repository>
+      <id>gw.releases</id>
+      <name>Guidewire internal releases repository</name>
+      <url>http://nexus/content/repositories/releases/</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+    </repository>
+
+    <!-- Guidewire Nexus with extra 3rd-party dependencies -->
+    <repository>
+      <id>gw.thirdparty</id>
+      <name>Guidewire Nexus repository for third party libs not in Central</name>
+      <url>http://nexus/content/repositories/thirdparty</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+  </repositories>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <directory>${project.build.directory}/generated-resources</directory>
+      </resource>
+    </resources>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.5.1</version>
+        <configuration>
+          <encoding>UTF-8</encoding>
+          <source>1.7</source>
+          <target>1.7</target>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <version>2.3.7</version>
+        <extensions>true</extensions>
+        <configuration>
+          <unpackBundle>true</unpackBundle>
+          <instructions>
+            <Bundle-RequiredExecutionEnvironment>JavaSE-1.7</Bundle-RequiredExecutionEnvironment>
+            <Bundle-Vendor>Guidewire Software, Inc.</Bundle-Vendor>
+          </instructions>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <version>1.7</version>
+        <executions>
+          <execution>
+            <id>download-compass</id>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>run</goal>
+            </goals>
+            <configuration>
+              <target>
+                <property name="output.dir" value="${project.build.directory}/generated-resources/com/guidewire/pl/web/compass/internal" />
+                <property name="tmp.ruby.home" value="${output.dir}/tmp" />
+
+                <mkdir dir="${tmp.ruby.home}" />
+
+                <!-- install a specific version of sass at the first place, then install compass -->
+                <!-- fork="true" is required, because org.jruby.Main invokes System.exit at the -->
+                <java classname="org.jruby.Main" fork="true" failonerror="true" timeout="60000">
+                  <classpath refid="maven.compile.classpath" />
+                  <arg line="-S gem install -i" />
+                  <arg value="${tmp.ruby.home}" />
+                  <arg line="--version ${sass.version} sass --no-rdoc --no-ri" />
+                </java>
+
+                <java classname="org.jruby.Main" fork="true" failonerror="true" timeout="60000">
+                  <classpath refid="maven.compile.classpath" />
+                  <arg line="-S gem install -i" />
+                  <arg value="${tmp.ruby.home}" />
+                  <arg line="--version ${compass.version} compass --no-rdoc --no-ri" />
+                </java>
+
+                <zip destfile="${output.dir}/compass-home.zip" basedir="${tmp.ruby.home}" />
+
+                <delete dir="${tmp.ruby.home}" />
+              </target>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <pluginRepositories>
+    <!-- Central proxy -->
+    <pluginRepository>
+      <id>central</id>
+      <name>Guidewire Nexus proxy for Maven Central</name>
+      <url>http://nexus/content/repositories/central</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <distributionManagement>
+    <snapshotRepository>
+      <id>com.guidewire.pl.snapshots</id>
+      <url>http://nexus.guidewire.com/content/repositories/snapshots/</url>
+      <name>Guidewire internal snapshots repository</name>
+    </snapshotRepository>
+    <repository>
+      <id>com.guidewire.pl.releases</id>
+      <url>http://nexus.guidewire.com/content/repositories/releases/</url>
+      <name>Guidewire internal releases repository</name>
+    </repository>
+  </distributionManagement>
+</project>

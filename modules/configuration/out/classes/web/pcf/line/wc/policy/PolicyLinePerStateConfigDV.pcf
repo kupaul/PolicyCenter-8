@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <DetailViewPanel
+    editable="true"
+    id="PolicyLinePerStateConfigDV">
+    <Require
+      name="wcLine"
+      type="WorkersCompLine"/>
+    <Require
+      name="jurisdiction"
+      type="WCJurisdiction"/>
+    <Variable
+      initialValue="jurisdiction != null ? wcLine.Branch.getNamedInsuredOfficialIDsForState(gw.api.util.StateJurisdictionMappingUtil.getStateMappingForJurisdiction(jurisdiction.State)): null"
+      name="namedInsuredOfficialIDs"
+      recalculateOnRefresh="true"
+      type="OfficialID[]"/>
+    <Variable
+      initialValue="wcLine.Pattern.getCoverageCategory(&quot;WorkersCompStateGrp&quot;)"
+      name="wCStateGrp"/>
+    <Variable
+      initialValue="jurisdiction.AllModifierVersions"
+      name="allModifierVersions"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="jurisdiction.RatingPeriods"
+      name="ratingPeriods"
+      recalculateOnRefresh="true"/>
+    <InputColumn>
+      <Label
+        label="displaykey.Web.Policy.WC.RatingPeriods"/>
+      <DateInput
+        editable="true"
+        id="AnniversaryDate"
+        label="displaykey.Web.SubmissionWizard.PolicyInfo.AnniversaryDate"
+        requestValidationExpression="gw.pcf.policyfile.PolicyLinePerStateConfigUIHelper.validateAnniversaryDate(jurisdiction, VALUE)"
+        value="jurisdiction.AnniversaryDate"/>
+      <InputIterator
+        elementName="period"
+        id="RatingPeriodsIterator"
+        value="ratingPeriods.Count &gt; 1 ? ratingPeriods.toTypedArray() : new gw.lob.wc.rating.WCRatingPeriod[0]">
+        <Input
+          id="Period"
+          label="displaykey.Web.Policy.WC.Period(period.Number)"
+          value="&quot;${period.Start.ShortFormat} - ${period.End.ShortFormat}&quot;"/>
+      </InputIterator>
+      <InputDivider/>
+      <InputSetRef
+        def="WCDeductiblesInputSet(jurisdiction)"
+        visible="not jurisdiction.VersionList.Coverages.Empty"/>
+      <Label
+        label="displaykey.Web.Policy.PolicyLine.PerState.OfficialIDs"
+        visible="namedInsuredOfficialIDs.Count &gt; 0"/>
+      <InputIterator
+        elementName="officialID"
+        id="officialIDs"
+        value="namedInsuredOfficialIDs">
+        <IteratorSort
+          sortBy="officialID.DisplayName"
+          sortOrder="1"/>
+        <Input
+          align="left"
+          editable="true"
+          id="ANI_OfficialIDEntry"
+          label="officialID.OfficialIDInsuredAndType"
+          numCols="20"
+          validationExpression="officialID.validateValue()"
+          value="officialID.OfficialIDValue">
+          <PostOnChange
+            target="DATA_ONLY"/>
+        </Input>
+      </InputIterator>
+    </InputColumn>
+    <InputColumn>
+      <!-- Iterator for unsplit modifiers -->
+      <Label
+        label="displaykey.Web.Policy.WC.PerState.Modifiers"
+        visible="allModifierVersions.Count &gt; 0"/>
+      <InputSetRef
+        def="WCModifiersInputSet(gw.pcf.policyfile.PolicyLinePerStateConfigUIHelper.getUnsplitModifiers(ratingPeriods, allModifierVersions), wcLine.Branch)"
+        id="UnsplitModifiers"/>
+      <InputDivider/>
+      <InputIterator
+        elementName="ratingPeriod"
+        id="SplitModifiers"
+        value="ratingPeriods.toTypedArray()">
+        <!-- Iterator for split modifiers in subperiod 1 -->
+        <Label
+          label="displaykey.Web.Policy.WC.Period(ratingPeriod.Number)"
+          visible="ratingPeriods.Count &gt; 1"/>
+        <InputSetRef
+          def="WCModifiersInputSet(gw.pcf.policyfile.PolicyLinePerStateConfigUIHelper.getSplitModifiers(allModifierVersions, ratingPeriod.Start, ratingPeriod.End), wcLine.Branch)"
+          visible="ratingPeriods.Count &gt; 1"/>
+      </InputIterator>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

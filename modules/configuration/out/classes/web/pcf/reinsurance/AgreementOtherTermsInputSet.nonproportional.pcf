@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InputSet
+    id="AgreementOtherTermsInputSet"
+    mode="nonproportional">
+    <Require
+      name="agreement"
+      type="RIAgreement"/>
+    <Variable
+      initialValue="agreement as NonProportionalRIAgreement"
+      name="nonprop"/>
+    <TypeKeyInput
+      editable="true"
+      filter="(agreement as LossDateAttachable).AcceptableAttachmentBasisTypes.contains(VALUE)"
+      id="LossAttachBasis"
+      label="displaykey.Web.Reinsurance.Treaty.LossAttachBasis"
+      value="(agreement as LossDateAttachable).AttachmentBasis"
+      visible="agreement typeis LossDateAttachable">
+      <PostOnChange
+        onChange="nonprop.CalculateCededPremium = !agreement.IsLossDateAttachment"
+        target="AgreementOtherTermsInputSet"/>
+    </TypeKeyInput>
+    <BooleanRadioInput
+      editable="true"
+      id="CalculateCededPremium"
+      label="displaykey.Web.Reinsurance.Treaty.CalculateCededPremium"
+      required="true"
+      value="nonprop.CalculateCededPremium"
+      visible="agreement.IsLossDateAttachment"/>
+    <TypeKeyInput
+      editable="true"
+      id="GNPBasis"
+      label="displaykey.Web.Reinsurance.Treaty.GNPBasis"
+      value="nonprop.GNPSubtotal"/>
+    <InputSet
+      visible="agreement typeis entity.PerRisk">
+      <Variable
+        initialValue="agreement typeis PerRisk ? agreement : null"
+        name="perrisk"/>
+      <BooleanRadioInput
+        editable="true"
+        id="CountTowardTotalLimit"
+        label="displaykey.Web.Reinsurance.Treaty.CountTowardTotalLimit"
+        required="true"
+        value="perrisk.CountTowardTotalLimit"/>
+      <MonetaryAmountInput
+        currency="perrisk.Currency"
+        editable="true"
+        formatType="currency"
+        id="NotificationThresh"
+        label="displaykey.Web.Reinsurance.Treaty.NotificationThresh"
+        value="perrisk.NotificationThreshold"/>
+    </InputSet>
+    <TextAreaInput
+      editable="true"
+      id="Comments"
+      label="displaykey.Web.Reinsurance.Treaty.Comments"
+      numRows="4"
+      value="agreement.Comments"/>
+  </InputSet>
+</PCF>

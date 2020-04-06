@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    afterEnter="gw.api.web.PebblesUtil.addWebMessages(CurrentLocation, policyPeriod.PolicyFileMessages)"
+    canVisit="perm.PolicyPeriod.view(policyPeriod) and (perm.System.viewriskrefreasons or perm.System.viewriskclaims or perm.System.viewriskpriorpolicies or perm.System.viewriskpriorlosses)"
+    id="PolicyFile_RiskAnalysis"
+    title="displaykey.Web.PolicyFile.RiskAnalysis">
+    <LocationEntryPoint
+      signature="PolicyFile_RiskAnalysis(policyPeriod : PolicyPeriod, asOfDate : DateTime)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="asOfDate"
+      type="DateTime"/>
+    <Screen
+      id="PolicyFile_RiskAnalysisScreen">
+      <TitleBar/>
+      <CardViewPanel
+        id="PolicyFile_RiskAnalysisCV">
+        <Variable
+          initialValue="gw.web.policy.UWReferralReasonsModalRowOrganizer.organize(policyPeriod.Policy.UWReferralReasons)"
+          name="organizedReasons"
+          recalculateOnRefresh="true"
+          type="gw.web.policy.UWReferralReasonModalRow[]"/>
+        <Card
+          id="PolicyFile_UWReferralReasonCard"
+          title="displaykey.Web.PolicyFile.UWReferralReasons"
+          visible="perm.System.viewriskrefreasons">
+          <PanelRef>
+            <Toolbar>
+              <CheckedValuesToolbarButton
+                checkedRowAction="CheckedValue.closeReferralReasonAndCommit()"
+                flags="all closable"
+                id="CloseUWReferralReason"
+                iterator="UWReferralReasonsLV"
+                label="displaykey.Web.UWReferralReasonLV.Close"/>
+              <CheckedValuesToolbarButton
+                checkedRowAction="CheckedValue.openReferralReasonAndCommit()"
+                flags="all reopenable"
+                id="ReopenUWReferralReason"
+                iterator="UWReferralReasonsLV"
+                label="displaykey.Web.UWReferralReasonLV.Reopen"/>
+              <CheckedValuesToolbarButton
+                allCheckedRowsAction="ReferralReasonDetailsPopup.push(CheckedValues*.Item)"
+                id="ViewUWReferralReason"
+                iterator="UWReferralReasonsLV"
+                label="displaykey.Web.UWReferralReasonLV.ViewDetails"/>
+              <ToolbarButton
+                action="NewUWReferralReasonPopup.push(policyPeriod.Policy)"
+                id="AddUWReferralReason"
+                label="displaykey.Web.UWReferralReasonLV.AddUWReferralReason"
+                visible="perm.System.createreferralreason"/>
+            </Toolbar>
+            <ListViewPanel
+              id="UWReferralReasonsLV">
+              <RowIterator
+                canPick="modalRow.IsItem"
+                checkBoxVisible="modalRow.IsItem"
+                editable="true"
+                elementName="modalRow"
+                hasCheckBoxes="true"
+                value="organizedReasons">
+                <ToolbarFlag
+                  condition="modalRow.IsItem and modalRow.Open == Clickable"
+                  name="reopenable"/>
+                <ToolbarFlag
+                  condition="modalRow.IsItem and modalRow.Close == Clickable"
+                  name="closable"/>
+                <RowSetRef
+                  def="UWReferralReasonRowSet(modalRow)"
+                  mode="modalRow.Mode"/>
+              </RowIterator>
+            </ListViewPanel>
+          </PanelRef>
+        </Card>
+        <Card
+          id="PolicyFile_EvaluationIssuesCard"
+          title="displaykey.Web.Policy.EvaluationIssues"
+          visible="perm.System.viewriskevalissues">
+          <PanelRef
+            def="RiskEvaluationPanelSet(policyPeriod, false)"/>
+        </Card>
+        <Card
+          id="PolicyFile_PriorPoliciesCard"
+          title="displaykey.Web.PolicyFile.PriorHistory.PriorPolicies"
+          visible="perm.System.viewriskpriorpolicies">
+          <PanelRef
+            def="PolicyFile_PriorHistoryDV(policyPeriod, policyPeriod.Policy)"/>
+        </Card>
+        <Card
+          id="PolicyFile_ClaimsCard"
+          title="displaykey.Web.PolicyFile.Claims"
+          visible="perm.System.viewriskclaims">
+          <SearchPanel
+            criteriaName="claimSearchCriteria"
+            resultsName="claimSet"
+            search="claimSearchCriteria.performSearch()"
+            searchCriteria="policyPeriod.getNewClaimSearchCriteria(true)"
+            searchOnEnter="false"
+            searchResultsType="ClaimSet">
+            <DetailViewPanel>
+              <InputColumn>
+                <DateCriterionChoiceInput
+                  editable="true"
+                  id="DateRangeForClaimSearch"
+                  label="displaykey.Web.PolicyFile.RiskAnalysis.ClaimSearch.Date"
+                  required="false"
+                  value="claimSearchCriteria.DateCriteria"/>
+              </InputColumn>
+              <InputFooterSection>
+                <InputSetRef
+                  def="SearchAndResetInputSet()"/>
+              </InputFooterSection>
+            </DetailViewPanel>
+            <ListDetailPanel
+              selectionName="selectedClaim"
+              selectionType="Claim">
+              <PanelRef
+                def="ClaimsLV(claimSet.Claims, claimSet==null ? new gw.losshistory.ClaimPolicyPeriodFilterSet(null) : claimSet.retrieveClaimFilter())">
+                <Toolbar/>
+              </PanelRef>
+              <PanelRef
+                def="ClaimDetailsCV(selectedClaim,false)"
+                editable="false"
+                visible="selectedClaim != null"/>
+            </ListDetailPanel>
+          </SearchPanel>
+        </Card>
+        <Card
+          id="PolicyFile_LossHistoryCard"
+          title="displaykey.Web.PolicyFile.PriorHistory.PriorLosses"
+          visible="perm.System.viewriskpriorlosses">
+          <PanelRef
+            def="PolicyFile_LossHistoryDV(policyPeriod, policyPeriod.Policy)"/>
+        </Card>
+        <Card
+          id="MotorVehicleRecord"
+          title="displaykey.Web.PersonalAuto.MotorVehicleRecord.MotorVehicleRecords"
+          visible="policyPeriod.PersonalAutoLineExists">
+          <PanelRef
+            def="MotorVehicleRecordSummary(policyPeriod)"/>
+        </Card>
+      </CardViewPanel>
+    </Screen>
+  </Page>
+</PCF>

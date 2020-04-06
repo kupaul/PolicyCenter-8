@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Forward
+    id="PolicyFileForward"
+    onBeforeForward="if(retrievedPeriod != null) gw.api.web.util.SessionUtil.addToPoliciesList(retrievedPeriod)"
+    parent="PolicyForward()">
+    <LocationEntryPoint
+      signature="PolicyFileForward(policyNumber : String)"/>
+    <LocationEntryPoint
+      signature="PolicyFileForward(policyNumber : String, retrieveAsOfDate : DateTime)"/>
+    <LocationEntryPoint
+      signature="PolicyFileForward(retrievedPeriod : PolicyPeriod, retrieveAsOfDate : DateTime)"/>
+    <LocationEntryPoint
+      signature="PolicyFileForward(retrievedPeriod : PolicyPeriod, retrieveAsOfDate : DateTime, step : String)"/>
+    <LocationEntryPoint
+      signature="PolicyFileForward(retrievedPeriod : PolicyPeriod, retrieveAsOfDate : DateTime, step : String, args : Object[])"/>
+    <LocationEntryPoint
+      signature="PolicyFileForward(retrievedPeriod : PolicyPeriod)"/>
+    <!-- Parameters -->
+    <Variable
+      name="policyNumber"
+      type="String"/>
+    <Variable
+      initialValue="java.util.Date.CurrentDate"
+      name="retrieveAsOfDate"
+      type="DateTime"/>
+    <!-- Use Local variables, otherwise the policy could be retrieved multiple times! -->
+    <Variable
+      initialValue="Policy.retrieveBoundOrLegacyRenewalPeriod(policyNumber, retrieveAsOfDate)"
+      name="retrievedPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="step"
+      type="String"/>
+    <Variable
+      name="args"
+      type="Object[]"/>
+    <Variable
+      initialValue="gw.pcf.policyfile.PolicyFileForwardHelper.validate(retrievedPeriod, policyNumber)"
+      name="error"
+      type="String"/>
+    <ForwardCondition
+      action="PolicySearch.go(error)"
+      condition="error &lt;&gt; null"/>
+    <ForwardCondition
+      action="ArchivedLocationGroup.go(retrievedPeriod)"
+      condition="retrievedPeriod.PolicyTerm.Archived"/>
+    <ForwardCondition
+      action="PolicyFile_Audits.go(retrievedPeriod, retrieveAsOfDate)"
+      condition="&quot;PolicyAudits&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_Summary.go(retrievedPeriod, retrieveAsOfDate)"
+      condition="&quot;PolicySummary&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_Summary.go(retrievedPeriod, retrieveAsOfDate, args[0] as String)"
+      condition="&quot;PolicySummary with Error&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_Billing.go(retrievedPeriod, retrieveAsOfDate)"
+      condition="&quot;PolicyBilling&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_Contacts.go(retrievedPeriod, retrieveAsOfDate)"
+      condition="&quot;PolicyContacts&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_Documents.go(retrievedPeriod, retrieveAsOfDate)"
+      condition="&quot;PolicyDocuments&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_History.go(retrievedPeriod, retrieveAsOfDate)"
+      condition="&quot;PolicyHistory&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_Notes.go(retrievedPeriod, retrieveAsOfDate)"
+      condition="&quot;PolicyNotes&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_Notes.goInMain(retrievedPeriod, args[0] as Activity)"
+      condition="&quot;PolicyNotes for Activity&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_Participants.go(retrievedPeriod, retrieveAsOfDate)"
+      condition="&quot;PolicyParticipants&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_RiskAnalysis.go(retrievedPeriod, retrieveAsOfDate)"
+      condition="&quot;PolicyRiskAnalysis&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_Reinsurance.go(retrievedPeriod, retrieveAsOfDate)"
+      condition="&quot;PolicyReinsurance&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_Jobs.go(retrievedPeriod, retrieveAsOfDate)"
+      condition="&quot;PolicyWorkOrders&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_Jobs.go(retrievedPeriod, retrieveAsOfDate, args[0] as Job)"
+      condition="&quot;PolicyWorkOrders for Job&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_DraftPeriodError.go(retrievedPeriod, retrieveAsOfDate)"
+      condition="&quot;PolicyDraftPeriodError&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_PolicyInfo.go(retrievedPeriod, retrieveAsOfDate)"
+      condition="&quot;PolicyInfo&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_Locations.go(retrievedPeriod, retrieveAsOfDate)"
+      condition="&quot;PolicyLocations&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile_Pricing.go(retrievedPeriod, retrieveAsOfDate)"
+      condition="&quot;PolicyQuote&quot;.equals(step)"/>
+    <ForwardCondition
+      action="PolicyFile.go(retrievedPeriod, retrieveAsOfDate)"
+      condition="retrievedPeriod.Promoted"/>
+    <ForwardCondition
+      action="JobForward.go(retrievedPeriod.Job)"
+      condition="not retrievedPeriod.Promoted"/>
+  </Forward>
+</PCF>

@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Screen
+    id="DocumentsScreen">
+    <Require
+      name="account"
+      type="Account"/>
+    <Require
+      name="viewOnly"
+      type="boolean"/>
+    <SearchPanel
+      criteriaName="searchCriteria"
+      resultCachingEnabled="false"
+      resultsName="documents"
+      search="searchCriteria.performSearch()"
+      searchCriteria="return createCriteria()"
+      searchOnEnter="true"
+      searchResultsType="DocumentQuery">
+      <PanelRef
+        def="DocumentSearchDV(searchCriteria, null)"/>
+      <PanelRef
+        def="DocumentsLV(documents, viewOnly)"
+        editable="true">
+        <TitleBar
+          appendListViewPaging="true"
+          title="displaykey.Web.PolicyFile.Documents"/>
+        <Toolbar>
+          <CheckedValuesToolbarButton
+            checkedRowAction=" CheckedValue.Obsolete = true"
+            flags="all editableDocument,no hidden"
+            id="PolicyFile_Documents_ObsolesceButton"
+            iterator="DocumentsLV.DocumentsLV"
+            label="displaykey.Web.PolicyFile.Documents.Obsolesce"
+            shortcut="O"/>
+          <CheckedValuesToolbarButton
+            checkedRowAction=" CheckedValue.Obsolete = false"
+            flags="all editableDocument,all hidden"
+            id="PolicyFile_Documents_DeobsolesceButton"
+            iterator="DocumentsLV.DocumentsLV"
+            label="displaykey.Web.PolicyFile.Documents.Deobsolesce"
+            shortcut="O"
+            visible="searchCriteria.IncludeObsoletes"/>
+        </Toolbar>
+      </PanelRef>
+    </SearchPanel>
+    <Code><![CDATA[function createCriteria() : DocumentSearchCriteria {
+  var criteria = new DocumentSearchCriteria()
+  criteria.IncludeObsoletes = false
+  criteria.Account = account
+  return criteria
+}]]></Code>
+  </Screen>
+</PCF>

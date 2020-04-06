@@ -1,0 +1,93 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Popup
+    countsAsWork="false"
+    id="CPClassCodeSearchPopup"
+    returnType="CPClassCode"
+    title="displaykey.Web.ClassCodeSearch">
+    <LocationEntryPoint
+      signature="CPClassCodeSearchPopup(cpLine : CommercialPropertyLine, cpBuilding : CPBuilding)"/>
+    <Variable
+      name="cpLine"
+      type="CommercialPropertyLine"/>
+    <Variable
+      name="cpBuilding"
+      type="CPBuilding"/>
+    <Variable
+      initialValue="(cpLine.Branch.Job.NewTerm) ? null : cpBuilding.BasedOn.ClassCode"
+      name="previousCPClassCode"
+      type="CPClassCode"/>
+    <Screen
+      id="CPClassCodeSearchScreen">
+      <SearchPanel
+        cachingEnabled="false"
+        criteriaName="searchCriteria"
+        resultsName="cpClassCodes"
+        search="searchCriteria.performSearch()"
+        searchCriteria="return createCriteria()"
+        searchOnEnter="true"
+        searchResultsType="CPClassCodeQuery">
+        <PanelRef>
+          <DetailViewPanel
+            id="CPClassCodeSearchDV">
+            <InputColumn>
+              <Input
+                editable="true"
+                id="Code"
+                label="displaykey.Web.ClassCodeSearch.Code"
+                required="false"
+                value="searchCriteria.Code"/>
+              <Input
+                editable="true"
+                id="Classification"
+                label="displaykey.Web.ClassCodeSearch.Classification"
+                required="false"
+                value="searchCriteria.Classification"/>
+            </InputColumn>
+            <InputFooterSection>
+              <InputSetRef
+                def="SearchAndResetInputSet()"/>
+            </InputFooterSection>
+          </DetailViewPanel>
+        </PanelRef>
+        <PanelRef>
+          <TitleBar
+            appendListViewPaging="true"
+            title="displaykey.Web.Search.Results"/>
+          <Toolbar/>
+          <ListViewPanel
+            id="ClassCodeSearchResultsLV">
+            <RowIterator
+              editable="false"
+              elementName="cpClassCode"
+              pickValue="cpClassCode"
+              value="cpClassCodes">
+              <Row>
+                <TextCell
+                  id="Code"
+                  label="displaykey.Web.ClassCodeSearch.Code"
+                  numCols="8"
+                  value="cpClassCode.Code"/>
+                <Cell
+                  align="left"
+                  id="Classification"
+                  label="displaykey.Web.ClassCodeSearch.Classification"
+                  value="cpClassCode.Classification"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+    <Code><![CDATA[function createCriteria() : gw.lob.cp.CPClassCodeSearchCriteria {
+  var criteria = new gw.lob.cp.CPClassCodeSearchCriteria()
+  criteria.EffectiveAsOfDate = cpLine.getReferenceDateForCurrentJob(gw.api.util.JurisdictionMappingUtil.getJurisdiction(cpBuilding.CPLocation.Location))
+  if (previousCPClassCode != null) {
+    criteria.PreviousSelectedClassCode = previousCPClassCode.Code
+  }
+  return criteria
+}]]></Code>
+  </Popup>
+</PCF>

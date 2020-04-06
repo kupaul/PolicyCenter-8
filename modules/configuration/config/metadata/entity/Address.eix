@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?><internalExtension xmlns="http://guidewire.com/datamodel" entityName="Address">
+  <description>Represents a street or mailing address. Addresses are normally associated with
+      a Contact, either as a Primary Address for that Contact or via the ContactAddress table. Addresses can
+      have geographic location information stored for proximity searches.&lt;p/&gt;
+      {@see com.guidewire.pl.domain.contact.Contact}&lt;br/&gt;
+      {@see com.guidewire.pl.domain.contact.ContactAddress}</description>
+
+    <implementsEntity name="Referenceable"/>
+    <implementsInterface iface="gw.api.domain.archiving.MergeableReferenceable" impl="gw.contact.AddressMergeableReferenceableImpl"/>
+    <column desc="Date and time of last update" exportable="false" name="LastUpdateTime" nullok="true" setterScriptability="hidden" type="datetime"/>
+
+    <column desc="Temporary date and time of last update; will eventually be copied to the LastUpdateTime during commit" exportable="false" getterScriptability="hidden" name="TemporaryLastUpdateTime" nullok="true" setterScriptability="hidden" type="datetime"/>
+
+    <foreignkey desc="A potential link to a group of addresses" fkentity="LinkedAddress" name="LinkedAddress" nullok="true"/>
+    <array arrayentity="AddressReplacement" cascadeDelete="true" desc="The Addresses that this Address has replaced through merges" exportable="false" name="Replaces" setterScriptability="hidden"/>
+    <index desc="Perf index for searches involving the city or state." name="AddressPerfU1" unique="true">
+        <indexcol keyposition="1" name="CityDenorm"/>
+        <indexcol keyposition="2" name="State"/>
+        <indexcol keyposition="3" name="Retired"/>
+        <indexcol keyposition="4" name="ID"/>
+    </index>
+</internalExtension>

@@ -1,0 +1,142 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Screen
+    id="Policy_SummaryScreen">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="asOfDate"
+      type="DateTime"/>
+    <Require
+      name="policySummaryHelper"
+      type="gw.pcf.policysummary.PolicySummaryHelper"/>
+    <Variable
+      initialValue="policySummaryHelper.isCancelling(policyPeriod)"
+      name="checkforcancel"/>
+    <TitleBar/>
+    <Toolbar>
+      <ToolbarButton
+        action="RequestRestorePopup.push(policyPeriod.PolicyTerm)"
+        id="RequestRestoreButton"
+        label="displaykey.Web.Archive.RequestRestoreButton"
+        visible="policyPeriod.Archived and perm.PolicyPeriod.restorefromarchive"/>
+    </Toolbar>
+    <AlertBar
+      allowDismiss="false"
+      available="false"
+      id="FutureArchivedTermWarning"
+      label="displaykey.Web.Job.Warning.ArchivedFutureTerm(asOfDate.ShortFormat)"
+      visible="gw.api.archive.PCArchivingUtil.hasFutureArchivedTerms(policyPeriod)"/>
+    <AlertBar
+      allowDismiss="false"
+      available="false"
+      id="ArchivedPeriodWarning"
+      label="displaykey.Web.Archive.PolicyPeriodLandingPage.Issue(policyPeriod.PeriodStart, policyPeriod.PeriodEnd)"
+      visible="policyPeriod.Archived"/>
+    <AlertBar
+      allowDismiss="false"
+      id="PendingPaymentConfirmation"
+      label="displaykey.Web.PolicyFile.Warnings.PendingPaymentConfirmation"
+      visible="not policyPeriod.PolicyTerm.Bound and not policyPeriod.Canceled"/>
+    <AlertBar
+      allowDismiss="false"
+      available="false"
+      id="PolicyRewrittenWarning"
+      label="policyPeriod.Policy.RewrittenToNewAccountDestination.Issued ? displaykey.Web.PolicyFile.Warnings.PolicyRewritten : displaykey.Web.PolicyFile.Warnings.PolicyBeingRewritten"
+      visible="policyPeriod.Policy.RewrittenToNewAccountDestination != null"/>
+    <PanelRow>
+      <PanelColumn>
+        <PanelRef
+          def="Policy_Summary_AccountDV(policyPeriod.Policy.Account)"
+          editable="false"/>
+        <PanelRef
+          def="Policy_Summary_PolicyDV(policyPeriod.Policy, policyPeriod, asOfDate)"/>
+      </PanelColumn>
+      <PanelColumn>
+        <PanelRef
+          def="Policy_Summary_DatesDV(policyPeriod)"/>
+        <PanelRef
+          def="Policy_Summary_EarnedPremiumDV(policyPeriod)"
+          visible="!policyPeriod.Archived"/>
+        <DetailViewPanel
+          visible="!policyPeriod.Archived and policyPeriod.IsReportingPolicy">
+          <InputColumn>
+            <InputSetRef
+              def="TrendAnalysisInputSet(policyPeriod, true)"
+              id="TrendAnalysis"/>
+          </InputColumn>
+        </DetailViewPanel>
+        <PanelRef
+          def="Policy_Summary_ProducerDV(policyPeriod)"/>
+        <DetailViewPanel
+          id="UWCompanyDV">
+          <InputColumn>
+            <Label
+              label="displaykey.Web.Policy.UWCompanies.Name"/>
+            <Input
+              id="UWCompany"
+              value="policyPeriod.UWCompany"/>
+          </InputColumn>
+        </DetailViewPanel>
+        <PanelRef
+          def="Policy_Summary_AssocJobDV(policyPeriod, asOfDate)"
+          mode="policyPeriod.Job.Subtype"/>
+      </PanelColumn>
+    </PanelRow>
+    <PanelRow>
+      <PanelColumn>
+        <PanelRef
+          def="Policy_Summary_ActivitiesLV(policyPeriod)"
+          visible="perm.System.actview">
+          <TitleBar
+            title="displaykey.Web.PolicyFile.Summary.Activities"/>
+          <Toolbar/>
+        </PanelRef>
+        <PanelRef
+          def="Policy_Summary_TransactionsLV(policyPeriod, asOfDate)">
+          <TitleBar
+            title="displaykey.Web.PolicyFile.Summary.Transactions"/>
+          <Toolbar>
+            <CheckedValuesToolbarButton
+              allCheckedRowsAction="policySummaryHelper.gotoPolicyTransactionsDiff(CheckedValues, displaykey.Web.PolicyFile.DiffPolicyTransactions)"
+              flags="two transaction"
+              id="Policy_Summary_TransactionDiffButton"
+              iterator="Policy_Summary_TransactionsLV.Policy_Summary_TransactionsLV"
+              label="displaykey.Web.PolicyFile.Summary.Diff"
+              shortcut="I"/>
+          </Toolbar>
+        </PanelRef>
+        <PanelRef
+          def="Policy_Summary_JobsInProgressLV(policyPeriod, asOfDate)">
+          <TitleBar
+            title="displaykey.Web.PolicyFile.Summary.JobsInProgress"/>
+          <Toolbar>
+            <CheckedValuesToolbarButton
+              allCheckedRowsAction="policySummaryHelper.gotoWorkOrdersDiff(CheckedValues, displaykey.Web.PolicyFile.DiffPolicyWorkOrders)"
+              flags="two job"
+              id="Policy_Summary_DiffButton"
+              iterator="Policy_Summary_JobsInProgressLV.Policy_Summary_JobsInProgressLV"
+              label="displaykey.Web.PolicyFile.Summary.Diff"/>
+          </Toolbar>
+        </PanelRef>
+        <PanelRef
+          def="DividePoliciesLV(policyPeriod)"
+          visible="policyPeriod.Policy.DividedPolicies.Count &gt; 0">
+          <TitleBar
+            title="displaykey.Web.PolicyFile.Summary.DividePolicies"/>
+          <Toolbar/>
+        </PanelRef>
+        <PanelRef
+          def="NotesSummaryLV(policyPeriod)"
+          visible="policyPeriod.Policy.canViewNotes()">
+          <TitleBar
+            title="displaykey.Web.PolicyFile.Summary.Notes"/>
+          <Toolbar/>
+        </PanelRef>
+      </PanelColumn>
+    </PanelRow>
+  </Screen>
+</PCF>

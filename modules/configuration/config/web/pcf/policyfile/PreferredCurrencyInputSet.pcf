@@ -1,0 +1,37 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InputSet
+    id="PreferredCurrencyInputSet"
+    visible="gw.api.util.CurrencyUtil.isMultiCurrencyMode()">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Label
+      label="displaykey.Web.JobWizard.PreferredCurrency.Title"/>
+    <TypeKeyInput
+      confirmMessage="displaykey.Web.MultiCurrency.ChangePreferredCoverageCurrencyWarning"
+      editable="policyPeriod.Job.isNewTerm()"
+      id="PreferredCoverageCurrency"
+      label="displaykey.Web.JobWizard.PreferredCurrency.Coverage"
+      required="true"
+      showConfirmMessage="true"
+      value="policyPeriod.PreferredCoverageCurrency"/>
+    <TypeKeyInput
+      confirmMessage="displaykey.Web.MultiCurrency.ChangePreferredSettlementCurrencyWarning"
+      editable="policyPeriod.Job.isNewTerm()"
+      id="PreferredSettlementCurrency"
+      label="displaykey.Web.JobWizard.PreferredCurrency.Settlement"
+      required="true"
+      showConfirmMessage="true"
+      value="policyPeriod.PreferredSettlementCurrency">
+      <PostOnChange
+        onChange="policyPeriod.preferredSettlementCurrencyUpdated()"/>
+    </TypeKeyInput>
+    <Code><![CDATA[property get AllPossibleCoverageCurrencies() : Currency[] {
+  var result = policyPeriod.Lines*.Pattern.flatMap(\p -> p.AvailableCoverageCurrencies*.Currency).toSet()
+  return result.toTypedArray()
+}]]></Code>
+  </InputSet>
+</PCF>

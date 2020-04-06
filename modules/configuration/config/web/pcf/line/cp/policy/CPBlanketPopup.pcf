@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Popup
+    afterEnter="initialize()"
+    beforeCommit="blanket.removeNonMatchingCoverages(); gw.lob.cp.CPBlanketValidation.validateBlanket(blanket); "
+    canEdit="openForEdit"
+    countsAsWork="false"
+    id="CPBlanketPopup"
+    returnType="CPBlanket"
+    startInEditMode="true"
+    title="displaykey.Web.Policy.CP.Blanket.BlanketDetails">
+    <LocationEntryPoint
+      signature="CPBlanketPopup(cpLine : CommercialPropertyLine, blanket : CPBlanket, openForEdit : boolean, jobWizardHelper: web.job.JobWizardHelper)"/>
+    <Variable
+      name="cpLine"
+      type="CommercialPropertyLine"/>
+    <Variable
+      name="blanket"
+      type="CPBlanket"/>
+    <Variable
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      name="matchingCoverages"
+      type="CPBuildingCov[]"/>
+    <Screen>
+      <Toolbar>
+        <EditButtons
+          editVisible="false"
+          pickValue="blanket"/>
+      </Toolbar>
+      <PanelRef
+        def="PreferredCoverageCurrencyPanelSet(blanket, true, jobWizardHelper)"
+        id="PreferredCoverageCurrencySelectorRef"/>
+      <DetailViewPanel>
+        <InputColumn>
+          <Input
+            id="BlanketNum"
+            label="displaykey.Web.Policy.CP.Blanket.Number"
+            value="blanket.CPBlanketNum"/>
+          <TypeKeyInput
+            editable="true"
+            id="BlanketType"
+            label="displaykey.Web.Policy.CP.Blanket.BlanketType"
+            value="blanket.BlanketType">
+            <PostOnChange/>
+          </TypeKeyInput>
+          <TypeKeyInput
+            editable="true"
+            id="BlanketGroupType"
+            label="displaykey.Web.Policy.CP.Blanket.GroupType"
+            value="blanket.BlanketGroupType">
+            <PostOnChange/>
+          </TypeKeyInput>
+          <RangeInput
+            editable="true"
+            id="BuildingCoverage"
+            label="displaykey.Web.Policy.CP.Blanket.BuildingCoverage"
+            required="blanket.BlanketType == &quot;singlecov&quot;"
+            value="blanket.CPBuildingCovName"
+            valueRange="blanket.CovPatternNames"
+            visible="blanket.BlanketType == &quot;singlecov&quot;"/>
+          <Input
+            editable="true"
+            id="Description"
+            label="displaykey.Web.Policy.CP.Blanket.Description"
+            value="blanket.CPBlanketDescription"/>
+          <RangeInput
+            editable="true"
+            id="BlanketLocation"
+            label="displaykey.Web.Policy.CP.Blanket.Location"
+            required="blanket.BlanketType==&quot;singleloc&quot;"
+            value="blanket.CPLocation"
+            valueRange="cpLine.CPLocations.sortBy(\ c -&gt; c.Location.LocationNum)"
+            visible="blanket.BlanketType==&quot;singleloc&quot;"/>
+          <InputSetRef
+            def="CovTermDirectInputSet(blanket.CPBlanketCov.CPBlanketLimitTerm)"
+            id="CPBlanketCovLimitId"
+            visible="blanket.CPBlanketCov.hasCovTerm( &quot;CPBlanketLimit&quot; )"/>
+          <ButtonInput
+            action="blanket.recalculateLimit()"
+            available="blanket.BuildingCoverages.Count &gt; 0"
+            hideIfReadOnly="true"
+            id="RecaculateLimit"
+            value="displaykey.Web.Policy.CP.Blanket.RecalculateLimit"
+            visible="openForEdit"/>
+          <RangeInput
+            editable="true"
+            id="CPBlanketCovDeductible"
+            label="blanket.CPBlanketCov.CPBlanketDeductibleTerm.DisplayName"
+            required="blanket.CPBlanketCov.CPBlanketDeductibleTerm.Pattern.Required"
+            sortValueRange="false"
+            value="blanket.CPBlanketCov.CPBlanketDeductibleTerm.OptionValue"
+            valueRange="gw.web.productmodel.ChoiceCovTermUtil.getModelValueRange(blanket.CPBlanketCov.CPBlanketDeductibleTerm, openForEdit)"
+            visible="blanket.CPBlanketCov.hasCovTerm(&quot;CPBlanketDeductible&quot;)"/>
+          <RangeInput
+            editable="true"
+            id="CPBlanketCovCoinsurance"
+            label="blanket.CPBlanketCov.CPBlanketCoinsuranceTerm.DisplayName"
+            required="blanket.CPBlanketCov.CPBlanketCoinsuranceTerm.Pattern.Required"
+            sortValueRange="false"
+            value="blanket.CPBlanketCov.CPBlanketCoinsuranceTerm.OptionValue"
+            valueRange="gw.web.productmodel.ChoiceCovTermUtil.getModelValueRange(blanket.CPBlanketCov.CPBlanketCoinsuranceTerm, openForEdit)"
+            visible="blanket.CPBlanketCov.hasCovTerm(&quot;CPBlanketCoinsurance&quot;)"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef>
+        <Toolbar>
+          <ToolbarButton
+            action="matchingCoverages = blanket.getBuildingCoveragesByBlanketType()"
+            id="ShowCoverages"
+            label="displaykey.Web.Policy.CP.Blanket.ShowCoverages"/>
+          <CheckedValuesToolbarButton
+            allCheckedRowsAction="blanket.addBuildingCoverages(CheckedValues)"
+            id="AddCoverages"
+            iterator="matchingCoveragesIterator"
+            label="displaykey.Web.Policy.CP.Blanket.AddCoverages"/>
+          <CheckedValuesToolbarButton
+            allCheckedRowsAction="resetCPBlanketAndSetCPBlanketLimitTermValues(CheckedValues)"
+            id="RemoveCoverages"
+            iterator="matchingCoveragesIterator"
+            label="displaykey.Web.Policy.CP.Blanket.RemoveCoverages"/>
+        </Toolbar>
+        <ListViewPanel
+          id="CPBlanketCovLV">
+          <RowIterator
+            checkBoxVisible="openForEdit"
+            editable="false"
+            elementName="matchingCov"
+            hasCheckBoxes="true"
+            id="matchingCoveragesIterator"
+            value="matchingCoverages">
+            <IteratorSort
+              sortBy="matchingCov.CPBuilding.CPLocation.Location.LocationNum"
+              sortOrder="1"/>
+            <IteratorSort
+              sortBy="matchingCov.CPBuilding.Building.BuildingNum"
+              sortOrder="2"/>
+            <Row>
+              <Cell
+                id="location"
+                label="displaykey.Web.Policy.CP.Blanket.Location"
+                value="matchingCov.CPBuilding.CPLocation"/>
+              <Cell
+                id="Building"
+                label="displaykey.Web.Policy.CP.Blanket.Building"
+                value="matchingCov.CPBuilding"/>
+              <Cell
+                action="CPBuildingPopup.push(cpLine, matchingCov.CPBuilding, openForEdit, jobWizardHelper)"
+                id="Coverage"
+                label="displaykey.Web.Policy.CP.Blanket.Coverage"
+                value="matchingCov.Pattern.DisplayName"/>
+              <Cell
+                id="Limit"
+                label="displaykey.Web.Policy.CP.Blanket.Limit"
+                value="blanket.getBuildingCovLimitDisplay(matchingCov)"/>
+              <Cell
+                id="Deductible"
+                label="displaykey.Web.Policy.CP.Blanket.Deductible"
+                value="blanket.getBuildingCovDeductDisplay(matchingCov)"/>
+              <Cell
+                id="Coinsurance"
+                label="displaykey.Web.Policy.CP.Blanket.Coinsurance"
+                value="blanket.getBuildingCovCoinsuranceDisplay(matchingCov)"/>
+              <Cell
+                id="Status"
+                label="displaykey.Web.Policy.CP.Blanket.Status"
+                value="blanket.getBlanketInclusion(matchingCov)"/>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+      </PanelRef>
+    </Screen>
+    <Code><![CDATA[function initialize() {
+  if (blanket == null and openForEdit) {
+    blanket = cpLine.createAndAddBlanket()
+  }
+  else if (blanket != null){
+    matchingCoverages =  blanket.getBuildingCoveragesByBlanketType()
+  }
+}
+
+function resetCPBlanketAndSetCPBlanketLimitTermValues(cpBuildingCovs : entity.CPBuildingCov[]) {
+  cpBuildingCovs.each(\ c -> {c.CPBlanket = null})
+  blanket.CPBlanketCov.CPBlanketLimitTerm.Value = blanket.BuildingCovLimitSum
+}]]></Code>
+  </Popup>
+</PCF>

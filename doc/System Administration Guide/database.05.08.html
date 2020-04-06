@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Configuring Database Statistics</title>
+    <link rel="StyleSheet" href="css/database.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter System Administration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="database.05.01.html#1199461">Configuring and Maintaining the PolicyCenter Database</a> : Configuring Database Statistics</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1199461">Configuring Database Statistics</a></h3>
+      <div class="B_-_Body"><a name="1217309">Database statistics are metadata that describe the underlying database. For example, database statistics store row counts in a table, how the data is distributed in a table, and much more. A database management system uses statistics to determine query plans to optimize performance.</a></div>
+      <div class="B_-_Body"><a name="1217316">PolicyCenter provides database statistics generation designed specifically for how the PolicyCenter application and data model interact with the physical database. </a></div>
+      <div class="B_-_Body"><a name="1271618">With Oracle, generating database statistics from the database management system can potentially create statistics that cause PolicyCenter to select a bad plan for execution of SQL queries. Therefore, always use PolicyCenter to generate database statistics, rather than by using the statistics generation provided with Oracle. </a></div>
+      <div class="B_-_Body"><a name="1271681">Guidewire recommends that Oracle implementations only update database statistics during quiet periods, such as weekends, so that these updates do not occur when BillingCenter is under heavy load. By default, updating statistics on a table or index invalidates existing query plans related to that table or index. </a></div>
+      <div class="B_-_Body"><a name="1271712">Guidewire further recommends that Oracle implementations use the </a><span class="cv_-_computer_voice">NO_INVALIDATE =&gt; AUTO_INVALIDATE</span> option when updating statistics. This is the default option. This option is also what the Guidewire Database Statistics batch process uses, unless the configuration parameter <span class="cv_-_computer_voice">DiscardQueryPlansDuringStatsUpdateBatch</span> is set to <span class="cv_-_computer_voice">true</span>. Setting <span class="cv_-_computer_voice">NO_INVALIDATE =&gt; FALSE</span> to force immediate invalidation of query plans has a high likelihood of causing issues with concurrent batch updates. Using <span class="cv_-_computer_voice">AUTO_INVALIDATE</span> greatly reduces this risk. Ideally, set the <span class="cv_-_computer_voice">_optimizer_invalidation_period</span> parameter to a low value (a few minutes) to reduce the time window during which Oracle might invalidate a plan. </div>
+      <div class="B_-_Body"><a name="1271621">For SQL Server, have SQL Server update database statistics. Do not use PolicyCenter to update the statistics or run the statistics statements that PolicyCenter can create. Guidewire requires that you set </a><span class="cv_-_computer_voice">Auto Create Statistics</span> and <span class="cv_-_computer_voice">Auto Update Statistics</span> to <span class="cv_-_computer_voice">true</span> on the database account used for PolicyCenter.</div>
+      <div class="B_-_Body"><a name="1217569">Updating database statistics can take a long time on a large database. Only collect statistics if there are significant changes to data, such as after a major upgrade, after using the </a><span class="cv_-_computer_voice">zone_import</span> command, or if there are performance problems. Under normal operating conditions, you do not need to update database statistics on the PolicyCenter server often. If you encounter performance problems or degradation related to the database, check the <span class="ui_-_UI_element">Database Statistics</span> page on the <span class="ui_-_UI_element">Info Pages</span> section of the <span class="ui_-_UI_element">Server Tools</span>. If the page shows suspicious or inaccurate statistics, update database statistics. If the data change is high, consider using a weekly or biweekly schedule for updating statistics.</div>
+      <div class="B_-_Body"><a name="1284097">The database statistics batch process is resource-intensive. To prevent application administrators from accidentally running the process, it can only be started from the command line. Consult with your Database Administrator before starting the database statistics process.</a></div>
+      <div class="B_-_Body"><a name="1239053">You can also run a process to only update statistics for tables that have had a configurable percentage of data changed since the last statistics process was run.</a></div>
+      <div class="B_-_Body"><a name="1217576">PolicyCenter automatically updates specific database statistics during an upgrade, in conjunction with selected batch processes, or during the </a><span class="cv_-_computer_voice">zone_import</span> process. </div>
+      <div class="B_-_Body"><a name="1217302">For database upgrades, PolicyCenter updates database statistics for objects that the upgrade process changes significantly. For optimum performance, generate incremental database statistics after performing an upgrade between major versions.</a></div>
+      <div class="B_-_Body"><a name="1217413">Some PolicyCenter batch processes use work or scratch tables to store intermediate calculations. Other batch processes populate denormalized tables that PolicyCenter uses internally for performance reasons. These processes can update database statistics on the scratch tables and denormalized tables during their execution.</a></div>
+      <div class="B_-_Body"><a name="1217408">Using the </a><span class="ui_-_UI_element">Database Statistics</span> page, you can see if any statistics are out of date. See <a href="javascript:WWHClickedPopup('admin', 'maintenance.13.11.html#1473623', '');" title="Info Pages">“Database Statistics”</a>. Guidewire recommends that you archive database statistics as standard practice. This ensures that you have a record of the database history that can be reviewed if necessary.</div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="1199510">Have your database administrator (DBA) review these statistics with you.</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

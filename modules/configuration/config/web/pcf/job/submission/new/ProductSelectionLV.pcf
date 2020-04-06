@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <ListViewPanel
+    id="ProductSelectionLV">
+    <Require
+      name="productOffers"
+      type="ProductSelection[]"/>
+    <Require
+      name="account"
+      type="Account"/>
+    <Require
+      name="producerSelection"
+      type="ProducerSelection"/>
+    <Require
+      name="createSingle"
+      type="boolean"/>
+    <Require
+      name="quoteType"
+      type="QuoteType"/>
+    <Variable
+      initialValue="false"
+      name="createMultiple"
+      type="boolean"/>
+    <RowIterator
+      editable="true"
+      elementName="productOffer"
+      value="productOffers">
+      <Row>
+        <LinkCell
+          align="center"
+          id="Select"
+          visible="createSingle"
+          width="75">
+          <Link
+            action="createOneSubmission(productOffer)"
+            id="addSubmission"
+            label="displaykey.Web.Submission.Products.Select"
+            styleClass="miniButton"
+            visible="productOffer.ProductSelectionStatus == &quot;Available&quot; || productOffer.ProductSelectionStatus == &quot;AutoDeclined&quot;"/>
+        </LinkCell>
+        <RangeCell
+          align="left"
+          desc="f"
+          editable="true"
+          id="NumToCreate"
+          label="displaykey.Web.Submission.Products.NumberToCreate"
+          value="productOffer.NumToCreate"
+          valueRange="makeNumberRange(productOffer.MaxCreate)"
+          valueVisible="productOffer.ProductSelectionStatus == &quot;Available&quot; || productOffer.ProductSelectionStatus == &quot;AutoDeclined&quot;"
+          visible="!createSingle"/>
+        <Cell
+          align="left"
+          id="Name"
+          label="displaykey.Web.SubmissionManagerLV.Name"
+          value="productOffer.Product.Name"/>
+        <Cell
+          align="left"
+          id="Description"
+          label="displaykey.Web.SubmissionManagerLV.Description"
+          value="productOffer.Product.Description"/>
+        <Cell
+          align="left"
+          id="Status"
+          label="displaykey.Web.SubmissionManagerLV.Status"
+          value="productOffer.ProductSelectionStatus"/>
+        <Cell
+          align="left"
+          id="MaxCreate"
+          label="displaykey.Web.Submission.Products.MaxToCreate"
+          value="productOffer.MaxCreate"
+          visible="!createSingle"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function createOneSubmission( offer : ProductSelection )
+{
+  if( producerSelection.DefaultPPEffDate == null ) {
+    throw new gw.api.util.DisplayableException(displaykey.Web.SubmissionManagerLV.DefaultPPEffDateRequired)
+  }
+  var availOffer = account.getAvailableProduct( producerSelection.SubmissionPolicyProductRoot, offer.Product )
+  if( availOffer == null )
+  {
+    throw new gw.api.util.DisplayableException( displaykey.Web.SubmissionManagerLV.UnavailableProduct( offer.Product ) )
+  }
+  if( producerSelection.ProducerCode == null )
+  {
+    throw new gw.api.util.DisplayableException( displaykey.Web.SubmissionManagerLV.ProducerCodeRequired )
+  }
+  web.job.submission.SubmissionUtil.setLastProducerSelection( producerSelection )
+  offer.NumToCreate = 1
+  var submission = web.job.submission.SubmissionUtil.createSubmission( offer, account, producerSelection, quoteType )
+  // For one new submission - go straight to Submission view
+  var policyPeriod = submission.LatestPeriod
+  gw.transaction.Transaction.runWithNewBundle( \ bun -> {
+    policyPeriod = bun.add( policyPeriod )
+    policyPeriod.SubmissionProcess.beginEditing()
+  } )
+  
+  JobForward.go(submission, policyPeriod)
+}
+
+function makeNumberRange( max : int ) : java.util.List<java.lang.Integer>
+{
+  var result = new java.util.ArrayList<java.lang.Integer>()
+  var count = 0
+  while( count <= max )
+  {
+    result.add( count )
+    count = count + 1
+  }
+  return result
+}]]></Code>
+  </ListViewPanel>
+</PCF>

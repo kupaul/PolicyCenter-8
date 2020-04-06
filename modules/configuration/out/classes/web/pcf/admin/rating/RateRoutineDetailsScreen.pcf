@@ -1,0 +1,205 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    id="RateRoutineDetailsScreen">
+    <Require
+      name="rateRoutine"
+      type="CalcRoutineDefinition"/>
+    <Variable
+      initialValue="new gw.pcf.rating.flow.RateRoutineEditScreenHelper(rateRoutine, CurrentLocation)"
+      name="helper"/>
+    <Variable
+      initialValue="rateRoutine.isLatestVersion()"
+      name="isLatestVersion"
+      type="boolean"/>
+    <Variable
+      initialValue="rateRoutine.OrderedSteps"
+      name="orderedSteps"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="helper.indentLevel(orderedSteps)"
+      name="indentLevelMap"
+      recalculateOnRefresh="true"/>
+    <AlertBar
+      id="RateRoutineUsedByPromotedBookMessage"
+      label="displaykey.Web.Rating.RateRoutines.UsedByPromotedRateBook"
+      showConfirmMessage="false"
+      visible="rateRoutine.isIncludedInPromotedRateBook()"/>
+    <PanelRef>
+      <PanelRow>
+        <PanelColumn>
+          <PanelRef
+            def="RateRoutineDV(rateRoutine, false, UNDEFINED, {}, {})">
+            <Toolbar
+              id="RateroutineDetailToolbar">
+              <ToolbarButton
+                action="EditRateRoutine.go(rateRoutine)"
+                available="not rateRoutine.isIncludedInPromotedRateBook()"
+                id="EditButton"
+                label="displaykey.Web.Rating.RateRoutines.EditButton"
+                shortcut="E"
+                visible="perm.System.ratebookedit"/>
+              <ToolbarButton
+                action="NewRateRoutine.go(rateRoutine, VERSION)"
+                available="isLatestVersion"
+                id="VersionButton"
+                label="displaykey.Web.Rating.RateRoutines.VersionButton"
+                shortcut="C"
+                showConfirmMessage="false"/>
+              <ToolbarButton
+                action="NewRateRoutine.go(rateRoutine, BRANCH)"
+                id="BranchButton"
+                label="displaykey.Web.Rating.RateRoutines.Branch.JurisdictionButton"
+                shortcut="V"
+                showConfirmMessage="false"/>
+              <ToolbarButton
+                action="NewRateRoutine.go(rateRoutine, COPY)"
+                id="CopyButton"
+                label="displaykey.Web.Rating.RateRoutines.CopyButton"
+                shortcut="Y"
+                showConfirmMessage="false"/>
+              <ToolbarButton
+                action="helper.deleteRoutine()"
+                available="not rateRoutine.isIncludedInPromotedRateBook()"
+                confirmMessage="displaykey.Web.Rating.RateRoutines.DeleteConfirmation"
+                id="Delete"
+                label="displaykey.Web.Rating.RateRoutines.DeleteButton"
+                shortcut="L"/>
+            </Toolbar>
+          </PanelRef>
+        </PanelColumn>
+        <PanelColumn>
+          <PanelRef
+            def="LocalizedValuesDV(rateRoutine, { &quot;Name&quot;, &quot;Description&quot;}, { displaykey.Web.Rating.RateRoutines.Name, displaykey.Web.Rating.RateRoutines.Description })"/>
+        </PanelColumn>
+      </PanelRow>
+    </PanelRef>
+    <PanelRef>
+      <TitleBar
+        title="displaykey.Web.Rating.Flow.CalcRoutine.Steps"/>
+      <ListViewPanel
+        alternateEntryStyle="false">
+        <Row
+          renderAsSmartHeader="true">
+          <TextCell
+            enableSort="false"
+            id="RateRoutineLineNumberColumnLabel"
+            value="displaykey.Web.Rating.Flow.CalcRoutine.LineNumber"/>
+          <TextCell
+            enableSort="false"
+            id="RateRoutineInstructionColumnLabel"
+            value="displaykey.Web.Rating.Flow.CalcRoutine.Instruction"/>
+          <TextCell
+            align="center"
+            enableSort="false"
+            id="StepOperatorColumnLabel"
+            showHeaderIcon="false"
+            value="displaykey.Web.Rating.Flow.CalcRoutine.Operator"/>
+          <TextCell
+            align="center"
+            enableSort="false"
+            id="LeftParenthesisGroupColumnLabel"
+            value="displaykey.Web.Rating.Flow.CalcRoutine.LeftParenthesis"/>
+          <TextCell
+            enableSort="false"
+            id="RateRoutineOperandColumnLabel"
+            value="displaykey.Web.Rating.Flow.CalcRoutine.Operand"/>
+          <TextCell
+            align="center"
+            enableSort="false"
+            id="RightParenthesisGroupColumnLabel"
+            value="displaykey.Web.Rating.Flow.CalcRoutine.RightParenthesis"/>
+          <TextCell
+            enableSort="false"
+            id="StepNoteColumnLabel"
+            showHeaderIcon="false"
+            value="displaykey.Web.Rating.Flow.CalcRoutine.Notes"/>
+        </Row>
+        <RowIterator
+          checkBoxVisible="false"
+          editable="false"
+          elementName="ratingRoutineStep"
+          id="RatingRoutineSteps"
+          pageSize="0"
+          value="rateRoutine.Steps.orderBy(\rr -&gt; rr.SortOrder)">
+          <Row
+            visible="not ratingRoutineStep.IsSectionCommentStep">
+            <TextCell
+              align="center"
+              enableSort="false"
+              fontColor="&quot;#888888&quot;"
+              id="LineNumber"
+              value="ratingRoutineStep.SortOrder"/>
+            <ModalCellRef
+              def="RateRoutineStepInstruction(ratingRoutineStep, helper, indentLevelMap)"
+              id="RateRoutineStepInstruction"
+              mode="ratingRoutineStep.StepType.Categories.whereTypeIs(CalcStepCategory).first().Code"/>
+            <RangeCell
+              align="center"
+              available="helper.operatorAvailable(ratingRoutineStep)"
+              enableSort="false"
+              filter="CalcStepOperatorType.Type.getTypeKeysByFilterName(&quot;MainColumnOperators&quot;).contains(VALUE)"
+              id="ActionOperator"
+              noneSelectedLabel="&quot; &quot;"
+              optionLabel="VALUE.LabelForDisplay"
+              showHeaderIcon="false"
+              value="ratingRoutineStep.PrimaryOperand.OperatorType"
+              valueRange="CalcStepOperatorType.getTypeKeys(false)"
+              valueVisible="helper.operatorAvailable(ratingRoutineStep) and not ratingRoutineStep.IsSectionCommentStep"
+              width="64">
+              <PostOnChange
+                onChange="helper.updateOperandForOperatorChange(ratingRoutineStep)"/>
+            </RangeCell>
+            <TextCell
+              align="center"
+              id="LeftParenthesisGroup"
+              numCols="1"
+              requestValidationExpression="VALUE.toCharArray().toList().countWhere(\ c -&gt; c != '(') == 0 ? null: displaykey.Web.Rating.Flow.CalcRoutine.OnlyLeftParenthesisHere"
+              value="ratingRoutineStep.PrimaryOperand.LeftParenthesisGroup"
+              valueVisible="not ratingRoutineStep.IsSectionCommentStep"
+              width="45"/>
+            <TextCell
+              enableSort="false"
+              id="ActionOperand"
+              value="ratingRoutineStep.PrimaryOperand.OperandName"/>
+            <TextCell
+              align="center"
+              id="RightParenthesisGroup"
+              numCols="1"
+              requestValidationExpression="VALUE.toCharArray().toList().countWhere(\ c -&gt; c != ')') == 0 ? null: displaykey.Web.Rating.Flow.CalcRoutine.OnlyRightParenthesisHere"
+              value="ratingRoutineStep.PrimaryOperand.RightParenthesisGroup"
+              valueVisible="not ratingRoutineStep.IsSectionCommentStep"
+              width="45"/>
+            <TextCell
+              enableSort="false"
+              id="StepNote"
+              numCols="60"
+              showHeaderIcon="false"
+              value="ratingRoutineStep.Notes"
+              valueVisible="not ratingRoutineStep.IsSectionCommentStep"/>
+          </Row>
+          <Row
+            visible="ratingRoutineStep.IsSectionCommentStep">
+            <TextCell
+              align="center"
+              enableSort="false"
+              fontColor="&quot;#888888&quot;"
+              id="LineNumberCommentRow"
+              value="ratingRoutineStep.SortOrder"/>
+            <Cell
+              id="SectionCommentInstruction"
+              value="displaykey.Web.Rating.Flow.CalcRoutine.SectionComment"/>
+            <TextAreaCell
+              colspan="5"
+              id="SectionComment"
+              numRows="2"
+              outputConversion="helper.indented(ratingRoutineStep, VALUE, indentLevelMap)"
+              value="ratingRoutineStep.SectionComment"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </PanelRef>
+  </Screen>
+</PCF>

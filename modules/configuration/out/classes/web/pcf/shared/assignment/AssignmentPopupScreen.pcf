@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    id="AssignmentPopupScreen">
+    <Require
+      name="AssignmentPopup"
+      type="assignment.AssignmentPopup"/>
+    <Toolbar>
+      <ToolbarButton
+        action="CurrentLocation.cancel()"
+        id="AssignmentPopupScreen_CancelButton"
+        label="displaykey.Button.Cancel"
+        shortcut="L"/>
+    </Toolbar>
+    <PanelRef
+      def="FailedAssignmentsLV(AssignmentPopup)"
+      mode="AssignmentPopup.AssignableType.RelativeName"
+      visible="AssignmentPopup.hasErrors()">
+      <TitleBar
+        title="displaykey.Web.Assignment.Popup.Unassigned"/>
+      <Toolbar/>
+    </PanelRef>
+    <SearchPanel
+      criteriaName="SearchCriteria"
+      resultsName="SearchResult"
+      search="SearchCriteria.performSearch()"
+      searchCriteria="new gw.api.assignment.AssignmentSearchCriteria()"
+      searchResultsType="gw.api.assignment.AssignmentSearchResult">
+      <PanelRef
+        def="AssignmentPopupDV(AssignmentPopup, SearchResult, SearchCriteria)"/>
+      <PanelRef
+        def="AssignmentUserLV(SearchResult.Users)"
+        visible="(SearchCriteria.SearchType == &quot;User&quot;) and (AssignmentPopup.SelectionType == &quot;FromSearch&quot;)">
+        <Toolbar/>
+      </PanelRef>
+      <PanelRef
+        def="AssignmentGroupLV(SearchResult.Groups)"
+        visible="(SearchCriteria.SearchType == &quot;Group&quot;) and (AssignmentPopup.SelectionType == &quot;FromSearch&quot;)">
+        <Toolbar/>
+      </PanelRef>
+      <PanelRef
+        def="AssignmentQueueLV(SearchResult.Queues)"
+        visible="(SearchCriteria.SearchType == &quot;Queue&quot;) and (AssignmentPopup.SelectionType == &quot;FromSearch&quot;)">
+        <Toolbar/>
+      </PanelRef>
+    </SearchPanel>
+  </Screen>
+</PCF>

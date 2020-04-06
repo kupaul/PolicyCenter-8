@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Calling Your Published RPCE Web Service from Java</title>
+    <link rel="StyleSheet" href="css/webservices-rpce-publish.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-webservices.html#3550443">Web Services</a> : <a class="WebWorks_Breadcrumb_Link" href="webservices-rpce-publish.10.01.html#3550443">Publishing Web Services (RPCE)</a> : Calling Your Published RPCE Web Service from Java</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="3550443">Calling Your Published RPCE Web Service from Java</a></h3>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="3647573">RPCE web services are deprecated. Convert existing RPCE code to WS-I web services.</a></div>
+      <div class="B_-_Body"><a name="3550447">Guidewire recommends the Java language to integrate with PolicyCenter from external systems. Guidewire provides a Java class that improves performance for Java web service clients by transparently caching authenticated proxies. Cached proxies avoid unnecessary time and resources to get new proxies every time client code requests one. Developers who use the standard PolicyCenter Java libraries can closely follow the instructions and code snippets in this section for basic web service connectivity and authentication. </a></div>
+      <div class="B_-_Body"><a name="3317683">To connect to the PolicyCenter web service APIs using Java, follow these high-level steps:</a></div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><span class="ri_-_run_in_header"><a name="3646700">Get references to API interfaces that you want by using ‘APILocator’</a></span> – Typical applications use <span class="cv_-_computer_voice">AccountAPI</span> and <span class="cv_-_computer_voice">PolicyPeriodAPI</span>. Applications also may use other interfaces in the package <span class="cv_-_computer_voice">com.guidewire.pc.webservices.api</span>, as documented in the <span style="font-style: italic">API Reference Javadoc</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="3445619">If you create a custom SOAP API called </a><span class="cv_-_computer_voice">MyServiceAPI</span>, reference the service as <span class="cv_-_computer_voice">com.guidewire.pc.webservices.api.MyServiceAPI</span>.</div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="3318539">From the perspective of Java code connecting to SOAP APIs through SOAP API generated libraries, the API class is always in the package </a><span class="cv_-_computer_voice">com.guidewire.pc.webservices.api.*</span>. This is true independent of the original package of the Gosu class that implements the web service as defined within Studio.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><span class="ri_-_run_in_header"><a name="3317695">Call those interface’s methods.</a></span> Call API interface methods to query PolicyCenter or to change its data.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><span class="ri_-_run_in_header"><a name="3391898">If you are finished, log out.</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3445647">If you use Java, get references to API interfaces with the Java-specific </a><span class="cv_-_computer_voice">APILocator</span> class. The <span class="cv_-_computer_voice">APILocator</span> class and related classes are special in the SOAP API generated libraries because they are specifically for Java. In contrast, PolicyCenter generates almost all SOAP API classes from WSDL and thus do not vary by SOAP client language.</div>
+      <div class="B_-_Body"><a name="3445680">Use the following steps to use </a><span class="cv_-_computer_voice">APILocator</span>:</div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="3445681">Get a proxy. Call the </a><span class="cv_-_computer_voice">APILocator</span> method <span class="cv_-_computer_voice">getAuthenticatedProxy</span>. Pass it the API name, the server URL, the user name, and that user’s password. This method obtains and returns a SOAP API proxy object. Do not use the PolicyCenter <span class="cv_-_computer_voice">ILoginAPI</span> interface from Java because <span class="cv_-_computer_voice">APIHandler</span> handles authentication for you.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3317714">Use the API interface by calling methods of the interface.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3317716">Before your application exits, log out by calling </a><span class="cv_-_computer_voice">APILocator.releaseAndLogoutAllProxies()</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3317717">It is important to understand that with this approach there is no call with </a><span class="cv_-_computer_voice">ILoginAPI</span> to log into the server. By calling <span class="cv_-_computer_voice">APILocator</span>.<span class="cv_-_computer_voice">getAuthenticatedProxy(...)</span>, your code effectively logs into the server to get the proxy.</div>
+      <div class="B_-_Body"><a name="3317718">However, before your program exits, you must log out of the server. You must log out from PolicyCenter by calling </a><span class="cv_-_computer_voice">APILocator.releaseAndLogoutAllProxies()</span> after your code completes. Failure to call the <span class="cv_-_computer_voice">releaseAndLogoutAllProxies</span> method results in lingering server sessions and potential memory leaks on the client.</div>
+      <div class="B_-_Body"><a name="3317725">The following example in Java uses </a><span class="cv_-_computer_voice">APILocator</span>:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="3317729">// Import your web service in the external tookit namespace. It is always in the following package:</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336833">package com.example;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336834">import javax.xml.rpc.ServiceException;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336993">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336994">import com.guidewire.pc.webservices.api.*;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336995">import com.guidewire.pc.webservices.entity.*;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336838">import com.guidewire.util.webservices.APILocator;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336839">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336840">public class Soaptest1 {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3635783">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336842">&nbsp;&nbsp;public static void main(String args[]) throws ServiceException {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336843">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336844">&nbsp;&nbsp;&nbsp;&nbsp;IUserAPI userAPI = null;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336845">&nbsp;&nbsp;&nbsp;&nbsp;User oneUser;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336846">&nbsp;&nbsp;&nbsp;&nbsp;String userName = "sys";</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336848">&nbsp;&nbsp;&nbsp;&nbsp;String url = "http://localhost:8080/pc"; // NOTE: change server or port as appropriate</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336849">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336851">&nbsp;&nbsp;&nbsp;&nbsp;// Get API interface proxies here. </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336854">&nbsp;&nbsp;&nbsp;&nbsp;System.out.println("About to get the proxy -- doesn't call the API yet!");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336855">&nbsp;&nbsp;&nbsp;&nbsp;userAPI = (IUserAPI) APILocator.getAuthenticatedProxy(IUserAPI.class, url, "su", "gw");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336856">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3337039">&nbsp;&nbsp;&nbsp;&nbsp;try {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3337062">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// use the API proxies...</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3337040">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3337065">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// First, get the public ID of a User based on its user name string.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3337076">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;String oneUserPublicID = userAPI.findPublicIdByName(userName);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3337077">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3337078">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Next, use that public ID to get the SOAP version of the entity</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336861">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;oneUser = userAPI.getUser(oneUserPublicID);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336863">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3634917">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (oneUser == null) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336864">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw new Exception("That user name was not found!!!!");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336865">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336866">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336867">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println("DETAILS OF USER NAME '" + userName + "' ");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336868">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println("Public ID = " + oneUser.getPublicID());</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336869">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println("First Name = " + oneUser.getContact().getFirstName());</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336870">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println("Last Name = " + oneUser.getContact().getLastName());</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336871">&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3635753">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336872">&nbsp;&nbsp;&nbsp;&nbsp;catch (Exception e2) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336873">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;System.out.println("EXCEPTION DETECTED!! Details:" + e2.getMessage());</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336874">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;e2.printStackTrace();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336875">&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336876">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336877">&nbsp;&nbsp;&nbsp;&nbsp;// </a><span class="s_-_strong">Before the application finally exits, always release all the proxies!</span></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336878">&nbsp;&nbsp;&nbsp;&nbsp;APILocator.releaseAndLogoutAllProxies();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3336879">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3445822">}</a></PRE>
+      <div class="B_-_Body"><a name="3445824">If you use a different server name, port, web application, or if you use secure sockets (SSL/HTTPS), you might pass a slightly different connection URL to the </a><span class="cv_-_computer_voice">getAuthenticatedProxy</span> method.</div>
+      <div class="B_-_Body"><a name="3317756">Each program that calls PolicyCenter must authenticate as a PolicyCenter user. Create some special PolicyCenter users that represent systems rather than actual people. This helps you track the original source of data in your database. Use different user IDs for different systems to help debug problems. You can track which code module imported which data. Remember to give this user identity sufficient roles and permissions to make the desired API calls. All API calls except for logging in require the </a><span class="cv_-_computer_voice">SOAPADMIN</span> permission. Some APIs specify additional permissions that the user must have.</div>
+      <div class="B_-_Body"><a name="3317767">PolicyCenter supports plugins that can optionally manage user authentication. For instance, to integrate PolicyCenter user sign-on with a corporate LDAP authentication directory. If you register a user authentication plugin, it handles the user authentication automatically. There is no difference for login or logout code to support authentication plugins. For information about writing a user authentication plugin, see </a><a href="javascript:WWHClickedPopup('integration', 'authentication.16.5.html#1454403', '');" title="Deploying User Authentication Plugins">“Deploying User Authentication Plugins”</a>.</div>
+      <div class="B_-_Body"><a name="3317783">On a related note, you can design custom handing of authentication for certain users. For example, use PolicyCenter internal authentication for the SOAP API special users, and then use LDAP authentication for other users. For more details, see </a><a href="javascript:WWHClickedPopup('integration', 'authentication.16.4.html#1856130', '');" title="User Authentication Service Plugin">“SOAP API User Permissions and Special-Casing Users”</a>.</div>
+      <div class="B_-_Body"><a name="3339502">The SOAP protocol defines several approaches to server-client communication. PolicyCenter supports SOAP </a><span class="e_-_emphasis">conversational mode</span> and <span class="e_-_emphasis">non-conversational mode</span>. See <a href="javascript:WWHClickedPopup('integration', 'webservices-rpce-publish.10.13.html#3541689', '');" title="Web Services Using PolicyCenter Clusters">“Conversational and Non-Conversational SOAP Modes”</a>.</div>
+      <h4 class="H2_-_Heading_2"><a name="3317790">More Java Web Service API Client Examples </a></h4>
+      <div class="B_-_Body"><a name="3317792">The previous section shows basic web service API connectivity and authentication. This section contains examples using the Java language interface that demonstrate basic usage of other PolicyCenter APIs. </a></div>
+      <div class="B_-_Body"><a name="3646759">This example shows how to use APIs to:</a></div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="3646760">Create a new note</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3646761">Add a note to an existing policy.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3646762">Use Java code similar to the following:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="3646763">// Log in and get references to PolicyCenter API interface AccountAPI.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646764">//   (See previous sections of this topic for details.)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646765">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646766">// Create new account</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646767">Account acct=new Account();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646768">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646769">// Set the Public ID to a known, already existing public ID</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646770">acct.setPublicID("ds:1"); </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646771">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646772">// Set the reference type to "by reference". </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646773">acct.setRefType(com.guidewire.pc.webservices.enumeration.RefTypeEnum.GW_ByRef);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646774">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646775">// Create a new note</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646776">Note note1=new Note();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646777">note1.setAccount(acct);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646778">note1.setAuthor("aapplegate"); </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646779">note1.setSubject("subject");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646780">note1.setBody("This is an note from AccountAPI");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646781">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646782">// Add the note.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646783">try {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646784">&nbsp;&nbsp;String returnID = accountAPI.addNoteToAccount("ds:1",note1); </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646785">}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646786">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646787">catch (Exception e) {/* Examine exceptions thrown from PolicyCenter… */}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646788">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646789">// If connecting from a language other than Java, be sure to</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646790">// log out from the PolicyCenter server if you are done (see previous sections)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646791">// For the Java language, log out is automatic if using APILocator.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646792">// However, BEFORE THE APPLICATION FINALLY EXITS, ALWAYS RELEASE ALL THE PROXIES:</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3646793">// &nbsp;&nbsp;&nbsp;APILocator.releaseAndLogoutAllProxies();</a></PRE>
+      <div class="B_-_Body"><a name="3646796">For more information about referring to objects by reference, see </a><a href="javascript:WWHClickedPopup('integration', 'webservices-rpce-publish.10.11.html#1402026', '');" title="Public IDs and RPCE Web Services">“As a SOAP Client, Refer to an Entity By Reference with a Public ID”</a>.</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3620414">&nbsp;</a></PRE>
+      <h4 class="H2_-_Heading_2"><a name="3450568">Setting Timeout with Java API Locator</a></h4>
+      <div class="B_-_Body"><a name="3450582">To override the default message timeout when using </a><span class="cv_-_computer_voice">APILocator</span>, you can specify a new timeout in milliseconds. </div>
+      <div class="B_-_Body"><a name="3450592">From your web service client code, use the following code to set the timeout to 12345 milliseconds:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="3450593">com.guidewire.util.webservices.SOAPOutboundHandler.READ_TIMEOUT.set(new Integer(12345));</a></div>
+      <div class="B_-_Body"><a name="3450583">If you do not override the timeout, the </a><span class="cv_-_computer_voice">APILocator</span> class uses the Apache Axis default, which is 600000 milliseconds. That default is the Axis configuration constant <span class="cv_-_computer_voice">org.apache.axis.Constants.DEFAULT_MESSAGE_TIMEOUT</span>.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <MenuActions
+    flatten="true"
+    id="WizardMenuActions">
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <MenuItem
+      id="WizardMenuActions_Goto"
+      label="displaykey.Web.JobWizard.GoTo"
+      visible="true">
+      <MenuItem
+        action="AccountFileForward.go(policyPeriod.Policy.Account)"
+        id="WizardMenuActions_ToAccountFile"
+        label="displaykey.Web.JobWizard.ToAccountFile"
+        visible="policyPeriod.Policy.Account != null and !policyPeriod.Policy.Account.New"/>
+      <!-- Can only view PolicyFile from bound periods or from open jobs after the first submission -->
+      <MenuItem
+        action="PolicyFileForward.go(job.LatestPeriod.PolicyNumber)"
+        id="WizardMenuActions_ToPolicyFile"
+        label="displaykey.Web.JobWizard.ToPolicyFile"
+        visible="(policyPeriod.Promoted) or (policyPeriod.Job typeis Issuance) or (not policyPeriod.Job?.createsNewPolicy())"/>
+      <MenuItemSetRef
+        def="WizardActionsMenuItemSet(jobWizardHelper,job,policyPeriod)"
+        mode="job.Subtype"/>
+      <MenuItem
+        id="WizardMenuActions_JobGroup"
+        label="displaykey.Web.JobWizard.JobGroup"
+        visible="job.JobGroup != null">
+        <MenuItem
+          action="JobGroupForward.go(job.JobGroup)"
+          id="JobGroupItem"
+          label="job.JobGroup.Name"/>
+        <MenuItemIterator
+          elementName="jobItem"
+          id="JobsItems"
+          value="job.JobGroup.Jobs">
+          <MenuItem
+            action="JobForward.go(jobItem)"
+            id="JobItem"
+            label="displaykey.Web.JobWizard.JobGroup.JobName(jobItem.Policy.Product.Abbreviation, jobItem.JobNumber)"
+            visible="jobItem != job"/>
+        </MenuItemIterator>
+      </MenuItem>
+    </MenuItem>
+    <MenuItemDivider/>
+    <MenuItem
+      id="WizardMenuActions_Create"
+      label="displaykey.Web.JobWizard.Create"
+      visible="true">
+      <MenuItem
+        action="NewNoteWorksheet.goInWorkspace(policyPeriod, policyPeriod.EditEffectiveDate, job)"
+        id="WizardMenuActions_NewNote"
+        label="displaykey.Web.JobWizard.NewNote"
+        visible="!policyPeriod.Locked and perm.Note.create"/>
+      <MenuItem
+        id="WizardMenuActions_NewDocument"
+        label="displaykey.Web.JobWizard.NewDocument"
+        visible="!policyPeriod.Locked">
+        <MenuItemSetRef
+          def="NewJobDocumentMenuItemSet(policyPeriod)"/>
+      </MenuItem>
+      <MenuItem
+        id="WizardMenuActions_NewActivity"
+        label="displaykey.Web.JobWizard.NewActivity"
+        visible="!policyPeriod.Locked and perm.System.actcreate">
+        <MenuItemSetRef
+          def="NewActivityMenuItemSet(null, null, policyPeriod)"/>
+      </MenuItem>
+      <MenuItem
+        action="copySubmission()"
+        id="WizardMenuActions_CopySubmission"
+        label="displaykey.Web.JobWizard.CopySubmission"
+        visible="job typeis Submission &amp;&amp; perm.System.jobcopy &amp;&amp; perm.Submission.create"/>
+    </MenuItem>
+    <MenuItemDivider/>
+    <MenuItem
+      id="WizardMenuActions_Change"
+      label="displaykey.Web.JobWizard.Edit"
+      visible="true">
+      <MenuItemSetRef
+        def="WizardActionsEditMenuItemSet(jobWizardHelper,job,policyPeriod)"
+        mode="job.Subtype"/>
+      <MenuItem
+        action="PolicyChange_ChangeEditEffectiveDate.go(job as PolicyChange, policyPeriod)"
+        available="!policyPeriod.hasAnyUnhandledPreemptions()"
+        confirmMessage="getConfirmMessgeForChangeEffectiveDate()"
+        id="WizardMenuActions_ChangeEffDate"
+        label="displaykey.Web.JobWizard.ChangeEffDate"
+        visible="policyPeriod.JobProcess.canStartChangeEditEffectiveDate().Okay"/>
+      <MenuItem
+        action="validateThenGoToCopyData()"
+        id="WizardMenuActions_CopyPolicyData"
+        label="displaykey.Web.JobWizard.CopyPolicyData"
+        visible="canCopyData()"/>
+    </MenuItem>
+    <MenuItemDivider/>
+    <MenuItem
+      id="WizardMenuActions_Archiving"
+      label="displaykey.Web.JobWizard.Archive.Title"
+      visible="perm.System.archivedisable or perm.System.archiveenable">
+      <MenuItem
+        action="ArchiveSuspendResumePopup.push(policyPeriod.PolicyTerm.Policy)"
+        id="WizardMenuActions_SuspendResumeArchiving"
+        label="displaykey.Web.JobWizard.Archive.EnableDisable"/>
+    </MenuItem>
+    <MenuItemDivider/>
+    <MenuItem
+      id="DiagWorksheetItem"
+      label="displaykey.Web.JobWizard.DiagnosticData"
+      showConfirmMessage="false"
+      visible="policyPeriod.Lines.hasMatch(\ line -&gt; gw.rating.worksheet.WorksheetUIHelper.canViewDiagnosticWorksheet(line))">
+      <MenuItem
+        action="RatingWorksheetPopup.push(policyPeriod.Lines.firstWhere(\ line -&gt; gw.rating.worksheet.WorksheetUIHelper.canViewDiagnosticWorksheet(line)))"
+        id="ShowDiagWorksheet"
+        label="displaykey.Web.JobWizard.ShowPartialWorksheet"
+        showConfirmMessage="false"/>
+    </MenuItem>
+    <Code><![CDATA[// Copy current PolicyPeriod into new Submission and new Policy
+function copySubmission() {
+  var submission = (job as Submission)
+  var copy = submission.copyPolicyPeriod( policyPeriod )
+  JobForward.go(copy)
+}
+
+function getConfirmMessgeForChangeEffectiveDate() : String {
+  if (((job as PolicyChange).ActivePeriods.Count == 1) ) {
+    return policyPeriod.Status == PolicyPeriodStatus.TC_QUOTED ? displaykey.Job.Operation.Edit.Confirm : null
+  } else {
+    return (getActiveQuotedPeriods().Count > 0) ? displaykey.Job.Operation.MultiQuote.Edit.Confirm : null
+  }
+}
+
+function getActiveQuotedPeriods() : PolicyPeriod[] {
+  return (job as PolicyChange).ActivePeriods.where(\ p -> p.Status == PolicyPeriodStatus.TC_QUOTED )
+}
+
+function validateThenGoToCopyData(){
+  var jobWizard = jobWizardHelper.Wizard
+  var valid = jobWizard.reValidateModel()
+  if (valid){
+    jobWizard.saveDraft()
+    CopyPolicyDataSearchPopup.push(policyPeriod)
+  }
+}
+
+function canCopyData() : boolean {
+  var isVisible = not (jobWizardHelper.Wizard.CurrentStepId == "SideBySide")
+  isVisible = isVisible and gw.job.CopyDataVisibilityByProduct.isCopyDataVisibleForProduct(policyPeriod.Policy.ProductCode)
+  isVisible = isVisible and policyPeriod.JobProcess.canStartCopyPolicyData().Okay
+  return isVisible
+}
+]]></Code>
+  </MenuActions>
+</PCF>

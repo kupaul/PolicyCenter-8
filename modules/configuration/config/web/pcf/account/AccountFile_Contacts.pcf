@@ -1,0 +1,155 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    canEdit="perm.Account.edit(account)"
+    canVisit="perm.Account.view(account) and perm.System.accountcontacts"
+    handlesValidationIssue="VALUE typeis entity.Contact"
+    id="AccountFile_Contacts"
+    title="displaykey.Web.AccountFile.Contacts.Title"
+    validationParameter="account">
+    <LocationEntryPoint
+      signature="AccountFile_Contacts(account : Account)"/>
+    <Variable
+      name="account"
+      type="Account"/>
+    <Variable
+      initialValue="gw.plugin.Plugins.get(gw.plugin.contact.IContactConfigPlugin)"
+      name="contactConfigPlugin"/>
+    <Variable
+      initialValue="gw.web.account.AccountFileContactsUIHelper .loadAcctContactRolesDisplay(account)"
+      name="acctContactRolesDisplayNames"
+      type="java.util.Map&lt;AccountContact,String&gt;"/>
+    <Screen
+      id="AccountFile_ContactsScreen">
+      <Toolbar/>
+      <ListDetailPanel
+        selectionName="accountContact"
+        selectionOnEnter="false"
+        selectionType="AccountContact">
+        <!-- The main ListView -->
+        <PanelRef>
+          <Toolbar
+            visible="perm.Account.edit(account)">
+            <CheckedValuesToolbarButton
+              checkedRowAction="CheckedValue.Active = !CheckedValue.Active"
+              flags="all canChangeActiveStatus"
+              id="changeActiveStatus"
+              iterator="AccountContactsLV"
+              label="displaykey.Web.AccountFile.Contacts.ChangeActiveStatus"/>
+            <ToolbarDivider/>
+            <ToolbarButton
+              id="addContactButton"
+              label="displaykey.Button.CreateNew">
+              <MenuItemIterator
+                elementName="roleType"
+                value="contactConfigPlugin.AvailableAccountContactRoleTypes.subtract({&quot;AccountHolder&quot;}).toTypedArray()">
+                <IteratorSort
+                  sortBy="roleType.DisplayName"
+                  sortOrder="1"/>
+                <MenuItem
+                  id="roleType"
+                  label="contactConfigPlugin.getAccountContactRoleTypeDisplayName(roleType)">
+                  <MenuItemIterator
+                    elementName="contactType"
+                    value="contactConfigPlugin.getAllowedContactTypesForAccountContactRoleType(roleType)">
+                    <IteratorSort
+                      sortBy="contactType.DisplayName"
+                      sortOrder="1"/>
+                    <MenuItem
+                      action="NewAccountContactPopup.push(account, roleType, contactType)"
+                      id="contactType"
+                      label="displaykey.Web.Contact.AddNewOfType(contactType)"/>
+                  </MenuItemIterator>
+                  <PickerMenuItem
+                    action="ContactSearchPopup.push(roleType)"
+                    id="Search"
+                    label="displaykey.Web.Button.FromAddressBook"
+                    onPick="gw.web.account.AccountFileContactsUIHelper.addContactFromAddressBook(acctContactRolesDisplayNames, account, PickedValue, roleType)"/>
+                </MenuItem>
+              </MenuItemIterator>
+            </ToolbarButton>
+            <ToolbarDivider/>
+            <CheckedValuesToolbarButton
+              allCheckedRowsAction="gw.web.account.AccountFileContactsUIHelper .removeContacts(acctContactRolesDisplayNames, account, CheckedValues)"
+              flags="all canRemoveContact"
+              id="removeContact"
+              iterator="AccountContactsLV"
+              label="displaykey.Web.Account.Contact.RemoveContact"/>
+            <IteratorButtons
+              iterator="AccountContactsLV"/>
+          </Toolbar>
+          <ListViewPanel
+            id="AccountContactsLV">
+            <RowIterator
+              editable="true"
+              elementName="acctContact"
+              hasCheckBoxes="true"
+              value="account.AccountContacts">
+              <ToolbarFilter
+                cacheOptions="false"
+                name="roleFilters">
+                <ToolbarFilterOption
+                  filter="new filters.StandardBeanFilter(displaykey.Web.AccountContacts.DisplayAllRoles, \ x -&gt; true)"/>
+                <ToolbarFilterOptionGroup
+                  filters="new gw.api.web.contact.ContactRoleFilterSet().getFilterOptions(account.AccountContactRoleSubtypes)"/>
+              </ToolbarFilter>
+              <ToolbarFilter
+                name="personCompanyFilters">
+                <ToolbarFilterOption
+                  filter="new filters.StandardBeanFilter(displaykey.Web.AccountContacts.PersonsAndCompanies, \ x -&gt; true)"/>
+                <ToolbarFilterOption
+                  filter="new filters.StandardBeanFilter(displaykey.Web.AccountContacts.Persons, \ x -&gt; (x as AccountContact).Person)"/>
+                <ToolbarFilterOption
+                  filter="new filters.StandardBeanFilter(displaykey.Companies, \ x -&gt; (x as AccountContact).Company)"/>
+              </ToolbarFilter>
+              <ToolbarFlag
+                condition="account.AccountHolderContact &lt;&gt; acctContact.Contact and acctContact.canRemove()"
+                name="canRemoveContact"/>
+              <IteratorSort
+                sortBy="acctContact.DisplayName"
+                sortOrder="1"/>
+              <ToolbarFlag
+                condition="acctContact != acctContact.Account.AccountHolder.AccountContact"
+                name="canChangeActiveStatus"/>
+              <Row>
+                <Cell
+                  id="Active"
+                  label="displaykey.Web.AccountFile.Contacts.Active"
+                  value="acctContact.Active"/>
+                <Cell
+                  action="EditAccountContactPopup.push(acctContact)"
+                  actionAvailable="perm.Account.edit( account )"
+                  id="Name"
+                  label="displaykey.Web.AccountContactsLV.Name"
+                  value="acctContact.DisplayName"
+                  width="200"
+                  wrap="true"/>
+                <Cell
+                  id="Roles"
+                  label="displaykey.Web.AccountContactsLV.Roles"
+                  value="gw.web.account.AccountFileContactsUIHelper .lookupAcctContactRolesDisplayName(acctContactRolesDisplayNames, acctContact)"
+                  width="300"
+                  wrap="true"/>
+                <Cell
+                  id="Phone"
+                  label="displaykey.Web.AccountContactsLV.Phone"
+                  value="acctContact.Contact.PrimaryPhoneValue"/>
+                <Cell
+                  id="Email"
+                  label="displaykey.Web.AccountContactsLV.Email"
+                  value="acctContact.Contact.EmailAddress1"
+                  width="300"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </PanelRef>
+        <!-- The contact details -->
+        <PanelRef
+          def="AccountContactCV(accountContact, false)"
+          editable="false"/>
+      </ListDetailPanel>
+    </Screen>
+  </Page>
+</PCF>

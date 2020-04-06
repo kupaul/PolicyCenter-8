@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    beforeCommit="reconstructAcctContact()"
+    canEdit="true"
+    id="NewAccountContactPopup"
+    returnType="AccountContact"
+    startInEditMode="true"
+    title="displaykey.Web.Contact.NewContact(gw.plugin.Plugins.get(gw.plugin.contact.IContactConfigPlugin).getAccountContactRoleTypeDisplayName(acRoleType))">
+    <LocationEntryPoint
+      signature="NewAccountContactPopup(acct: Account, acRoleType : typekey.AccountContactRole, contactType: typekey.ContactType)"/>
+    <Variable
+      name="acct"
+      type="Account"/>
+    <Variable
+      name="acRoleType"
+      type="typekey.AccountContactRole"/>
+    <Variable
+      name="contactType"
+      type="typekey.ContactType"/>
+    <Variable
+      initialValue="initializeAcctContact()"
+      name="acctContact"
+      type="AccountContact"/>
+    <Variable
+      initialValue="new gw.pcf.duplicatecontacts.DuplicateContactsPopupHelper(acctContact.Contact)"
+      name="duplicateContactsPopupHelper"/>
+    <Screen
+      editable="true"
+      id="ContactDetailScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.checkForDuplicatesOrUpdate(\ -&gt; CurrentLocation.commit())"
+          id="ForceDupCheckUpdate"
+          label="displaykey.Button.Update"
+          visible="acctContact.Contact != null and duplicateContactsPopupHelper.ShowButton"/>
+        <EditButtons
+          pickValue="acctContact"
+          updateVisible="acctContact.Contact != null and not duplicateContactsPopupHelper.ShowButton"/>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.push()"
+          id="CheckForDuplicates"
+          label="displaykey.Web.Contact.CheckForDuplicates"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+      </Toolbar>
+      <PanelRef
+        def="AccountContactCV(acctContact,false)"/>
+    </Screen>
+    <Code><![CDATA[uses gw.api.database.PCBeanFinder
+
+function initializeAcctContact() : AccountContact {
+  var ac = acct.addNewAccountContactOfType(contactType)
+  ac.addNewRole(acRoleType)
+  return ac
+}
+
+function reconstructAcctContact() {
+  var existingPCContactWithABContactMatch = duplicateContactsPopupHelper.existingPCContactWithABContactMatch
+  var contactRoles = acctContact.Roles  
+  if (existingPCContactWithABContactMatch != null) { // existing ab contact that matches the current new contact
+    acct.removeFromAccountContacts(acctContact)
+    existingPCContactWithABContactMatch = acctContact.Contact.Bundle.add(PCBeanFinder.loadBeanByPublicID<Contact>(existingPCContactWithABContactMatch.PublicID, Contact))
+    existingPCContactWithABContactMatch.copyUIFieldsFromContact(acctContact.Contact)
+ 
+    var matchingAcctContact = acct.AccountContacts.firstWhere(\ a -> a.Contact.AddressBookUID == existingPCContactWithABContactMatch.AddressBookUID )
+    if (matchingAcctContact != null) { // if any acccount contacts in this account also match the ab contact
+      matchingAcctContact.addRoles(contactRoles)
+    } else {
+      var newAcctContact = acct.addNewAccountContactForContact(existingPCContactWithABContactMatch)
+      newAcctContact.addRoles(contactRoles)     
+    }
+    // remove the newly created contact from the bundle if there is a match found in pc
+    acctContact.Contact.OfficialIDs.each(\ o -> o.remove() )
+    acctContact.Contact.remove()
+    acctContact.remove()
+  }  
+  else {
+    acctContact.Contact = duplicateContactsPopupHelper.originalContact
+  }
+}]]></Code>
+  </Popup>
+</PCF>

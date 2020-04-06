@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<!-- ====================================================================  PolicyExceptions  ==================================================================== -->
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  entity="PolicyException"
+  type="versionable"
+  desc="Records the action of the policy exception monitor. This table will have at most one row for each PolicyPeriod in the system, indicating the last time it had policy exception rules run on it."
+  exportable="false"
+  subpackage="policy.period"
+  platform="false"
+  loadable="false"
+  table="policyexception">
+  <implementsEntity name="Extractable"/>
+  <column
+    name="ExCheckTime"
+    type="datetime"
+    desc="The last time at which policy exception rules were run on the PolicyPeriod."
+    nullok="false"/>
+  <foreignkey
+    name="PolicyPeriod"
+    desc="A foreign key to the PolicyPeriod."
+    columnName="PolicyPeriodID"
+    exportable="false"
+    fkentity="PolicyPeriod"
+    nullok="false"/>
+  <fulldescription>
+    Records the action of the policy exception monitor. Each PolicyPeriod in the system has, at most, one PolicyException instance
+        indicating the last time we ran policy exception rules ran on the PolicyPeriod.
+  </fulldescription>
+  <!-- This table holds at most 1 row per PolicyPeriod, so we have a unique index on policyperiodid.
+      One of the access patterns for this table is to search for all policyPeriods that haven't been
+      checked since some timestamp, so we have an index on exchecktime to speed that search. -->
+  <index
+    name="policyexception1"
+    desc="Ensures that this table holds at most 1 row per PolicyPeriod."
+    unique="true">
+    <indexcol
+      name="PolicyPeriodID"
+      keyposition="1"/>
+    <indexcol
+      name="ExCheckTime"
+      keyposition="2"/>
+  </index>
+  <index
+    name="policyexception2"
+    desc="Used to speed queries that find all PolicyPeriods that haven't been checked since a certain time.">
+    <indexcol
+      name="ExCheckTime"
+      keyposition="1"/>
+  </index>
+</entity>

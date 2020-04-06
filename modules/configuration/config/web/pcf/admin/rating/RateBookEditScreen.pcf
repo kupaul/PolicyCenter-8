@@ -1,0 +1,236 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="rateBook.isDraft()"
+    id="RateBookEditScreen">
+    <Require
+      name="rateBook"
+      type="RateBook"/>
+    <Require
+      name="isEdit"
+      type="Boolean"/>
+    <Require
+      name="currentCard"
+      type="gw.rating.rtm.util.RatingUIUtil.RateBookCardTabType"/>
+    <Variable
+      initialValue="new gw.pcf.rating.ratebook.RateBookEditScreenUIHelper (rateBook, CurrentLocation)"
+      name="rateBookEditScreenUI"/>
+    <Toolbar
+      visible="true">
+      <ToolbarButton
+        action="rateBookEditScreenUI.checkCurrentDataChange()"
+        hideIfReadOnly="true"
+        id="UpdateButton"
+        label="displaykey.Button.Update"
+        shortcut="U"
+        visible="rateBookEditScreenUI.RateBook.isDraft()"/>
+      <EditButtons
+        cancelLabel="((rateBook.isDraft()) ? displaykey.Button.Cancel : displaykey.Web.Rating.Ratebooks.ExitButton)"
+        cancelVisible="true"
+        editVisible="rateBook.isDraft()"
+        showUpdateConfirmMessage="false"
+        updateVisible="false"/>
+    </Toolbar>
+    <PanelRow>
+      <PanelColumn>
+        <PanelRef
+          def="RateBookDV(rateBook)"/>
+      </PanelColumn>
+      <PanelColumn>
+        <PanelRef
+          def="LocalizedValuesDV(rateBook, { &quot;BookName&quot;, &quot;BookDesc&quot;}, { displaykey.Web.Rating.Ratebooks.Name, displaykey.Web.Rating.Ratebooks.Description })"/>
+      </PanelColumn>
+    </PanelRow>
+    <CardViewPanel>
+      <Card
+        id="RateTablesCard"
+        selectOnEnter="currentCard == gw.rating.rtm.util.RatingUIUtil.RateBookCardTabType.TableCard"
+        title="displaykey.Web.Rating.Ratebooks.RateTables">
+        <PanelRow>
+          <PanelColumn>
+            <PanelRef
+              editable="rateBook.Status == RatebookStatus.TC_DRAFT">
+              <TitleBar
+                title="displaykey.Web.Rating.Ratebooks.SelectedRateTablesTitle"/>
+              <Toolbar
+                visible="rateBook.Status == RatebookStatus.TC_DRAFT">
+                <CheckedValuesToolbarButton
+                  allCheckedRowsAction="rateBook.removeRateTables(CheckedValues)"
+                  available="perm.System.ratebookedit"
+                  id="RemoveFromRateBookButton"
+                  iterator="SelectedRateTablesList"
+                  label="displaykey.Web.Rating.Ratebooks.RemoveFromRateBookButton"
+                  retainScrollPosition="true"/>
+              </Toolbar>
+              <ListViewPanel>
+                <RowIterator
+                  checkBoxVisible="rateBook.Status == RateBookStatus.TC_DRAFT"
+                  editable="false"
+                  elementName="selectedRateTable"
+                  hasCheckBoxes="true"
+                  id="SelectedRateTablesList"
+                  value="rateBook != null ? rateBook.RateTables.orderBy(\ rt -&gt; rt.Definition.TableName).toTypedArray() : java.util.Collections.EMPTY_LIST as entity.RateTable[]">
+                  <Row>
+                    <Cell
+                      id="Name"
+                      label="displaykey.Web.Rating.Ratebooks.TableName"
+                      value="selectedRateTable.Definition.TableName"/>
+                  </Row>
+                </RowIterator>
+              </ListViewPanel>
+            </PanelRef>
+          </PanelColumn>
+          <PanelColumn>
+            <PanelRef
+              id="AvailableRateTablesPanel"
+              visible="rateBook.isDraft()">
+              <TitleBar
+                title="displaykey.Web.Rating.Ratebooks.AvailableRatingTables"/>
+              <Toolbar
+                visible="rateBook.Status == RatebookStatus.TC_DRAFT">
+                <CheckedValuesToolbarButton
+                  allCheckedRowsAction="rateBook.addRateTables(CheckedValues)"
+                  available="perm.System.ratebookedit"
+                  id="AddToRateBookButton"
+                  iterator="AvailableRateTablesList"
+                  label="displaykey.Web.Rating.Ratebooks.AddToRatebookButton"
+                  retainScrollPosition="true"/>
+              </Toolbar>
+              <ListViewPanel>
+                <RowIterator
+                  checkBoxVisible="rateBook.Status == RateBookStatus.TC_DRAFT"
+                  editable="false"
+                  elementName="availableRateTable"
+                  hasCheckBoxes="true"
+                  id="AvailableRateTablesList"
+                  value="rateBook != null ? rateBook.availableRateTables(rateBook.PolicyLine).orderBy(\ t -&gt; t.TableName).toTypedArray() : java.util.Collections.EMPTY_LIST as entity.RateTableDefinition[]">
+                  <Row>
+                    <Cell
+                      id="Name"
+                      label="displaykey.Web.Rating.Ratebooks.TableName"
+                      value="availableRateTable.TableName"/>
+                  </Row>
+                </RowIterator>
+              </ListViewPanel>
+            </PanelRef>
+          </PanelColumn>
+        </PanelRow>
+      </Card>
+      <Card
+        id="CalcRoutinesCard"
+        selectOnEnter="currentCard == gw.rating.rtm.util.RatingUIUtil.RateBookCardTabType.RoutineCard"
+        title="displaykey.Web.Rating.Ratebooks.CalcRoutines">
+        <PanelRow>
+          <PanelColumn>
+            <PanelRef
+              editable="rateBook.Status == RateBookStatus.TC_DRAFT"
+              id="IncludedCalcRoutinesPanel">
+              <TitleBar
+                title="displaykey.Web.Rating.Ratebooks.SelectedRateRoutinesTitle"/>
+              <Toolbar
+                visible="rateBook.Status == RateBookStatus.TC_DRAFT">
+                <CheckedValuesToolbarButton
+                  allCheckedRowsAction="rateBook.removeCalcRoutines(CheckedValues)"
+                  available="perm.System.ratebookedit"
+                  id="RemoveRoutineFromRateBookButton"
+                  iterator="SelectedCalcRoutinesList"
+                  label="displaykey.Web.Rating.Ratebooks.RemoveFromRateBookButton"
+                  retainScrollPosition="true"/>
+              </Toolbar>
+              <ListViewPanel>
+                <RowIterator
+                  checkBoxVisible="rateBook.Status == RateBookStatus.TC_DRAFT"
+                  editable="false"
+                  elementName="selectedCalcRoutine"
+                  hasCheckBoxes="true"
+                  id="SelectedCalcRoutinesList"
+                  value="rateBook != null ? rateBook.updatedCalcRoutines.orderBy(\ r -&gt; r.Code).toTypedArray() : java.util.Collections.EMPTY_LIST as entity.CalcRoutineDefinition[]">
+                  <IteratorSort
+                    sortBy="selectedCalcRoutine.Code"
+                    sortOrder="1"/>
+                  <IteratorSort
+                    sortBy="selectedCalcRoutine.BranchingFieldValues[0]"
+                    sortOrder="2"/>
+                  <IteratorSort
+                    sortBy="selectedCalcRoutine.Version"
+                    sortDirection="descending"
+                    sortOrder="3"/>
+                  <Row>
+                    <Cell
+                      id="Code"
+                      label="displaykey.Web.Rating.Ratebooks.CalcRoutineCode"
+                      value="selectedCalcRoutine.Code"/>
+                    <Cell
+                      id="Jurisdiction"
+                      label="displaykey.Web.Rating.Ratebooks.CalcRoutineJurisdiction"
+                      value="selectedCalcRoutine.Jurisdiction"/>
+                    <Cell
+                      align="left"
+                      id="Version"
+                      label="displaykey.Web.Rating.Ratebooks.CalcRoutineVersion"
+                      value="selectedCalcRoutine.Version"/>
+                  </Row>
+                </RowIterator>
+              </ListViewPanel>
+            </PanelRef>
+          </PanelColumn>
+          <PanelColumn>
+            <PanelRef
+              id="AvailableCalcRoutinesPanel"
+              visible="rateBook.isDraft()">
+              <TitleBar
+                title="displaykey.Web.Rating.Ratebooks.AvailableCalcRoutinesTitle"/>
+              <Toolbar
+                visible="rateBook.Status == RateBookStatus.TC_DRAFT">
+                <CheckedValuesToolbarButton
+                  allCheckedRowsAction="rateBookEditScreenUI.addToRateBookAction(CheckedValues)"
+                  available="perm.System.ratebookedit"
+                  id="AddRoutineToRateBookButton"
+                  iterator="AvailableCalcRoutinesList"
+                  label="displaykey.Web.Rating.Ratebooks.AddToRatebookButton"
+                  retainScrollPosition="true"/>
+              </Toolbar>
+              <ListViewPanel>
+                <Variable
+                  initialValue="rateBook != null ? rateBook.availableCalcRoutines(true).map(\ c -&gt; new gw.web.rating.CalcRoutineCodeAndVersion(c)).orderBy(\ r -&gt; r.Code).toTypedArray() : {}"
+                  name="availableCalcRoutineCodeAndVersions"
+                  recalculateOnRefresh="true"
+                  type="gw.web.rating.CalcRoutineCodeAndVersion[]"/>
+                <RowIterator
+                  checkBoxVisible="rateBook.Status == RateBookStatus.TC_DRAFT"
+                  editable="true"
+                  elementName="availableCalcRoutineCodeAndVersion"
+                  hasCheckBoxes="true"
+                  id="AvailableCalcRoutinesList"
+                  value="availableCalcRoutineCodeAndVersions">
+                  <Row>
+                    <Cell
+                      id="Code"
+                      label="displaykey.Web.Rating.Ratebooks.CalcRoutineCode"
+                      value="availableCalcRoutineCodeAndVersion.Code"/>
+                    <Cell
+                      id="Jurisdiction"
+                      label="displaykey.Web.Rating.Ratebooks.CalcRoutineJurisdiction"
+                      value="availableCalcRoutineCodeAndVersion.BranchValues.first()"/>
+                    <RangeCell
+                      align="left"
+                      editable="true"
+                      id="Version"
+                      label="displaykey.Web.Rating.Ratebooks.CalcRoutineVersion"
+                      required="true"
+                      value="availableCalcRoutineCodeAndVersion.Version"
+                      valueRange="rateBook.availableCalcRoutines(false).where(\ calcRoutine -&gt; availableCalcRoutineCodeAndVersion.isMatchIgnoreVersion(calcRoutine))*.Version">
+                      <PostOnChange/>
+                    </RangeCell>
+                  </Row>
+                </RowIterator>
+              </ListViewPanel>
+            </PanelRef>
+          </PanelColumn>
+        </PanelRow>
+      </Card>
+    </CardViewPanel>
+  </Screen>
+</PCF>

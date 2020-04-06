@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<PCF>
+  <Page
+    canEdit="false"
+    canVisit="perm.User.ViewPlugin or perm.User.DevAllAccess"
+    id="StartablePlugin"
+    title="displaykey.Web.Plugin.Title">
+    <Screen>
+      <Toolbar/>
+      <AlertBar
+        id="NotAvailable"
+        label="displaykey.Web.Plugin.NotAvailableBecauseOfRunlevel"
+        visible="!gw.api.startable.StartablePluginPageHelper.canBeEnabled()"/>
+      <AlertBar
+        id="BatchNotAvailable"
+        label="displaykey.Java.Cluster.NoBatchServer"
+        visible="!gw.api.tools.ClusterInfoData.isBatchServerAvailable()"/>
+      <ListViewPanel
+        available="gw.api.startable.StartablePluginPageHelper.canBeEnabled() and gw.api.tools.ClusterInfoData.isBatchServerAvailable()"
+        visible="gw.api.tools.ClusterInfoData.isBatchServerAvailable()">
+        <RowIterator
+          editable="false"
+          elementName="pluginDef"
+          value="gw.api.startable.StartablePluginPageHelper.getEnabledPlugins().toTypedArray()">
+          <Row>
+            <Cell
+              id="Name"
+              label="displaykey.Web.Plugin.Name"
+              sortOrder="1"
+              value="gw.api.startable.StartablePluginPageHelper.getName( pluginDef )"/>
+            <Cell
+              id="Status"
+              label="displaykey.Web.Plugin.Status"
+              value="gw.api.startable.StartablePluginPageHelper.getPluginState( pluginDef )"/>
+            <LinkCell
+              id="Actions"
+              label="displaykey.Web.InternalTools.BatchProcessInfo.Run"
+              visible="perm.User.EditPlugin or perm.User.DevAllAccess">
+              <Link
+                action="gw.api.startable.StartablePluginPageHelper.startPlugin( pluginDef )"
+                available="gw.api.startable.StartablePluginPageHelper.getPluginState( pluginDef ) == Stopped"
+                id="Start"
+                label="displaykey.Web.Plugin.Start"
+                styleClass="miniButton"/>
+              <Link
+                action="gw.api.startable.StartablePluginPageHelper.stopPlugin( pluginDef )"
+                available="gw.api.startable.StartablePluginPageHelper.getPluginState( pluginDef ) == Started"
+                id="Stop"
+                label="displaykey.Web.Plugin.Stop"
+                styleClass="miniButton"/>
+            </LinkCell>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </Screen>
+  </Page>
+</PCF>

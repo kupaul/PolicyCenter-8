@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    id="GroupQueuesLV">
+    <ExposeIterator
+      flags="assignableQueue"
+      valueType="entity.AssignableQueue"
+      widget="GroupQueuesLV"/>
+    <Require
+      name="group"
+      type="Group"/>
+    <RowIterator
+      editable="true"
+      elementName="assignableQueue"
+      hasCheckBoxes="true"
+      hideCheckBoxesIfReadOnly="true"
+      toAdd="group.addToAssignableQueues(assignableQueue)"
+      toRemove="removeQueue(assignableQueue)"
+      value="group.AssignableQueues">
+      <ToolbarFlag
+        name="assignableQueue"/>
+      <Row>
+        <Cell
+          action="GroupQueueDetailPage.drilldown(group, assignableQueue)"
+          editable="true"
+          id="Name"
+          label="displaykey.Web.Admin.GroupDetail.Queues.Name"
+          value="assignableQueue.Name"/>
+        <Cell
+          editable="true"
+          id="Description"
+          label="displaykey.Web.Admin.GroupDetail.Queues.Description"
+          value="assignableQueue.Description"/>
+        <Cell
+          editable="true"
+          id="SubGroupVisible"
+          label="displaykey.Web.Admin.GroupDetail.Queues.SubGroupVisible"
+          value="assignableQueue.SubGroupVisible"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function removeQueue(queue : AssignableQueue) {
+  if (queue.New or Activity.finder.findActivitiesByQueues( {queue} ).Empty) {
+    group.removeFromAssignableQueues(queue)
+  } else {
+    throw new gw.api.util.DisplayableException(displaykey.Web.Admin.GroupQueuesLV.Error.CanNotRemoveQueueWithActivities(queue.Name))
+  }
+}]]></Code>
+  </ListViewPanel>
+</PCF>

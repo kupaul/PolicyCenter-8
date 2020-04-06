@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    id="LoadCallbackResultsDetail"
+    parent="LoadHistoryDetail(PageHelper, History)"
+    showUpLink="true"
+    title="displaykey.Web.InternalTools.InfoPages.LoadCallbackResultsInfo">
+    <LocationEntryPoint
+      signature="LoadCallbackResultsDetail(PageHelper : gw.api.tools.LoadHistoryHelper,             History : LoadCommand, Callback : LoadCallback)"/>
+    <Variable
+      name="PageHelper"
+      type="gw.api.tools.LoadHistoryHelper"/>
+    <Variable
+      name="History"
+      type="LoadCommand"/>
+    <Variable
+      name="Callback"
+      type="LoadCallback"/>
+    <Screen
+      id="LoadCallbackReultsScreen">
+      <TitleBar
+        id="loadcallbackresultstitlebar"
+        title="displaykey.Web.InternalTools.InfoPages.LoadCallbackResultsInfo"/>
+      <Toolbar>
+        <ToolbarButton
+          action="null"
+          id="refresh"
+          label="displaykey.Button.Refresh"/>
+      </Toolbar>
+      <PanelRef
+        def="LoadHistoryLV(PageHelper, new LoadCommand[] {History} as entity.LoadCommandQuery, false)">
+        <Toolbar/>
+      </PanelRef>
+      <PanelRef
+        def="LoadCallbacksLV(PageHelper, History, new LoadCallback[] {Callback}, false)">
+        <Toolbar/>
+      </PanelRef>
+      <PanelRef>
+        <Toolbar/>
+        <ListViewPanel
+          id="LoadCallbackResultsLV">
+          <RowIterator
+            editable="false"
+            elementName="Result"
+            pageSize="30"
+            value="find(var result in LoadCallbackResult where result.LoadCallback == Callback)">
+            <Row>
+              <Cell
+                id="name"
+                label="displaykey.Web.InternalTools.InfoPages.LoadHistory.CallbackResultName"
+                value="Result.Name"/>
+              <Cell
+                id="executionorder"
+                label="displaykey.Web.InternalTools.InfoPages.LoadHistory.ExecutionOrder"
+                sortBy="Result.ExecutionOrder"
+                value="Result.ExecutionOrder"/>
+              <Cell
+                id="opstarttime"
+                label="displaykey.Web.InternalTools.InfoPages.LoadHistory.StartTime"
+                sortBy="Result.StartTime"
+                value="util.StringUtil.formatDate(Result.StartTime, &quot;MM/dd/yy HH:mm:ss.SSS&quot;)"/>
+              <Cell
+                id="opendtime"
+                label="displaykey.Web.InternalTools.InfoPages.LoadHistory.EndTime"
+                sortBy="Result.EndTime"
+                value="util.StringUtil.formatDate(Result.EndTime, &quot;MM/dd/yy HH:mm:ss.SSS&quot;)"/>
+              <Cell
+                enableSort="false"
+                id="opduration"
+                label="displaykey.Web.InternalTools.InfoPages.LoadHistory.Duration"
+                value="PageHelper.getDurationString(Result.StartTime, Result.EndTime)"/>
+              <Cell
+                enableSort="true"
+                id="affectedrowcount"
+                label="displaykey.Web.InternalTools.InfoPages.LoadHistory.AffectedRowCount"
+                value="Result.AffectedRowCount"/>
+              <TextAreaCell
+                enableSort="false"
+                id="lcrquery"
+                label="displaykey.Web.InternalTools.InfoPages.LoadHistory.Query"
+                numCols="30"
+                numRows="3"
+                value="Result.SQLText"/>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+      </PanelRef>
+    </Screen>
+  </Page>
+</PCF>

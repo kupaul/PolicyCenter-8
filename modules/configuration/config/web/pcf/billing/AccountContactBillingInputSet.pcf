@@ -1,0 +1,132 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InputSet
+    id="AccountContactBillingInputSet">
+    <Require
+      name="period"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="billingUIHelper"
+      type="gw.web.policy.BillingAdjustmentsUIHelper"/>
+    <Variable
+      initialValue="gw.plugin.Plugins.get(gw.plugin.contact.IContactConfigPlugin)"
+      name="contactConfigPlugin"/>
+    <Variable
+      initialValue="gw.plugin.Plugins.get(gw.plugin.billing.IBillingSystemPlugin)"
+      name="billingSystemPlugin"/>
+    <Input
+      hideChildrenIfReadOnly="false"
+      id="AltBillingAccount"
+      label="displaykey.Web.Policy.Billing.AltBillingAccount"
+      outputConversion="gw.web.policy.BillingAdjustmentsUIHelper.formatAccount(VALUE)"
+      required="period.BillingMethod == TC_LISTBILL"
+      value="period.AltBillingAccountNumber">
+      <PickerMenuItem
+        action="AccountSearchPopup.push()"
+        id="Search"
+        label="displaykey.Button.Search"
+        onPick="billingUIHelper.setAltBillingAccount(PickedValue.AccountNumber)"
+        visible="openForEdit and period.BillingMethod != TC_LISTBILL"/>
+      <PickerMenuItem
+        action="BillingAccountSearchPopup.push(period.PreferredSettlementCurrency)"
+        id="SearchBillingAccount"
+        label="displaykey.Button.Search"
+        onPick="billingUIHelper.setAltBillingAccount(PickedValue)"
+        visible="openForEdit and period.BillingMethod == TC_LISTBILL"/>
+      <MenuItem
+        id="SubAccounts"
+        label="displaykey.Web.Policy.Billing.BillingSubAccounts"
+        subMenuOnDemand="true"
+        visible="openForEdit and period.BillingMethod &lt;&gt; BillingMethod.TC_LISTBILL">
+        <MenuItemIterator
+          elementName="subAccount"
+          value="billingUIHelper?.getSubAccounts()">
+          <MenuItem
+            action="if (subAccount.AccountNumber.HasContent) {billingUIHelper.setAltBillingAccount(subAccount.AccountNumber)}"
+            available="subAccount.AccountNumber.HasContent"
+            id="SubAccount"
+            label="subAccount.DisplayName"/>
+        </MenuItemIterator>
+      </MenuItem>
+      <MenuItem
+        action="billingUIHelper.setAltBillingAccount(null)"
+        id="Remove"
+        label="displaykey.Web.Generic.Remove"
+        visible="period.AltBillingAccountNumber &lt;&gt; null and openForEdit"/>
+      <PostOnChange/>
+    </Input>
+    <Input
+      action="EditPolicyContactRolePopup.push(period.BillingContact, openForEdit)"
+      actionAvailable="period.BillingContact != null"
+      hideChildrenIfReadOnly="false"
+      id="ChangeBillingContactButton"
+      label="displaykey.Web.Policy.BillingContact.Name"
+      value="period.BillingContact"
+      visible="period.BillingMethod == TC_DIRECTBILL">
+      <MenuItemIterator
+        elementName="typeOfContact"
+        value="contactConfigPlugin.getAllowedContactTypesForPolicyContactRoleType(&quot;PolicyBillingContact&quot;)">
+        <IteratorSort
+          sortBy="typeOfContact.DisplayName"
+          sortOrder="1"/>
+        <MenuItem
+          action="NewBillingContactPopup.push(period, typeOfContact)"
+          id="contactType"
+          label="displaykey.Web.Contact.AddNewOfType(typeOfContact)"
+          visible="openForEdit"/>
+      </MenuItemIterator>
+      <PickerMenuItem
+        action="ContactSearchPopup.push(&quot;BillingContact&quot;)"
+        id="BillingABContactAdder"
+        label="displaykey.Web.Button.FromAddressBook"
+        onPick="period.changeBillingContactTo(PickedValue)"
+        visible="openForEdit"/>
+      <MenuItem
+        id="ExistingBillingContact"
+        label="displaykey.Web.Policy.Contact.ExistingBillingContacts"
+        subMenuOnDemand="true"
+        visible="openForEdit">
+        <MenuItemIterator
+          elementName="billingContactExistingCandidate"
+          id="UnassignedAccountContactIterator"
+          value="period.BillingContactExistingCandidates">
+          <IteratorSort
+            sortBy="billingContactExistingCandidate.DisplayName"
+            sortOrder="1"/>
+          <MenuItem
+            action="period.changeBillingContactTo(billingContactExistingCandidate.Contact)"
+            id="UnassignedAccountContact"
+            label="billingContactExistingCandidate"/>
+        </MenuItemIterator>
+      </MenuItem>
+      <MenuItem
+        id="OtherExistingContact"
+        label="displaykey.Web.Policy.Contact.OtherContacts"
+        subMenuOnDemand="true"
+        visible="openForEdit">
+        <MenuItemIterator
+          elementName="billingContactOtherCandidate"
+          id="UnassignedContactIterator"
+          value="period.BillingContactOtherCandidates">
+          <IteratorSort
+            sortBy="billingContactOtherCandidate.DisplayName"
+            sortOrder="1"/>
+          <MenuItem
+            action="period.changeBillingContactTo(billingContactOtherCandidate.Contact)"
+            id="UnassignedContact"
+            label="billingContactOtherCandidate"/>
+        </MenuItemIterator>
+      </MenuItem>
+      <MenuItem
+        action="period.removeBillingContact()"
+        id="Remove"
+        label="displaykey.Web.Generic.Remove"
+        visible="period.BillingContact != null and openForEdit"/>
+    </Input>
+  </InputSet>
+</PCF>

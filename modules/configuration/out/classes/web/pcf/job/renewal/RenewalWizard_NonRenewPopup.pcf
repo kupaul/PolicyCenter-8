@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Popup
+    afterCommit="policyPeriod.RenewalProcess.pendingNonRenew(); TopLocation.commit(); JobComplete.go(renewal, policyPeriod)"
+    beforeCommit="policyPeriod.Job.createCustomHistoryEvent(CustomHistoryType.TC_RENEWAL, \ -&gt; displaykey.Job.Renewal.History.NonRenewPopup)"
+    canEdit="true"
+    countsAsWork="false"
+    id="RenewalWizard_NonRenewPopup"
+    startInEditMode="true"
+    title="displaykey.Web.RenewalWizard.NonRenew.Title">
+    <LocationEntryPoint
+      signature="RenewalWizard_NonRenewPopup(renewal : Renewal, policyPeriod : PolicyPeriod)"/>
+    <Variable
+      name="renewal"
+      type="Renewal"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="policyPeriod.Policy"
+      name="policy"
+      type="Policy"/>
+    <Variable
+      initialValue="policyPeriod.PolicyTerm"
+      name="policyTerm"
+      type="PolicyTerm"/>
+    <Variable
+      initialValue="new String[]{&quot;&quot;}"
+      name="descriptions"
+      type="String[]"/>
+    <Screen
+      id="RenewalWizard_NonRenewScreen">
+      <Toolbar>
+        <EditButtons
+          updateConfirmMessage="displaykey.Job.Operation.SendToNonRenewal.Confirm"/>
+      </Toolbar>
+      <DetailViewPanel>
+        <InputColumn>
+          <TypeKeyInput
+            editable="true"
+            id="NonRenewReason"
+            label="displaykey.Web.PreRenewalDirection.NonRenewReason"
+            required="true"
+            value="policyTerm.NonRenewReason"/>
+          <TextAreaInput
+            editable="true"
+            id="NonRenewAddExpl"
+            label="displaykey.Web.PreRenewalDirection.NonRenewAddExplanation"
+            numRows="5"
+            value="policyTerm.NonRenewAddExplanation"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef
+        def="SelectedNonRenewalExplanationsLV(policy, policyPeriod, descriptions)">
+        <TitleBar
+          appendListViewPaging="true"
+          title="displaykey.Web.PreRenewalDirection.SelectedNonRenewalExplanations"/>
+        <Toolbar>
+          <IteratorButtons
+            iterator="SelectedNonRenewalExplanationsLV.SelectedNonRenewalExplanationsLV"
+            removeLabel="displaykey.Web.NonRenewalExplanationPattern.Remove"/>
+        </Toolbar>
+      </PanelRef>
+    </Screen>
+  </Popup>
+</PCF>

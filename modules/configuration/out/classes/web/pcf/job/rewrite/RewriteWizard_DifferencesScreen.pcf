@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="policyPeriod.OpenForEdit"
+    id="RewriteWizard_DifferencesScreen">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, policyPeriod.Job, jobWizardHelper)"/>
+    </Toolbar>
+    <PanelRef
+      def="WarningsPanelSet(policyPeriod.getWizardQuoteScreenWarnings())"/>
+    <CardViewPanel>
+      <Variable
+        initialValue="getRootNodeWrapper()"
+        name="rootNodeWrapper"
+        type="gw.api.tree.RowTreeRootNodeWrapper"/>
+      <Variable
+        initialValue="policyPeriod.Policy.Product.DiffTreeConfig"
+        name="diffTreeConfig"/>
+      <Card
+        id="Diffs"
+        title="displaykey.Web.PolicyChangeWizard.Differences">
+        <PanelRef
+          def="DifferencesPanelSet(&quot;PolicyReview&quot;, policyPeriod.BasedOn, policyPeriod, rootNodeWrapper.rowTreeRootNode, diffTreeConfig)"/>
+      </Card>
+      <Card
+        id="OOSConflicts"
+        title="displaykey.Web.PolicyChangeWizard.OOSE.Conflicts"
+        visible="policyPeriod.Job.OOSJob &amp;&amp; policyPeriod.OOSConflicts.Count &gt; 0">
+        <PanelRef
+          def="OOSConflictPanelSet(policyPeriod,rootNodeWrapper,jobWizardHelper)"/>
+      </Card>
+    </CardViewPanel>
+    <Code><![CDATA[function getRootNodeWrapper() : gw.api.tree.RowTreeRootNodeWrapper {
+  if (policyPeriod.BasedOn.PolicyTerm.Archived) {
+    return null
+  }
+  return new gw.api.tree.RowTreeRootNodeWrapper(gw.diff.tree.DiffTree.recalculateRootNodeForPolicyReview(policyPeriod))
+}]]></Code>
+  </Screen>
+</PCF>

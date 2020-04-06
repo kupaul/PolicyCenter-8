@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ListViewPanel
+    id="QuestionSetLV">
+    <Require
+      name="questionSet"
+      type="gw.api.productmodel.QuestionSet"/>
+    <Require
+      name="answerContainer"
+      type="AnswerContainer"/>
+    <Require
+      name="onChangeBlock"
+      type="block()"/>
+    <Variable
+      initialValue="questionSet.getOrderedQuestions().where(\ q -&gt; answerContainer.getAnswer(q) != null and q.isQuestionVisible(answerContainer))"
+      name="questions"
+      recalculateOnRefresh="true"/>
+    <!-- Iterate and display all questions based on their type -->
+    <RowIterator
+      editable="true"
+      elementName="question"
+      pageSize="0"
+      value="questions">
+      <IteratorSort
+        sortBy="question.Priority"
+        sortOrder="1"/>
+      <Row>
+        <Cell
+          id="questionText"
+          value="gw.api.web.HtmlUtil.indent(question.Text, question.Indent)"
+          width="500"
+          wrap="true"/>
+        <ModalCellRef
+          def="QuestionModalInput(question, answerContainer, gw.pcf.QuestionSetUIHelper.wrapOnChangeBlock(answerContainer, question, onChangeBlock, CurrentLocation))"
+          editable="true"
+          mode="question.getInputSetMode(answerContainer, onChangeBlock)"/>
+      </Row>
+      <RowIterator
+        editable="false"
+        elementName="supplementalText"
+        pageSize="0"
+        value="question.SupplementalTexts">
+        <IteratorSort
+          sortBy="supplementalText.Priority"
+          sortOrder="1"/>
+        <Row>
+          <Cell
+            id="subQuestionText"
+            value="gw.api.web.HtmlUtil.indent(supplementalText.Text, question.Indent)"
+            wrap="true"/>
+          <Cell
+            id="empty"/>
+        </Row>
+      </RowIterator>
+    </RowIterator>
+  </ListViewPanel>
+</PCF>

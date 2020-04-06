@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<Workflow locale="gw.api.util.LocaleUtil.toLanguage(PolicyPeriod.Policy.PrimaryLanguage)" subtype="CompleteCancellationWF" version="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="workflow.xsd">
+  <Context>
+    <Symbol name="PolicyPeriod" type="PolicyPeriod" value="Workflow.PolicyPeriod"/>
+    <Symbol name="Cancellation" type="Cancellation" value="Workflow.PolicyPeriod.Cancellation"/>
+  </Context>
+  <Start firstStep="WaitOrIssue"/>
+  <AutoStep id="WaitOrIssue" layoutid="21108638">
+    <Go desc="" if="PolicyPeriod.Cancellation.CancelProcessDate &lt;= java.util.Date.CurrentDate" layoutid="31272338" nextStep="Bound"/>
+    <Go desc="" layoutid="31126311" nextStep="PendingCancel"/>
+  </AutoStep>
+  <ManualStep id="PendingCancel" layoutid="1877110">
+    <Trigger desc="" id="Rescind" layoutid="22284729" nextStep="Rescinded">
+      <Available test="PolicyPeriod.CancellationProcess.canRescind().Okay"/>
+    </Trigger>
+    <Timeout desc="" layoutid="30046104" nextStep="Bound" timeAbsolute="PolicyPeriod.Cancellation.CancelProcessDate"/>
+  </ManualStep>
+  <Outcome id="Bound" layoutid="30870454">
+    <Enter>PolicyPeriod.CancellationProcess.issueCancellationFromWorkflow()   </Enter>
+  </Outcome>
+  <Outcome id="Rescinded" layoutid="21106953">
+    <Enter>PolicyPeriod.CancellationProcess.rescind()</Enter>
+  </Outcome>
+  <Finish/>
+  <Layout>
+    <BoxUI height="4" layoutid="25493999" width="20" x="1" y="0"/>
+    <BoxUI height="4" layoutid="21108638" width="20" x="1" y="11"/>
+    <BoxUI height="4" layoutid="1877110" width="20" x="1" y="21"/>
+    <BoxUI height="4" layoutid="7436410" width="20" x="1" y="41"/>
+    <BoxUI height="4" layoutid="27051815" width="20" x="32" y="31"/>
+    <BoxUI height="4" layoutid="30870454" width="20" x="1" y="31"/>
+    <BoxUI height="4" layoutid="21106953" width="20" x="32" y="21"/>
+    <BoxUI height="4" layoutid="7119100" width="20" x="32" y="41"/>
+    <ArrowUI layoutid="29179169" visible="true">
+      <PointUI x="11" y="4"/>
+      <PointUI x="11" y="10"/>
+    </ArrowUI>
+    <ArrowUI layoutid="16280960" visible="true">
+      <PointUI x="21" y="4"/>
+      <PointUI x="52" y="32"/>
+    </ArrowUI>
+    <ArrowUI layoutid="31272338" visible="true">
+      <PointUI x="1" y="13"/>
+      <PointUI x="-5" y="13"/>
+      <PointUI x="-5" y="33"/>
+      <PointUI x="1" y="33"/>
+    </ArrowUI>
+    <ArrowUI layoutid="31126311" visible="true">
+      <PointUI x="11" y="15"/>
+      <PointUI x="11" y="21"/>
+    </ArrowUI>
+    <ArrowUI layoutid="26319067" visible="true">
+      <PointUI x="21" y="23"/>
+      <PointUI x="31" y="23"/>
+    </ArrowUI>
+    <ArrowUI layoutid="30046104" visible="true">
+      <PointUI x="11" y="25"/>
+      <PointUI x="11" y="31"/>
+    </ArrowUI>
+    <ArrowUI layoutid="24238226" visible="true">
+      <PointUI x="11" y="41"/>
+      <PointUI x="11" y="35"/>
+    </ArrowUI>
+    <ArrowUI layoutid="21068232" visible="true">
+      <PointUI x="21" y="43"/>
+      <PointUI x="32" y="43"/>
+    </ArrowUI>
+    <ArrowUI layoutid="27418641" visible="true">
+      <PointUI x="42" y="31"/>
+      <PointUI x="42" y="25"/>
+    </ArrowUI>
+    <ArrowUI layoutid="22091936" visible="true">
+      <PointUI x="42" y="35"/>
+      <PointUI x="42" y="41"/>
+    </ArrowUI>
+    <ArrowUI layoutid="22284729" visible="true">
+      <PointUI x="21" y="23"/>
+      <PointUI x="32" y="23"/>
+    </ArrowUI>
+  </Layout>
+</Workflow>

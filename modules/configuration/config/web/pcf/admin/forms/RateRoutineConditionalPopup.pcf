@@ -1,0 +1,169 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="pcf.xsd">
+  <Popup
+    afterEnter="operand.OperandType = TC_CONDITIONAL;  if(operand.ConditionalSubOperands.Empty) operand.addNewSubOperand()"
+    beforeCommit="popUpHelper.checkForUnbalancedParentheses()"
+    canEdit="true"
+    id="RateRoutineConditionalPopup"
+    startInEditMode="true"
+    title="displaykey.Web.Rating.Flow.CalcRoutine.EditConditionalOperand">
+    <LocationEntryPoint
+      signature="RateRoutineConditionalPopup(operand : CalcStepDefinitionOperand, routine: CalcRoutineDefinition, paramInScopeUsageMap :  java.util.Map&lt;CalcRoutineParamName,List&lt;gw.rating.flow.util.InScopeUsage&gt;&gt;, costDataUsages : java.util.List&lt;gw.rating.flow.util.InScopeUsage&gt;, orderedSteps : java.util.List&lt;entity.CalcStepDefinition&gt;)"/>
+    <Variable
+      name="operand"
+      recalculateOnRefresh="true"
+      type="CalcStepDefinitionOperand"/>
+    <Variable
+      initialValue="new gw.pcf.rating.flow.RateRoutineConditionalPopupHelper(CurrentLocation, operand, routine)"
+      name="popUpHelper"
+      type="gw.pcf.rating.flow.RateRoutineConditionalPopupHelper"/>
+    <Variable
+      initialValue="popUpHelper.parseRateTables()"
+      name="tableCodeNameMap"
+      type="java.util.Map&lt;String,String&gt;"/>
+    <Variable
+      name="routine"
+      recalculateOnRefresh="true"
+      type="CalcRoutineDefinition"/>
+    <Variable
+      initialValue="operand.CalcStep.getAllExistingVariableNames(true)"
+      name="availLocalVariables"
+      recalculateOnRefresh="true"
+      type="List&lt;gw.rating.flow.LocalVariable&gt;"/>
+    <Variable
+      initialValue="{}"
+      name="paramInScopeUsageMap"
+      type="java.util.Map&lt;CalcRoutineParamName,List&lt;gw.rating.flow.util.InScopeUsage&gt;&gt;"/>
+    <Variable
+      name="costDataUsages"
+      type="java.util.List&lt;gw.rating.flow.util.InScopeUsage&gt;"/>
+    <Variable
+      name="orderedSteps"
+      type="java.util.List&lt;entity.CalcStepDefinition&gt;"/>
+    <Screen
+      editable="true">
+      <Toolbar>
+        <ToolbarButton
+          action="popUpHelper.commitPopup(availLocalVariables)"
+          id="RateRoutineParamEditUpdate"
+          label="displaykey.Web.ActivityDetail.Button.Update"/>
+        <ToolbarButton
+          action="CurrentLocation.cancel()"
+          id="RateRoutineParamEditCancel"
+          label="displaykey.Web.ActivityDetail.Button.Cancel"/>
+      </Toolbar>
+      <DetailViewPanel>
+        <InputColumn>
+          <TextInput
+            id="Usage"
+            label="displaykey.Web.Rating.Flow.CalcRoutine.Usage"
+            value="displaykey.Web.Rating.Flow.CalcRoutine.Usage.Operand"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef
+        editable="true">
+        <Toolbar>
+          <IteratorButtons
+            id="conditionalOperandToolbar"
+            iterator="conditionalOperandIterator"/>
+        </Toolbar>
+        <ListViewPanel
+          editable="true">
+          <RowIterator
+            editable="true"
+            elementName="conditionalOperand"
+            id="conditionalOperandIterator"
+            pageSize="0"
+            toCreateAndAdd="operand.addNewSubOperand()"
+            toRemove="operand.removeSubOperand(conditionalOperand)"
+            value="operand.ConditionalSubOperands">
+            <Row
+              editable="true">
+              <TypeKeyCell
+                align="center"
+                editable="conditionalOperand.First.OperandOrder &gt; 1"
+                enableSort="false"
+                filter="CalcStepOperatorType.TF_CONDITIONALS.TypeKeys.contains(VALUE)"
+                id="operator"
+                noneSelectedLabel="&quot; &quot;"
+                outputConversion="VALUE.LabelForDisplay"
+                value="conditionalOperand.First.OperatorType"
+                valueVisible="conditionalOperand.First.OperandOrder &gt; 1"/>
+              <TextCell
+                editable="true"
+                id="op1LeftParens"
+                numCols="1"
+                requestValidationExpression="(VALUE.toCharArray().toList().countWhere(\ c -&gt; c != '(')) == 0 ? null: displaykey.Web.Rating.Flow.CalcRoutine.OnlyLeftParenthesisHere"
+                value="conditionalOperand.First.LeftParenthesisGroup"
+                width="45"/>
+              <RangeCell
+                editable="true"
+                id="leftNegated"
+                optionLabel="VALUE ? displaykey.Web.Rating.Flow.CalcRoutine.LogicalNot : &quot;&quot;"
+                value="conditionalOperand.First.LogicalNot"
+                valueRange="{true,false}"
+                valueVisible="popUpHelper.mightBeBoolean(conditionalOperand.First, availLocalVariables) // See method comment"/>
+              <ModalCellRef
+                def="RateRoutineConditionalPopupFirstOperand(conditionalOperand, routine, paramInScopeUsageMap, costDataUsages, orderedSteps)"
+                editable="true"
+                id="FirstOperand"
+                label="displaykey.Web.Rating.Flow.CalcRoutine.Operand"
+                mode="((conditionalOperand.First.OperandType == null) or (conditionalOperand.First.IsEditableConstant)) ? &quot;constant&quot; : &quot;variable&quot;"/>
+              <TextCell
+                editable="true"
+                id="op1RightParens"
+                numCols="1"
+                requestValidationExpression="VALUE.toCharArray().toList().countWhere(\ c -&gt; c != ')') == 0 ? null: displaykey.Web.Rating.Flow.CalcRoutine.OnlyRightParenthesisHere"
+                value="conditionalOperand.First.RightParenthesisGroup"
+                width="45"/>
+              <RangeCell
+                align="center"
+                editable="not conditionalOperand.First.OperandName.Empty"
+                enableSort="false"
+                filter="CalcStepOperatorType.TF_COMPARATORS.TypeKeys.contains(VALUE)"
+                id="comparator"
+                label="displaykey.Web.Rating.Flow.CalcRoutine.ComparisonOperator"
+                noneSelectedLabel="&quot; &quot;"
+                optionLabel="VALUE.LabelForDisplay"
+                value="conditionalOperand.Second.OperatorType"
+                valueRange="CalcStepOperatorType.getTypeKeys(false)"
+                valueVisible="not conditionalOperand.First.OperandName.Empty">
+                <PostOnChange/>
+              </RangeCell>
+              <TextCell
+                editable="conditionalOperand.Second.OperatorType.Value != null"
+                id="op2LeftParens"
+                numCols="1"
+                requestValidationExpression="VALUE.toCharArray().toList().countWhere(\ c -&gt; c != '(') == 0 ? null: displaykey.Web.Rating.Flow.CalcRoutine.OnlyLeftParenthesisHere"
+                value="conditionalOperand.Second.LeftParenthesisGroup"
+                width="45"/>
+              <RangeCell
+                align="center"
+                editable="conditionalOperand.Second.OperatorType.Value != null"
+                id="rightNegated"
+                optionLabel="VALUE ? displaykey.Web.Rating.Flow.CalcRoutine.LogicalNot : &quot;&quot;"
+                value="conditionalOperand.Second.LogicalNot"
+                valueRange="{true,false}"
+                valueVisible="conditionalOperand.Second.OperatorType.Value != null and popUpHelper.mightBeBoolean(conditionalOperand.Second, availLocalVariables) // See method comment"/>
+              <ModalCellRef
+                def="RateRoutineConditionalPopupSecondOperand(conditionalOperand, routine, paramInScopeUsageMap, costDataUsages, orderedSteps, popUpHelper)"
+                editable="true"
+                id="SecondOperand"
+                label="displaykey.Web.Rating.Flow.CalcRoutine.Operand"
+                mode="(conditionalOperand.Second.OperatorType.Value != null and not popUpHelper.showFreeFormOperand(conditionalOperand)) ? &quot;variable&quot; : &quot;constant&quot;"/>
+              <TextCell
+                editable="conditionalOperand.Second.OperatorType.Value != null"
+                id="op2RightParens"
+                numCols="1"
+                requestValidationExpression="VALUE.toCharArray().toList().countWhere(\ c -&gt; c != ')') == 0 ? null: displaykey.Web.Rating.Flow.CalcRoutine.OnlyRightParenthesisHere"
+                value="conditionalOperand.Second.RightParenthesisGroup"
+                width="45"/>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+      </PanelRef>
+    </Screen>
+  </Popup>
+</PCF>

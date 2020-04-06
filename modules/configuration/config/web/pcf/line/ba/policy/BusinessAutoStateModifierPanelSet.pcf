@@ -1,0 +1,252 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <PanelSet
+    id="BusinessAutoStateModifierPanelSet">
+    <Require
+      name="baLine"
+      type="BusinessAutoLine"/>
+    <Require
+      name="jurisdiction"
+      type="BAJurisdiction"/>
+    <Variable
+      initialValue="jurisdiction.BAJurisModifiers"
+      name="modifiers"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="new gw.pcf.ModifiersListViewHelper(modifiers)"
+      name="modifiersLVHelper"
+      recalculateOnRefresh="true"/>
+    <ListViewPanel>
+      <Variable
+        initialValue="modifiersLVHelper.NonSchedRateModifiers"
+        name="nonSchedRateModifiers"
+        recalculateOnRefresh="true"/>
+      <Variable
+        initialValue="modifiersLVHelper.AllDisplayJustificationsFalse"
+        name="allDisplayJustificationsFalse"/>
+      <RowIterator
+        editable="true"
+        elementName="modifier"
+        id="RateModifiers"
+        pageSize="0"
+        value="nonSchedRateModifiers.where(\ mod -&gt; mod.DataType == ModifierDataType.TC_RATE)">
+        <IteratorSort
+          sortBy="modifier.Pattern.Priority"
+          sortOrder="1"/>
+        <Row>
+          <TextCell
+            align="left"
+            id="Category"
+            label="displaykey.Web.Policy.RatingInputs.Category"
+            numCols="40"
+            value="modifier.Pattern.Name"/>
+          <Cell
+            align="left"
+            editable="modifier.Pattern.DisplayEligibility"
+            id="Eligibility"
+            label="displaykey.Web.Policy.Modifiers.Eligible"
+            value="modifier.Eligible">
+            <PostOnChange
+              onChange="clearModifier(modifier)"/>
+          </Cell>
+          <Cell
+            align="left"
+            id="Minimum"
+            label="displaykey.Web.Policy.RatingInputs.Minimum"
+            value="modifier.Minimum"
+            valueVisible="modifier.Pattern.ModifierDataType == &quot;rate&quot; and modifier.Pattern.DisplayRange"/>
+          <Cell
+            align="left"
+            id="Maximum"
+            label="displaykey.Web.Policy.RatingInputs.Maximum"
+            value="modifier.Maximum"
+            valueVisible="modifier.Pattern.ModifierDataType == &quot;rate&quot; and modifier.Pattern.DisplayRange"/>
+          <Cell
+            align="right"
+            editable="true"
+            id="Rate"
+            label="displaykey.Web.Policy.PolicyLine.PerState.Modifiers.Value"
+            requestValidationExpression="modifier.getModifierValidation(VALUE as String)"
+            value="modifier.RateModifier"
+            valueVisible="modifier.Eligible"/>
+          <Cell
+            align="left"
+            editable="modifier.Pattern.DisplayValueFinal"
+            id="ValueFinal"
+            label="displaykey.Web.Policy.Modifiers.ValueFinal"
+            value="modifier.ValueFinal"
+            valueVisible="modifier.Eligible"/>
+          <TextCell
+            align="left"
+            editable="modifier.Pattern.DisplayJustification"
+            id="Justification"
+            label="displaykey.Web.Policy.RatingInputs.Justification"
+            numCols="45"
+            value="modifier.Justification"
+            valueVisible="modifier.Eligible"
+            visible="allDisplayJustificationsFalse"/>
+          <DateCell
+            align="left"
+            id="Effective"
+            label="displaykey.Web.Policy.PolicyLine.PerState.Modifiers.EffectiveDate"
+            value="modifier.EffectiveDate"
+            valueVisible="modifier.Eligible"/>
+          <DateCell
+            align="left"
+            id="Expiration"
+            label="displaykey.Web.Policy.PolicyLine.PerState.Modifiers.ExpirationDate"
+            value="modifier.ExpirationDate"
+            valueVisible="modifier.Eligible"/>
+        </Row>
+      </RowIterator>
+      <RowIterator
+        editable="true"
+        elementName="modifier"
+        id="NonRateModifiers"
+        pageSize="0"
+        value="nonSchedRateModifiers.where(\ mod -&gt; mod.DataType != ModifierDataType.TC_RATE)">
+        <IteratorSort
+          sortBy="modifier.Pattern.Priority"
+          sortOrder="1"/>
+        <Row>
+          <TextCell
+            align="left"
+            id="Category"
+            numCols="40"
+            value="modifier.Pattern.Name"/>
+          <Cell
+            align="left"
+            editable="modifier.Pattern.DisplayEligibility"
+            id="Eligibility"
+            value="modifier.Eligible">
+            <PostOnChange
+              onChange="clearModifier(modifier)"/>
+          </Cell>
+          <Cell
+            align="left"
+            id="Minimum"
+            value="modifier.Minimum"
+            valueVisible="modifier.Pattern.ModifierDataType == &quot;rate&quot; and modifier.Pattern.DisplayRange"/>
+          <Cell
+            align="left"
+            id="Maximum"
+            value="modifier.Maximum"
+            valueVisible="modifier.Pattern.ModifierDataType == &quot;rate&quot; and modifier.Pattern.DisplayRange"/>
+          <ModifierCell
+            align="right"
+            editable="true"
+            id="Value"
+            value="modifier"
+            valueVisible="modifier.Eligible"/>
+          <Cell
+            align="left"
+            editable="modifier.Pattern.DisplayValueFinal"
+            id="ValueFinal"
+            value="modifier.ValueFinal"
+            valueVisible="modifier.Eligible"/>
+          <TextCell
+            align="left"
+            editable="modifier.Pattern.DisplayJustification"
+            id="Justification"
+            numCols="45"
+            value="modifier.Justification"
+            valueVisible="modifier.Eligible"
+            visible="allDisplayJustificationsFalse"/>
+          <DateCell
+            align="left"
+            id="Effective"
+            value="modifier.EffectiveDate"
+            valueVisible="modifier.Eligible"/>
+          <DateCell
+            align="left"
+            id="Expiration"
+            value="modifier.ExpirationDate"
+            valueVisible="modifier.Eligible"/>
+        </Row>
+      </RowIterator>
+    </ListViewPanel>
+    <!-- <PanelRef>
+      <ListViewPanel
+        id="ModifiersLV">
+        <Variable
+          initialValue="CurrentLocation.InEditMode and modifiers != null"
+          name="modifiersUpdated"/>
+        <RowIterator
+          editable="true"
+          elementName="modifier"
+          value="modifiers">
+          <IteratorSort
+            sortBy="modifier.Pattern.Priority"
+            sortOrder="1"/>
+          <Row>
+            <TextCell
+              id="Category"
+              label="displaykey.Web.Policy.RatingInputs.Category"
+              numCols="40"
+              value="modifier.Pattern.Name"/>
+            <Cell
+              editable="modifier.Pattern.DisplayEligibility"
+              id="Eligibility"
+              label="displaykey.Web.Policy.Modifiers.Eligible"
+              onChange="clearModifier(modifier)"
+              postOnChange="true"
+              value="modifier.Eligible"/>
+            <Cell
+              id="Minimum"
+              label="displaykey.Web.Policy.RatingInputs.Minimum"
+              value="modifier.Minimum"
+              valueVisible="modifier.Pattern.ModifierDataType == &quot;rate&quot; and modifier.Pattern.DisplayRange"/>
+            <Cell
+              id="Maximum"
+              label="displaykey.Web.Policy.RatingInputs.Maximum"
+              value="modifier.Maximum"
+              valueVisible="modifier.Pattern.ModifierDataType == &quot;rate&quot; and modifier.Pattern.DisplayRange"/>
+            <ModifierCell
+              editable="true"
+              id="Value"
+              label="displaykey.Web.Policy.PolicyLine.PerState.Modifiers.Value"
+              requestValidationExpression="modifier.getModifierValidation(VALUE as String)"
+              value="modifier"
+              valueVisible="modifier.Eligible"/>
+            <Cell
+              editable="modifier.Pattern.DisplayValueFinal"
+              id="ValueFinal"
+              label="displaykey.Web.Policy.Modifiers.ValueFinal"
+              value="modifier.ValueFinal"
+              valueVisible="modifier.Eligible"/>
+            <TextCell
+              editable="modifier.Pattern.DisplayJustification"
+              id="Justification"
+              label="displaykey.Web.Policy.RatingInputs.Justification"
+              numCols="45"
+              value="modifier.Justification"
+              valueVisible="modifier.Eligible"
+              visible="gw.pcf.ModifiersListViewHelper.falseIfAllDisplayJustificationsFalse(modifiers)"/>
+            <DateCell
+              id="Effective"
+              label="displaykey.Web.Policy.PolicyLine.PerState.Modifiers.EffectiveDate"
+              value="modifier.EffectiveDate"
+              valueVisible="modifier.Eligible"/>
+            <DateCell
+              id="Expiration"
+              label="displaykey.Web.Policy.PolicyLine.PerState.Modifiers.ExpirationDate"
+              value="modifier.ExpirationDate"
+              valueVisible="modifier.Eligible"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </PanelRef> -->
+    <PanelRef
+      def="ScheduleRateDV(modifiersLVHelper.SchedRateModifiers)"/>
+    <Code><![CDATA[function clearModifier(mod: Modifier) : Modifier {
+  mod.BooleanModifier = null
+  mod.RateModifier = null
+  mod.DateModifier = null
+  mod.TypeKeyModifier = null
+  mod.Justification = null
+  return mod
+}]]></Code>
+  </PanelSet>
+</PCF>

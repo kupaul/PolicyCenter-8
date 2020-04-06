@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <!-- ListView that displays the results of a Group search that allows the user to
+    select one of the results by clicking on the appropriate "Select" button. -->
+  <ListViewPanel
+    id="GroupSearchPickerResultsLV">
+    <Require
+      name="groupList"
+      type="GroupQuery"/>
+    <Require
+      name="excludeGroup"
+      type="Group"/>
+    <!-- Row visible="(ExcludeGroup == null ? true : group != ExcludeGroup and not ExcludeGroup.isAncestor(group))" -->
+    <RowIterator
+      editable="false"
+      elementName="group"
+      pickValue="group"
+      value="groupList?.where(\g -&gt; ShowGroup(g))">
+      <Row>
+        <Cell
+          id="Web_GroupSearchResults_Name"
+          label="displaykey.Web.GroupSearchResults.Name"
+          sortOrder="1"
+          value="group"/>
+        <Cell
+          id="Web_GroupSearchResults_ParentGroup"
+          label="displaykey.Web.GroupSearchResults.ParentGroup"
+          value="group.Parent"/>
+        <Cell
+          enableSort="false"
+          id="Web_GroupSearchResults_Organization"
+          label="displaykey.Web.GroupSearchResults.Organization"
+          value="group.Organization"/>
+        <Cell
+          id="Web_GroupSearchResults_Type"
+          label="displaykey.Web.GroupSearchResults.Type"
+          value="group.GroupType"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function ShowGroup( CurrentGroup : Group ) : Boolean
+{
+  return ( excludeGroup == null || (CurrentGroup != excludeGroup and not excludeGroup.isAncestor( CurrentGroup )) )
+}]]></Code>
+  </ListViewPanel>
+</PCF>

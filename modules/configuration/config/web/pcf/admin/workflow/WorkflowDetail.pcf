@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    afterCancel="WorkflowSearch.go()"
+    afterCommit="WorkflowSearch.go()"
+    id="WorkflowDetail"
+    parent="WorkflowSearch()"
+    showUpLink="true"
+    title="displaykey.Web.Admin.WorkflowDetail">
+    <LocationEntryPoint
+      signature="WorkflowDetail(Workflow : Workflow)"/>
+    <Variable
+      name="Workflow"
+      type="Workflow"/>
+    <Screen
+      id="WorkflowDetailScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="null"
+          id="WorkflowDetail_RefreshButton"
+          label="displaykey.Button.Refresh"/>
+        <ToolbarButton
+          action="gw.api.admin.WorkflowUtil.suspend(Workflow)"
+          confirmMessage="displaykey.Web.Admin.WorkflowDetail.ConfirmSuspend"
+          id="WorkflowDetail_SuspendButtonButton"
+          label="displaykey.Web.Admin.WorkflowDetail.SuspendButton"
+          visible="perm.System.workflowmanage and Workflow.State == &quot;active&quot;"/>
+        <ToolbarButton
+          action="gw.api.admin.WorkflowUtil.resumeWorkflow(Workflow)"
+          id="WorkflowDetail_ResumeButton"
+          label="displaykey.Button.Resume"
+          visible="perm.System.workflowmanage and (Workflow.State == &quot;error&quot; or Workflow.State == &quot;suspended&quot;)"/>
+        <ToolbarButton
+          action="ManageWorkflows.go( new Workflow[] { Workflow })"
+          id="WorkflowDetail_ManageButton"
+          label="displaykey.Web.Admin.Workflow.Manage.Title"
+          visible="perm.System.workflowmanage and Workflow.State != &quot;completed&quot;"/>
+      </Toolbar>
+      <PanelRef
+        def="WorkflowDetailDV(Workflow)"/>
+      <PanelRef
+        def="WorkflowsLV(findSubFlows(Workflow), true)"
+        visible="Workflow.SubFlows.length &gt; 0">
+        <TitleBar
+          appendListViewPaging="true"
+          title="displaykey.Web.Admin.WorkflowDetail.SubFlows"/>
+        <Toolbar/>
+      </PanelRef>
+    </Screen>
+    <Code><![CDATA[function findSubFlows(wf : Workflow) : WorkflowQuery {
+  var criteria = new WorkflowSearchCriteria()
+  criteria.Parent = wf
+  return criteria.performSearch()
+}]]></Code>
+  </Page>
+</PCF>

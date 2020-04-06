@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InputSet
+    id="Policy_JobDetailsInputSet"
+    mode="Submission">
+    <Require
+      name="job"
+      type="Job"/>
+    <Variable
+      initialValue="gw.api.util.JurisdictionMappingUtil.getJurisdiction(job.ResultingBoundPeriod.PolicyAddress.Address)"
+      name="referenceState"
+      type="Jurisdiction"/>
+    <Variable
+      initialValue="(referenceState != null) ? job.ResultingBoundPeriod.getReferenceDateForCurrentJob(referenceState) : null"
+      name="referenceDate"
+      type="java.util.Date"/>
+    <Label
+      label="displaykey.Web.PolicyFile.JobDetails.SubmissionTitle"/>
+    <Input
+      id="Account"
+      label="displaykey.Web.PolicyFile.JobDetails.Account"
+      value="job.ResultingBoundPeriod.Policy.Account.AccountHolderContact.DisplayName"/>
+    <Input
+      id="Insured"
+      label="displaykey.Web.PolicyFile.JobDetails.Insured"
+      value="job.ResultingBoundPeriod.PrimaryNamedInsured.DisplayName"/>
+    <IndustryCodeInput
+      domain="&quot;SIC&quot; as IndustryCodeType"
+      id="IndustryCode"
+      label="displaykey.Java.IndustryCodeInputWidget.Label"
+      pickLocation="IndustryCodeSearchPopup.push(&quot;SIC&quot; as IndustryCodeType, referenceDate)"
+      referenceDate="referenceDate"
+      value="job.ResultingBoundPeriod.PrimaryNamedInsured.IndustryCode"/>
+    <Input
+      id="Name"
+      label="displaykey.Web.PolicyFile.JobDetails.Producer.Name"
+      value="job.ResultingBoundPeriod.EffectiveDatedFields.ProducerCode"/>
+    <Input
+      id="Premium"
+      label="displaykey.Web.PolicyFile.JobDetails.Premium"
+      value="job.ResultingBoundPeriod.TransactionCostRPT"/>
+  </InputSet>
+</PCF>

@@ -1,0 +1,1076 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Integrating with a Contact Management System</title>
+    <link rel="StyleSheet" href="css/contact-integration.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-pc-suite.html#2070843">Billing, Claim, and Contact Integrations</a> : <a class="WebWorks_Breadcrumb_Link" href="contact-integration.36.1.html#2070843">Contact Integration</a> : Integrating with a Contact Management System</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2070843">Integrating with a Contact Management System</a></h3>
+      <div class="B_-_Body"><a name="2206180">PolicyCenter integrates with an external contact management system through two plugin interfaces. Each one has a different function:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2206181">ContactSystemPlugin</a></span> – Integrate your external contact management system with PolicyCenter</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2206182">IContactConfigPlugin</a></span> – Configure how PolicyCenter handles contacts </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2206183">The most important contact-related plugin interface is the contact system plugin, </a><span class="cv_-_computer_voice">ContactSystemPlugin</span>. </div>
+      <div class="B_-_Body"><a name="2206184">Integrate with an external contact management system by registering a class that implements the </a><span class="cv_-_computer_voice">ContactSystemPlugin</span> plugin interface.</div>
+      <div class="B_-_Body"><a name="2206185">For use with internal contacts only, PolicyCenter includes the following </a><span class="cv_-_computer_voice">ContactSystemPlugin</span> plugin interface implementation:</div>
+      <div class="CS_-_Code_Single_Line" style="font-style: normal; font-variant: normal; font-weight: normal; text-transform: none; vertical-align: baseline"><span class="cv_-_computer_voice"><a name="2206186">gw.plugin.contact.impl.StandAloneContactSystemPlugin</a></span></div>
+      <div class="B_-_Body"><a name="2206187">The PolicyCenter base configuration supports integration with Guidewire ContactManager. If you have a Client Data Management module license and install ContactManager, do not write your own implementation of the </a><span class="cv_-_computer_voice">ContactSystemPlugin</span> plugin interface. Instead, use the plugin implementation <span class="cv_-_computer_voice">gw.plugin.contact.impl.ABContactSystemPlugin</span>.</div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="2206188">The PolicyCenter base configuration has built-in support for integration with Guidewire ContactManager. If you have a license for the optional Client Data Management module, you can install and integrate ContactManager. For information on integration with ContactManager, see </a><a href="javascript:WWHClickedPopup('contact', 'integrate.06.1.html#2078890', '');" title="Integrating ContactManager with Guidewire Core Applications">“Integrating ContactManager with Guidewire Core Applications” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('contact', 'integrate.06.1.html#2078890', '');" title="Integrating ContactManager with Guidewire Core Applications">Contact Management Guide</a></span>. For more information about the mapping between PolicyCenter and ContactManager contacts, see <a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2708573', '');" title="ContactMapper Class">“ContactMapper Class” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.07.html#2708573', '');" title="ContactMapper Class">Contact Management Guide</a></span>.</div>
+      <div class="B_-_Body"><a name="2100141">Your implementation of the contact system plugin defines the contract between PolicyCenter and the code that initiates requests to an external contact management system. PolicyCenter relies on this plugin to:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2070894">Retrieve a contact from the external contact management system.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2070918">Search for contacts in the external contact management system.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2074631">Add a contact to an external contact management system.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2102795">Update a contact in an external contact management system.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2070855">PolicyCenter uniquely identifies contacts by using unique IDs in the external system, known as the Address Book Unique ID (</a><span class="cv_-_computer_voice">AddressBookUID</span>). This unique ID is analogous to a public ID, but is not necessarily the same as the public ID, which is the separate property <span class="cv_-_computer_voice">PublicID</span>. </div>
+      <div class="B_-_Body"><a name="2205154">When PolicyCenter needs to retrieve a contact from the contact management system, it calls the </a><span class="cv_-_computer_voice">retrieveContact</span> method of this plugin. The plugin takes only one argument, the unique ID of the contact. Your plugin implementation needs to get the contact from the external system by using whatever network protocol is appropriate, and then populate a contact record object. </div>
+      <div class="B_-_Body"><a name="2205155">For this plugin, the contact record object that you must populate is a </a><span class="cv_-_computer_voice">Contact</span> entity instance. </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2202589">Inbound Contact Integrations</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2202611">For inbound integration, PolicyCenter publishes a WS-I web service called </a><span class="cv_-_computer_voice">ContactAPI</span>. This web service enables an external contact management system to notify ClaimCenter of updates, deletes, and merges of contacts in that external system. When ClaimCenter receives a notification from the external contact management system, ClaimCenter can update its local copies of those contacts to match. See <a href="javascript:WWHClickedPopup('integration', 'contact-integration.36.7.html#2084787', '');" title="Contact Web Service APIs">“Contact Web Service APIs”</a>.</div>
+      <h4 class="H2_-_Heading_2"><a name="2190289">Asynchronous Messaging with the Contact Management System</a></h4>
+      <div class="B_-_Body"><a name="2200608">When a user in PolicyCenter creates or updates a local </a><span class="cv_-_computer_voice">Contact</span> instance, PolicyCenter runs the Event Fired rule set. These rules determine whether to create a message that creates or updates the <span class="cv_-_computer_voice">Contact</span> in the contact management system. In the default configuration, the process of sending the message to the contact system involves several messaging objects:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2200609">A built-in </a><span class="cv_-_computer_voice">ContactSystemPlugin</span> plugin implementation. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2200610">A built-in messaging destination that is responsible for sending messages to the contact system. The messaging destination uses two plugins:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="2200918">A message transport (</a><span class="cv_-_computer_voice">MessageTransport</span>) plugin implementation called <span class="cv_-_computer_voice">ContactMessageTransport</span>. PolicyCenter calls the message transport plugin implementation to send a message.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="2202229">A message request (</a><span class="cv_-_computer_voice">MessageRequest</span>) plugin implementation called <span class="cv_-_computer_voice">ContactMessageRequest</span>. PolicyCenter calls the message request plugin to update the message payload immediately before sending the message if necessary.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2204700">For more information about messaging and these plugin interfaces, see </a><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.01.html#4197044', '');" title="Messaging and Events">“Messaging and Events”</a></div>
+      <div class="B_-_Body"><a name="2202242">In the default configuration, PolicyCenter calls the following two methods of </a><span class="cv_-_computer_voice">ContactSystemPlugin</span>:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2202243">createAsyncUpdate </a></span>– At message creation time, Event Fired rules call this method to create a message.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2202244">sendAsyncUpdate</a></span> – At message send time, the message transport calls this method to send the message. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h6 class="HS_-_Head_Sub"><a name="2202233">Detailed Contact Messaging Flow</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2202259">At message creation time, the Event Fired rules call the </a><span class="cv_-_computer_voice">ContactSystemPlugin</span> method called <span class="cv_-_computer_voice">createAsyncUpdate</span> to actually create the message. The Event Fired rules pass a <span class="cv_-_computer_voice">MessageContext</span> object to the <span class="cv_-_computer_voice">ContactSystemPlugin</span> method <span class="cv_-_computer_voice">createAsyncUpdate</span>. The <span class="cv_-_computer_voice">createAsyncUpdate</span> method uses the <span class="cv_-_computer_voice">MessageContext</span> to determine whether to create a message for the change to the contact, and, if so, what the payload is for that message. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2199887">At message send time on the batch server, ClaimCenter sends the message to the messaging destination. There are two phases of this process:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LS2A_-_List_Start_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS2A_-_List_Start_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">a.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS2A_-_List_Start_002c_Level_2_Alpha_inner"><a name="2201417">PolicyCenter calls the message request plugin to handle late-bound </a><span class="cv_-_computer_voice">AddressBookUID</span> values. For example, suppose the <span class="cv_-_computer_voice">AddressBookUID</span> for a contact is unknown at message creation time but is known when at message send time. PolicyCenter calls the <span class="cv_-_computer_voice">beforeSend</span> method of the <span class="cv_-_computer_voice">ContactMessageRequest</span> plugin to update the payload before the message is sent. For related information, see <a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.08.html#3946497', '');" title="Late Binding Data in Your Payload">“Late Binding Data in Your Payload”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">b.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2201805">PolicyCenter calls the message transport plugin to send the message. The message transport implementation finds the </a><span class="cv_-_computer_voice">ContactSystemPlugin</span> class and calls its <span class="cv_-_computer_voice">sendAsyncUpdate</span> method to actually send the message. An additional method argument includes the modified late-bound payload that the message request plugin returned.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="2191442">Contact Retrieval</a></h4>
+      <div class="B_-_Body"><a name="2191443">To support contact retrieval, do the following in your </a><span class="cv_-_computer_voice">retrieveContact</span> method:</div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2191444">Determine what object type to populate locally for your contact to connect to the external system. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2191445">For example, suppose you define the web service in Studio with the name </a><span class="cv_-_computer_voice">MyContactSystem</span> and that web service has a <span class="cv_-_computer_voice">MyContact</span> XML type from a WSDL or XSD file. For this example, suppose your contact retrieval web service returns a <span class="cv_-_computer_voice">MyContact</span> object. </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2191449">For more information about web services and how PolicyCenter imports types from external web services, see </a><a href="javascript:WWHClickedPopup('integration', 'webservice-wsi-consuming.08.1.html#2065452', '');" title="Calling WS-I Web Services from Gosu">“Calling WS-I Web Services from Gosu”</a>.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2191453">Write your web service code that connects to the external contact management system. Whatever type it returns must contain equivalents of the following </a><span class="cv_-_computer_voice">Contact</span> properties: </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><span class="cv_-_computer_voice"><a name="2191454">PrimaryPhone</a></span>, <span class="cv_-_computer_voice">TaxID</span>, <span class="cv_-_computer_voice">WorkPhone</span>, <span class="cv_-_computer_voice">EmailAddress2</span>, <span class="cv_-_computer_voice">FaxPhone</span>, </div>
+      <div class="CS_-_Code_Single_Line"><span class="cv_-_computer_voice"><a name="2191455">HomePhone</a></span>, <span class="cv_-_computer_voice">CellPhone</span>, <span class="cv_-_computer_voice">DateOfBirth</span>, and <span class="cv_-_computer_voice">Version</span>. </div>
+      <div class="LP_-_List_Para"><a name="2191456">If the contact is a person, it must have the properties </a><span class="cv_-_computer_voice">FirstName</span> and <span class="cv_-_computer_voice">LastName</span>.</div>
+      <div class="LP_-_List_Para"><a name="2191457">If the contact is a company, it must have the property </a><span class="cv_-_computer_voice">Name</span>, containing the company name.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2191458">Your plugin code synchronously waits for a response.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2191462">To return the data to PolicyCenter, create a new instance of a contact in the current transaction's bundle. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2205160">Create the new instance by using the instance of </a><span class="cv_-_computer_voice">ContactCreator</span> that your plugin method gets as a method argument. This class standardizes finding and creating contacts within PolicyCenter. It has a <span class="cv_-_computer_voice">loadOrCreateContact</span> method that you can use for creating a contact. </div>
+      <div class="LP_-_List_Para"><a name="2205164">For example, your code might look like something like this:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2205165">override function retrieveContact(addressBookUID : String, creator : ContactCreator) : Contact {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2205166">    var returnedContact : Contact = null</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2205167">    var contactXml = retrieveContactXML(addressBookUID)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2205168">    if (contactXml != null) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2205169">      var contactType =</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2205170">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_mapper.getNameMapper().getLocalEntityName(contactXml.EntityType)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2205171">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a><span class="s_-_strong">returnedContact = creator.loadOrCreateContact(contactXml.LinkID, contactType)</span></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2205172">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2205173">      validateAutoSyncState(returnedContact, addressBookUID)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2205174">      overwriteContactFromXml(returnedContact, contactXml)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2205175">    }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2205176">    return returnedContact</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2205177">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2205178">&nbsp;</a></PRE>
+      <div class="CS_-_Code_Single_Line"><a name="2205179">var c = new Contact()</a></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2191482">Populate the new contact entity instance with information from your external contact.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2191483">Return that object as the result from your </a><span class="cv_-_computer_voice">retrieveContact</span> method. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2191487">If you ever need the PolicyCenter implementation to retrieve more fields from the external contact management system, it is best to extend the data model for the </a><span class="cv_-_computer_voice">Contact</span> entity.</div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2191491">If you need to view or edit these additional properties in PolicyCenter, remember to modify the contact-related PCF files to extract and display the new field.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="2191492">Contact Searching</a></h4>
+      <div class="B_-_Body"><a name="2094935">To support contact searching, your plugin must respond to a search request from PolicyCenter. PolicyCenter calls the plugin method </a><span class="cv_-_computer_voice">searchContacts</span> to perform the search. The details of the search are defined in a contact search criteria object, <span class="cv_-_computer_voice">ContactSearchCriteria</span>, which is a method argument. This object defines the fields that the user searched on. </div>
+      <div class="B_-_Body"><a name="2075141">The important properties in this object are:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2072067">ContactIntrinsicType</a></span> – The type of contact. To determine if the contact search is for a person or a company, use code such as the following:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2072036">var isPerson = Person.Type.isAssignableFrom(searchCriteria.ContactIntrinsicType)</a></PRE>
+      <div class="LP_-_List_Para"><a name="2072113">If the result is </a><span class="cv_-_computer_voice">true</span>, the contact is a person rather than a company.</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="2072038">FirstName</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2072039">Keyword</a></span> – The general name for a company name (for companies) or a last name (for people)</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="2072040">TaxID</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="2205184">OfficialId</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="2072042">OrganizationName</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="2072044">Address.AddressLine1</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="2072046">Address.City</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="2072047">Address.State.Code</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="2072048">Address.PostalCode</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="2072049">Address.Country.Code</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="2072050">Address.County</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2072310">Refer to the Data Dictionary for the complete set of fields on the search criteria object that you could use to perform the search. However, the built-in implementation of the user interface might not necessarily support populating those fields with non-null values. You can modify the user interface code to add any existing fields or extend the data model of the search criteria object to add new properties.</a></div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2205189">Properties related to proximity search are unsupported. For example, you cannot search by attitude or longitude using this API.</a></div>
+      <div class="B_-_Body"><a name="2075329">The second parameter to this method is the </a><span class="cv_-_computer_voice">ContactSearchFilter</span>, which defines some metadata about the search, including:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2191065">The start row of the results to be returned.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2191075">The maximum number of results, if you are just querying for the number of results, as opposed to the actual results.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2191100">The sort columns.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2191107">Any subtypes to exclude from the search due to user permissions.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2190949">For the return results, populate a </a><span class="cv_-_computer_voice">ContactResult</span> object, which includes the number of results from the query and, if required, the actual results of the search as <span class="cv_-_computer_voice">Contact</span> entities. It is not expected that these <span class="cv_-_computer_voice">Contact</span> entities will contain all the contact information from the external contact management system. These entities are expected to contain just enough information to display in a list view to enable the user to select a result. </div>
+      <div class="B_-_Body"><a name="2191177">For example, the default configuration of the plugin for ContactManager includes the following properties on the </a><span class="cv_-_computer_voice">Contact</span> entities returned as search results:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2072546">AddressBookUID</a></span> – The unique ID for the contact as <span class="cv_-_computer_voice">String</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2072534">FirstName</a></span> – First name as <span class="cv_-_computer_voice">String</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2072576">LastName</a></span> – Last name as <span class="cv_-_computer_voice">String</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2072583">Name</a></span> – Company name as <span class="cv_-_computer_voice">String</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2072590">DisplayAddress</a></span> – Display version of the address, as a <span class="cv_-_computer_voice">String</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2072599">PrimaryAddress</a></span> – An address entity instance</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2072876">CellPhone</a></span> – Mobile phone number as <span class="cv_-_computer_voice">String</span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2191213">HomePhone</a></span> – Home phone number as <span class="cv_-_computer_voice">String</span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2191229">WorkPhone</a></span> – Work phone number as <span class="cv_-_computer_voice">String</span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2191284">FaxPhone</a></span> – Fax phone number as <span class="cv_-_computer_voice">String</span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2072879">EmailAddress1</a></span> – Email address as <span class="cv_-_computer_voice">String</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2191318">EmailAddress2</a></span> – Email address as <span class="cv_-_computer_voice">String</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2082927">For the full list of properties, see the </a><span class="cv_-_computer_voice">ABContactAPISearchResult</span> Gosu class in ContactManager. This class is in the package <span class="cv_-_computer_voice">gw.webservice.ab.ab800.abcontactapi</span>.</div>
+      <h4 class="H2_-_Heading_2"><a name="2205194">Support for Finding Duplicates</a></h4>
+      <div class="B_-_Body"><a name="2205198">Your plugin must tell PolicyCenter whether the external contact management system supports finding duplicates. Implement the </a><span class="cv_-_computer_voice">supportsFindingDuplicates</span> method. Return <span class="cv_-_computer_voice">true</span> if the external system is capable of finding and returning duplicate contacts. If this method returns <span class="cv_-_computer_voice">false</span>, then a call to the <span class="cv_-_computer_voice">findDuplicates</span> method might throw an exception, but in any event cannot be relied upon to return legitimate results.</div>
+      <h4 class="H2_-_Heading_2"><a name="2094918">Finding Duplicates</a></h4>
+      <div class="B_-_Body"><a name="2094919">PolicyCenter calls the </a><span class="cv_-_computer_voice">findDuplicates</span> method in the plugin to find duplicate contacts for a specified contact. </div>
+      <div class="B_-_Body"><a name="2191558">The method takes two arguments:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2191640">A </a><span class="cv_-_computer_voice">Contact</span> entity instance for which you are checking for duplicates</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2191649">A </a><span class="cv_-_computer_voice">ContactSearchFilter</span> that can specify subtypes to exclude from the results if contact subtype permissions are being used</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2191635">The </a><span class="cv_-_computer_voice">findDuplicates</span> method must return an instance of <span class="cv_-_computer_voice">DuplicateSearchResult</span>, a class that contains a collection of the potential duplicates as <span class="cv_-_computer_voice">ContactMatch</span> objects and the number of results. </div>
+      <div class="B_-_Body"><a name="2191712">The </a><span class="cv_-_computer_voice">ContactMatch</span> object contains the <span class="cv_-_computer_voice">Contact</span> that was found to be a duplicate and a <span class="cv_-_computer_voice">boolean</span> property, <span class="cv_-_computer_voice">ExactMatch</span>, which indicates if the contact is an exact or a potential match. As with searching, the <span class="cv_-_computer_voice">Contact</span> returned in the <span class="cv_-_computer_voice">ContactMatch</span> object does not have to contain all the contact information from the external contact management system. The object contains just enough contact information to enable the PolicyCenter user to determine if the duplicate is valid.</div>
+      <div class="B_-_Body"><a name="2191763">The list of properties returned by ContactManager in its default configuration is in the </a><span class="cv_-_computer_voice">ABContactAPIFindDuplicatesResult</span> class in the package <span class="cv_-_computer_voice">gw.webservice.ab.ab800.abcontactapi</span>.</div>
+      <h6 class="HS_-_Head_Sub"><a name="2095530">To find duplicates</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2111230">Query the external system for a list of matching or potentially matching contacts.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2111390">Optionally, if the results you receive are only summaries, if it is necessary for detecting duplicates, retrieve all the data for each contact from the external system.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2111356">Review the duplicates and determine which contacts are duplicates according to your plugin implementation.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2191935">Create a list of </a><span class="cv_-_computer_voice">ContactMatch</span> items, each of which contains a <span class="cv_-_computer_voice">Contact</span> and a <span class="cv_-_computer_voice">boolean</span> property that indicates if the contact is an exact match. Each of these <span class="cv_-_computer_voice">Contact</span> objects is a summary that contains many, but perhaps not all, <span class="cv_-_computer_voice">Contact</span> properties. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2192033">Create an instance of the concrete class </a><span class="cv_-_computer_voice">DuplicateSearchResult</span> with the collection of <span class="cv_-_computer_voice">ContactMatch</span> items. Pass the list of duplicates to the constructor.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2111467">Return that instance of </a><span class="cv_-_computer_voice">DuplicateSearchResult</span> from this method.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="2205203">Adding Contacts to the External System</a></h4>
+      <div class="B_-_Body"><a name="2205207">To support PolicyCenter sending new contacts to the external contact management system, implement the </a><span class="cv_-_computer_voice">addContact</span> methods in your contact system plugin. This method must add the contact to the external system. Send as many fields on <span class="cv_-_computer_voice">Contact</span> as make sense for your external system. If you added data model extensions to <span class="cv_-_computer_voice">Contact</span>, you must decide which ones apply to the external contact management system data model. There might be side effects on the local contact in ClaimCenter, typically to store external identifiers.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2205208">Alternative Method Signatures for Adding a Contact to an External System</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2205209">The </a><span class="cv_-_computer_voice">addContact</span> method has two signatures:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2205210">addContact(Contact contact, String payload, String transactionId)</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2205211">addContact(Contact contact, String transactionId)</a></PRE>
+      <div class="B_-_Body"><a name="2205212">The </a><span class="cv_-_computer_voice">payload</span> parameter uniquely describes the contact for the external system in whatever format the external system accepts, such as XML specified by a published XSD. For a typical integration, your Event Fired rules generate an XML serialization of your contact. The <span class="cv_-_computer_voice">payload</span> parameter represents the <span class="cv_-_computer_voice">Message.Payload</span> property of the message.</div>
+      <div class="B_-_Body"><a name="2205213">The simpler method signature takes a </a><span class="cv_-_computer_voice">Contact</span> entity and a transaction ID.</div>
+      <div class="B_-_Body"><a name="2205214">The transaction ID parameter uniquely identifies the request. Your external system can use this transaction ID to track duplicate requests from ClaimCenter.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2205215">Capturing the Contact ID from the External System</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2205219">The </a><span class="cv_-_computer_voice">addContact</span> method returns nothing to PolicyCenter. However, your implementation of the method must capture the ID for the new contact from the external system. Use the captured value to set the address book UID on the local PolicyCenter contact before your <span class="cv_-_computer_voice">addContact</span> method returns control to the caller. Typically, the external system is the system of record for issuing address book UIDs.</div>
+      <h4 class="H2_-_Heading_2"><a name="2192316">Updating Contacts in the External System</a></h4>
+      <div class="B_-_Body"><a name="2142354">If a PolicyCenter user updates a contact’s information, PolicyCenter sends the update to the contact management system by calling the </a><span class="cv_-_computer_voice">updateContact</span> method of the contact system plugin. Just like the <span class="cv_-_computer_voice">addContact</span> method, one parameter to <span class="cv_-_computer_voice">updateContact</span> is a <span class="cv_-_computer_voice">Contact</span> entity. The second version of the method adds a transaction ID that can be used by the external contact management system to track if an update has already been applied.</div>
+      <h4 class="H2_-_Heading_2"><a name="2206252">Overwrite the Local Contact with Latest Values</a></h4>
+      <div class="B_-_Body"><a name="2206253">The previously-mentioned </a><span class="cv_-_computer_voice">updateContact</span> method updates the external system from a local contact. In contrast, the <span class="cv_-_computer_voice">overwriteContactWithLatestValues</span> method overwrites a local PolicyCenter contact with the latest values from the contact in the external system.</div>
+      <div class="B_-_Body"><a name="2206257">It takes two parameters:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2206258">The </a><span class="cv_-_computer_voice">Contact</span> object to update</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2206259">The address book UID of the contact in the external system</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2206260">A typical contact system plugin would perform the following steps:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2206261">Validate the auto synchronization state of the local contact with the external system</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2206263">Retrieve the contact from the external system</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2206264">Overwrite the local contact from fields in the external system</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

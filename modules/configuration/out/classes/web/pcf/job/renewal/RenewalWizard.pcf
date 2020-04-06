@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <JobWizard
+    acceleratedMenuActions="MultiQuoteAcceleratedMenuActions(renewal,policyPeriod,jobWizardHelper)"
+    canEdit="(not job.Complete) and perm.Renewal.edit(renewal)"
+    canVisit="perm.Renewal.view(renewal)"
+    desc="The main Wizard for a policy renewal.  Flow steps within the Wizard are determined by the product model."
+    id="RenewalWizard"
+    independentStepsTitle="displaykey.Web.PolicyFile.ToolsMenuTitle"
+    independentStepsTitleIcon="&quot;ToolsMenuTitle.png&quot;"
+    infoBar="JobWizardInfoBar(renewal, policyPeriod)"
+    initialStep="wizardStep == null ? jobWizardHelper.getInitialWizardStepId(policyPeriod) : wizardStep"
+    isDraftOnEnter="true"
+    jobType="Renewal"
+    menuActions="WizardMenuActions(jobWizardHelper,renewal,policyPeriod)"
+    onConcurrentDataChange="CurrentLocation.cancel(); JobForward.go(job)"
+    parent="JobForward(renewal)"
+    subtitle="policyPeriod.Status.DisplayName"
+    title="displaykey.Web.RenewalWizard.Title(renewal.JobNumber)">
+    <LocationEntryPoint
+      signature="RenewalWizard(renewal : Renewal, policyPeriod : PolicyPeriod)"/>
+    <LocationEntryPoint
+      signature="RenewalWizard(renewal : Renewal, policyPeriod : PolicyPeriod, wizardStep : String)"/>
+    <Variable
+      name="renewal"
+      type="Renewal"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="gw.util.concurrent.LockingLazyVar.make(\ -&gt; policyPeriod.OpenForEdit)"
+      name="openForEditInit"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="openForEditInit.get()"
+      name="openForEdit"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="renewal"
+      name="job"/>
+    <Variable
+      initialValue="policyPeriod.Policy"
+      name="policy"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="policy.Product.Code"
+      name="productCode"
+      type="String"/>
+    <Variable
+      initialValue="new web.job.JobWizardHelper(CurrentLocation)"
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="policyPeriod.Status == &quot;Quoted&quot; and perm.Renewal.edit(renewal)"
+      name="billingPageEditable"
+      recalculateOnRefresh="true"/>
+    <Variable
+      name="wizardStep"
+      type="String"/>
+    <JobWizardStep
+      beforeSave="gw.policy.PolicyPeriodValidation.validateOfferingAnswers(policyPeriod)"
+      id="Offering"
+      onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncOffering(policyPeriod, jobWizardHelper );                                                  gw.web.productmodel.ProductModelSyncIssuesHandler.syncQuestions({policyPeriod}, jobWizardHelper )}"
+      onExit="if (openForEdit) {                     gw.web.productmodel.ProductModelSyncIssuesHandler.syncPolicyTerm(policyPeriod, jobWizardHelper);                     gw.web.productmodel.ProductModelSyncIssuesHandler.syncPolicyLines(jobWizardHelper)               }"
+      save="openForEdit"
+      screen="OfferingScreen(policyPeriod, openForEdit, jobWizardHelper)"
+      title="displaykey.Web.PolicyChangeWizard.Offerings"
+      visible="policy.Product.Offerings.Count &gt; 0"/>
+    <WizardStepGroup
+      id="LOBWizardStepGroup"
+      label="displaykey.Web.Wizard.LineWizardStepGroup">
+      <JobWizardStep
+        id="PolicyInfo"
+        onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncPolicyTerm(policyPeriod, jobWizardHelper) }"
+        save="openForEdit"
+        screen="RenewalWizard_PolicyInfoScreen(renewal, policyPeriod, openForEdit,jobWizardHelper)"
+        title="displaykey.Web.RenewalWizardMenu.PolicyInfo"/>
+      <WizardStepSetRef
+        def="LineWizardStepSet(job, policyPeriod, jobWizardHelper, openForEdit)"
+        mode="productCode"/>
+      <JobWizardStep
+        id="RiskAnalysis"
+        save="openForEdit"
+        screen="Job_RiskAnalysisScreen(policyPeriod, openForEdit, jobWizardHelper)"
+        title="displaykey.Web.Job.Policy.RiskAnalysis"
+        visible="perm.System.viewriskevalissues or perm.System.viewriskpriorpolicies or perm.System.viewriskclaims or perm.System.viewriskpriorlosses"/>
+      <JobWizardStep
+        id="PolicyReview"
+        onEnter="policyPeriod.AllAccountSyncables.each(\ a -&gt; a.prepareForDiff())"
+        screen="RenewalWizard_DifferencesScreen(policyPeriod, openForEdit, jobWizardHelper)"
+        title="displaykey.Web.RenewWizard.Review"/>
+    </WizardStepGroup>
+    <WizardStepSet
+      available="policyPeriod.JobProcess.canViewQuote()"
+      id="PostQuoteWizardStepSet">
+      <JobWizardStep
+        id="ViewQuote"
+        screen="RenewalWizard_QuoteScreen(renewal, policyPeriod, openForEdit,jobWizardHelper)"
+        title="displaykey.Web.RenewalWizardMenu.ViewQuote"
+        visible="!policyPeriod.MultiLine"/>
+      <JobWizardStep
+        id="ViewMultiLineQuote"
+        mode="productCode"
+        screen="RenewalWizard_MultiLine_QuoteScreen(renewal, policyPeriod, openForEdit, jobWizardHelper)"
+        title="displaykey.Web.RenewalWizardMenu.ViewQuote"
+        visible="policyPeriod.MultiLine"/>
+      <JobWizardStep
+        available="policyPeriod.JobProcess.canViewQuote()"
+        id="Forms"
+        save="openForEdit"
+        screen="FormsScreen(policyPeriod, openForEdit,jobWizardHelper)"
+        title="displaykey.Web.SubmissionWizardMenu.PolicyLines.Forms"/>
+      <JobWizardStep
+        allowFinish="false"
+        id="BillingInfo"
+        save="policyPeriod.Status == &quot;Quoted&quot; and perm.Renewal.edit(renewal)"
+        screen="RenewalWizard_PaymentScreen(renewal, policyPeriod, billingPageEditable, jobWizardHelper)"
+        title="displaykey.Web.RenewalWizardMenu.Payment"/>
+    </WizardStepSet>
+    <WizardStepSetRef
+      def="JobWizardToolsMenuWizardStepSet(jobWizardHelper, policyPeriod)"/>
+  </JobWizard>
+</PCF>

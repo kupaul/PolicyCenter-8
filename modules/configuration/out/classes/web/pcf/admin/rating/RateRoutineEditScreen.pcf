@@ -1,0 +1,339 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="pcf.xsd">
+  <Screen
+    editable="true"
+    id="RateRoutineEditScreen">
+    <Require
+      name="rateRoutine"
+      type="CalcRoutineDefinition"/>
+    <Require
+      name="newRateRoutine"
+      type="boolean"/>
+    <Require
+      name="copyVersionTyp"
+      type="gw.rating.flow.util.CopyVersionType"/>
+    <Variable
+      initialValue="new gw.pcf.rating.flow.RateRoutineEditScreenHelper(rateRoutine, CurrentLocation)"
+      name="helper"/>
+    <Variable
+      initialValue="helper.initializeInScopeParamInScopeUsageMap(rateRoutine)"
+      name="inScopeParamInScopeUsageMap"
+      recalculateOnRefresh="true"
+      type="java.util.Map&lt;CalcRoutineParamName,List&lt;gw.rating.flow.util.InScopeUsage&gt;&gt;"/>
+    <Variable
+      initialValue="helper.getCostDataUsages(rateRoutine.ParameterSet)"
+      name="costDataUsages"
+      recalculateOnRefresh="true"
+      type="java.util.List&lt;gw.rating.flow.util.InScopeUsage&gt;"/>
+    <Variable
+      initialValue="(rateRoutine.ParameterSet != null) ? rateRoutine.ParameterSet.getWritableParameterUsages() : null"
+      name="writableParamUsages"
+      recalculateOnRefresh="true"
+      type="java.util.Map&lt;CalcRoutineParameter, java.util.List&lt;gw.rating.flow.util.InScopeUsage&gt;&gt;"/>
+    <Variable
+      initialValue="(writableParamUsages != null) ? writableParamUsages.Keys.toList().orderBy(\ crp -&gt; crp.DisplayName) : null"
+      name="writableParams"
+      recalculateOnRefresh="true"
+      type="List&lt;CalcRoutineParameter&gt;"/>
+    <Variable
+      initialValue="false"
+      name="checkAll"
+      type="boolean"/>
+    <Variable
+      initialValue="{}"
+      name="highlightedRows"
+      type="java.util.Map&lt;CalcStepDefinition, java.util.List&lt;java.lang.Integer&gt;&gt;"/>
+    <Variable
+      initialValue="rateRoutine.OrderedSteps"
+      name="orderedSteps"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="helper.indentLevel(orderedSteps)"
+      name="indentLevelMap"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="helper.getIndex(rateRoutine, indentLevelMap)"
+      name="sectionIndex"
+      recalculateOnRefresh="true"
+      type="java.util.List&lt;gw.pcf.rating.flow.RateRoutineEditScreenHelper.RateRoutineSection&gt;"/>
+    <Variable
+      initialValue="sectionIndex?.first()"
+      name="currentSection"
+      type="gw.pcf.rating.flow.RateRoutineEditScreenHelper.RateRoutineSection"/>
+    <Variable
+      initialValue="CalcStepOperatorType.Type.getTypeKeysByFilterName(&quot;MainColumnOperators&quot;)"
+      name="mainColumnOperators"/>
+    <AlertBar
+      id="AlertBarForViewButton"
+      label="displaykey.Web.Rating.Flow.CalcRoutine.ViewDisabledHelp"
+      visible="currentSection!= null and helper.bundleContainsChanges(CurrentLocation.Bundle)"/>
+    <PanelRow>
+      <PanelColumn>
+        <PanelRef
+          def="RateRoutineDV(rateRoutine, newRateRoutine, copyVersionTyp, highlightedRows, costDataUsages)">
+          <Toolbar
+            id="RateRoutineToolBar">
+            <ToolbarButton
+              action="rateRoutine.canUpdate(); CurrentLocation.commit()"
+              default="true"
+              hideIfReadOnly="true"
+              id="UpdateButton"
+              label="displaykey.Button.Update"
+              shortcut="U"
+              visible="CurrentLocation.InEditMode"/>
+            <EditButtons
+              cancelLabel="displaykey.Web.Rating.RateRoutines.ExitButton"
+              cancelShortcut="C"
+              cancelVisible="true"
+              hideIfReadOnly="true"
+              updateDefault="true"
+              updateVisible="false"/>
+            <ToolbarButton
+              action="rateRoutine.canUpdate(); helper.saveDraft()"
+              available="true"
+              id="SaveDraftButton"
+              label="displaykey.Web.Rating.Flow.CalcRoutine.Save"
+              shortcut="Y"/>
+            <ToolbarButton
+              available="false"
+              confirmMessage="displaykey.Web.Rating.RateRoutines.DeleteConfirmation"
+              id="Delete"
+              label="displaykey.Web.Rating.RateRoutines.DeleteButton"
+              tooltip="displaykey.Web.Rating.RateRoutines.DeleteButtonTooltip"/>
+          </Toolbar>
+        </PanelRef>
+      </PanelColumn>
+      <PanelColumn>
+        <PanelRef
+          def="LocalizedValuesDV(rateRoutine, { &quot;Name&quot;, &quot;Description&quot; }, { displaykey.Web.Rating.RateRoutines.Name, displaykey.Web.Rating.RateRoutines.Description })"/>
+      </PanelColumn>
+    </PanelRow>
+    <PanelRow>
+      <PanelColumn>
+        <PanelRef>
+          <TitleBar
+            id="StepsTitlebar"
+            title="currentSection == null ? displaykey.Web.Rating.Flow.CalcRoutine.Steps : helper.getTitleBarHeadingInSection(currentSection, rateRoutine)"/>
+          <Toolbar
+            id="RateRoutineStepsToolbar">
+            <ToolbarButton
+              id="ViewButton"
+              label="&quot;View&quot;"
+              tooltip="helper.bundleContainsChanges(CurrentLocation.Bundle) ? displaykey.Web.Rating.Flow.CalcRoutine.ViewDisabledHelp : displaykey.Web.Rating.Flow.CalcRoutine.ViewEnabledHelp"
+              visible="(currentSection != null)">
+              <MenuItemIterator
+                elementName="rateRoutineSection"
+                id="viewSectionsMenu"
+                value="sectionIndex.toTypedArray()">
+                <MenuItem
+                  action="currentSection = rateRoutineSection"
+                  available="currentSection == rateRoutineSection or not helper.bundleContainsChanges(CurrentLocation.Bundle)"
+                  checked="rateRoutineSection == currentSection"
+                  hideIfDisabled="false"
+                  id="sectionItem"
+                  label="helper.makeSectionLabel(rateRoutineSection, rateRoutine, highlightedRows)"/>
+              </MenuItemIterator>
+            </ToolbarButton>
+            <ToolbarButton
+              available="currentSection == null"
+              id="AddButton"
+              label="displaykey.Web.Rating.Flow.CalcRoutine.Append">
+              <MenuItem
+                action="helper.appendRows(1)"
+                id="Add1"
+                label="displaykey.Web.Rating.Flow.CalcRoutine.Add1"
+                retainScrollPosition="true"/>
+              <MenuItem
+                action="helper.appendRows(10)"
+                id="Add10"
+                label="displaykey.Web.Rating.Flow.CalcRoutine.Add10"
+                retainScrollPosition="true"/>
+            </ToolbarButton>
+            <CheckedValuesToolbarButton
+              id="RowEditButton"
+              iterator="RatingRoutineActions"
+              label="displaykey.Web.Rating.Flow.CalcRoutine.Insert">
+              <CheckedValuesMenuItem
+                allCheckedRowsAction="currentSection = helper.copySteps(CheckedValues,currentSection)"
+                id="Duplicate"
+                label="displaykey.Web.Rating.Flow.CalcRoutine.Duplicate"
+                retainScrollPosition="true"/>
+              <CheckedValuesMenuItem
+                allCheckedRowsAction="currentSection = helper.insertBefore(CheckedValues,currentSection)"
+                id="InsertBefore"
+                label="displaykey.Web.Rating.Flow.CalcRoutine.InsertBefore"
+                retainScrollPosition="true"/>
+              <CheckedValuesMenuItem
+                allCheckedRowsAction="currentSection = helper.insertAfter(CheckedValues, currentSection)"
+                id="InsertAfter"
+                label="displaykey.Web.Rating.Flow.CalcRoutine.InsertAfter"
+                retainScrollPosition="true"/>
+              <CheckedValuesMenuItem
+                allCheckedRowsAction="currentSection = helper.insertBefore(CheckedValues,currentSection, 10)"
+                id="Insert10Before"
+                label="displaykey.Web.Rating.Flow.CalcRoutine.Insert10Before"
+                retainScrollPosition="true"/>
+              <CheckedValuesMenuItem
+                allCheckedRowsAction="currentSection = helper.insertAfter(CheckedValues, currentSection, 10)"
+                id="Insert10After"
+                label="displaykey.Web.Rating.Flow.CalcRoutine.Insert10After"
+                retainScrollPosition="true"/>
+            </CheckedValuesToolbarButton>
+            <RemoveButton
+              confirmMessage="displaykey.Web.Rating.Flow.CalcRoutine.RemoveRowConfirmation"
+              id="removeButton"
+              iterator="RatingRoutineActions"
+              label="displaykey.Web.Rating.Flow.CalcRoutine.RemoveRow"
+              shortcut="ShiftR"/>
+            <CheckedValuesToolbarButton
+              allCheckedRowsAction="helper.moveUp(CheckedValues)"
+              id="MoveUp"
+              iterator="RatingRoutineActions"
+              label="displaykey.Web.Rating.Flow.CalcRoutine.MoveUp"
+              retainScrollPosition="true"/>
+            <CheckedValuesToolbarButton
+              allCheckedRowsAction="helper.moveDown(CheckedValues)"
+              id="MoveDown"
+              iterator="RatingRoutineActions"
+              label="displaykey.Web.Rating.Flow.CalcRoutine.MoveDown"
+              retainScrollPosition="true"/>
+            <ToolbarDivider/>
+            <ToolbarButton
+              action="gw.rating.flow.validation.RateRoutineValidation.validateForRateRoutineEditScreen(rateRoutine, &quot;default&quot;, gw.rating.flow.validation.ValidationGroup.ALL, highlightedRows); util.LocationUtil.addRequestScopedInfoMessage(displaykey.Validation.Rating.RateRoutineDefinition.ValidatationPasses)"
+              available="true"
+              id="ValidateButton"
+              label="currentSection != null ? displaykey.Web.Rating.Flow.CalcRoutine.ValidateAll : displaykey.Web.Rating.Flow.CalcRoutine.Validate"
+              retainScrollPosition="true"
+              shortcut="V"/>
+          </Toolbar>
+          <ListViewPanel
+            alternateEntryStyle="false">
+            <Row
+              renderAsSmartHeader="true">
+              <TextCell
+                id="RateRoutineStepErrorColumnLabel"
+                value="displaykey.Web.Rating.Flow.CalcRoutine.ErrorCrossRefNum"/>
+              <TextCell
+                id="RateRoutineInstructionColumnLabel"
+                value="displaykey.Web.Rating.Flow.CalcRoutine.Instruction"/>
+              <TextCell
+                align="center"
+                enableSort="false"
+                id="StepOperatorColumnLabel"
+                showHeaderIcon="false"
+                value="displaykey.Web.Rating.Flow.CalcRoutine.Operator"/>
+              <TextCell
+                align="center"
+                id="LeftParenthesisGroupColumnLabel"
+                value="displaykey.Web.Rating.Flow.CalcRoutine.LeftParenthesis"/>
+              <TextCell
+                id="RateRoutineOperandColumnLabel"
+                value="displaykey.Web.Rating.Flow.CalcRoutine.Operand"/>
+              <TextCell
+                align="center"
+                id="RightParenthesisGroupColumnLabel"
+                value="displaykey.Web.Rating.Flow.CalcRoutine.RightParenthesis"/>
+              <TextCell
+                enableSort="false"
+                id="StepNoteColumnLabel"
+                showHeaderIcon="false"
+                value="displaykey.Web.Rating.Flow.CalcRoutine.Notes"/>
+            </Row>
+            <RowIterator
+              editable="true"
+              elementName="ratingRoutineStep"
+              id="RatingRoutineActions"
+              pageSize="0"
+              startChecked="helper.startChecked(ratingRoutineStep)"
+              toRemove="currentSection = helper.removeRow(ratingRoutineStep, currentSection)"
+              value="orderedSteps.where(\ s -&gt; currentSection == null or currentSection.showRow(s.SortOrder))">
+              <ToolbarFlag
+                name="trueFlag"/>
+              <Row
+                highlighted="highlightedRows.containsKey(ratingRoutineStep)"
+                visible="not ratingRoutineStep.IsSectionCommentStep">
+                <TextCell
+                  id="RateRoutineStepError"
+                  value="highlightedRows.get(ratingRoutineStep)!= null ? highlightedRows.get(ratingRoutineStep).join(&quot;,&quot;) : &quot; &quot;"/>
+                <ModalCellRef
+                  def="RateRoutineStepEditInstruction(ratingRoutineStep, helper, indentLevelMap, writableParamUsages, writableParams, costDataUsages)"
+                  editable="true"
+                  id="RateRoutineInstruction"
+                  mode="helper.getStepEditInstructionMode(ratingRoutineStep)"/>
+                <RangeCell
+                  align="center"
+                  available="helper.operatorAvailable(ratingRoutineStep)"
+                  editable="true"
+                  enableSort="false"
+                  filter="mainColumnOperators.contains(VALUE)"
+                  id="StepOperator"
+                  noneSelectedLabel="&quot; &quot;"
+                  optionLabel="VALUE.LabelForDisplay"
+                  showHeaderIcon="false"
+                  value="ratingRoutineStep.PrimaryOperand.OperatorType"
+                  valueRange="CalcStepOperatorType.getTypeKeys(false)"
+                  valueVisible="helper.operatorAvailable(ratingRoutineStep) and not ratingRoutineStep.IsSectionCommentStep"
+                  width="64">
+                  <PostOnChange
+                    onChange="helper.updateOperandForOperatorChange(ratingRoutineStep)"/>
+                </RangeCell>
+                <TextCell
+                  align="center"
+                  editable="!(ratingRoutineStep.StepType.hasCategory(CalcStepCategory.TC_FLOWCONTROL) or ratingRoutineStep.IsSectionCommentStep)"
+                  id="LeftParenthesisGroup"
+                  numCols="1"
+                  requestValidationExpression="VALUE.toCharArray().toList().countWhere(\ c -&gt; c != '(') == 0 ? null: displaykey.Web.Rating.Flow.CalcRoutine.OnlyLeftParenthesisHere"
+                  value="ratingRoutineStep.PrimaryOperand.LeftParenthesisGroup"
+                  valueVisible="not ratingRoutineStep.IsSectionCommentStep"
+                  width="45"/>
+                <ModalCellRef
+                  def="RateRoutineStepEditOperand(ratingRoutineStep, rateRoutine, inScopeParamInScopeUsageMap, costDataUsages, orderedSteps)"
+                  editable="true"
+                  id="RateRoutineOperand"
+                  mode="gw.pcf.rating.flow.RateRoutineEditScreenHelper.getRateRoutineStepOperandMode(ratingRoutineStep)"/>
+                <TextCell
+                  align="center"
+                  editable="!(ratingRoutineStep.StepType.hasCategory(CalcStepCategory.TC_FLOWCONTROL) or ratingRoutineStep.IsSectionCommentStep)"
+                  id="RightParenthesisGroup"
+                  numCols="1"
+                  requestValidationExpression="VALUE.toCharArray().toList().countWhere(\ c -&gt; c != ')') == 0 ? null: displaykey.Web.Rating.Flow.CalcRoutine.OnlyRightParenthesisHere"
+                  value="ratingRoutineStep.PrimaryOperand.RightParenthesisGroup"
+                  valueVisible="not ratingRoutineStep.IsSectionCommentStep"
+                  width="45"/>
+                <TextCell
+                  editable="true"
+                  enableSort="false"
+                  id="StepNote"
+                  numCols="60"
+                  showHeaderIcon="false"
+                  value="ratingRoutineStep.Notes"
+                  valueVisible="not ratingRoutineStep.IsSectionCommentStep"/>
+              </Row>
+              <Row
+                highlighted="highlightedRows.containsKey(ratingRoutineStep)"
+                visible="ratingRoutineStep.IsSectionCommentStep">
+                <TextCell
+                  id="RateRoutineStepErrorCommentRow"
+                  value="highlightedRows.get(ratingRoutineStep)!= null ? highlightedRows.get(ratingRoutineStep).join(&quot;,&quot;) : &quot; &quot;"/>
+                <ModalCellRef
+                  def="RateRoutineStepEditInstruction(ratingRoutineStep, helper, indentLevelMap, writableParamUsages, writableParams, costDataUsages)"
+                  editable="true"
+                  id="RateRoutineInstructionCommentRow"
+                  mode="helper.getStepEditInstructionMode(ratingRoutineStep)"/>
+                <TextAreaCell
+                  colspan="5"
+                  editable="true"
+                  id="SectionComment"
+                  numRows="2"
+                  outputConversion="helper.indented(ratingRoutineStep, VALUE, indentLevelMap)"
+                  value="ratingRoutineStep.SectionComment"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </PanelRef>
+      </PanelColumn>
+    </PanelRow>
+  </Screen>
+</PCF>

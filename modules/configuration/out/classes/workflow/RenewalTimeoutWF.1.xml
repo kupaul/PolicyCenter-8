@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<Workflow locale="gw.api.util.LocaleUtil.toLanguage(PolicyPeriod.Policy.PrimaryLanguage)" subtype="RenewalTimeoutWF" version="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="workflow.xsd">
+  <Context>
+    <Symbol name="PolicyPeriod" type="PolicyPeriod" value="Workflow.PolicyPeriod"/>
+    <Symbol name="Renewal" type="Renewal" value="Workflow.PolicyPeriod.Renewal"/>
+  </Context>
+  <Start firstStep="Start"/>
+  <ManualStep id="Start" layoutid="8235066">
+    <Timeout desc="" id="Wait" layoutid="23950900" nextStep="Done" timeAbsolute="Workflow.WakeupTime"/>
+    <Trigger desc="" id="EditPolicy" layoutid="13002032" nextStep="Draft" perm="perm.Renewal.edit(Renewal)"></Trigger>
+    <Trigger desc="" id="Withdraw" layoutid="16951039" nextStep="Withdrawn" perm="perm.Renewal.withdraw(Renewal)"></Trigger>
+    <Trigger desc="Receive payment for this renewal offer" id="FinishIssueRenewal" layoutid="32499860" nextStep="Renew" perm="perm.Renewal.renew(Renewal)">
+      <Available test="Workflow.RenewalOffer"/>
+    </Trigger>
+  </ManualStep>
+  <Outcome desc="" id="Done" layoutid="27494439">
+    <Enter>PolicyPeriod.RenewalProcess.runMethodAsRenewalUser(Workflow.FunctionToCall)</Enter>
+  </Outcome>
+  <Finish/>
+  <Outcome id="Draft" layoutid="15918339">
+    <Enter>PolicyPeriod.RenewalProcess.runMethodAsRenewalUser("editFromWorkflow")</Enter>
+  </Outcome>
+  <Outcome id="Withdrawn" layoutid="25034288">
+    <Enter></Enter>
+  </Outcome>
+  <Outcome id="Renew" layoutid="6971044">
+    <Enter>PolicyPeriod.RenewalProcess.runMethodAsRenewalUser("issueAutomatedRenewal")</Enter>
+  </Outcome>
+  <Layout>
+    <BoxUI height="4" layoutid="8235066" width="8" x="-16" y="-69"/>
+    <BoxUI height="4" layoutid="27494439" width="8" x="-16" y="-52"/>
+    <BoxUI height="4" layoutid="1842378" width="8" x="12" y="3"/>
+    <ArrowUI layoutid="29214173" visible="true">
+      <PointUI x="5" y="-14"/>
+      <PointUI x="16" y="3"/>
+    </ArrowUI>
+    <ArrowUI layoutid="26073604" visible="true">
+      <PointUI x="0" y="-25"/>
+      <PointUI x="0" y="-6"/>
+    </ArrowUI>
+    <ArrowUI layoutid="23950900" visible="true">
+      <PointUI x="-12" y="-65"/>
+      <PointUI x="-12" y="-52"/>
+    </ArrowUI>
+    <BoxUI height="4" layoutid="15918339" width="10" x="0" y="-52"/>
+    <ArrowUI layoutid="13002032" visible="true">
+      <PointUI x="-8" y="-67"/>
+      <PointUI x="4" y="-67"/>
+      <PointUI x="4" y="-52"/>
+    </ArrowUI>
+    <BoxUI height="4" layoutid="25034288" width="10" x="-33" y="-52"/>
+    <ArrowUI layoutid="16951039" visible="true">
+      <PointUI x="-16" y="-67"/>
+      <PointUI x="-28" y="-67"/>
+      <PointUI x="-28" y="-52"/>
+    </ArrowUI>
+    <ArrowUI layoutid="25370382" visible="true">
+      <PointUI x="6" y="-73"/>
+      <PointUI x="-8" y="-67"/>
+    </ArrowUI>
+    <BoxUI height="4" layoutid="6971044" width="10" x="-1" y="-40"/>
+    <ArrowUI layoutid="32499860" visible="true">
+      <PointUI x="-8" y="-65"/>
+      <PointUI x="-1" y="-40"/>
+    </ArrowUI>
+  </Layout>
+</Workflow>

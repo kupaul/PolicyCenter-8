@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <JobWizard
+    acceleratedMenuActions="BlankAcceleratedMenuActions()"
+    canEdit="(not job.Complete) and perm.Audit.edit"
+    canVisit="perm.Audit.view"
+    desc="The main Wizard for an audit. Flow steps within the Wizard are determined by the product model."
+    id="AuditWizard"
+    independentStepsTitle="displaykey.Web.PolicyFile.ToolsMenuTitle"
+    independentStepsTitleIcon="&quot;ToolsMenuTitle.png&quot;"
+    infoBar="AuditWizardInfoBar(policyPeriod, audit)"
+    initialStep="jobWizardHelper.getInitialWizardStepId( policyPeriod )"
+    isDraftOnEnter="true"
+    jobType="Audit"
+    menuActions="AuditWizardMenuActions(job, policyPeriod)"
+    onConcurrentDataChange="CurrentLocation.cancel(); JobForward.go(job)"
+    parent="JobForward(audit)"
+    subtitle="policyPeriod.Status.DisplayName"
+    title="displaykey.Web.AuditWizard.Title(audit.JobNumber)">
+    <LocationEntryPoint
+      signature="AuditWizard(audit : Audit, policyPeriod : PolicyPeriod)"/>
+    <Variable
+      name="audit"
+      type="Audit"/>
+    <Variable
+      initialValue="audit"
+      name="job"/>
+    <Variable
+      initialValue="audit.Policy"
+      name="policy"
+      recalculateOnRefresh="true"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="new web.job.JobWizardHelper(CurrentLocation)"
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="gw.util.concurrent.LockingLazyVar.make(\ -&gt; policyPeriod.OpenForEdit)"
+      name="openForEditInit"
+      recalculateOnRefresh="true"/>
+    <JobWizardStep
+      id="Summary"
+      save="true"
+      screen="AuditWizard_SummaryScreen(audit, policyPeriod, jobWizardHelper)"
+      title="displaykey.Web.AuditWizardMenu.Summary"/>
+    <JobWizardStep
+      id="Details"
+      save="true"
+      screen="AuditWizard_DetailsScreen(audit, policyPeriod, jobWizardHelper)"
+      title="displaykey.Web.AuditWizardMenu.Details"/>
+    <JobWizardStep
+      allowFinish="false"
+      available="policyPeriod.JobProcess.canViewQuote()"
+      id="Premiums"
+      save="true"
+      screen="AuditWizard_PremiumsScreen(audit, policyPeriod, jobWizardHelper)"
+      title="displaykey.Web.AuditWizardMenu.Premiums"/>
+    <WizardStepSetRef
+      def="JobWizardToolsMenuWizardStepSet(jobWizardHelper, policyPeriod)"/>
+  </JobWizard>
+</PCF>

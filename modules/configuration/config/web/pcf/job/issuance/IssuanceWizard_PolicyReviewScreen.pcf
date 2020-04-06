@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="false"
+    id="IssuanceWizard_PolicyReviewScreen">
+    <Require
+      name="issuance"
+      type="Issuance"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, issuance, jobWizardHelper)"/>
+    </Toolbar>
+    <PanelRef
+      def="IssuanceWizard_ReviewSummaryDV(policyPeriod, issuance)"/>
+    <CardViewPanel
+      hideTabIfSingle="true"
+      id="ReviewSummaryCV">
+      <Variable
+        initialValue="gw.diff.tree.DiffTree.recalculateRootNodeForPolicyReview(policyPeriod)"
+        name="rootNode"/>
+      <Variable
+        initialValue="policyPeriod.Policy.Product.DiffTreeConfig"
+        name="diffTreeConfig"/>
+      <Card
+        id="LineSummary"
+        title="displaykey.Web.SubmissionWizard.PolicyReview.Card.Summary">
+        <PanelIterator
+          elementName="line"
+          value="policyPeriod.Lines">
+          <PanelRef
+            def="PolicyLineSummaryPanelSet(line, jobWizardHelper)"
+            mode="line.Pattern.Code">
+            <TitleBar
+              title="line.DisplayName"
+              visible="policyPeriod.Lines.Count &gt; 1"/>
+          </PanelRef>
+        </PanelIterator>
+      </Card>
+      <!-- Show comparison with original bound period -->
+      <Card
+        id="Diffs"
+        title="displaykey.Web.SubmissionWizard.PolicyReview.Card.Differences">
+        <PanelRef
+          def="DifferencesPanelSet(&quot;PolicyReview&quot;, policyPeriod.BasedOn, policyPeriod, rootNode, diffTreeConfig)"/>
+      </Card>
+    </CardViewPanel>
+  </Screen>
+</PCF>

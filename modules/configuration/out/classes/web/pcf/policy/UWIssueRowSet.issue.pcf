@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <RowSet
+    id="UWIssueRowSet"
+    mode="issue">
+    <Require
+      name="wrapper"
+      type="gw.web.policy.RiskEvaluationPanelSetModalRow"/>
+    <Require
+      name="canApproveRejectReopenIssue"
+      type="boolean"/>
+    <Variable
+      initialValue="wrapper.Item"
+      name="issue"/>
+    <Row
+      editable="canApproveRejectReopenIssue">
+      <Cell
+        action="RiskApprovalDetailsPopup.push(new UWIssue[]{issue}, false, false)"
+        id="ShortDescription"
+        value="issue.ShortDescription"
+        width="350"
+        wrap="true"/>
+      <LinkCell
+        align="right"
+        width="50">
+        <Link
+          id="isAutoApprovable"
+          label="issue.IssueType.AutoApprovable? &quot;*&quot; : &quot;&quot;"
+          showConfirmMessage="false"
+          tooltip="displaykey.Web.Policy.EvaluationIssues.AutoApproveTooltip"/>
+      </LinkCell>
+      <LinkCell
+        align="right"
+        width="150">
+        <Link
+          id="issueValue"
+          label="wrapper.FormattedValue"
+          showConfirmMessage="false"
+          tooltip="issue.ValueVariesAcrossSlices ? displaykey.Web.Policy.EvaluationIssues.VariesOverTermTooltip : &quot;&quot;"/>
+      </LinkCell>
+      <LinkCell
+        align="right"
+        width="800"
+        wrap="true"
+        wrapLabel="true">
+        <Link
+          action="RiskApprovalDetailsPopup.push(new UWIssue[]{issue}, true, false)"
+          available="wrapper.Approve.Available"
+          id="Approve"
+          label="displaykey.Web.Policy.EvaluationIssues.Approve"
+          styleClass="bigButton"
+          visible="canApproveRejectReopenIssue and wrapper.Approve.Visible"/>
+        <Link
+          action="issue.reject(); issue.Bundle.commit()"
+          available="wrapper.Reject.Available"
+          id="Reject"
+          label="displaykey.Web.Policy.EvaluationIssues.Reject"
+          styleClass="bigButton"
+          visible="canApproveRejectReopenIssue and wrapper.Reject.Visible"/>
+        <Link
+          action="issue.reopen(); issue.Bundle.commit()"
+          available="wrapper.Reopen.Available"
+          id="Reopen"
+          label="displaykey.Web.Policy.EvaluationIssues.Reopen"
+          styleClass="bigButton"
+          visible="canApproveRejectReopenIssue and wrapper.Reopen.Visible"/>
+        <Link
+          action="RiskApprovalDetailsPopup.push(new UWIssue[]{issue}, true, true)"
+          available="wrapper.SpecialApprove.Available"
+          confirmMessage="displaykey.Web.Policy.EvaluationIssues.SpecialApproveConfirmMessage"
+          id="SpecialApprove"
+          label="displaykey.Web.Policy.EvaluationIssues.SpecialApprove"
+          styleClass="bigButton"
+          visible="canApproveRejectReopenIssue and wrapper.SpecialApprove.Visible"/>
+      </LinkCell>
+    </Row>
+  </RowSet>
+</PCF>

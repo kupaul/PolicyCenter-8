@@ -1,0 +1,125 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InputSet
+    id="ColumnDefinitionInputSet">
+    <Require
+      name="columnDefinition"
+      type="RateTableColumn"/>
+    <Require
+      name="tableDefinition"
+      type="RateTableDefinition"/>
+    <Require
+      name="advancedEdit"
+      type="boolean"/>
+    <Require
+      name="hideCodeAndLabelInSingleParameterMode"
+      type="boolean"/>
+    <Variable
+      initialValue="gw.api.util.LocaleUtil.getAllLanguages() as LanguageType[]"
+      name="languages"/>
+    <Variable
+      initialValue="gw.api.util.LocaleUtil.getDefaultLanguageType()"
+      name="defaultLanguage"/>
+    <Variable
+      initialValue="new java.util.HashMap&lt;entity.RateTableColumn, ValueProvider&gt;()"
+      name="providerMap"/>
+    <Variable
+      initialValue="getProxy()"
+      name="valueProviderProxy"
+      recalculateOnRefresh="true"/>
+    <Input
+      editable="advancedEdit"
+      id="SortOrder"
+      label="displaykey.Web.Rating.RateTableDefinition.Priority"
+      required="true"
+      value="columnDefinition.SortOrder"
+      visible="columnDefinition.IsParameterColumn or columnDefinition.IsFactorColumn"/>
+    <Input
+      editable="advancedEdit"
+      id="ColumnName"
+      label="displaykey.Web.Rating.RateTableDefinition.ColumnCode"
+      required="true"
+      value="columnDefinition.ColumnName"
+      visible="not hideCodeAndLabelInSingleParameterMode or columnDefinition.MatchOp.Params.length &gt; 1"/>
+    <Input
+      editable="true"
+      id="ColumnLabel"
+      label="displaykey.Web.Rating.RateTableDefinition.ColumnLabel"
+      required="true"
+      value="columnDefinition.ColumnLabel"
+      visible="not hideCodeAndLabelInSingleParameterMode or columnDefinition.MatchOp.Params.length &gt; 1"/>
+    <Input
+      editable="true"
+      id="DisplayType"
+      label="displaykey.Web.Rating.RateTableDefinition.DisplayType"
+      value="columnDefinition.DisplayType"/>
+    <RangeInput
+      editable="advancedEdit"
+      id="PhysicalColumn"
+      label="displaykey.Web.Rating.RateTableDefinition.PhysicalColumn"
+      noneSelectedLabel="getRangeForPhysicalColumns(columnDefinition).Empty? displaykey.Web.Rating.RateTableDefinition.PhysicalColumnNotAvailable : displaykey.Java.TextValueWidget.NoneSelected"
+      optionLabel="getPhysicalColumnLabel(VALUE)"
+      sortValueRange="false"
+      value="columnDefinition.PhysicalColumnName"
+      valueRange="getRangeForPhysicalColumns(columnDefinition)">
+      <PostOnChange/>
+    </RangeInput>
+    <TypeKeyInput
+      editable="advancedEdit"
+      id="ValueProvider"
+      label="displaykey.Web.Rating.RateTableDefinition.ValueProvider"
+      value="valueProviderProxy.ClassName"
+      visible="columnDefinition.IsParameterColumn">
+      <PostOnChange
+        onChange="valueProviderProxy.clearArguments(); valueProviderProxy.createValueProviderString(); columnDefinition.clearArgumentSources()"/>
+    </TypeKeyInput>
+    <InputSetRef
+      def="ValueProviderArgumentsInputSet(valueProviderProxy, advancedEdit, columnDefinition)"
+      mode="valueProviderProxy.ClassName"
+      visible="columnDefinition.IsParameterColumn"/>
+    <RangeInput
+      editable="advancedEdit"
+      id="DependsOn"
+      label="displaykey.Web.Rating.RateTableDefinition.DependsOn"
+      optionLabel="VALUE.ColumnName"
+      required="false"
+      value="columnDefinition.DependsOn"
+      valueRange="columnDefinition.Definition.MatchOps*.Params.where(\ col -&gt; col != columnDefinition)"
+      visible="columnDefinition.IsParameterColumn and columnDefinition.HasValueProvider"/>
+    <Code><![CDATA[function getPhysicalColumnLabel(colName : String) : String {
+  if (columnDefinition.ColumnType == TC_DECIMAL) {
+    return displaykey.Web.Rating.RateTableDefinition.PhysicalColumnMenuLabel(colName,
+                                                                             columnDefinition.precision(colName),
+                                                                             columnDefinition.scale(colName))
+  } else {
+    return colName
+  }
+}
+
+function getRangeForPhysicalColumns(column : entity.RateTableColumn) : List<String> {
+  var ret = new java.util.ArrayList<String>()
+  if (column.PhysicalColumnName <> null and not column.PhysicalColumnName.Empty) {
+    ret.add(column.PhysicalColumnName)
+  }
+  try {
+    ret.addAll(tableDefinition.availablePhysicalColumnsForDataType(column.ColumnType))
+  } catch(ex : gw.rating.rtm.InvalidCustomRateTableException) {
+    // don't really care about it here - will simply get an empty list
+    ex = null
+    ret = null
+  }
+  return ret
+}
+
+function getProxy(): gw.rating.rtm.valueprovider.CustomValueProviderData{
+  var proxy = valueProviderProxy
+  if(valueProviderProxy == null or valueProviderProxy.ColumnDef <> columnDefinition){
+    proxy = new gw.rating.rtm.valueprovider.CustomValueProviderData(columnDefinition)
+}
+
+  return proxy
+}]]></Code>
+  </InputSet>
+</PCF>

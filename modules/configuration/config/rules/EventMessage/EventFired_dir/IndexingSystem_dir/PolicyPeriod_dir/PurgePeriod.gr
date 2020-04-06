@@ -1,0 +1,21 @@
+package rules.EventMessage.EventFired_dir.IndexingSystem_dir.PolicyPeriod_dir
+
+@gw.rules.RuleName("Purge Period")
+internal class PurgePeriod {
+  static function doCondition(messageContext : entity.MessageContext) : boolean {
+    
+/*start00rule*/
+return messageContext.EventName == "PolicyPeriodPurged"
+
+/*end00rule*/
+
+  }
+
+  static function doAction(messageContext : entity.MessageContext, actions : gw.rules.Action) {
+
+/*start00rule*/
+gw.plugin.Plugins.get(gw.plugin.solr.ISolrMessageTransportPlugin).handlePeriodDeletedEvent(messageContext, {messageContext.Root as PolicyPeriod})
+/*end00rule*/
+
+  }
+}

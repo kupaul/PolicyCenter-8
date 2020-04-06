@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="Policy_Summary_EarnedPremiumDV"
+    visible="!policyPeriod.Archived">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="!policyPeriod.Archived and (policyPeriod.IsReportingPolicy and policyPeriod.CompletedNotReversedFinalAudits.Count == 0)"
+      name="includeEBUR"
+      type="boolean"/>
+    <Variable
+      initialValue="java.util.Date.Today"
+      name="asOfDate"/>
+    <Variable
+      initialValue="!policyPeriod.Archived ? (policyPeriod.IsReportingPolicy ? policyPeriod.LastReportedDate : policyPeriod.PeriodStart) : gw.api.system.PLDependenciesGateway.getSystemClock().DateTime"
+      name="lastReportedDate"
+      recalculateOnRefresh="true"
+      type="DateTime"/>
+    <Variable
+      initialValue="gw.api.domain.financials.TransactionFinder.instance.findPostedTransactions(policyPeriod)"
+      name="txs"/>
+    <Variable
+      initialValue="txs.partition(\ t -&gt; t.Cost.PolicyLine.Pattern.Name)"
+      name="txsByPolicyLine"
+      type="java.util.Map&lt;String, java.util.List&lt;Transaction&gt;&gt;"/>
+    <InputColumn>
+      <Label
+        label="displaykey.Web.Policy.EarnedPremium"/>
+      <Input
+        id="includesEBURorNot"
+        label="displaykey.Web.Policy.IncludesEBUR"
+        value="includeEBUR"
+        visible="!policyPeriod.Archived and policyPeriod.IsReportingPolicy"/>
+      <ContentInput
+        label="displaykey.Web.Policy.EarnedAsOf"
+        labelAbove="true"
+        visible="CurrentLocation.Id == &quot;Policy_Summary_EarnedPremiumPopup&quot;">
+        <Link
+          action="setNewAsOfDate(ArgValue)"
+          argInitialValue="asOfDate"
+          argType="java.util.Date"
+          id="setnewdate"
+          performActionOnArgChange="true"
+          styleClass="bigButton"/>
+      </ContentInput>
+      <!-- <Input
+        id="x"
+        label="&quot;Audit complete&quot;"
+        value="policyPeriod.IsReportingPolicy and policyPeriod.CompletedNotReversedFinalAudits.Count != 0"
+        visible="!policyPeriod.Archived"/> -->
+      <!-- <InputIterator
+        elementName="eachline"
+        value="txsByPolicyLine.Keys.toTypedArray()">
+        <Input
+          formatType="currency"
+          helpText="displaykey.Web.Policy.EarnedPremiumExcludesTaxesAndFees"
+          id="showearnedpremium"
+          label="eachline"
+          value="(txsByPolicyLine.get(eachline) as entity.Transaction[]).sum(\ t -&gt; t.earnedAsOf(asOfDate, lastReportedDate, includeEBUR))">
+          <MenuItem
+            hideIfDisabled="false"
+            icon="&quot;menu-checked.png&quot;"
+            id="checkmarkicon"
+            tooltip="displaykey.Web.Policy.FinalAuditComplete"
+            visible="!policyPeriod.Archived and (policyPeriod.IsReportingPolicy and policyPeriod.CompletedNotReversedFinalAudits.Count != 0)"/>
+        </Input>
+      </InputIterator> -->
+      <ListViewInput
+        labelAbove="true">
+        <Toolbar/>
+        <ListViewPanel
+          alternateEntryStyle="false"
+          id="alinelLV">
+          <RowIterator
+            editable="false"
+            elementName="aline"
+            pageSize="0"
+            value="txsByPolicyLine.Keys.toTypedArray()">
+            <Row>
+              <Cell
+                id="alinename"
+                value="aline"/>
+              <Cell
+                formatType="currency"
+                id="amount"
+                value="(txsByPolicyLine.get(aline)).sum(policyPeriod.PreferredSettlementCurrency, \ t -&gt; t.earnedAsOf(asOfDate, lastReportedDate, includeEBUR))">
+                <PostOnChange
+                  target="DATA_ONLY"/>
+              </Cell>
+              <LinkCell
+                id="Context2">
+                <Link
+                  icon="&quot;menu-checked.png&quot;"
+                  id="checkmarkiconx"
+                  tooltip="&quot;Final Audit Complete&quot;"
+                  visible="!policyPeriod.Archived and (policyPeriod.IsReportingPolicy and policyPeriod.CompletedNotReversedFinalAudits.Count != 0)"/>
+              </LinkCell>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+      </ListViewInput>
+      <ContentInput
+        labelAbove="true"
+        visible="CurrentLocation.Id != &quot;Policy_Summary_EarnedPremiumPopup&quot;">
+        <Link
+          action="Policy_Summary_EarnedPremiumPopup.push(policyPeriod)"
+          id="earnedpremiumpopuplink"
+          label="displaykey.Web.Policy.CalculateEarnedAmountAsOfaDifferentDate"/>
+      </ContentInput>
+    </InputColumn>
+    <Code><![CDATA[function toggleIncludeEBUR() {
+  if (includeEBUR == true) {
+    includeEBUR = false
+  } else {
+    includeEBUR = true
+  }
+}
+function setNewAsOfDate( newDate : java.util.Date) {
+  asOfDate = newDate
+}]]></Code>
+  </DetailViewPanel>
+</PCF>

@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <CardViewPanel
+    id="PolicyContactRoleDetailsCV">
+    <Require
+      name="policyContactRole"
+      type="PolicyContactRole"/>
+    <Require
+      name="openForEditOverride"
+      type="boolean"/>
+    <Card
+      id="PolicyContactRoleDetailCard"
+      title="displaykey.Web.AccountContacts.AccountDetail">
+      <PanelRef
+        def="PolicyContactDetailsDV(policyContactRole, openForEditOverride)">
+        <Toolbar/>
+      </PanelRef>
+    </Card>
+    <Card
+      id="RolesCard"
+      title="displaykey.Web.Admin.UserDetailDV.Roles">
+      <PanelIterator
+        elementName="currentPolicyContactRole"
+        id="PolicyContactRoleIterator"
+        value="policyContactRole.Branch.PolicyContactRoles.where(\ pcr -&gt; pcr.AccountContactRole.AccountContact == policyContactRole.AccountContactRole.AccountContact)">
+        <IteratorSort
+          sortBy="currentPolicyContactRole.Subtype.DisplayName"
+          sortOrder="1"/>
+        <PanelRef
+          def="PolicyContactRolePanelSet(currentPolicyContactRole)"
+          mode="currentPolicyContactRole.Subtype"/>
+      </PanelIterator>
+    </Card>
+    <Card
+      id="AddressesCard"
+      title="displaykey.Web.Contact.Addresses.Title">
+      <PanelRef
+        def="AddressesPanelSet(policyContactRole.AccountContactRole.AccountContact.Contact,false,policyContactRole.Branch.Policy.Account, policyContactRole.Branch)"/>
+    </Card>
+  </CardViewPanel>
+</PCF>

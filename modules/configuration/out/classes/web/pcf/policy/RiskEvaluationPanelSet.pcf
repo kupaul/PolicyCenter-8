@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <PanelSet
+    editable="true"
+    id="RiskEvaluationPanelSet">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="canApproveRejectReopenIssue"
+      type="boolean"/>
+    <Variable
+      initialValue="&quot;Me&quot;"
+      name="userInView"/>
+    <Variable
+      initialValue="createUserProfilesMap()"
+      name="userProfilesMap"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="userProfilesMap.get(userInView).First"
+      name="authorityProfiles"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="gw.web.policy.RiskEvaluationPanelSetModalRowOrganizer.wrapIssues(policyPeriod.UWIssuesActiveOnly.viewableToUserWithProfiles(authorityProfiles))"
+      name="wrappedIssues"
+      recalculateOnRefresh="true"
+      type="gw.web.policy.RiskEvaluationPanelSetModalRow[]"/>
+    <Verbatim
+      id="NoIssuesMessage"
+      label="displaykey.Web.Policy.EvaluationIssues.NoIssues"
+      visible="wrappedIssues.IsEmpty"/>
+    <PanelRef>
+      <Toolbar>
+        <CheckedValuesToolbarButton
+          allCheckedRowsAction="var issues = new java.util.ArrayList&lt;UWIssue&gt;(); CheckedValues.each(\ u -&gt; issues.add(u.Item)); RiskApprovalDetailsPopup.push(issues as UWIssue[], true, false)"
+          flags="all approvable"
+          hideIfReadOnly="true"
+          id="Approve"
+          iterator="issueIterator"
+          label="displaykey.Web.Policy.RiskAnalysis.ApproveSelected"
+          visible="canApproveRejectReopenIssue"/>
+        <CheckedValuesToolbarButton
+          allCheckedRowsAction="CheckedValues.each( \ issue -&gt; issue.Item.reject()); policyPeriod.Bundle.commit()"
+          flags="all rejectable"
+          hideIfReadOnly="true"
+          id="Reject"
+          iterator="issueIterator"
+          label="displaykey.Web.Policy.RiskAnalysis.RejectSelected"
+          visible="canApproveRejectReopenIssue"/>
+        <CheckedValuesToolbarButton
+          allCheckedRowsAction="CheckedValues.each( \ issue -&gt; issue.Item.reopen()); policyPeriod.Bundle.commit()"
+          flags="all reopenable"
+          hideIfReadOnly="true"
+          id="Reopen"
+          iterator="issueIterator"
+          label="displaykey.Web.Policy.RiskAnalysis.ReopenSelected"
+          visible="canApproveRejectReopenIssue"/>
+        <CheckedValuesToolbarButton
+          allCheckedRowsAction="var issues = new java.util.ArrayList(); CheckedValues.each(\ u -&gt; issues.add(u.Item)); RiskApprovalDetailsPopup.push(issues as UWIssue[], false, false)"
+          flags="all histories"
+          id="History"
+          iterator="issueIterator"
+          label="displaykey.Web.Policy.RiskAnalysis.HistorySelected"/>
+        <ToolbarRangeInput
+          align="right"
+          editable="true"
+          id="UserViewFilter"
+          label="displaykey.Web.Policy.EvaluationIssues.ViewIssuesBlocking"
+          optionLabel="userProfilesMap.get(VALUE).Second"
+          required="true"
+          sortValueRange="false"
+          value="userInView"
+          valueRange="userProfilesMap.Keys.toTypedArray()">
+          <PostOnChange/>
+        </ToolbarRangeInput>
+      </Toolbar>
+      <ListViewPanel
+        alternateEntryStyle="false"
+        editable="true">
+        <RowIterator
+          checkBoxVisible="issue.IsItem"
+          editable="true"
+          elementName="issue"
+          hasCheckBoxes="true"
+          id="issueIterator"
+          pageSize="0"
+          value="wrappedIssues">
+          <ToolbarFlag
+            condition="issue.Approve.Available"
+            name="approvable"/>
+          <ToolbarFlag
+            condition="issue.Reopen.Available"
+            name="reopenable"/>
+          <ToolbarFlag
+            condition="issue.Reject.Available"
+            name="rejectable"/>
+          <ToolbarFlag
+            name="histories"/>
+          <RowSetRef
+            def="UWIssueRowSet(issue, canApproveRejectReopenIssue and not (policyPeriod.Promoted or policyPeriod.Status == PolicyPeriodStatus.TC_WITHDRAWN))"
+            mode="issue.Mode"/>
+        </RowIterator>
+      </ListViewPanel>
+    </PanelRef>
+    <Code><![CDATA[function createUserProfilesMap() : java.util.Map<String, gw.util.Pair<UWAuthorityProfile[], String>> {
+  // map where the value pair is the array of user profiles chosen and the localized name of the input label
+  var map = new java.util.LinkedHashMap<String, gw.util.Pair<UWAuthorityProfile[], String>>()
+  var currentUser = User.util.CurrentUser
+  map.put("Me", gw.util.Pair<UWAuthorityProfile[], String>.make(currentUser.UWAuthorityProfiles, displaykey.Web.Policy.EvaluationIssues.ViewIssuesBlocking.Me)) 
+  //only displays users with certain roles if this pcf is used for jobs but not bound policies
+  if (canApproveRejectReopenIssue) {
+    var usersToView = policyPeriod.Job.getUsersWithUWPerspectives()
+    usersToView.subtract(new User[]{currentUser}).toTypedArray().sortBy(\ u -> u.DisplayName).each(\ u -> map.put(u.DisplayName, gw.util.Pair<UWAuthorityProfile[], String>.make(u.UWAuthorityProfiles, u.DisplayName)))
+  }
+  map.put("View All", gw.util.Pair<UWAuthorityProfile[], String>.make(new UWAuthorityProfile[]{}, displaykey.Web.Policy.EvaluationIssues.ViewIssuesBlocking.ViewAll))
+
+  return map 
+}]]></Code>
+  </PanelSet>
+</PCF>

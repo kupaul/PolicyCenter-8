@@ -1,0 +1,784 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://api.webservices.pc.guidewire.com/" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://api.webservices.pc.guidewire.com/" xmlns:intf="http://api.webservices.pc.guidewire.com/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns1="http://entity.webservices.pc.guidewire.com/" xmlns:tns2="http://fault.webservices.pc.guidewire.com/" xmlns:tns3="http://enumeration.webservices.pc.guidewire.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><wsdl:types><schema targetNamespace="http://api.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://fault.webservices.pc.guidewire.com/"/><import namespace="http://enumeration.webservices.pc.guidewire.com/"/><import namespace="http://entity.webservices.pc.guidewire.com/"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="ArrayOf_soapenc_string"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="soapenc:string[]"/></restriction></complexContent></complexType></schema><schema targetNamespace="http://entity.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://fault.webservices.pc.guidewire.com/"/><import namespace="http://api.webservices.pc.guidewire.com/"/><import namespace="http://enumeration.webservices.pc.guidewire.com/"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="CustomEvents"><sequence><element name="Events" nillable="true" type="impl:ArrayOf_soapenc_string"/><element name="ObjectKey" nillable="true" type="soapenc:string"/></sequence></complexType><complexType name="ArrayOfCustomEvents"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="tns1:CustomEvents[]"/></restriction></complexContent></complexType><complexType name="FieldChangeValue"><sequence><element name="Name" nillable="true" type="soapenc:string"/><element name="Value" nillable="true" type="soapenc:string"/></sequence></complexType><complexType name="ArrayOfFieldChangeValue"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="tns1:FieldChangeValue[]"/></restriction></complexContent></complexType><complexType name="FieldChanges"><sequence><element name="FieldValues" nillable="true" type="tns1:ArrayOfFieldChangeValue"/><element name="ObjectKey" nillable="true" type="soapenc:string"/></sequence></complexType><complexType name="ArrayOfFieldChanges"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="tns1:FieldChanges[]"/></restriction></complexContent></complexType><complexType name="Acknowledgement"><sequence><element name="AckCode" nillable="true" type="soapenc:string"/><element name="CustomEvents" nillable="true" type="tns1:ArrayOfCustomEvents"/><element name="Duplicate" type="xsd:boolean"/><element name="Error" type="xsd:boolean"/><element name="ErrorDescription" nillable="true" type="soapenc:string"/><element name="FieldChanges" nillable="true" type="tns1:ArrayOfFieldChanges"/><element name="MessageID" type="xsd:long"/><element name="Retryable" type="xsd:boolean"/></sequence></complexType><complexType name="MessageOptionalFields"><sequence><element name="MessageCode" nillable="true" type="soapenc:string"/><element name="OptionalInt" nillable="true" type="soapenc:int"/><element name="OptionalMoney" nillable="true" type="soapenc:decimal"/><element name="OptionalString" nillable="true" type="soapenc:string"/><element name="SenderRefID" nillable="true" type="soapenc:string"/></sequence></complexType><complexType name="MessageStatisticsData"><xsd:annotation><xsd:documentation>Holds the statistics for messages for a given safe ordered object.
+The statistics include:
+&lt;ul&gt;
+&lt;li&gt;# of failed messages&lt;/li&gt;
+&lt;li&gt;# of failed messages that can be retried&lt;/li&gt;
+&lt;li&gt;# of inflight messages&lt;/li&gt;
+&lt;li&gt;# of unsent messages&lt;/li&gt;
+&lt;/ul&gt;</xsd:documentation></xsd:annotation><sequence><element name="Failed" type="xsd:int"><xsd:annotation><xsd:documentation>Returns the number of messages that failed.</xsd:documentation></xsd:annotation></element><element name="Inflight" type="xsd:int"><xsd:annotation><xsd:documentation>Returns the number of messages that are in flight.</xsd:documentation></xsd:annotation></element><element name="Retry" type="xsd:int"><xsd:annotation><xsd:documentation>Returns the number of failed messages that can be retried.</xsd:documentation></xsd:annotation></element><element name="Unsent" type="xsd:int"><xsd:annotation><xsd:documentation>Returns the number of messages that are not sent yet.</xsd:documentation></xsd:annotation></element></sequence></complexType></schema><schema targetNamespace="http://fault.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://api.webservices.pc.guidewire.com/"/><import namespace="http://enumeration.webservices.pc.guidewire.com/"/><import namespace="http://entity.webservices.pc.guidewire.com/"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="SOAPException"><xsd:annotation><xsd:documentation>A generic SOAP exception.</xsd:documentation></xsd:annotation><sequence><element name="Message" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>The message associated with this exception</xsd:documentation></xsd:annotation></element><element name="OtherMessages" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>Other messages attached to this exception.  This message may contain information
+related to other exceptions that occurred during a SOAP call, but not directly
+associated with this particular exception.</xsd:documentation></xsd:annotation></element></sequence></complexType><complexType name="SOAPSenderException"><xsd:annotation><xsd:documentation>SOAPSenderException is the base class for all exceptions that resulted from
+a sender error. This usually means that required data was not properly encoded
+or was absent. Senders should not send the message again unless some steps have
+been taken to make the encoded data valid.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="DataConversionException"><xsd:annotation><xsd:documentation>Thrown by many APIs when they encounter a problem translating a SOAP data object into
+an internal system object.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="BadIdentifierException"><xsd:annotation><xsd:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect).</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="PermissionException"><xsd:annotation><xsd:documentation>Thrown when the authenticated SOAP user does not have permission to
+perform the requested operation</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="SOAPServerException"><xsd:annotation><xsd:documentation>SOAPServerException is the base class for all exceptions that resulted from
+a server error. This is something of a catch-all exception type insofar as
+some things which might in fact be considered SOAPSenderExceptions are reported
+as SOAPServerExceptions. Perhaps a rule failed or something else. Generally it
+indicates a problem in the server that is likely retryable at some future time.
+The database being down, an unavailable plugin, etc would fall into this catagory.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="ServerStateException"><xsd:annotation><xsd:documentation>ServerStateException is thrown when a request is made at a time the
+server is in a state that disallows the request. An example is if
+an attempt is made to add a claim and the server is in maintenance
+mode.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:SOAPServerException"><sequence/></extension></complexContent></complexType><complexType name="SOAPRetryableException"><xsd:annotation><xsd:documentation>SOAPRetryableException is the class for all exceptions that are retryable
+immediately.  The primary example of this is ConcurrentDataChangeException.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="LoginException"><xsd:annotation><xsd:documentation>Class of exceptions thrown when a user tries to log in and an authentication failure occurs.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:PermissionException"><sequence/></extension></complexContent></complexType><complexType name="EntityStateException"><xsd:annotation><xsd:documentation>Thrown when an attempt is made to manipulate an object that is in a state
+that prevents the operation from being performed. An example is trying to
+modify a Claim that is marked as closed.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="DuplicateKeyException"><xsd:annotation><xsd:documentation>Throws if a duplicate data exception is detected in the database.  I.e. a unique index violation.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="FieldConversionException"><xsd:annotation><xsd:documentation>Thrown when a data type cannot be converted into the native data type.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="FieldFormatException"><xsd:annotation><xsd:documentation>Thrown when the input type does not match the format specified in the metadata.  I.e. a string is too long.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="RequiredFieldException"><xsd:annotation><xsd:documentation>Thrown when required data is missing from a bean.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="UnknownTypeKeyException"><xsd:annotation><xsd:documentation>Thrown when a typekey value isn't available on the server.  This exception can only
+happen if the SOAP WSDL that is being used on the remote side is invalid.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="BatchProcessException"><xsd:annotation><xsd:documentation>SOAP Exception specific to batch process operations</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:SOAPServerException"><sequence/></extension></complexContent></complexType><complexType name="AlreadyExecutedException"><complexContent><extension base="tns2:SOAPSenderException"><sequence/></extension></complexContent></complexType></schema><schema targetNamespace="http://enumeration.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://fault.webservices.pc.guidewire.com/"/><import namespace="http://api.webservices.pc.guidewire.com/"/><import namespace="http://entity.webservices.pc.guidewire.com/"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><simpleType name="ErrorCategory"><xsd:annotation><xsd:documentation>Types of errors for messages in error</xsd:documentation></xsd:annotation><restriction base="xsd:string"><xsd:enumeration value="TC_contact_error"><xsd:annotation><xsd:documentation>This is to indicate that an contact communication error occurs while sending message to contact manager.</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_contact_unsynced"><xsd:annotation><xsd:documentation>This is to indicated that a contact need be be synced first.</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_system_error"><xsd:annotation><xsd:documentation>This is to indicate that an error occurs whilte communicating with the external system.</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_system_timeout"><xsd:annotation><xsd:documentation>This is to indicate that communication with the external system timed out.</xsd:documentation></xsd:annotation></xsd:enumeration></restriction></simpleType></schema></wsdl:types>
+  <wsdl:message name="retryRetryableErrorMessagesForCategoryRequest">
+    <wsdl:part name="destID" type="xsd:int">
+<wsdl:documentation>The destination that should be retried.</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="category" type="tns3:ErrorCategory">
+<wsdl:documentation>The error category of the messages that should be retried.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getMessageIdResponse">
+    <wsdl:part name="getMessageIdReturn" type="xsd:long">
+<wsdl:documentation>message id, or -1 if message is not found</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="retryRetryableErrorMessagesRequest1">
+    <wsdl:part name="destID" type="xsd:int">
+<wsdl:documentation>The destination that should be retried.</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="retryLimit" type="xsd:int">
+<wsdl:documentation>Retry only messages with retryCount &lt; retryLimit; if retryLimit
+is 0, retry all messages.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getMessageStatisticsForSafeOrderedObjectRequest">
+    <wsdl:part name="destID" type="xsd:int">
+<wsdl:documentation>The destination to get the message statistics.</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="safeOrderedObjectId" type="soapenc:string">
+<wsdl:documentation>The public id of the safe ordered object of interest</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ackMessageRequest">
+    <wsdl:part name="ack" type="tns1:Acknowledgement">
+<wsdl:documentation>The acknowledgement to report</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="skipMessageResponse">
+    <wsdl:part name="skipMessageReturn" type="xsd:boolean">
+<wsdl:documentation>Returns whether the message was successfully skipped.
+If the message with this messageId does not exist, this returns false.
+If the message is not in an active state(active states are:
+pending send, inflight, error, retryable error and pending retry),
+this returns false.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BadIdentifierException">
+    <wsdl:part name="fault" type="tns2:BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getTotalStatisticsRequest">
+    <wsdl:part name="destID" type="xsd:int">
+<wsdl:documentation>The destination to get the message statistics.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ackMessageResponse">
+    <wsdl:part name="ackMessageReturn" type="xsd:boolean">
+<wsdl:documentation>true if the message was found and acked, false otherwise.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="retryRetryableErrorMessagesForCategoryResponse">
+    <wsdl:part name="retryRetryableErrorMessagesForCategoryReturn" type="xsd:boolean">
+<wsdl:documentation>Returns true if all messages were successfully retried; false if any errors occurred.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="resumeDestinationResponse">
+  </wsdl:message>
+  <wsdl:message name="resyncAccountResponse">
+  </wsdl:message>
+  <wsdl:message name="PermissionException">
+    <wsdl:part name="fault" type="tns2:PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="resumeDestinationRequest">
+    <wsdl:part name="destID" type="xsd:int">
+<wsdl:documentation>The destination id of the destination to resume</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="acknowledgeMessageRequest">
+    <wsdl:part name="ack" type="tns1:Acknowledgement">
+<wsdl:documentation>The acknowledgement to report</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="retryMessageResponse">
+    <wsdl:part name="retryMessageReturn" type="xsd:boolean">
+<wsdl:documentation>Returns whether or not the message was successfully retried.
+If the message with this messageID does not exist, this returns false.
+If the message is not a retryable error message or an inflight message, this returns false.
+Returning true does not necessarily mean that the retry was successful; it just means that the message was retried.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="skipMessageRequest">
+    <wsdl:part name="messageID" type="xsd:long">
+<wsdl:documentation>The message to skip.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getMessageStatisticsForSafeOrderedObjectResponse">
+    <wsdl:part name="getMessageStatisticsForSafeOrderedObjectReturn" type="tns1:MessageStatisticsData">
+<wsdl:documentation>the message statistics for the specified destination and safe order object</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="suspendDestinationRequest">
+    <wsdl:part name="destID" type="xsd:int">
+<wsdl:documentation>The destination id of the destination to suspend</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="purgeCompletedMessagesRequest">
+    <wsdl:part name="cutoff" type="xsd:dateTime">
+<wsdl:documentation>Remove messages with send time less than this date.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ServerStateException">
+    <wsdl:part name="fault" type="tns2:ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="purgeCompletedMessagesResponse">
+  </wsdl:message>
+  <wsdl:message name="SOAPException">
+    <wsdl:part name="fault" type="tns2:SOAPException">
+<wsdl:documentation>If the ack could not be committed to the database</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="suspendDestinationResponse">
+  </wsdl:message>
+  <wsdl:message name="retryRetryableErrorMessagesResponse">
+    <wsdl:part name="retryRetryableErrorMessagesReturn" type="xsd:boolean">
+<wsdl:documentation>Returns true if all messages were successfully retried; false if any errors occurred.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="retryMessageRequest">
+    <wsdl:part name="messageID" type="xsd:long">
+<wsdl:documentation>The message to retry.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="acknowledgeMessageResponse">
+    <wsdl:part name="acknowledgeMessageReturn" type="tns1:MessageOptionalFields">
+<wsdl:documentation>optional message fields that can be set</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="retryRetryableErrorMessagesRequest">
+    <wsdl:part name="destID" type="xsd:int">
+<wsdl:documentation>The destination that should be retried.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getTotalStatisticsResponse">
+    <wsdl:part name="getTotalStatisticsReturn" type="tns1:MessageStatisticsData">
+<wsdl:documentation>the message statistics for the specified destination</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="resyncAccountRequest">
+    <wsdl:part name="destID" type="xsd:int">
+<wsdl:documentation>The destination to get the message statistics.</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="accountNumber" type="soapenc:string">
+<wsdl:documentation>The account number of the account with all the messages need to be resync.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getMessageIdRequest">
+    <wsdl:part name="senderRefID" type="soapenc:string">
+<wsdl:documentation>The sender ref id for the message we want to get</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="destinationID" type="xsd:int">
+<wsdl:documentation>The destination id for the message we want to get. -1 would match all destination ids.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="retryRetryableErrorMessagesResponse1">
+    <wsdl:part name="retryRetryableErrorMessagesReturn" type="xsd:boolean">
+<wsdl:documentation>Returns true if all messages were successfully retried; false if any errors occurred.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="IMessagingToolsAPI">
+<wsdl:documentation>MessagingTools is a remote interface to a set of tools to get messaging
+statistics and perform operations on messages.
+@deprecated As of 8.0 use gw.webservice.pc.pc800.MessagingToolsAPI instead
+</wsdl:documentation>
+    <wsdl:operation name="ackMessage" parameterOrder="ack">
+<wsdl:documentation>Acknowledges message
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:ackMessageRequest" name="ackMessageRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:ackMessageResponse" name="ackMessageResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="acknowledgeMessage" parameterOrder="ack">
+<wsdl:documentation>Acknowledges message
+&lt;br&gt;@deprecated In PC 7.0.3.  MessageOptionalFields are no longer supported.
+Please use {@link #ackMessage(Acknowledgement)} instead.</wsdl:documentation>
+      <wsdl:input message="impl:acknowledgeMessageRequest" name="acknowledgeMessageRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:acknowledgeMessageResponse" name="acknowledgeMessageResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getMessageId" parameterOrder="senderRefID destinationID">
+<wsdl:documentation>Gets the message id for a message with a specific sender ref id and a specific destination id.
+If the destination id passed in is -1, then this would find messages from any destination that matches the sender ref id.
+Returns -1 if no message is found that has given sender ref id and destination id.
+If there are multiple messages that match, this will return the first one.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:getMessageIdRequest" name="getMessageIdRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:getMessageIdResponse" name="getMessageIdResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getMessageStatisticsForSafeOrderedObject" parameterOrder="destID safeOrderedObjectId">
+<wsdl:documentation>Gets all the message statistics of a given destination and safe ordered object.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:getMessageStatisticsForSafeOrderedObjectRequest" name="getMessageStatisticsForSafeOrderedObjectRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:getMessageStatisticsForSafeOrderedObjectResponse" name="getMessageStatisticsForSafeOrderedObjectResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTotalStatistics" parameterOrder="destID">
+<wsdl:documentation>Gets all the message statistics of a given destination.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:getTotalStatisticsRequest" name="getTotalStatisticsRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:getTotalStatisticsResponse" name="getTotalStatisticsResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="purgeCompletedMessages" parameterOrder="cutoff">
+<wsdl:documentation>Purges the message history table of completed messages.
+Deletes all messages with send time less than supplied before date.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:purgeCompletedMessagesRequest" name="purgeCompletedMessagesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:purgeCompletedMessagesResponse" name="purgeCompletedMessagesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="resumeDestination" parameterOrder="destID">
+<wsdl:documentation>Resumes the destination with the specified destination id
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:resumeDestinationRequest" name="resumeDestinationRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:resumeDestinationResponse" name="resumeDestinationResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="resyncAccount" parameterOrder="destID accountNumber">
+<wsdl:documentation>This will resync all the event messages associated with the given account.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:resyncAccountRequest" name="resyncAccountRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:resyncAccountResponse" name="resyncAccountResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="retryMessage" parameterOrder="messageID">
+<wsdl:documentation>Retries a single message (retryable error or inflight).
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:retryMessageRequest" name="retryMessageRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:retryMessageResponse" name="retryMessageResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="retryRetryableErrorMessages" parameterOrder="destID">
+<wsdl:documentation>Retries all messages in retryable error state for the given destination.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:retryRetryableErrorMessagesRequest" name="retryRetryableErrorMessagesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:retryRetryableErrorMessagesResponse" name="retryRetryableErrorMessagesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="retryRetryableErrorMessages" parameterOrder="destID retryLimit">
+<wsdl:documentation>Retries messages in retryable error state for the given destination where the message
+has previously been retried fewer than retryLimit times.  Each message maintains a retry
+count; attempts to retry the message increment the retry count.  If there are messages
+whose retry count &gt;= retryLimit, they will not be retried.
+&lt;p/&gt;
+Specifying a retryLimit of 0 retries all retryable error messages,
+and is identical to retryRetryableErrorMessages(int destID).
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:retryRetryableErrorMessagesRequest1" name="retryRetryableErrorMessagesRequest1">
+    </wsdl:input>
+      <wsdl:output message="impl:retryRetryableErrorMessagesResponse1" name="retryRetryableErrorMessagesResponse1">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="retryRetryableErrorMessagesForCategory" parameterOrder="destID category">
+<wsdl:documentation>Retries messages in retryable error state for the given destination and error category,
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:retryRetryableErrorMessagesForCategoryRequest" name="retryRetryableErrorMessagesForCategoryRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:retryRetryableErrorMessagesForCategoryResponse" name="retryRetryableErrorMessagesForCategoryResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="skipMessage" parameterOrder="messageID">
+<wsdl:documentation>Skips a single message (error or inflight).
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:skipMessageRequest" name="skipMessageRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:skipMessageResponse" name="skipMessageResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="suspendDestination" parameterOrder="destID">
+<wsdl:documentation>Suspends the destination with the specified destination id
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:suspendDestinationRequest" name="suspendDestinationRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:suspendDestinationResponse" name="suspendDestinationResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="IMessagingToolsAPISoapBinding" type="impl:IMessagingToolsAPI">
+    <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="ackMessage">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="ackMessageRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="ackMessageResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="acknowledgeMessage">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="acknowledgeMessageRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="acknowledgeMessageResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getMessageId">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getMessageIdRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="getMessageIdResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getMessageStatisticsForSafeOrderedObject">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getMessageStatisticsForSafeOrderedObjectRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="getMessageStatisticsForSafeOrderedObjectResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTotalStatistics">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getTotalStatisticsRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="getTotalStatisticsResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="purgeCompletedMessages">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="purgeCompletedMessagesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="purgeCompletedMessagesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="resumeDestination">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="resumeDestinationRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="resumeDestinationResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="resyncAccount">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="resyncAccountRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="resyncAccountResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="retryMessage">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="retryMessageRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="retryMessageResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="retryRetryableErrorMessages">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="retryRetryableErrorMessagesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="retryRetryableErrorMessagesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="retryRetryableErrorMessages">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="retryRetryableErrorMessagesRequest1">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="retryRetryableErrorMessagesResponse1">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="retryRetryableErrorMessagesForCategory">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="retryRetryableErrorMessagesForCategoryRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="retryRetryableErrorMessagesForCategoryResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="skipMessage">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="skipMessageRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="skipMessageResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="suspendDestination">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="suspendDestinationRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="suspendDestinationResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="IMessagingToolsAPIService">
+<wsdl:documentation>MessagingTools is a remote interface to a set of tools to get messaging
+statistics and perform operations on messages.
+@deprecated As of 8.0 use gw.webservice.pc.pc800.MessagingToolsAPI instead
+</wsdl:documentation>
+    <wsdl:port binding="impl:IMessagingToolsAPISoapBinding" name="IMessagingToolsAPI">
+      <wsdlsoap:address location="http://dontuse.defaultvalue.com/IMessagingToolsAPI"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

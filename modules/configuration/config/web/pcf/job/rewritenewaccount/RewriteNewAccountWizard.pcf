@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <JobWizard
+    acceleratedMenuActions="BlankAcceleratedMenuActions()"
+    canEdit="not job.Complete"
+    canVisit="perm.RewriteNewAccount.view(rewriteNewAccount)"
+    desc="The main Wizard for rewriting a Policy to a different account.  Flow steps within the Wizard are determined by the product model."
+    id="RewriteNewAccountWizard"
+    independentStepsTitle="displaykey.Web.PolicyFile.ToolsMenuTitle"
+    independentStepsTitleIcon="&quot;ToolsMenuTitle.png&quot;"
+    infoBar="JobWizardInfoBar(rewriteNewAccount, policyPeriod)"
+    initialStep="wizardStep == null ? jobWizardHelper.getInitialWizardStepId(policyPeriod) : wizardStep"
+    isDraftOnEnter="true"
+    jobType="RewriteNewAccount"
+    menuActions="WizardMenuActions(jobWizardHelper,rewriteNewAccount,policyPeriod)"
+    onConcurrentDataChange="CurrentLocation.cancel(); JobForward.go(job)"
+    parent="JobForward(rewriteNewAccount)"
+    subtitle="policyPeriod.Status.DisplayName"
+    title="displaykey.Web.RewriteNewAccountWizard.Title(rewriteNewAccount.JobNumber)">
+    <LocationEntryPoint
+      signature="RewriteNewAccountWizard(rewriteNewAccount : RewriteNewAccount, policyPeriod : PolicyPeriod)"/>
+    <LocationEntryPoint
+      signature="RewriteNewAccountWizard(rewriteNewAccount : RewriteNewAccount, policyPeriod : PolicyPeriod, wizardStep : String)"/>
+    <Variable
+      name="rewriteNewAccount"
+      type="RewriteNewAccount"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="gw.util.concurrent.LockingLazyVar.make(\ -&gt; policyPeriod.OpenForEdit)"
+      name="openForEditInit"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="openForEditInit.get()"
+      name="openForEdit"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="policyPeriod.Policy.Account"
+      name="account"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="rewriteNewAccount"
+      name="job"/>
+    <Variable
+      initialValue="policyPeriod.Policy"
+      name="policy"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="policy.Product.Code"
+      name="productCode"
+      type="String"/>
+    <Variable
+      initialValue="policy.Product.getAvailableQuestionSetsByType(QuestionSetType.TC_PREQUAL, policyPeriod).Count &gt; 0"
+      name="preQualNecessary"
+      type="boolean"/>
+    <Variable
+      initialValue="new java.util.HashMap&lt;gw.api.productmodel.Question, String&gt;()"
+      name="incorrectAnswerMap"
+      type="java.util.Map&lt;gw.api.productmodel.Question, String&gt;"/>
+    <Variable
+      initialValue="new web.job.JobWizardHelper(CurrentLocation)"
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="!policyPeriod.Promoted"
+      name="billingPageEditable"
+      recalculateOnRefresh="true"/>
+    <Variable
+      name="wizardStep"
+      type="String"/>
+    <JobWizardStep
+      beforeSave="gw.policy.PolicyPeriodValidation.validateOfferingAnswers(policyPeriod)"
+      id="Offering"
+      onEnter="if ( openForEdit ) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncOffering(policyPeriod, jobWizardHelper );                                                  gw.web.productmodel.ProductModelSyncIssuesHandler.syncQuestions({policyPeriod}, jobWizardHelper )}"
+      onExit="if ( openForEdit) {                     gw.web.productmodel.ProductModelSyncIssuesHandler.syncPolicyTerm(policyPeriod, jobWizardHelper);                     gw.web.productmodel.ProductModelSyncIssuesHandler.syncPolicyLines(jobWizardHelper)               }"
+      save="openForEdit"
+      screen="OfferingScreen(policyPeriod, openForEdit, jobWizardHelper)"
+      title="displaykey.Web.RewriteNewAccountWizard.Offerings"
+      visible="policy.Product.Offerings.Count &gt; 0"/>
+    <JobWizardStep
+      beforeSave="gw.question.IncorrectAnswerProcessor.processIncorrectAnswers(policyPeriod, incorrectAnswerMap); gw.policy.PolicyPeriodValidation.validatePreQualAnswers(policyPeriod)"
+      id="Qualification"
+      onEnter="if(openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncQuestions( {policyPeriod}, jobWizardHelper )}"
+      save="openForEdit"
+      screen="RewriteNewAccountWizard_PreQualificationScreen(rewriteNewAccount, policyPeriod, openForEdit, jobWizardHelper)"
+      title="displaykey.Web.RewriteNewAccountWizard.Qualification"
+      visible="preQualNecessary"/>
+    <WizardStepGroup
+      id="LOBWizardStepGroup"
+      label="displaykey.Web.Wizard.LineWizardStepGroup">
+      <JobWizardStep
+        id="PolicyInfo"
+        onEnter="if ( openForEdit ) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncPolicyTerm( policyPeriod, jobWizardHelper ) }"
+        save="openForEdit"
+        screen="RewriteNewAccountWizard_PolicyInfoScreen(policyPeriod, rewriteNewAccount, openForEdit, jobWizardHelper)"
+        title="displaykey.Web.RewriteNewAccountWizard.PolicyInfo"/>
+      <WizardStepSetRef
+        def="LineWizardStepSet(job, policyPeriod,jobWizardHelper, openForEdit)"
+        mode="policy.Product.Code"/>
+    </WizardStepGroup>
+    <JobWizardStep
+      id="RiskAnalysis"
+      save="openForEdit"
+      screen="Job_RiskAnalysisScreen(policyPeriod, openForEdit, jobWizardHelper)"
+      title="displaykey.Web.Job.Policy.RiskAnalysis"
+      visible="perm.System.viewriskevalissues or perm.System.viewriskpriorpolicies or perm.System.viewriskclaims or perm.System.viewriskpriorlosses"/>
+    <JobWizardStep
+      id="PolicyReview"
+      onEnter="policyPeriod.AllAccountSyncables.each(\ a -&gt; a.prepareForDiff())"
+      screen="RewriteNewAccountWizard_PolicyReviewScreen(rewriteNewAccount, policyPeriod, openForEdit, jobWizardHelper)"
+      title="displaykey.Web.RewriteNewAccountWizard.Review"/>
+    <JobWizardStep
+      available="policyPeriod.JobProcess.canViewQuote()"
+      id="ViewQuote"
+      screen="RewriteNewAccountWizard_QuoteScreen(job, policyPeriod, openForEdit,jobWizardHelper)"
+      title="displaykey.Web.Policy.Quote"
+      visible="!policyPeriod.MultiLine"/>
+    <JobWizardStep
+      available="policyPeriod.JobProcess.canViewQuote()"
+      id="ViewMultiLineQuote"
+      mode="productCode"
+      screen="RewriteNewAccountWizard_MultiLine_QuoteScreen(job, policyPeriod, openForEdit, jobWizardHelper)"
+      title="displaykey.Web.Policy.Quote"
+      visible="policyPeriod.MultiLine"/>
+    <JobWizardStep
+      available="policyPeriod.JobProcess.canViewQuote()"
+      id="Forms"
+      save="openForEdit"
+      screen="FormsScreen(policyPeriod, openForEdit,jobWizardHelper)"
+      title="displaykey.Web.SubmissionWizardMenu.PolicyLines.Forms"/>
+    <JobWizardStep
+      allowFinish="false"
+      available="policyPeriod.JobProcess.canViewQuote()"
+      id="BillingInfo"
+      save="(!policyPeriod.Promoted)"
+      screen="RewriteNewAccountWizard_PaymentScreen(rewriteNewAccount, policyPeriod, billingPageEditable, jobWizardHelper)"
+      title="displaykey.Web.RewriteWizard.Payment"/>
+    <WizardStepSetRef
+      def="JobWizardToolsMenuWizardStepSet(jobWizardHelper, policyPeriod)"/>
+  </JobWizard>
+</PCF>

@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    canVisit="policyPeriod.Policy.canViewNotes() and perm.PolicyPeriod.view(policyPeriod) and perm.System.noteview"
+    countsAsWork="false"
+    id="PreRenewalNotesPage"
+    parent="PolicyFile(policyPeriod, asOfDate)"
+    title="displaykey.Web.PolicyFile.Notes">
+    <LocationEntryPoint
+      signature="PreRenewalNotesPage(policyPeriod : PolicyPeriod, topic : NoteTopicType, asOfDate : DateTime)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="topic"
+      type="NoteTopicType"/>
+    <Variable
+      name="asOfDate"
+      type="DateTime"/>
+    <Screen
+      id="PreRenewalNotesScreen">
+      <SearchPanel
+        criteriaName="searchCriteria"
+        resultCachingEnabled="false"
+        resultsName="notes"
+        search="searchCriteria.performSearch()"
+        searchCriteria="new NoteSearchCriteria() {:Policy = policyPeriod.Policy, :Topic = topic}"
+        searchOnEnter="true"
+        searchResultsType="NoteQuery">
+        <PanelRef
+          def="NoteSearchDV(searchCriteria, policyPeriod)"/>
+        <PanelRef
+          def="NotesLV(notes, true)">
+          <TitleBar
+            appendListViewPaging="true"
+            title="displaykey.Web.PolicyFile.Notes"/>
+          <Toolbar>
+            <IteratorButtons
+              iterator="NotesLV.NotesLV"/>
+          </Toolbar>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+  </Page>
+</PCF>

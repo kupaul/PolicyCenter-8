@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    canEdit="false"
+    countsAsWork="false"
+    id="UWBlockProgressIssuesPopup"
+    title="displaykey.Web.Job.Warning.UWIssue.ApprovalRequired">
+    <LocationEntryPoint
+      signature="UWBlockProgressIssuesPopup(policyPeriod : PolicyPeriod, jobWizardHelper : web.job.JobWizardHelper, blockingPoint : UWIssueBlockingPoint, blockingIssues : entity.UWIssue[])"/>
+    <Variable
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="blockingIssues"
+      type="entity.UWIssue[]"/>
+    <Variable
+      name="blockingPoint"
+      type="UWIssueBlockingPoint"/>
+    <Screen
+      id="IssuesScreen">
+      <TitleBar
+        id="PreQuoteIssueTitle"
+        title="titleForBlockingPoint()"/>
+      <Toolbar>
+        <ToolbarButton
+          action="jobWizardHelper.goToRiskAnalysisStep(policyPeriod.Job)"
+          available="not policyPeriod.PolicyTerm.Archived"
+          id="DetailsButton"
+          label="displaykey.Web.Job.Warning.UWIssue.Details"/>
+      </Toolbar>
+      <DetailViewPanel
+        id="ApproveDV">
+        <InputColumn>
+          <Label
+            label="headerForBlockingPoint()"/>
+          <InputIterator
+            elementName="issue"
+            id="issues"
+            value="blockingIssues.partition(\ u -&gt; u.ShortDescription ).Values.toTypedArray()">
+            <TextInput
+              id="ShortDescriptionAndSize"
+              numCols="60"
+              outputConversion="descriptionAndCount(VALUE)"
+              required="false"
+              value="issue"/>
+          </InputIterator>
+        </InputColumn>
+      </DetailViewPanel>
+    </Screen>
+    <Code><![CDATA[function titleForBlockingPoint() : String {
+  switch (blockingPoint) {
+    case "BlocksQuote": return displaykey.Web.Job.Warning.UWIssue.PreQuoteIssues
+    case "BlocksBind": return displaykey.Web.Job.Warning.UWIssue.PreBindIssues
+    case "BlocksIssuance": return displaykey.Web.Job.Warning.UWIssue.PreIssuanceIssues
+  }
+  throw new java.lang.IllegalStateException("Not expecting blocking point ${blockingPoint}")
+}
+
+function headerForBlockingPoint() : String {
+  switch (blockingPoint) {
+    case "BlocksQuote": return displaykey.Web.Job.Warning.UWIssue.PreQuoteIssues.Description
+    case "BlocksBind": return displaykey.Web.Job.Warning.UWIssue.PreBindIssues.Description
+    case "BlocksIssuance": return displaykey.Web.Job.Warning.UWIssue.PreIssuanceIssues.Description
+  }
+  throw new java.lang.IllegalStateException("Not expecting blocking point ${blockingPoint}")
+}
+
+function descriptionAndCount(issueList : List<UWIssue>) : String {
+  var issueDescription = issueList.get(0).ShortDescription
+  var issueCount = issueList.Count
+  if (issueCount > 1)
+    return issueDescription + " (" + new String(issueCount as java.lang.StringBuilder) + ")"
+  else 
+    return issueDescription
+}
+]]></Code>
+  </Popup>
+</PCF>

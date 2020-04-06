@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity xmlns="http://guidewire.com/datamodel" desc="BOP Location" displayName="BOP Location" effDatedBranchType="PolicyPeriod" entity="BOPLocation" exportable="true" extendable="true" loadable="false" platform="false" table="boplocation" subpackage="lob.bop" type="effdated">
+  <implementsInterface iface="gw.api.domain.LineSpecificLocation" impl="gw.lob.bop.BOPSpecificLocation"/>
+  <implementsInterface iface="gw.api.copier.EffDatedCopyable" impl="gw.lob.bop.BOPLocationCopier"/>
+  <implementsInterface iface="gw.api.logicalmatch.EffDatedLogicalMatcher" impl="gw.lob.bop.BOPLocationMatcher"/>
+  <implementsEntity adapter="gw.lob.bop.BOPLocationCoverableAdapter" name="Coverable"/>
+  <column desc="Whether the location is within city limits" name="CityLimits" nullok="true" type="bit"/>
+  <column desc="Principle operations and occupancy." name="PrincipalOpsDesc" nullok="true" type="varchar">
+    <columnParam name="size" value="240"/>
+  </column>
+  <column desc="Internal field for storing the reference date of this entity on bound policy periods." name="ReferenceDateInternal" nullok="true" type="datetime"/>
+  <foreignkey fkentity="BusinessOwnersLine" name="BOPLine" nullok="false"/>
+  <foreignkey desc="Location of business exposure, e.g., one or more buildings." exportable="true" fkentity="PolicyLocation" name="Location" nullok="false"/>
+  <foreignkey columnName="RiskClassID" desc="Foreign key to Risk Class Codes" fkentity="RiskClass" name="RiskClass" nullok="true"/>
+  <array arrayentity="BOPBuilding" cascadeDelete="true" desc="Buildings on this location" name="Buildings" owner="false"/>
+  <array arrayentity="BOPLocationCov" cascadeDelete="true" desc="All coverages that apply directly to this location." name="Coverages" owner="false" setterScriptability="all"/>
+  <array arrayentity="BOPLocationAnswer" cascadeDelete="true" desc="Set of answers for any questions on this location" name="LocationAnswers" owner="false"/>
+</entity>

@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="BOPLineOtherIncludedDV">
+    <Require
+      name="policyLine"
+      type="PolicyLine"/>
+    <Variable
+      initialValue="policyLine as BOPLine"
+      name="bopLine"/>
+    <Variable
+      initialValue="bopLine.Pattern.getCoverageCategory(&quot;BOPOtherIncludedCat&quot;)"
+      name="bopOtherIncludedCat"/>
+    <Variable
+      initialValue="bopOtherIncludedCat.coveragePatternsForEntity(BusinessOwnersLine).whereSelectedOrAvailable(bopLine, CurrentLocation.InEditMode)"
+      name="bopOtherIncludedCatCoveragePatterns"
+      recalculateOnRefresh="true"/>
+    <InputColumn>
+      <InputIterator
+        elementName="coveragePattern"
+        forceRefreshDespiteChangedEntries="true"
+        id="BOPPropertyRequiredCatIterator"
+        value="bopOtherIncludedCatCoveragePatterns">
+        <IteratorSort
+          sortBy="coveragePattern.Priority"
+          sortOrder="1"/>
+        <InputSetRef
+          def="CoverageInputSet(coveragePattern, bopLine, true)"
+          mode="coveragePattern.Code"/>
+      </InputIterator>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

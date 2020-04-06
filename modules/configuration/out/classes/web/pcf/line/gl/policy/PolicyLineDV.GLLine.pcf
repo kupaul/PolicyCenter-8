@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="PolicyLineDV"
+    mode="GLLine">
+    <Require
+      name="policyLine"
+      type="PolicyLine"/>
+    <Variable
+      initialValue="policyLine as GLLine"
+      name="glLine"/>
+    <Variable
+      initialValue="glLine.Pattern.getCoverageCategory(&quot;GLGroup&quot;)"
+      name="glGroupCategory"/>
+    <Require
+      name="jobWizardHelper"
+      type="gw.api.web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="glLine.ClaimsMadeOrigEffDate"
+      name="previousClaimsMadeDate"/>
+    <Variable
+      initialValue="policyLine.Branch"
+      name="policyPeriod"/>
+    <Variable
+      initialValue="glGroupCategory.coveragePatternsForEntity(GeneralLiabilityLine).whereSelectedOrAvailable(glLine, CurrentLocation.InEditMode)"
+      name="glGroupCategoryCoveragePatterns"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="glGroupCategory.conditionPatternsForEntity(GeneralLiabilityLine).where(\ c -&gt; glLine.isConditionSelectedOrAvailable(c))"
+      name="glGroupCategoryConditionPatterns"
+      recalculateOnRefresh="true"/>
+    <InputColumn>
+      <TypeKeyInput
+        editable="policyPeriod.PolicyChange == null"
+        id="GLPolicyClaimsMade"
+        label="displaykey.Web.Policy.GL.PolicyBasis"
+        required="true"
+        showConfirmMessage="true"
+        value="glLine.GLCoverageForm">
+        <PostOnChange
+          target="PolicyLineDV"/>
+      </TypeKeyInput>
+      <DateInput
+        editable="policyPeriod.EditEffectiveDate == policyPeriod.PeriodStart"
+        id="ClaimsMadeOrigEffDate"
+        label="displaykey.Web.Policy.GL.ClaimsMadeOrigEffDate"
+        required="true"
+        value="glLine.ClaimsMadeOrigEffDate"
+        visible="glLine.GLCoverageForm == &quot;ClaimsMade&quot;">
+        <PostOnChange
+          onChange="changeRetroactiveDateIfTheSame()"
+          target="PolicyLineDV"/>
+      </DateInput>
+      <DateInput
+        editable="policyPeriod.EditEffectiveDate == policyPeriod.PeriodStart"
+        id="Retrodate"
+        label="displaykey.Web.Policy.GL.RetroDate"
+        required="true"
+        value="glLine.RetroactiveDate"
+        visible="glLine.GLCoverageForm == &quot;ClaimsMade&quot;"/>
+      <Input
+        editable="true"
+        id="GLPolicySplitLimits"
+        label="displaykey.Web.Policy.GL.SplitLimits"
+        value="glLine.SplitLimits">
+        <PostOnChange
+          onChange="gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages({glLine}, null)"
+          target="PolicyLineDV"/>
+      </Input>
+      <InputDivider/>
+      <InputIterator
+        elementName="coveragePattern"
+        forceRefreshDespiteChangedEntries="true"
+        id="GLGroupIterator"
+        value="glGroupCategoryCoveragePatterns">
+        <IteratorSort
+          sortBy="coveragePattern.Priority"
+          sortOrder="1"/>
+        <InputSetRef
+          def="CoverageInputSet(coveragePattern, glLine, CurrentLocation.InEditMode)"
+          mode="coveragePattern.Code"/>
+      </InputIterator>
+      <InputIterator
+        elementName="conditionpattern"
+        forceRefreshDespiteChangedEntries="true"
+        id="GLConditionGroupIterator"
+        value="glGroupCategoryConditionPatterns">
+        <InputSetRef
+          def="CoverageInputSet(conditionpattern, glLine, CurrentLocation.InEditMode)"
+          mode="conditionpattern.Code"/>
+      </InputIterator>
+    </InputColumn>
+    <Code><![CDATA[function changeRetroactiveDateIfTheSame(){
+  if(web.util.PCDateUtil.equalsIgnoreTime(glLine.RetroactiveDate, previousClaimsMadeDate)){
+    glLine.RetroactiveDate = glLine.ClaimsMadeOrigEffDate
+  }
+  previousClaimsMadeDate = glLine.ClaimsMadeOrigEffDate
+}]]></Code>
+  </DetailViewPanel>
+</PCF>

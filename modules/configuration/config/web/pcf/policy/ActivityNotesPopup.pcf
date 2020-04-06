@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    canEdit="false"
+    id="ActivityNotesPopup"
+    title="displaykey.Web.PolicyFile.Notes">
+    <LocationEntryPoint
+      signature="ActivityNotesPopup(activity : Activity, policyPeriod : PolicyPeriod)"/>
+    <LocationEntryPoint
+      signature="ActivityNotesPopup(activity : Activity, account : Account)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="activity"
+      type="Activity"/>
+    <Variable
+      initialValue="getNoteSearchCriteriaForActivity()"
+      name="noteSearchCriteria"/>
+    <Variable
+      initialValue="noteSearchCriteria.performSearch()"
+      name="notes"/>
+    <Variable
+      name="account"
+      type="Account"/>
+    <Screen>
+      <DetailViewPanel
+        id="ActivityNoNotesDV"
+        visible="notes.Count == 0">
+        <InputColumn>
+          <HiddenInput
+            id="ActivityNoNotesInput"
+            value="displaykey.Web.Activity.ActivityNoNotes"/>
+          <Label
+            id="ActivityNoNotesLabel"
+            label="displaykey.Web.Activity.ActivityNoNotes"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef
+        def="NotesLV(notes, true)">
+        <Toolbar/>
+      </PanelRef>
+    </Screen>
+    <Code><![CDATA[function getNoteSearchCriteriaForActivity() : NoteSearchCriteria {
+  var searchCriteria = new NoteSearchCriteria() {:Account = (policyPeriod == null ? account : null), :Policy = policyPeriod.Policy}
+  searchCriteria.setSearchCriteria(activity)
+  return searchCriteria
+}]]></Code>
+  </Popup>
+</PCF>

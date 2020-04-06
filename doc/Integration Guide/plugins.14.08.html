@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Writing Plugin Templates For Plugins That Take Template Data</title>
+    <link rel="StyleSheet" href="css/plugins.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-plugins.html#2014210">Plugins</a> : <a class="WebWorks_Breadcrumb_Link" href="plugins.14.01.html#2014210">Plugin Overview</a> : Writing Plugin Templates For Plugins That Take Template Data</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2014210">Writing Plugin Templates For Plugins That Take Template Data</a></h3>
+      <div class="B_-_Body"><a name="2502574">Some plugin interface methods have parameters that directly specify their data as simple objects such as </a><span class="cv_-_computer_voice">String</span> objects. Some plugin methods have parameters of structured data such as a <span class="cv_-_computer_voice">java.util.Map</span> objects. Some methods take entities such as <span class="cv_-_computer_voice">Policy</span>. Some objects might link to other objects, resulting in a potentially large object graph.</div>
+      <div class="B_-_Body"><a name="2014220">However, some plugin interface methods take a single </a><span class="cv_-_computer_voice">String</span> that it must parse to access important parameters. This text data is <span class="e_-_emphasis">template data</span> specified as plugin method parameters called <span class="p_-_parameter">templateData</span>. Template data is the output of running a Gosu template called a <span class="e_-_emphasis">plugin template</span>. Plugin templates always have the suffix <span class="cv_-_computer_voice">.gsm</span>. </div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="2560434">For plugin templates, the file suffix must be </a><span class="cv_-_computer_voice">.gsm</span>. Do not use <span class="cv_-_computer_voice">.gst</span>, which is the normal Gosu template extension (see <a href="javascript:WWHClickedPopup('gosu', 'templates.23.2.html#1464501', '');" title="Template Overview">“Template Overview” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'templates.23.2.html#1464501', '');" title="Template Overview">Gosu Reference Guide</a></span>).</div>
+      <div class="B_-_Body"><a name="2775927">For example, the policy number generator plugin (</a><span class="cv_-_computer_voice">IPolicyNumGenPlugin</span>) uses template data as a parameter in its methods.</div>
+      <div class="B_-_Body"><a name="2559936">PolicyCenter passes this potentially-large </a><span class="cv_-_computer_voice">String</span> as a parameter to the plugin for the subset of plugins that use template data. This approach lets PolicyCenter pass the plugin all necessary properties in a large data graph but with minimal data transfer. </div>
+      <div class="B_-_Body"><a name="2775950">For example, plugins or the remote systems that they represent often need to analyze a policy’s properties to make submission decisions. Frequently, these properties are not just part of the policy itself. Instead, they may be part of the entire graph of objects connected to the policy. For example, properties from only one policy revision or the insured’s contact record (for example, age) could be needed to make decisions. </a></div>
+      <div class="B_-_Body"><a name="2775951">In this case, a submission’s object graph can be very large, but a submission number generator plugin does not need all of the policy object graph’s full set of data. In this case, the submission number generator plugin might only need a small subset of data in simple </a><span class="ps_-_parameter_in_code_snippets">fieldname</span><span class="e_-_emphasis" style="color: #000000; font-family: &quot;Times New Roman&quot;; font-size: 10.0pt; font-weight: normal">=</span><span class="ps_-_parameter_in_code_snippets">value</span> pairs. The corresponding plugin template might generate simple text like the following</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2775952">PolicyType=TC_homeowners</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2775953">PolicyEffectiveDate=1/01/2005</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2775954">...</a></PRE>
+      <div class="B_-_Body"><a name="2014240">Then, a plugin method can simply parse the text to access the properties. For plugins written in Java, it is easy to use the standard Java class called </a><span class="cv_-_computer_voice">Properties</span>. It can parse a <span class="cv_-_computer_voice">String</span> in that format into name/value pairs from which you can extract information using code such as: <span class="cv_-_computer_voice">propertiesObject.getProperty(</span><span class="ps_-_parameter_in_code_snippets">fieldname</span><span class="cv_-_computer_voice">)</span>.</div>
+      <div class="B_-_Body"><a name="2014243">For example, this Java code takes the </a><span class="p_-_parameter">templateData</span> parameter encoded in the simple format described earlier, and then extracts the value of the <span class="cv_-_computer_voice">AddressID</span> property from it:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2014244">// Create a Java Properties object</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2014245">Properties policyProperties = new Properties();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2014246">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2014247">try {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2470520">&nbsp;&nbsp;// extract the template data string and load it to the Properties object</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2470521">&nbsp;&nbsp;policyProperties.load(new ByteArrayInputStream(templateData.Bytes));</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2470522">} catch (java.io.IOException IOE) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2014252">&nbsp;&nbsp;System.out.println("MyPluginName:  bad template data");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2014253">}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2014254">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2014255">// Extract properties from the Properties object</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2014256">String myAddressID = policyProperties.getProperty("AddressID");</a></PRE>
+      <div class="B_-_Body"><a name="2014258">This Gosu code does a similar thing for a Gosu plugin as a private method within the Gosu class:</a></div>
+      <PRE class="CL_-_Code_Last_Line"><a name="2015113">private function loadPropertiesFromTemplateData(templateData : String) : Properties</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2015114">   {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2015115">     var props = new Properties();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2015116">     try{</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2015117">     props.load(new ByteArrayInputStream(templateData.getBytes()));</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2015118">     _logger.info("The properties are : " + props);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2015119">     }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2015120">     catch (e) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2015121">      e.printStackTrace();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2015122">      return null;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2015123">    }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2015124">    return props;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2015125">    }</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2015126">   }</a></PRE>
+      <div class="B_-_Body"><a name="2502647">You can design any text-based data format you want to pass to the plugin in the </a><span class="cv_-_computer_voice">templateData</span> string. If your data is not very structured, Guidewire recommends the simple <span class="ps_-_parameter_in_code_snippets">fieldname</span><span class="e_-_emphasis" style="color: #000000; font-family: &quot;Times New Roman&quot;; font-size: 10.0pt; font-weight: normal">=</span><span class="ps_-_parameter_in_code_snippets">value </span>format demonstrated earlier. In some cases, it may be convenient to generate XML formatted data, which permits hierarchical structure despite being a text format. This is especially useful for communicating to external systems that require XML-formatted data. Whatever text-based format you choose to use, you can modify the associated plugin template to generate the desired XML format. </div>
+      <div class="B_-_Body"><a name="2466042">For each plugin method call that takes a </a><span class="cv_-_computer_voice">templateData</span> parameter (not all methods do), PolicyCenter has a Gosu template file in <span class="cv_-_computer_voice">PolicyCenter/modules/configuration/config/templates/plugins/</span>.... PolicyCenter selects the correct plugin using a naming convention:</div>
+      <div class="CS_-_Code_Single_Line"><a name="2014276">{interface name}_{entity name}.gsm</a></div>
+      <div class="B_-_Body"><a name="2775986">For example, for an plugin to generate a policy revision with template data, the template in that directory would be named </a><span class="ps_-_parameter_in_code_snippets">PluginName</span><span class="cv_-_computer_voice">_PolicyPeriod.gsm</span>. Although your implementation might be different, it likely look something like the following:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2775988">PolicyPeriodNumber=&lt;%= PolicyPeriod.PolicyNumber %&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2775989">EffDate=&lt;%= PolicyPeriod.RevisionEffDate %&gt;</a></PRE>
+      <div class="B_-_Body"><a name="2775990">Each plugin that requires template date for some parameters has a different template for each combination of plugin and entity type. After the template runs, it generates template data that looks like the following:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2775991">PolicyPeriodNumber=HO-7013958-01</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2775992">EffDate=2007-02-01</a></PRE>
+      <div class="B_-_Body"><a name="2841058">After the Gosu engine generates a response using the designated Gosu template, the resulting </a><span class="cv_-_computer_voice">String</span> passes to the plugin as the <span class="p_-_parameter">templateData</span> parameter to the plugin method. Again, this is only for plugin interface methods that take a <span class="p_-_parameter">templateData</span> parameter.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

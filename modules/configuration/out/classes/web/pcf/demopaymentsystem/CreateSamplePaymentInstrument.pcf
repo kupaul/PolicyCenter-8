@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    autosaveable="false"
+    canEdit="true"
+    countsAsWork="false"
+    id="CreateSamplePaymentInstrument"
+    startInEditMode="true"
+    title="displaykey.Web.Demo.PaymentSystem">
+    <LocationEntryPoint
+      signature="CreateSamplePaymentInstrument(returnURL : String, jobNumber : String, accountHolderName : String, add1 : String, add2 : String, city : String, state : String, zip : String)"/>
+    <Variable
+      name="jobNumber"
+      type="String"/>
+    <Variable
+      name="accountHolderName"
+      type="String"/>
+    <Variable
+      name="add1"
+      type="String"/>
+    <Variable
+      name="add2"
+      type="String"/>
+    <Variable
+      name="city"
+      type="String"/>
+    <Variable
+      name="state"
+      type="String"/>
+    <Variable
+      name="zip"
+      type="String"/>
+    <Variable
+      name="returnURL"
+      type="String"/>
+    <Variable
+      initialValue="DateTime.CurrentDate.Time as String"
+      name="token"
+      type="String"/>
+    <Screen>
+      <Variable
+        initialValue="AccountPaymentMethod.TC_CREDITCARD"
+        name="paymentMethod"/>
+      <Toolbar>
+        <ToolbarButton
+          action="FinishPaymentInstrument.push(returnURL, jobNumber, paymentMethod.Code, token)"
+          id="OKButton"
+          label="displaykey.Web.Demo.PaymentSystem.Toolbar.OK"/>
+        <ToolbarButton
+          action="FinishPaymentInstrument.push(returnURL, jobNumber, null, null)"
+          id="CancelButton"
+          label="displaykey.Web.Demo.PaymentSystem.Toolbar.Cancel"/>
+      </Toolbar>
+      <DetailViewPanel>
+        <Variable
+          name="creditCardExpDate"
+          type="java.util.Date"/>
+        <Variable
+          initialValue="initAddress()"
+          name="address"
+          type="Address"/>
+        <InputColumn>
+          <Input
+            id="jobNumber"
+            label="displaykey.Web.Demo.PaymentSystem.JobNumber"
+            required="true"
+            value="jobNumber"/>
+          <RangeInput
+            editable="true"
+            id="paymentMethod"
+            label="displaykey.Web.Demo.PaymentSystem.PaymentMethod"
+            required="true"
+            value="paymentMethod"
+            valueRange="{AccountPaymentMethod.TC_ACH, AccountPaymentMethod.TC_CREDITCARD}">
+            <PostOnChange/>
+          </RangeInput>
+          <InputSetRef
+            def="PaymentMethodInputSet(accountHolderName, address)"
+            mode="paymentMethod.Code"/>
+        </InputColumn>
+      </DetailViewPanel>
+    </Screen>
+    <Code><![CDATA[function initAddress() : Address {
+  var addy = new Address()
+  addy.AddressLine1 = add1
+  addy.AddressLine2 = add2
+  addy.City = city
+  addy.State = state
+  addy.PostalCode = zip
+  return addy
+}]]></Code>
+  </Page>
+</PCF>

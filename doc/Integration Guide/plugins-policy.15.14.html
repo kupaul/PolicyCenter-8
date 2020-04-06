@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Policy Evaluation Plugin</title>
+    <link rel="StyleSheet" href="css/plugins-policy.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-plugins.html#2399688">Plugins</a> : <a class="WebWorks_Breadcrumb_Link" href="plugins-policy.15.01.html#2399688">Account and Policy Plugins</a> : Policy Evaluation Plugin</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2399688">Policy Evaluation Plugin</a></h3>
+      <div class="B_-_Body"><a name="2526627">To customize how PolicyCenter raises underwriting issues (</a><span class="cv_-_computer_voice">UWIssue</span> object) on a policy period, implement the policy evaluation plugin interface, <span class="cv_-_computer_voice">IPolicyEvaluationPlugin</span>. PolicyCenter includes a built-in implementation that raises underwriting issues and removes orphaned underwriting issues. The built-in implementation accomplishes these tasks indirectly through other classes. You only need to modify or reimplement this plugin if you choose an alternate way of raising and removing underwriting issues. Most likely, you can use the built-in implementation of this plugin without any modifications. To raise and remove your underwriting issue types, you modify the evaluator classes that this plugin uses indirectly.</div>
+      <div class="B_-_Body"><a name="2528121">If however, you choose an alternate way of raising and removing underwriting issues, the remainder of this topic provides guidance.</a></div>
+      <div class="B_-_Body"><a name="2400626">The plugin interface contains only one method, called </a><span class="cv_-_computer_voice">evaluatePeriod</span>:</div>
+      <div class="CS_-_Code_Single_Line"><a name="2400627">void evaluatePeriod(PolicyPeriod period, UWIssueCheckingPoint checkingPoint);</a></div>
+      <div class="B_-_Body"><a name="2527128">Before returning from this method, your method must add all relevant underwriting issues (</a><span class="cv_-_computer_voice">UWIssue</span> objects) on the period. Additionally, the method must remove all orphaned underwriting issues. </div>
+      <div class="B_-_Body"><a name="2402474">One of the parameters is an underwriting issue checking set typecode defined in the </a><span class="cv_-_computer_voice">UWIssueCheckingSet</span> typelist. The typecode describes a point at which PolicyCenter can evaluate a policy and generate an underwriting issue. </div>
+      <div class="B_-_Body"><a name="2402836">Each typecode contains a </a><span class="cv_-_computer_voice">Priority</span> property that indicates the order within the typelist. High priority checking set are evaluated first. </div>
+      <div class="B_-_Body"><a name="2402909">Use the typecode value to raise new issues appropriate for the policy. Next, remove any orphaned issues.</a></div>
+      <div class="B_-_Body"><a name="2527795">If you choose to modify this plugin, Guidewire recommends that your implementation use the </a><span class="cv_-_computer_voice">PolicyEvalContext</span> class to create and remove orphaned issues because these are complex and error-prone tasks. To add an issue, use the <span class="cv_-_computer_voice">addIssue</span> method on the <span class="cv_-_computer_voice">PolicyEvalContext</span> object. </div>
+      <div class="B_-_Body"><a name="2527796">The </a><span class="cv_-_computer_voice">addIssue</span> method finds an existing <span class="cv_-_computer_voice">UWIssue</span> with this type and key or, if no such issue exists, creates a new issue. If this method returns a pre-existing issue, this method marks it as touched by setting the <span class="cv_-_computer_voice">HumanTouched</span> property to <span class="cv_-_computer_voice">true</span><span class="e_-_emphasis" style="color: #000000; font-family: &quot;Times New Roman&quot;; font-size: 10.0pt; font-weight: normal">.</span> Because pre-existing issues are marked touched, the <span class="cv_-_computer_voice">removeOrphanedIssues</span> method (see later in this topic) does not remove them.</div>
+      <div class="B_-_Body"><a name="2403275">For example, you can create a new issue with the following code</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2403461">var context = new PolicyEvalContext(period, checkingPoint)</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2403444">var newIssue = context.addIssue( "PAHighValueAuto", "testissue", "this is a longer description", null )</a></PRE>
+      <div class="B_-_Body"><a name="2403204">Just as in the built-in implementation, you can use the </a><span class="cv_-_computer_voice">PolicyEvalContext</span> object to remove old issues using the <span class="cv_-_computer_voice">PolicyEvalContext.removeOrphanedIssues()</span> method. That method removes (or marks as inactive) all issues for which both of the following are true:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2406695">The issue existed at the time PolicyCenter created the context object.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2406696">No previous call to the </a><span class="cv_-_computer_voice">addIssue</span> method on <span class="cv_-_computer_voice">PolicyEvalContext</span> affected this issue.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2406703">This method removes any issues that are open or marked no longer applicable. In contrast, for issues that are approved or declined, this method marks them as inactive.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="2526436">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('config', 'uw_issues_config.45.05.html#1184675', '');" title="Creating Underwriting Issues" name="2526529">“Creating Underwriting Issues” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('config', 'uw_issues_config.45.05.html#1184675', '');" title="Creating Underwriting Issues">Configuration Guide</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('config', 'uw_issues_config.45.01.html#1079736', '');" title="Configuring Underwriting Authority" name="2526449">“Configuring Underwriting Authority” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('config', 'uw_issues_config.45.01.html#1079736', '');" title="Configuring Underwriting Authority">Configuration Guide</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

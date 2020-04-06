@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <InputSet
+    id="BAGarageLocationInputSet">
+    <Require
+      name="vehicle"
+      type="BusinessVehicle"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="Boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="gw.api.web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="policyPeriod.getUnassignedAccountLocations()"
+      name="unassignedAccountLocations"
+      recalculateOnRefresh="true"/>
+    <!-- Ignore the warning about the onPick not being executed. -->
+    <RangeInput
+      editable="true"
+      id="BAGarageLocationInput"
+      label="displaykey.Web.PolicyLine.Vehicle.WhereGaraged"
+      optionGroupLabel="policyPeriod.getPolicyLocation(VALUE) &lt;&gt; null ? displaykey.Web.Policy.LocationContainer.Location.ExistingGarageLocations : displaykey.Web.Policy.LocationContainer.Location.AccountLocations"
+      optionLabel="policyPeriod.getPolicyLocationOptionDisplayName(VALUE)"
+      required="true"
+      value="vehicle.AccountLocation"
+      valueRange="policyPeriod.Policy.Account.AccountLocations">
+      <PickerMenuItem
+        action="LocationPopup.push(null, null, policyPeriod, openForEdit, true, policyPeriod.BusinessAutoLine.SupportsNonSpecificLocations)"
+        id="NewGarageLocation"
+        label="displaykey.Web.Policy.LocationContainer.Location.New"
+        onPick="vehicle.Location = PickedValue; if (policyPeriod.OpenForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages(policyPeriod.BusinessAutoLine.Vehicles, jobWizardHelper)}"/>
+      <PickerMenuItem
+        action="LocationPopup.push(null, vehicle.Location, policyPeriod, openForEdit, true, policyPeriod.BusinessAutoLine.SupportsNonSpecificLocations)"
+        id="EditGarageLocation"
+        label="displaykey.Web.Policy.LocationContainer.Location.EditLocation"
+        onPick="vehicle.Location = PickedValue; if (policyPeriod.OpenForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages(policyPeriod.BusinessAutoLine.Vehicles, jobWizardHelper)}"
+        visible="vehicle.Location != null"/>
+      <PostOnChange
+        onChange="if (policyPeriod.OpenForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages(policyPeriod.BusinessAutoLine.Vehicles, jobWizardHelper); gw.web.productmodel.ProductModelSyncIssuesHandler.syncModifiers(policyPeriod.BusinessAutoLine.Vehicles, jobWizardHelper); vehicle.updateStateValueForModifiers()}"/>
+    </RangeInput>
+  </InputSet>
+</PCF>

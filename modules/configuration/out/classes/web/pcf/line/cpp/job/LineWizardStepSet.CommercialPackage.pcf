@@ -1,0 +1,147 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <WizardStepSet
+    id="LineWizardStepSet"
+    mode="CommercialPackage">
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <JobWizardStep
+      id="CPPLineSelection"
+      save="openForEdit"
+      screen="CPPLineSelectionScreen(policyPeriod, openForEdit, jobWizardHelper)"
+      title="displaykey.Web.LineWizardMenu.CommercialPackage.LineSelection"/>
+    <JobWizardStep
+      beforeSave="gw.policy.PolicyLocationValidation.validateLocationsStep(policyPeriod.PolicyLocations)"
+      id="CPPLocations"
+      onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncQuestions( policyPeriod.PolicyLocations, jobWizardHelper)}"
+      save="openForEdit"
+      screen="LocationsScreen(policyPeriod, openForEdit, jobWizardHelper, policyPeriod.SupportsNonSpecificLocations)"
+      title="displaykey.Web.LineWizardMenu.Locations"/>
+    <WizardStepGroup
+      collapseIfNotCurrent="true"
+      id="GLWizardStepGroup"
+      label="displaykey.Web.LineWizardMenu.CommercialPackage.GeneralLiability"
+      visible="policyPeriod.GLLineExists">
+      <!-- <JobWizardStep
+        id="GLLocations"
+        save="openForEdit"
+        screen="LocationsScreen(policyPeriod, openForEdit, jobWizardHelper)"
+        title="displaykey.Web.LineWizardMenu.Locations"/> -->
+      <JobWizardStep
+        beforeSave="gw.lob.gl.GLLineValidation.validatePolicyContacts(policyPeriod.GLLine)"
+        id="GLLine"
+        onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages(policyPeriod.GLLine.AllCoverables, jobWizardHelper)}"
+        save="openForEdit"
+        screen="GeneralLiabilityScreen(job, policyPeriod, openForEdit,jobWizardHelper)"
+        title="displaykey.Web.Policy.GL.Coverages"/>
+      <JobWizardStep
+        id="GLLineEU"
+        save="openForEdit"
+        screen="GeneralLiabilityEUScreen(policyPeriod, openForEdit,jobWizardHelper)"
+        title="displaykey.Web.Policy.GL.ExposureUnits.ScreenName"/>
+      <JobWizardStep
+        beforeSave="gw.validation.ValidationUtil.checkCurrentResult()"
+        id="GLModifiers"
+        onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncModifiers(policyPeriod.GLLine.AllModifiables, jobWizardHelper)}"
+        save="openForEdit"
+        screen="ModifiersScreen(policyPeriod, openForEdit, jobWizardHelper, policyPeriod.GLLine.GLModifiers)"
+        title="displaykey.Web.SubmissionWizardMenu.Modifiers"
+        visible="policyPeriod.CanViewModifiers"/>
+      <JobWizardStep
+        id="GLReview"
+        screen="CPPLineReviewScreen(policyPeriod.GLLine, jobWizardHelper)"
+        title="displaykey.Web.LineWizardMenu.CommercialPackage.LineReview"/>
+    </WizardStepGroup>
+    <WizardStepGroup
+      collapseIfNotCurrent="true"
+      id="CPWizardStepGroup"
+      label="displaykey.Web.LineWizardMenu.CommercialPackage.CommercialProperty"
+      visible="policyPeriod.CPLineExists">
+      <JobWizardStep
+        beforeSave="gw.lob.cp.CPLineValidation.validateBuildings(policyPeriod.CPLine)"
+        id="CPBuildings"
+        save="openForEdit"
+        screen="CPBuildingsScreen(policyPeriod.CPLine, openForEdit, jobWizardHelper)"
+        title="displaykey.Web.LineWizardMenu.BuildingsandLocations"/>
+      <JobWizardStep
+        beforeSave="gw.lob.cp.CPLineValidation.validateBlankets(policyPeriod.CPLine)"
+        id="CPBlanket"
+        save="openForEdit"
+        screen="CPBlanketScreen(policyPeriod.CPLine, openForEdit, jobWizardHelper)"
+        title="displaykey.Web.LineWizardMenu.Blankets"/>
+      <JobWizardStep
+        beforeSave="gw.lob.cp.CPLineValidation.validateModifiers(); gw.validation.ValidationUtil.checkCurrentResult()"
+        id="CPModifiers"
+        onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncModifiers( {policyPeriod.CPLine}, jobWizardHelper)}"
+        save="openForEdit"
+        screen="ModifiersScreen(policyPeriod, openForEdit, jobWizardHelper, policyPeriod.CPLine.CPModifiers)"
+        title="displaykey.Web.SubmissionWizardMenu.Modifiers"
+        visible="policyPeriod.CanViewModifiers"/>
+      <JobWizardStep
+        id="CPReview"
+        screen="CPPLineReviewScreen(policyPeriod.CPLine, jobWizardHelper)"
+        title="displaykey.Web.LineWizardMenu.CommercialPackage.LineReview"/>
+    </WizardStepGroup>
+    <WizardStepGroup
+      collapseIfNotCurrent="true"
+      id="IMWizardStepGroup"
+      label="displaykey.Web.LineWizardMenu.CommercialPackage.InlandMarine"
+      visible="policyPeriod.IMLineExists">
+      <!-- <JobWizardStep
+        id="IMLocations"
+        save="openForEdit"
+        screen="LocationsScreen(policyPeriod, openForEdit,jobWizardHelper)"
+        title="displaykey.Web.LineWizardMenu.Locations"/> -->
+      <JobWizardStep
+        id="IMPartSelection"
+        onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages(policyPeriod.IMLine.AllCoverables, jobWizardHelper)}"
+        save="openForEdit"
+        screen="IMPartSelectionScreen(job, policyPeriod, openForEdit, jobWizardHelper)"
+        title="displaykey.Web.Policy.IM.CoveragePartSelection"/>
+      <JobWizardStep
+        id="Buildings"
+        onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages(policyPeriod.IMLine.AllCoverables, jobWizardHelper)}"
+        save="openForEdit"
+        screen="IMBuildingsScreen(policyPeriod.IMLine, openForEdit, jobWizardHelper)"
+        title="displaykey.Web.LineWizardMenu.BuildingsandLocations"/>
+      <WizardStepIterator
+        elementName="imcoveragepart"
+        type="typekey.IMCoveragePart"
+        value="IMLine.definedParts().sortBy( \ part -&gt; part.DisplayName )">
+        <JobWizardStep
+          beforeSave="gw.lob.im.IMLineValidation.validateSinglePartAsPage( policyPeriod.IMLine.maybeCreateCoveragePart(imcoveragepart)); gw.lob.im.IMLineValidation.validateSupplementalQuestons( policyPeriod.IMLine )"
+          id="impartstep"
+          mode="imcoveragepart.Code"
+          onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages(policyPeriod.IMLine.AllCoverables, jobWizardHelper); gw.web.productmodel.ProductModelSyncIssuesHandler.syncExclusions(policyPeriod.IMLine.AllCoverables, jobWizardHelper); gw.web.productmodel.ProductModelSyncIssuesHandler.syncQuestions({policyPeriod.IMLine}, jobWizardHelper) }"
+          save="openForEdit"
+          screen="IMPartScreen(job, policyPeriod, openForEdit, jobWizardHelper)"
+          title="imcoveragepart.DisplayName"
+          visible="policyPeriod.IMLineExists and policyPeriod.IMLine.coveragePartExists( imcoveragepart.Code )"/>
+      </WizardStepIterator>
+      <JobWizardStep
+        id="IMReview"
+        screen="CPPLineReviewScreen(policyPeriod.IMLine, jobWizardHelper)"
+        title="displaykey.Web.LineWizardMenu.CommercialPackage.LineReview"/>
+    </WizardStepGroup>
+    <JobWizardStep
+      beforeSave="gw.validation.ValidationUtil.checkCurrentResult()"
+      id="CPPModifiers"
+      onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncModifiers( {policyPeriod.EffectiveDatedFields}, jobWizardHelper) }"
+      save="openForEdit"
+      screen="ModifiersScreen(policyPeriod, openForEdit, jobWizardHelper, policyPeriod.EffectiveDatedFields.Modifiers)"
+      title="displaykey.Web.LineWizardMenu.CommercialPackage.Modifiers"
+      visible="policyPeriod.CanViewModifiers"/>
+  </WizardStepSet>
+</PCF>

@@ -1,0 +1,439 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Creating Cost Methods</title>
+    <link rel="StyleSheet" href="css/lob.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Product Model Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-lob.html#1230536">Configuring Lines of Business</a> : <a class="WebWorks_Breadcrumb_Link" href="lob.16.01.html#1230536">Adding a New Line of Business</a> : <a class="WebWorks_Breadcrumb_Link" href="lob.16.32.html#1230536">Step 8: Define the Data Model for Rating in the New Line of Business</a> : Creating Cost Methods</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h4 class="H2B_-_Heading_2_Break"><a name="1230536">Creating Cost Methods</a></h4>
+      <div class="B_-_Body"><a name="1246859">Cost methods implement the methods and properties for the cost. Often, cost methods are used to get properties on the cost. The abstract cost and cost subtypes delegate to the cost methods for the line. </a></div>
+      <div class="B_-_Body"><a name="1246860">The base configuration provides one interface for the cost methods in each policy line. In homeowners, you define the interface in the </a><span class="cv_-_computer_voice">HOCostMethods</span> class. The abstract cost and cost subtypes delegate to this interface. The line level interface defines cost properties that are required for any of the specific cost types. Typical required cost properties include the coverage, any coverables other than the policy line, and other properties required in the user interface, such as properties for the quote page. Properties can include the policy location or jurisdiction. </div>
+      <div class="B_-_Body"><a name="1106040">Cost method implementation classes implement the cost method interface. A generic cost method implementation implements the cost interface and implements line level cost methods. For homeowners, you define the </a><span class="cv_-_computer_voice">GenericHOCostMethodsImpl</span> class to implement the cost interface, <span class="cv_-_computer_voice">HOCostMethods</span>. </div>
+      <div class="B_-_Body"><a name="1106155">Each cost subtype has a cost method implementation class that extends the generic class. For homeowners, you define the cost method implementation classes as </a><span class="cv_-_computer_voice">HoCovCostMethodsImpl</span> and <span class="cv_-_computer_voice">HODwellingCovCostMethodImpl</span>.</div>
+      <div class="F_-_Figure"><a name="1105541"><img class="Default" src="images/lob.16.38.1.png" style="display: inline; float: none; left: 0.0; top: 0.0" alt="" /></a></div>
+      <div class="F_-_Figure"><a name="1105567">&nbsp;</a></div>
+      <div class="F_-_Figure"><a name="1105619">&nbsp;</a></div>
+      <div class="F_-_Figure"><a name="1105649">&nbsp;</a></div>
+      <div class="F_-_Figure"><a name="1105675">&nbsp;</a></div>
+      <div class="B_-_Body"><a name="1230756">Create the line level interface first, then create the generic cost method implementation. Finally, create the cost specific extensions.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1231439">Cost Methods</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h6 class="HS_-_Head_Sub"><a name="1230863">To declare the interface for the cost methods</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="1231155">In Studio, open the cost entity. For homeowners, open </a><span class="cv_-_computer_voice">HOCost.eti</span> entity in <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">config</span> → <span class="ui_-_UI_element">extensions</span> → <span class="ui_-_UI_element">entity</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1231156">Declare the interface. For homeowners, add the </a><span class="cv_-_computer_voice">HOCostMethods</span> interface by adding an <span class="cv_-_computer_voice">implementsInterface</span> element to <span class="cv_-_computer_voice">HOCost</span> with the following properties:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="T_-_Table"><a name="1246151">&nbsp;</a></div>
+      <table class="withHeadingIndent" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="1246130">Property</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="1246132">Value</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><span class="uit_-_UI_element_table"><a name="1246134">iface</a></span> </div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><span class="itt_-_input_text_in_table"><a name="1246136">gw.lob.ho.financials.HOCostMethods</a></span> </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><span class="uit_-_UI_element_table"><a name="1246138">impl</a></span> </div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><span class="itt_-_input_text_in_table"><a name="1246140">gw.lob.ho.financials.GenericHOCostMethodsImpl</a></span> </div>
+          </td>
+        </tr>
+      </table>
+      <h6 class="HS_-_Head_Sub"><a name="1231039">To create the line level interface</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="1231240">In Studio, navigate to </a><span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> → <span class="ui_-_UI_element">gw</span> → <span class="ui_-_UI_element">lob</span> → <span class="p_-_parameter">line</span> → <span class="ui_-_UI_element">financials</span>. For homeowners, navigate to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> → <span class="ui_-_UI_element">gw</span> → <span class="ui_-_UI_element">lob</span> → <span class="ui_-_UI_element">ho</span> → <span class="ui_-_UI_element">financials</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1231259">Right-click the </a><span class="ui_-_UI_element">financials</span> node, and then select <span class="ui_-_UI_element">New</span> → <span class="ui_-_UI_element">Gosu Class</span>. In the <span class="ui_-_UI_element">New Gosu Class</span> dialog box, enter the name of the interface. For homeowners, enter <span class="it_-_input_text">HOCostMethods</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1231303">Add code for the line level interface. For homeowners, add the following code for the interface for </a><span class="cv_-_computer_voice">HOCostMethods</span>:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CF_-_Code_First_Line"><a name="1085192">package gw.lob.ho.financials</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1085193">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1085194">interface HOCostMethods {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1085195">  property get Coverage() : Coverage</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1085197">property get State() : Jurisdiction</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1085198">}</a></PRE>
+      <h6 class="HS_-_Head_Sub"><a name="1085218">To create the generic cost method implementation</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="1231337">In Studio, navigate to </a><span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> → <span class="ui_-_UI_element">gw</span> → <span class="ui_-_UI_element">lob</span> → <span class="p_-_parameter">line</span> → <span class="ui_-_UI_element">financials</span>. For homeowners, navigate to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> → <span class="ui_-_UI_element">gw</span> → <span class="ui_-_UI_element">lob</span> → <span class="ui_-_UI_element">ho</span> → <span class="ui_-_UI_element">financials</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1231356">Right-click the </a><span class="ui_-_UI_element">financials</span> node, and then select <span class="ui_-_UI_element">New</span> → <span class="ui_-_UI_element">Gosu Class</span>. In the <span class="ui_-_UI_element">New Gosu Class</span> dialog box, enter the name of the interface. You For homeowners, enter <span class="it_-_input_text">GenericHOCostMethodsImpl</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1104159">In the new Gosu class, write a constructor similar to the following for the </a><span class="cv_-_computer_voice">GenericHOCostMethodsImpl</span>:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CF_-_Code_First_Line"><a name="1104190">package gw.lob.ho.financials</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104191">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104192">class GenericHOCostMethodsImpl&lt;T extends HOCost&gt; implements HOCostMethods  {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104193">  protected var _owner : T as readonly Cost</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104194">  construct(owner : T) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104195">     _owner = owner</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104196">  }</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1104169">}</a></PRE>
+      <div class="LP_-_List_Para"><a name="1104170">This code produces a Gosu error in the class statement that you fix in the next step.</a></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1231403">Place the insertion point at the error (after </a><span class="cv_-_computer_voice">HOCostMethods</span>) and press <span class="it_-_input_text">Alt-Enter</span>. Click the <span class="ui_-_UI_element">ImplementMethods</span> command that pops up to open the <span class="ui_-_UI_element">Select Methods to Implement</span> dialog box. With all listed methods selected, click <span class="ui_-_UI_element">OK</span> to insert the empty methods into your code.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1231404">Write code for the new methods and properties. In most cases, the code for each method is a single line. Examine the transaction adapters for other lines of business as an example.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="1120655">At this point, you can verify your work. For instructions, see </a><a href="javascript:WWHClickedPopup('productmodel', 'lob.16.06.html#1197532', '');" title="Creating the Basic Policy Line and Coverable Entities">“Verifying Your Work”</a>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1120641">Coverage Cost Methods</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1120699">This topic describes how to create the coverage cost methods for the line of business. In homeowners, the coverage cost methods are </a><span class="cv_-_computer_voice">HOCovCostMethodsImpl</span> and <span class="cv_-_computer_voice">HODwellingCovCostMethodsImpl</span>. Instructions are provide for <span class="cv_-_computer_voice">HOCovCostMethodsImpl</span>.</div>
+      <h6 class="HS_-_Head_Sub"><a name="1120689">To declare the coverage cost method implementation</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="1231475">In Studio, open the coverage cost entity. For homeowners, open </a><span class="cv_-_computer_voice">HOCovCost.eti</span> entity in <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">config</span> → <span class="ui_-_UI_element">extensions</span> → <span class="ui_-_UI_element">entity</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1231476">Declare the interface for the cost method implementation. For homeowners, add the </a><span class="cv_-_computer_voice">HOCostMethods</span> implementation by adding an <span class="cv_-_computer_voice">implementsInterface</span> element to <span class="cv_-_computer_voice">HOCovCost</span> with the following properties:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="T_-_Table"><a name="1246195">&nbsp;</a></div>
+      <table class="withHeadingIndent" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="1246174">Property</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="1246176">Value</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><span class="uit_-_UI_element_table"><a name="1246178">iface</a></span> </div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><span class="itt_-_input_text_in_table"><a name="1246180">gw.lob.ho.financials.HOCostMethods</a></span> </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><span class="uit_-_UI_element_table"><a name="1246182">impl</a></span> </div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><span class="itt_-_input_text_in_table"><a name="1246184">gw.lob.ho.financials.HOCovCostMethodsImpl</a></span> </div>
+          </td>
+        </tr>
+      </table>
+      <h6 class="HS_-_Head_Sub"><a name="1119409">To create the coverage cost method implementation for the line</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="1231614">In Studio, navigate to </a><span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> → <span class="ui_-_UI_element">gw</span> → <span class="ui_-_UI_element">lob</span> → <span class="p_-_parameter">line</span> → <span class="ui_-_UI_element">financials</span>. For homeowners, navigate to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> → <span class="ui_-_UI_element">gw</span> → <span class="ui_-_UI_element">lob</span> → <span class="ui_-_UI_element">ho</span> → <span class="ui_-_UI_element">financials</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1231633">Right-click the </a><span class="ui_-_UI_element">financials</span> node, and then select <span class="ui_-_UI_element">New</span> → <span class="ui_-_UI_element">Gosu Class</span>. In the <span class="ui_-_UI_element">New Gosu Class</span> dialog box, enter the name of the interface. For homeowners, enter <span class="it_-_input_text">HOCovCostMethodsImpl</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1103964">In the new Gosu class, write a constructor similar to the following for the </a><span class="cv_-_computer_voice">gw.lob.ho.HOCovCostMethodsImpl</span>:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CF_-_Code_First_Line"><a name="1103999">&nbsp;&nbsp;package gw.lob.ho.financials</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104000">&nbsp;&nbsp;&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104001">&nbsp;&nbsp;class HOCovCostMethodsImpl extends GenericHOCostMethodsImpl&lt;HOCovCost&gt; {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104002">&nbsp;&nbsp;&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104004">&nbsp;&nbsp;construct(owner : HOCovCost) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104005">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;super( owner )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104006">&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104007">...</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1119501">&nbsp;&nbsp;}</a></PRE>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1119502">Override property values as necessary. For homeowners, the code is: </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CF_-_Code_First_Line"><a name="1119503">&nbsp;&nbsp;package gw.lob.ho.financials</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104303">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104304">&nbsp;&nbsp;class HOCovCostMethodsImpl extends GenericHOCostMethodsImpl&lt;HOCovCost&gt; {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104305">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104306">&nbsp;&nbsp;&nbsp;&nbsp;construct(owner : HOCovCost) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104307">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;super( owner )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104308">&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1242064">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1242065">&nbsp;&nbsp;&nbsp;&nbsp;override property get Coverage() : Coverage  {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1242066">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return Cost.HomeownersLineCov</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104312">&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104313">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104314">&nbsp;&nbsp;&nbsp;&nbsp;override property get State() : Jurisdiction {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104315">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return _owner.Jurisdiction.State</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1104316">&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1085278">&nbsp;&nbsp;}</a></PRE>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="1234544">At this point, you can verify your work. For instructions, see </a><a href="javascript:WWHClickedPopup('productmodel', 'lob.16.06.html#1197532', '');" title="Creating the Basic Policy Line and Coverable Entities">“Verifying Your Work”</a>.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

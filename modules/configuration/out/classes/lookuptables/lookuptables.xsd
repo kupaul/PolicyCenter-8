@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <xsd:element name="LookupTables">
+    <xsd:annotation>
+      <xsd:documentation>
+        This element represents the lookups performed by a Guidewire product. This is
+        a seperate document with the name lookuptables.xml within the config directory.
+
+        There are several different lookups that might be performed for a specific entity.
+        There are lookups for finding availability, questions, modifiers, forms and other
+        resources.
+      </xsd:documentation>
+    </xsd:annotation>
+    <xsd:complexType>
+      <xsd:sequence>
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+          <xsd:element ref="LookupTable"/>
+        </xsd:choice>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="LookupTable">
+    <xsd:complexType>
+      <xsd:annotation>
+        <xsd:documentation>
+          This element represents one specific lookup.
+        </xsd:documentation>
+      </xsd:annotation>
+      <xsd:sequence>
+        <xsd:choice minOccurs="0" maxOccurs="unbounded">
+          <xsd:element ref="Filter">
+            <xsd:annotation>
+              <xsd:documentation>
+                These elements define filters to be applied to further qualify the returned entries. A Filter differs
+                from a Dimension in that a value for the field is required in both the lookup and root. Typically these are
+                used to filter against a denormalized attribute in the lookup.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:choice>
+        <xsd:choice minOccurs="1" maxOccurs="unbounded">
+          <xsd:element ref="Dimension">
+            <xsd:annotation>
+              <xsd:documentation>
+                These elements define filters to be applied to further qualify the returned entries. A Dimension differs
+                from Filter in that the field is not required in the lookup, permitting simple wildcarding
+                for the lookup.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:choice>
+        <xsd:choice minOccurs="1" maxOccurs="1">
+          <xsd:element ref="DistinguishingField">
+            <xsd:annotation>
+              <xsd:documentation>
+                This is the element that defines the primary lookup attribute.  It is defined
+                as the foreign key in the lookup entity.
+              </xsd:documentation>
+            </xsd:annotation>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:sequence>
+      <xsd:attribute name="code" type="xsd:string" use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            This code for the specific lookup type (an entry in the typelist specified in keyType)
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="entityName" type="xsd:string" use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            This is the entity (definintion interface) for objects contained with this lookup table. The field defined
+            in enclosed elements reference fields in this entity. For supplied lookups, this will be defined in
+            dm_..._lookup.xml
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="root" type="xsd:string" use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            This is the entity that is expected to be used as the source for the valuePath.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="appliesTo" type="xsd:string" use="optional">
+        <xsd:annotation>
+          <xsd:documentation>
+            This is the entity that the lookup table applies to.  This is not required as the entity that this lookup
+            table applies to is usually the root object.  If it is not, however, this attribute can be used to correctly
+            specify the object.  This information is used in Studio only.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Filter">
+    <xsd:complexType>
+      <xsd:attribute name="field" type="xsd:string" use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            This is the name of an attribute from the entity specified in entityName.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="valuePath" type="xsd:string" use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            This is the path, including the root, to the attribute which should have the same value
+            as the field.  This path can be any Gosu expression.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="exactMatch" type="xsd:boolean" default="true" use="optional">
+        <xsd:annotation>
+          <xsd:documentation>
+            Specifies whether the filter matches exactly or not. If not, a null is a wildcard match.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Dimension">
+    <xsd:complexType>
+      <xsd:attribute name="field" type="xsd:string" use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            This is the name of an attribute from the entity specified in entityName.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="valuePath" type="xsd:string" use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            This is the path, including the root, to the attribute which should have the same value
+            as the field.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+      <xsd:attribute name="precedence" type="xsd:int" use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            Since it is possible for a Dimension to result in multiple possible candidates, this
+            is used determine which possible dimension takes precedence. Lower values have higher precedence.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="DistinguishingField">
+    <xsd:complexType>
+      <xsd:attribute name="field" type="xsd:string" use="required">
+        <xsd:annotation>
+          <xsd:documentation>
+            This is the name of the attribute in the lookup entity.
+          </xsd:documentation>
+        </xsd:annotation>
+      </xsd:attribute>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8"?><delegate xmlns="http://guidewire.com/datamodel" effdatedOnly="true" extendable="true" name="Cost" requires="gw.api.domain.financials.CostAdapter" subpackage="financials">
+  <monetaryamount amountColumnName="ActualAmount" desc="The current amount for the effDated effective period." name="ActualAmount" nullok="false"/>
+  <monetaryamount amountColumnName="ActualAmountBilling" desc="The current amount converted to the settlement currency for the effDated effective period." name="ActualAmountBilling" nullok="false"/>
+  <monetaryamount amountColumnName="StandardAmount" desc="The current amount for the effDated effective period, as calculated based on the standard rates." name="StandardAmount" nullok="true"/>
+  <monetaryamount amountColumnName="StandardAmountBilling" desc="The current amount for the effDated effective period, as calculated based on the standard rates." name="StandardAmountBilling" nullok="true"/>
+  <monetaryamount amountColumnName="OverrideAmount" desc="The user-specified override for the amount." name="OverrideAmount" nullok="true" scalable="true"/>
+  <monetaryamount amountColumnName="OverrideAmountBilling" desc="The user-specified override converted to settlement currency for the amount." name="OverrideAmountBilling" nullok="true" scalable="true"/>
+  <monetaryamount amountColumnName="ActualTermAmount" desc="The cost over an rated term." name="ActualTermAmount" nullok="false"/>
+  <monetaryamount amountColumnName="ActualTermAmountBilling" desc="The cost converted to settlement currency over an rated term." name="ActualTermAmountBilling" nullok="false"/>
+  <monetaryamount amountColumnName="StandardTermAmount" desc="The cost over an rated term, as calculated based on the standard rates." name="StandardTermAmount" nullok="true"/>
+  <monetaryamount amountColumnName="StandardTermAmountBilling" desc="The cost over an rated term converted to settlement currency, as calculated based on the standard rates." name="StandardTermAmountBilling" nullok="true"/>
+  <monetaryamount amountColumnName="OverrideTermAmount" desc="The user-specified override for the term amount." name="OverrideTermAmount" nullok="true"/>
+  <monetaryamount amountColumnName="OverrideTermAmountBilling" desc="The user-specified override converted to settlement currency for the term amount." name="OverrideTermAmountBilling" nullok="true"/>
+  <column default="0" desc="The basis for the cost over the rated term.  The basis type itself may vary (e.g. units of risk, units of money, etc.)" name="Basis" nullok="false" type="ratinglinebasisamount"/>
+  <column default="1" desc="The adjusted rate (after mod factors are applied) for the cost over the rated term." name="ActualAdjRate" nullok="false" type="rate"/>
+  <column desc="The adjusted rate (after mod factors are applied) for the cost over the rated term, as calculated based on the standard base rate." name="StandardAdjRate" nullok="true" type="rate"/>
+  <column desc="The user-specified override for the adjusted rate." name="OverrideAdjRate" nullok="true" type="rate"/>
+  <column default="1" desc="The base rate (before mod factors are applied) for the cost over the rated term." name="ActualBaseRate" nullok="false" type="rate"/>
+  <column desc="The standard base rate (before mod factors are applied) for the cost over the rated term." name="StandardBaseRate" nullok="true" type="rate"/>
+  <column desc="The user-specified override for the base rate." name="OverrideBaseRate" nullok="true" type="rate"/>
+  <column desc="Why the override is being applied." name="OverrideReason" nullok="true" type="shorttext"/>
+  <column desc="The number of days in the term period used to arrive at the rate." name="NumDaysInRatedTerm" nullok="false" type="positiveinteger"/>
+  <column default="true" desc="Indicates whether this cost can have an override applied; most likely set by the rating engine." name="Overridable" nullok="false" type="bit"/>
+  <column default="false" desc="Indicates whether this cost is subject to reporting.  If a cost is subject to reporting and a policy has a reporting plan, that cost will only generate charged transactions during report jobs and final audit." name="SubjectToReporting" nullok="false" type="bit"/>
+  <column desc="Custom group name to group charges together" name="ChargeGroup" nullok="true" type="shorttext"/>
+  <column default="false" desc="Flags when the PolicyFXRate is used to convert amounts from coverage currency to settlement currency" exportable="false" name="FXRateConversionUsed" nullok="false" setterScriptability="hidden" type="bit"/>
+  <typekey default="StdPremium" desc="Tax/surcharge, a standard premium, or a non-standard premium" name="RateAmountType" nullok="false" typelist="RateAmountType"/>
+  <typekey default="Premium" desc="The type of charge (Premium, Taxes, Fee)" name="ChargePattern" nullok="true" typelist="ChargePattern"/>
+  <column desc="Number of decimal places to which this cost should be rounded when prorated" name="RoundingLevel" nullok="true" type="integer"/>
+  <typekey desc="Rounding mode (e.g. HALF_UP) to be used when prorating" name="RoundingMode" nullok="true" typelist="RoundingModeType"/>
+  <typekey default="ProRataByDays" desc="Procedure used to derive Amount from Term Amount, e.g. day-based pro-rata, or flat" name="ProrationMethod" nullok="true" typelist="ProrationMethod"/>
+  <foreignkey fkentity="RateBook" name="RateBook" nullok="true"/>
+  <typekey default="manual" desc="Source of override, or null if none" name="OverrideSource" nullok="false" typelist="OverrideSourceType"/>
+  <foreignkey fkentity="PolicyFXRate" name="PolicyFXRate" nullok="true"/>
+  <fulldescription>
+    A delegate representing a unit of price for a period of time that should not be broken up any further.
+        It must be implemented only by an EffDatedBean so that the current cost amount has an effective period.
+  </fulldescription>
+</delegate>

@@ -1,0 +1,156 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    id="AccountFile_MergeAccountsSelection"
+    parent="AccountFile_Summary(survivingAccount)"
+    showUpLink="true"
+    title="displaykey.Web.AccountFile.MergeAccounts.AccountSelection(victimAccount.AccountNumber, survivingAccount.AccountNumber)">
+    <LocationEntryPoint
+      signature="AccountFile_MergeAccountsSelection(victimAccount : Account, survivingAccount : Account)"/>
+    <Variable
+      name="victimAccount"
+      type="Account"/>
+    <Variable
+      name="survivingAccount"
+      type="Account"/>
+    <Screen>
+      <Variable
+        initialValue="gw.job.JobFilters.StatusFilterSet"
+        name="statusFilterSet"/>
+      <Variable
+        initialValue="gw.job.JobFilters.OpenStatusFilter"
+        name="statusFilterChoice"/>
+      <Toolbar>
+        <ToolbarButton
+          action="survivingAccount.mergeWithAccountAndCreateHistoryEvent(victimAccount); AccountFile.go(survivingAccount)"
+          confirmMessage="displaykey.Web.AccountFile.MergeAccounts.Confirmation(victimAccount.AccountNumber, survivingAccount.AccountNumber)"
+          id="MergeAccounts"
+          label="displaykey.Web.AccountFile.MergeAccounts"/>
+        <ToolbarButton
+          action="CurrentLocation.cancel(); pcf.AccountFile_AccountSearch.go(survivingAccount, typekey.AccountSearchType.TC_MERGEACCOUNTS)"
+          id="CancelButton"
+          label="displaykey.Web.AccountFile.MergeAccounts.Cancel"/>
+      </Toolbar>
+      <AlertBar
+        allowDismiss="false"
+        id="mergeAccountsAlert"
+        label="displaykey.Web.AccountFile.MergeAccounts.Warning(victimAccount.AccountNumber, survivingAccount.AccountNumber)"
+        showConfirmMessage="false"/>
+      <AlertBar
+        allowDismiss="false"
+        id="mergeAccountRemovalAlert"
+        label="displaykey.Web.AccountFile.MergeAccounts.RemovalWarning(victimAccount.AccountNumber)"
+        showConfirmMessage="false"/>
+      <PanelRef
+        def="AccountFile_Summary_BasicInfoDV(victimAccount)"/>
+      <PanelRow>
+        <PanelColumn>
+          <PanelRef
+            def="AccountFile_Summary_ActivitiesLV(victimAccount)">
+            <TitleBar
+              title="displaykey.Web.PolicyFile.Summary.Activities"/>
+            <Toolbar/>
+          </PanelRef>
+          <PanelRef
+            def="AccountFile_Summary_PolicyTermsLV(victimAccount)">
+            <TitleBar
+              title="displaykey.Web.AccountFile.Summary.PolicyTerms"/>
+            <Toolbar/>
+          </PanelRef>
+        </PanelColumn>
+      </PanelRow>
+      <PanelRow>
+        <PanelColumn>
+          <PanelRef>
+            <TitleBar
+              title="displaykey.Web.AccountFile.Summary.PendingWorkOrders"/>
+            <Toolbar>
+              <ToolbarRangeInput
+                id="WorkOrdersCompletenessFilter"
+                sortValueRange="false"
+                value="statusFilterChoice"
+                valueRange="statusFilterSet">
+                <PostOnChange
+                  target="AccountFile_Summary_WorkOrdersLV"/>
+              </ToolbarRangeInput>
+            </Toolbar>
+            <ListViewPanel
+              id="AccountFile_Summary_WorkOrdersLV">
+              <Variable
+                initialValue="victimAccount.getAllJobs(statusFilterChoice.value, null, null, User.util.CurrentUser)"
+                name="jobs"
+                recalculateOnRefresh="true"
+                type="JobQuery"/>
+              <RowIterator
+                editable="false"
+                elementName="job"
+                value="jobs.toCollection().where(\ j -&gt; not (j typeis Audit and j.AuditInformation.IsReversal)) as Job[]">
+                <Row
+                  useArchivedStyle="gw.pcf.ArchiveHelper.getArchivedStyle(job)">
+                  <Cell
+                    id="CreateDate"
+                    label="displaykey.Web.AccountFile.Summary.WorkOrdersLV.CreateDate"
+                    sortOrder="1"
+                    value="job.CreateTime"/>
+                  <Cell
+                    action="JobForward.go(job)"
+                    id="WorkOrderNumber"
+                    label="displaykey.Web.AccountFile.Summary.WorkOrdersLV.WorkOrderNumber"
+                    value="job.JobNumber"/>
+                  <Cell
+                    enableSort="false"
+                    id="JobStatus"
+                    label="displaykey.Web.AccountFile.Summary.WorkOrdersLV.JobStatus"
+                    value="job.DisplayStatus"/>
+                  <Cell
+                    action="PolicyFileForward.go(job.LatestPeriod.PolicyNumber)"
+                    available="not job?.createsNewPolicy()"
+                    enableSort="false"
+                    id="PolicyNumber"
+                    label="displaykey.Web.AccountFile.Summary.WorkOrdersLV.PolicyNumber"
+                    value="job.LatestPeriod.PolicyNumberDisplayString"/>
+                  <Cell
+                    id="Product"
+                    label="displaykey.Web.AccountFile.Summary.WorkOrdersLV.Product"
+                    sortBy="job.Policy.ProductCode"
+                    value="job.Policy.Product"/>
+                  <Cell
+                    enableSort="false"
+                    id="WorkOrderType"
+                    label="displaykey.Web.AccountFile.Summary.WorkOrdersLV.WorkOrderType"
+                    value="job.DisplayType"/>
+                  <Cell
+                    enableSort="false"
+                    id="Underwriter"
+                    label="displaykey.Web.AccountFile.Summary.WorkOrdersLV.Underwriter"
+                    value="job.Underwriter"/>
+                </Row>
+              </RowIterator>
+            </ListViewPanel>
+          </PanelRef>
+        </PanelColumn>
+      </PanelRow>
+    </Screen>
+    <Code><![CDATA[function mergeAccounts(){
+  try{
+    var policies = Policy.finder.findLocalPoliciesByAccount(victimAccount)
+    policies.each(\ p -> {
+      var period = p.LatestBoundPeriod
+      if(period <> null and not perm.PolicyPeriod.change(p.LatestBoundPeriod)){
+        throw new gw.api.util.DisplayableException(displaykey.Account.MergeAccounts.InsufficientPermissionsOnPolicies)
+      }
+    })
+    survivingAccount.mergeWithAccount(victimAccount)
+    //history event not added to the surviving account in the base code
+    var _victimAccount = victimAccount
+    survivingAccount.createCustomHistoryEvent(CustomHistoryType.TC_ACCT_MERGED , \ -> displaykey.Account.History.AccountMerged(_victimAccount.AccountNumber,
+      _victimAccount.AccountHolder.DisplayName))
+  }
+  catch(e: java.lang.Exception){
+    throw new gw.api.util.DisplayableException(e.Message)
+  }
+}]]></Code>
+  </Page>
+</PCF>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://maven.apache.org/POM/4.0.0"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>gw.managed.osgi</groupId>
+  <artifactId>parent</artifactId>
+  <version>10</version>
+  <packaging>pom</packaging>
+
+  <name>Parent file for projects that wrap existing Maven artifacts</name>
+
+  <!-- 9 -> 10: No longer exclude dependencies by default
+  <properties>
+    <excludeDependencies>*;artifactId=!${project.artifactId}*</excludeDependencies>
+  </properties>
+  -->
+
+  <build>
+    <!-- Dependencies sources -->
+    <sourceDirectory>${project.build.directory}/src</sourceDirectory>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.felix</groupId>
+        <artifactId>maven-bundle-plugin</artifactId>
+        <extensions>true</extensions>
+        <version>2.3.6</version>
+        <configuration>
+          <excludeDependencies>${excludeDependencies}</excludeDependencies>
+          <instructions>
+            <_include>-bnd.bnd</_include>
+          </instructions>
+        </configuration>
+      </plugin>
+
+      <!-- Retrieve dependencies sources -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.4</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals>
+              <goal>unpack-dependencies</goal>
+            </goals>
+            <configuration>
+              <classifier>sources</classifier>
+              <failOnMissingClassifierArtifact>false</failOnMissingClassifierArtifact>
+              <outputDirectory>${project.build.directory}/src</outputDirectory>
+              <excludeTransitive>true</excludeTransitive>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- We don't compile sources of dependencies -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-compiler-plugin</artifactId>
+        <configuration>
+          <excludes>
+            <exclude>**/*</exclude>
+          </excludes>
+        </configuration>
+      </plugin>
+
+      <!-- Attach dependencies sources -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-source-plugin</artifactId>
+        <version>2.1.2</version>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>jar-no-fork</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <distributionManagement>
+    <repository>
+      <id>gw.thirdparty</id>
+      <url>http://nexus/content/repositories/thirdparty/</url>
+      <name>Guidewire repository for thirdparty JARs</name>
+    </repository>
+  </distributionManagement>
+
+  <repositories>
+    <!-- Central proxy -->
+    <repository>
+      <id>central</id>
+      <name>Guidewire Nexus proxy for Maven Central</name>
+      <url>http://nexus/content/repositories/central</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>gw.thirdparty</id>
+      <url>http://nexus/content/repositories/thirdparty/</url>
+      <name>Guidewire repository for thirdparty JARs</name>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <!-- Central proxy -->
+    <pluginRepository>
+      <id>central</id>
+      <name>Guidewire Nexus proxy for Maven Central</name>
+      <url>http://nexus/content/repositories/central</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+
+</project>

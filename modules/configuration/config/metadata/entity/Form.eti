@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity xmlns="http://guidewire.com/datamodel" desc="A form (endorsement, coverage form, etc.) instance on a policy" effDatedBranchType="PolicyPeriod" entity="Form" exportable="true" extendable="true" loadable="false" platform="false" subpackage="form" table="form" type="effdated">
+  <column desc="The endorsement number of this form.  This field will be null for non-contract forms." name="EndorsementNumber" nullok="true" type="integer"/>
+  <column desc="A short description of what the form should hold." name="FormDescription" nullok="true" type="shorttext"/>
+  <column desc="The form number to show in the list of forms." name="FormNumber" nullok="true" type="shorttext"/>
+  <column desc="The public-id of the FormPattern associated with this form." name="FormPatternCode" nullok="true" type="patterncode"/>
+  <column desc="The date on which the form became effective.  This column will be null if the form was effective as of the period start date." name="InternalFormEffDate" nullok="true" type="datetime"/>
+  <column desc="The date on which the form ceases to be effective. This may be superseded by the InternalFormRemovalDate column.  This column will be null if the form expires on the period end date." name="InternalFormExpDate" nullok="true" type="datetime"/>
+  <column desc="The date on which the form was removed or superseded.  If the RemovedOrSuperseded field is set to true, a null here means that the form was removed or superseded as of the period start date." name="InternalFormRemovalDate" nullok="true" type="datetime"/>
+  <column desc="Whether or not the form has been removed or superseded." name="RemovedOrSuperseded" nullok="true" type="bit"/>
+  <typekey desc="When the form was inferred.  We track this so that the bind process will only re-infer bind-time forms but will leave quote-time forms alone." name="InferenceTime" nullok="true" typelist="FormInferenceTime"/>
+  <foreignkey columnName="FormTextDataID" desc="The text for this form, which is stored independently so it's only loaded when necessary and not every time forms are queried, requested, or displayed." fkentity="FormTextData" name="FormTextData" nullok="true" owner="true"/>
+  <array arrayentity="FormAssociation" cascadeDelete="true" desc="The list of associations between this form and entities within the policy graph.  In general, these associations should only be used to in the case where multiple copies of a given form are issued and a way is needed to match up a given Form instance to the entity it's associated with." name="FormAssociations"/>
+  <array arrayentity="FormEdgeTable" arrayfield="OwningForm" cascadeDelete="true" desc="An array of size 0 or 1 that links this form to the form it superseded, if any." name="SupersededForms" owner="true"/>
+  <checkconstraint desc="Both effective date and expiration date should always be set to null (indicating that the entity spans the whole period)." predicate="EffectiveDate IS NULL AND ExpirationDate IS NULL"/>
+  <checkconstraint desc="If both InternalFormExpDate and InternalFormEffDate are set, InternalFormExpDate must be greater than or equal to InternalFormEffDate." predicate="InternalFormExpDate IS NULL OR InternalFormEffDate IS NULL OR InternalFormExpDate &gt;= InternalFormEffDate"/>
+  <checkconstraint desc="If both InternalFormRemovalDate and InternalFormExpDate are set, InternalFormRemovalDate must be less than or equal to InternalFormExpDate." predicate="InternalFormRemovalDate IS NULL OR InternalFormExpDate IS NULL OR InternalFormRemovalDate &lt;= InternalFormExpDate"/>
+  <fulldescription>
+    Represents an instance of a form on a policy.  Forms can either be inferred by the form inference process based
+      on a FormPattern or they can be attached directly to a policy if the forms are calculated by an external system.
+      Form objects are eff-dated but don't make use of the EffectiveDate and ExpirationDate fields, as they apply
+      to a given Period/Job rather than any particular point in effective time.
+  </fulldescription>
+</entity>

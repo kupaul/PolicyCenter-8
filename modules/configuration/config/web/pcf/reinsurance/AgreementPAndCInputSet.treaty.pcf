@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InputSet
+    id="AgreementPAndCInputSet"
+    mode="treaty">
+    <Require
+      name="agreement"
+      type="RIAgreement"/>
+    <Variable
+      initialValue="agreement as Treaty"
+      name="treaty"/>
+    <InputSet
+      visible="agreement typeis NonProportionalRIAgreement">
+      <Variable
+        initialValue="agreement typeis NonProportionalRIAgreement ? agreement : null"
+        name="nonprop"/>
+      <TextInput
+        editable="not nonprop.CedingRateAdjusted"
+        format="displaykey.Web.Reinsurance.PercentageDisplayFormat"
+        id="CedingRate"
+        label="displaykey.Web.Reinsurance.Treaty.CedingRate"
+        required="true"
+        value="nonprop.CedingRate"/>
+      <ContentInput>
+        <Link
+          action="nonprop.CedingRateAdjusted = true"
+          hideIfReadOnly="true"
+          id="AdjustCedingRates"
+          label="displaykey.Web.Reinsurance.Agreement.AdjustCedingRates"
+          styleClass="miniButton"
+          visible="not nonprop.CedingRateAdjusted"/>
+        <Link
+          action="nonprop.CedingRateAdjusted = false"
+          hideIfReadOnly="true"
+          id="SetCedingRate"
+          label="displaykey.Web.Reinsurance.Agreement.SetCedingRate"
+          styleClass="miniButton"
+          visible="nonprop.CedingRateAdjusted"/>
+      </ContentInput>
+    </InputSet>
+    <MonetaryAmountInput
+      currency="treaty.TreatyCurrency"
+      editable="true"
+      formatType="currency"
+      id="MinDeposit"
+      label="displaykey.Web.Reinsurance.Treaty.MinDepositPremium"
+      value="treaty.MinDepositPremium"/>
+    <TypeKeyInput
+      editable="true"
+      id="DepositPmtSchedule"
+      label="displaykey.Web.Reinsurance.Treaty.DepositPmtSchedule"
+      value="treaty.DepositPaymentSchedule"/>
+  </InputSet>
+</PCF>

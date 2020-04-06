@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Adding HTTP Basic Authentication in Java</title>
+    <link rel="StyleSheet" href="css/webservices-wsi-publish.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-webservices.html#3698838">Web Services</a> : <a class="WebWorks_Breadcrumb_Link" href="webservices-wsi-publish.07.01.html#3698838">Publishing Web Services (WS-I)</a> : <a class="WebWorks_Breadcrumb_Link" href="webservices-wsi-publish.07.20.html#3698838">Calling a PolicyCenter WS-I Web Service from Java</a> : Adding HTTP Basic Authentication in Java</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h4 class="H2B_-_Heading_2_Break"><a name="3698838">Adding HTTP Basic Authentication in Java</a></h4>
+      <div class="B_-_Body"><a name="3698839">In previous topics the examples showed how to connect to a service without authentication. The following code shows how to add HTTP Basic authentication to your WS-I client request. HTTP Basic authentication is the easiest type of authentication to code to connect to a PolicyCenter WS-I web service.</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698844">import com.example.example.helloworldapi.HelloWorldAPI;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698845">import com.example.example.helloworldapi.HelloWorldAPIPortType;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698846">import com.sun.xml.internal.ws.api.message.Headers;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698847">import import javax.xml.ws.BindingProvider;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698848">import org.w3c.dom.Document;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698849">import org.w3c.dom.Element;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698850">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698851">import javax.xml.namespace.QName;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698852">import javax.xml.parsers.DocumentBuilderFactory;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698853">import javax.xml.ws.BindingProvider;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698854">import java.util.Map;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698855">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698856">public class WsiTest02 {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698857">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698858">&nbsp;&nbsp;public static void main(String[] args) throws Exception {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698859">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698860">&nbsp;&nbsp;&nbsp;&nbsp;System.out.println("Starting the web service client test...");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698861">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698862">&nbsp;&nbsp;&nbsp;&nbsp;// get a reference to the SOAP 1.1 port for this web service</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698863">&nbsp;&nbsp;&nbsp;&nbsp;HelloWorldAPIPortType port = new HelloWorldAPI().getHelloWorldAPISoap11Port();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698864">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698865">&nbsp;&nbsp;&nbsp;&nbsp;// cast to BindingProvider so the following lines are easier to understand</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698866">&nbsp;&nbsp;&nbsp;&nbsp;BindingProvider bp = (BindingProvider) port;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698867">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698868">&nbsp;&nbsp;&nbsp;&nbsp;// "HTTP Basic" authentication</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698869">&nbsp;&nbsp;&nbsp;&nbsp;Map&lt;String, Object&gt; requestContext = bp.getRequestContext();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698870">&nbsp;&nbsp;&nbsp;&nbsp;requestContext.put(BindingProvider.USERNAME_PROPERTY, "su");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698871">&nbsp;&nbsp;&nbsp;&nbsp;requestContext.put(BindingProvider.PASSWORD_PROPERTY, "gw");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698872">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698873">&nbsp;&nbsp;&nbsp;&nbsp;System.out.println("Calling the service now...");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698874">&nbsp;&nbsp;&nbsp;&nbsp;String res = port.helloWorld();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698875">&nbsp;&nbsp;&nbsp;&nbsp;System.out.println("Web service result = " + res);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3698876">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3698877">}</a></PRE>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

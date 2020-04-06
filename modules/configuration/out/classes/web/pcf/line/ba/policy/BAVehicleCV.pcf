@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <CardViewPanel
+    id="BAVehicleCV">
+    <Require
+      name="vehicle"
+      type="BusinessVehicle"/>
+    <Require
+      name="policyPeriod"
+      type="entity.PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="Boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="gw.api.web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="(policyPeriod.Job typeis Submission) and (policyPeriod.Job.QuoteType == &quot;Quick&quot;)"
+      name="quickQuote"
+      type="boolean"/>
+    <Variable
+      initialValue="vehicle.PolicyLine.Pattern.getCoverageCategory(&quot;BAPOwnedPhysDamGrp&quot;)"
+      name="physDamCovCategory"/>
+    <Variable
+      initialValue="vehicle.PolicyLine.Pattern.getCoverageCategory(&quot;BAPIPCoverageCat&quot;)"
+      name="baPipCategory"/>
+    <Card
+      id="VehicleDetailCard"
+      title="displaykey.Web.PolicyLine.VehicleDetail">
+      <PanelRow>
+        <PanelColumn>
+          <DetailViewPanel>
+            <InputColumn>
+              <InputSetRef
+                def="BAGarageLocationInputSet(vehicle, policyPeriod, openForEdit, jobWizardHelper)"
+                editable="true"/>
+            </InputColumn>
+          </DetailViewPanel>
+          <PanelRef
+            def="VehicleDV(vehicle, policyPeriod, policyPeriod.BusinessAutoLine, openForEdit, jobWizardHelper)"/>
+        </PanelColumn>
+      </PanelRow>
+      <PanelRow>
+        <PanelColumn>
+          <PanelRef
+            def="AdditionalInterestDetailsDV(vehicle, openForEdit)"/>
+        </PanelColumn>
+      </PanelRow>
+    </Card>
+    <Card
+      id="CoveragesCard"
+      title="displaykey.Web.Policy.Coverages">
+      <PanelRef>
+        <TitleBar
+          title="physDamCovCategory.DisplayName"/>
+        <DetailViewPanel>
+          <Variable
+            initialValue="vehicle == null ? null : physDamCovCategory.coveragePatternsForEntity(BusinessVehicle).whereSelectedOrAvailable(vehicle, true)"
+            name="physDamCovCategoryCoveragePatterns"
+            recalculateOnRefresh="true"/>
+          <InputColumn>
+            <InputIterator
+              elementName="coveragePattern"
+              forceRefreshDespiteChangedEntries="true"
+              id="PhysDamCovIterator"
+              value="physDamCovCategoryCoveragePatterns">
+              <IteratorSort
+                sortBy="coveragePattern.Priority"
+                sortOrder="1"/>
+              <InputSetRef
+                def="CoverageInputSet(coveragePattern, vehicle, CurrentLocation.InEditMode)"
+                mode="coveragePattern.Code"/>
+            </InputIterator>
+          </InputColumn>
+        </DetailViewPanel>
+      </PanelRef>
+    </Card>
+    <Card
+      id="AdditionalCoveragesCard"
+      title="displaykey.Web.Policy.BA.AdditionalCoverages">
+      <PanelRef
+        def="AdditionalCoveragesPanelSet(vehicle, new String[]{&quot;BAPRentalGrp&quot;, &quot;BAPTapeDiscRecordGrp&quot;, &quot;BAPEquipGrp&quot;, &quot;BAPLoanLeaseGapGrp&quot;}, true)"/>
+    </Card>
+  </CardViewPanel>
+</PCF>

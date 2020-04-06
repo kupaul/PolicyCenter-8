@@ -1,0 +1,128 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified">
+  
+  <xsd:element name="CronSchedule">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <!-- This is the day of month for repeating based on day of month.  Or '*' for every day
+           of the month, or '?' if selecting by day of week. -->
+      <xsd:attribute name="dayofmonth" type="xsd:string" default="*"/>
+      <!-- This is the day 0-7 for repeating based on that day.  Or '?' if ignore day of week
+           (using day of month). -->
+      <xsd:attribute name="dayofweek" type="xsd:string" default="?"/>
+      <!-- This is the hours for repeating based on hours. Or '*' if every hour. -->
+      <xsd:attribute name="hours" type="xsd:string" default="*"/>
+      <!-- This is the minutes for repeating based on minutes.  Or '*' if every minute.  Defaults
+           to '0'. -->
+      <xsd:attribute name="minutes" type="xsd:string" default="0"/>
+      <!-- This is the month numbers for only those months.  Or '*' for every month. -->
+      <xsd:attribute name="month" type="xsd:string" default="*"/>
+      <!-- This is the seconds for repeating based on seconds.  Or '*' if every second.  Defaults
+           to '0'. -->
+      <xsd:attribute name="seconds" type="xsd:string" default="0"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="ProcessSchedule">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="CronSchedule" minOccurs="0" maxOccurs="1"/>
+      </xsd:choice>
+      <!-- This is the environment where the batch process will run. -->
+      <xsd:attribute name="env" type="xsd:string"/>
+      <!-- This is the batch process that is being scheduled. -->
+      <xsd:attribute name="process" type="ProcessType" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:simpleType name="ProcessType">
+    <xsd:restriction base="xsd:string">
+      <!-- Activity escalation monitor -->
+      <xsd:enumeration value="ActivityEsc"/>
+      <!-- Retires Canceled and Dismissed Activities -->
+      <xsd:enumeration value="ActivityRetire"/>
+      <!-- Apply any of the pending updates to account data. -->
+      <xsd:enumeration value="ApplyPendingAccountDataUpdates"/>
+      <!-- Policy term archiving monitor -->
+      <xsd:enumeration value="ArchivePolicyTerm"/>
+      <!-- Audit task monitor -->
+      <xsd:enumeration value="AuditTask"/>
+      <!-- Policy Exception Monitor for bound policies -->
+      <xsd:enumeration value="BoundPolicyException"/>
+      <!-- Policy Exception Monitor for closed policies -->
+      <xsd:enumeration value="ClosedPolicyException"/>
+      <!-- Database consistency checks -->
+      <xsd:enumeration value="DBConsistencyCheck"/>
+      <!-- Database statistics -->
+      <xsd:enumeration value="DBStats"/>
+      <!-- Extract rating worksheet data from WorksheetContainer objects and flag these objects
+           for purging -->
+      <xsd:enumeration value="ExtractWorksheets"/>
+      <!-- Deletes orphaned, purged, or archived FormTextData -->
+      <xsd:enumeration value="FormTextDataDelete"/>
+      <!-- Geocoding Addresses queue writer. -->
+      <xsd:enumeration value="Geocode"/>
+      <!-- Group exception Monitor -->
+      <xsd:enumeration value="GroupException"/>
+      <!-- Expire a job if no action has been taken upon it for a configured period of time. -->
+      <xsd:enumeration value="JobExpire"/>
+      <!-- Policy Exception Monitor for open policies -->
+      <xsd:enumeration value="OpenPolicyException"/>
+      <!-- Monitor for overdue premium reports -->
+      <xsd:enumeration value="OverduePremiumReport"/>
+      <!-- Evaluates jobs against the policy holds blocking it -->
+      <xsd:enumeration value="PolicyHoldJobEval"/>
+      <!-- Policy Renewal Start monitor -->
+      <xsd:enumeration value="PolicyRenewalStart"/>
+      <!-- Reinsurance ceding of premium -->
+      <xsd:enumeration value="PremiumCeding"/>
+      <!-- Invoke plugin on completion of monitored worker queue -->
+      <xsd:enumeration value="ProcessCompletionMonitor"/>
+      <!-- Purge batch process history data -->
+      <xsd:enumeration value="ProcessHistoryPurge"/>
+      <!-- Purges Entities which are no longer needed -->
+      <xsd:enumeration value="Purge"/>
+      <!-- Purge old ClusterMember entities -->
+      <xsd:enumeration value="PurgeClusterMembers"/>
+      <!-- Purge failed work items from all queues. -->
+      <xsd:enumeration value="PurgeFailedWorkItems"/>
+      <!-- Purges old messages from the message history table -->
+      <xsd:enumeration value="PurgeMessageHistory"/>
+      <!-- Purges policy periods orphaned as a result of preemption -->
+      <xsd:enumeration value="PurgeOrphanedPolicyPeriod"/>
+      <!-- Purge profiler data at regular intervals -->
+      <xsd:enumeration value="PurgeProfilerData"/>
+      <!-- Purge external transaction id that no longer need to be tracked, by age. -->
+      <xsd:enumeration value="PurgeTransactionIds"/>
+      <!-- Purge completed workflows logs, this executes gw.processes.PurgeWorkflowLogs.gs -->
+      <xsd:enumeration value="PurgeWorkflowLogs"/>
+      <!-- Purge completed workflows after resetting any referenced workflows, this executes
+           gw.processes.PurgeWorkflow.gs -->
+      <xsd:enumeration value="PurgeWorkflows"/>
+      <!-- Purge WorksheetContainer objects  -->
+      <xsd:enumeration value="PurgeWorksheets"/>
+      <!-- Policy term retrieve from archive monitor -->
+      <xsd:enumeration value="RestorePolicyTerm"/>
+      <!-- Performs a full data import of the app database into the Solr/Lucene index -->
+      <xsd:enumeration value="SolrDataImport"/>
+      <!-- Collect summary counts for team screens -->
+      <xsd:enumeration value="TeamScreens"/>
+      <!-- User exception Monitor -->
+      <xsd:enumeration value="UserException"/>
+      <!-- Purge WorkItemSet data -->
+      <xsd:enumeration value="WorkItemSetPurge"/>
+      <!-- Purge instrumentation data for work queues -->
+      <xsd:enumeration value="WorkQueueInstrumentationPurge"/>
+      <!-- Will execute the workflow writer. -->
+      <xsd:enumeration value="Workflow"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:element name="Schedule">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="ProcessSchedule" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

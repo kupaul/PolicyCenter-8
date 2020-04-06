@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InputSet
+    editable="true"
+    id="GlobalPhoneInputSet">
+    <Require
+      name="phoneOwner"
+      type="gw.api.phone.PhoneOwner"/>
+    <Variable
+      initialValue="gw.api.phone.PhoneOwnerFieldId"
+      name="fieldId"/>
+    <Variable
+      initialValue="!(isVisible(phoneOwner, fieldId.COUNTRY_CODE) || isVisible(phoneOwner, fieldId.EXTENSION))"
+      name="singleInput"
+      recalculateOnRefresh="true"/>
+    <TypeKeyInput
+      editable="phoneOwner.isEditable(fieldId.COUNTRY_CODE)"
+      hideIfReadOnly="true"
+      id="CountryCode"
+      label="displaykey.Web.ContactDetail.Phone.MultiField.RegionCode(phoneOwner.WidgetLabel)"
+      required="phoneOwner.isRegionCodeRequired() || phoneOwner.PhoneFields.NationalSubscriberNumber != null"
+      value="phoneOwner.PhoneFields.CountryCode"
+      visible="isVisible(phoneOwner, fieldId.COUNTRY_CODE)">
+      <PostOnChange
+        target="GlobalPhoneInputSet"/>
+    </TypeKeyInput>
+    <TextInput
+      editable="phoneOwner.isEditable(fieldId.NATIONAL_SUBSCRIBER_NUMBER)"
+      helpText="displaykey.Java.PhoneUtil.Example.ToolTip(phoneOwner.PhoneFields.CountryCode,gw.api.util.PhoneUtil.getExampleNumberWithExtension(phoneOwner.PhoneFields.CountryCode))"
+      hideIfReadOnly="true"
+      id="NationalSubscriberNumber"
+      label="phoneOwner.getPhoneLabel(singleInput)"
+      required="phoneOwner.isRequired(fieldId.NATIONAL_SUBSCRIBER_NUMBER)"
+      validationExpression="phoneOwner.validatePhone()"
+      value="phoneOwner.PhoneFields.NationalSubscriberNumber"
+      visible="isVisible(phoneOwner, fieldId.NATIONAL_SUBSCRIBER_NUMBER)">
+      <PostOnChange
+        onChange="phoneOwner.autoFormatAndCorrect(phoneOwner.PhoneFields.NationalSubscriberNumber, phoneOwner.PhoneFields.CountryCode)"
+        target="GlobalPhoneInputSet"/>
+    </TextInput>
+    <TextInput
+      editable="phoneOwner.isEditable(fieldId.EXTENSION)"
+      hideIfReadOnly="true"
+      id="Extension"
+      label="displaykey.Web.ContactDetail.Phone.MultiField.Extension(phoneOwner.WidgetLabel)"
+      required="phoneOwner.isRequired(fieldId.EXTENSION)"
+      validationExpression="gw.api.util.PhoneUtil.isValidExtension(phoneOwner.PhoneFields.Extension) ? null : displaykey.Validator.Phone.Extension(util.PhoneUtil.getMaximumExtensionLength())"
+      value="phoneOwner.PhoneFields.Extension"
+      visible="isVisible(phoneOwner, fieldId.EXTENSION)">
+      <PostOnChange
+        onChange="phoneOwner.autoFormatAndCorrect(phoneOwner.PhoneFields.NationalSubscriberNumber, phoneOwner.PhoneFields.CountryCode)"
+        target="GlobalPhoneInputSet"/>
+    </TextInput>
+    <TextInput
+      hideIfEditable="true"
+      id="PhoneDisplay"
+      label="phoneOwner.WidgetLabel"
+      value="phoneOwner.format()"
+      visible="isVisible(phoneOwner, fieldId.PHONE_DISPLAY)"/>
+    <Code><![CDATA[uses gw.api.phone.PhoneOwner
+uses gw.api.phone.PhoneOwnerFieldId
+
+function isVisible(owner: PhoneOwner, field : PhoneOwnerFieldId) : boolean {
+  if(CurrentLocation.InEditMode){
+    return owner.isFieldVisibleEditMode(field) 
+  }else{
+    return owner.isFieldVisibleReadOnlyMode(field)
+  }
+}]]></Code>
+  </InputSet>
+</PCF>

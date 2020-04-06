@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <WizardStepSet
+    id="LineWizardStepSet"
+    mode="PersonalAuto">
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <JobWizardStep
+      beforeSave="gw.lob.pa.PALineStepsValidator.validateDriversStep(policyPeriod.PersonalAutoLine)"
+      id="PADrivers"
+      save="openForEdit"
+      screen="PADriversScreen(job, policyPeriod, openForEdit,jobWizardHelper)"
+      title="displaykey.Web.LineWizardMenu.Drivers"/>
+    <JobWizardStep
+      beforeSave="gw.lob.pa.PAWizardStepHelper.onVehicleStepExit(policyPeriod, jobWizardHelper)"
+      id="PersonalVehicles"
+      onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncModifiers(policyPeriod.PersonalAutoLine.AllModifiables, jobWizardHelper)}"
+      save="openForEdit"
+      screen="PAVehiclesScreen(job, policyPeriod, openForEdit,jobWizardHelper)"
+      title="displaykey.Web.LineWizardMenu.Vehicles"/>
+    <JobWizardStep
+      beforeSave="gw.lob.pa.PALineStepsValidator.validatePALineStep(policyPeriod.PersonalAutoLine)"
+      id="PALine"
+      onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages(policyPeriod.PersonalAutoLine.AllCoverables, jobWizardHelper)}"
+      save="openForEdit"
+      screen="PersonalAutoScreen(policyPeriod, openForEdit,jobWizardHelper)"
+      title="displaykey.Web.Policy.PA.Title"/>
+  </WizardStepSet>
+</PCF>

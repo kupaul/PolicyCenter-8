@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    beforeCommit="policyOwnerOfficer.resetContactAndRoles(duplicateContactsPopupHelper.existingPCContactWithABContactMatch)"
+    canEdit="true"
+    countsAsWork="false"
+    id="NewOwnerOfficerPopup"
+    returnType="PolicyOwnerOfficer"
+    startInEditMode="true"
+    title="displaykey.Web.Contact.NewContact(entity.PolicyOwnerOfficer.Type.TypeInfo.DisplayName)">
+    <!-- brand new contact or new contact from AB search -->
+    <LocationEntryPoint
+      signature="NewOwnerOfficerPopup(line: WorkersCompLine, contactType : ContactType)"/>
+    <Variable
+      name="line"
+      type="WorkersCompLine"/>
+    <Variable
+      name="contactType"
+      type="ContactType"/>
+    <Variable
+      initialValue="line.addNewOwnerOfficerOfContactType(contactType)"
+      name="policyOwnerOfficer"/>
+    <Variable
+      initialValue="line.PolicyOwnerOfficers.map(\ p -&gt; p.AccountContactRole.AccountContact.Contact)"
+      name="existingContacts"
+      type="Contact[]"/>
+    <Variable
+      initialValue="new gw.pcf.duplicatecontacts.DuplicateContactsPopupHelper(policyOwnerOfficer.AccountContactRole.AccountContact.Contact, existingContacts)"
+      name="duplicateContactsPopupHelper"/>
+    <Screen
+      editable="true"
+      id="ContactDetailScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.checkForDuplicatesOrUpdate(\ -&gt; CurrentLocation.pickValueAndCommit(policyOwnerOfficer))"
+          id="ForceDupCheckUpdate"
+          label="displaykey.Button.OK"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+        <EditButtons
+          pickValue="policyOwnerOfficer"
+          updateVisible="not duplicateContactsPopupHelper.ShowButton"/>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.push()"
+          id="CheckForDuplicates"
+          label="displaykey.Web.Contact.CheckForDuplicates"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+      </Toolbar>
+      <DetailViewPanel
+        id="OwnerOfficerInfoDV">
+        <InputColumn>
+          <TypeKeyInput
+            editable="true"
+            id="Include"
+            label="displaykey.Web.Policy.WC.InclExcl.Include"
+            required="true"
+            value="policyOwnerOfficer.Included">
+            <PostOnChange/>
+          </TypeKeyInput>
+          <RangeInput
+            align="left"
+            editable="true"
+            id="State"
+            label="displaykey.Web.Policy.WC.InclExcl.State"
+            required="true"
+            value="policyOwnerOfficer.State"
+            valueRange="policyOwnerOfficer.Branch.WorkersCompLine.Jurisdictions.map(\j -&gt; j.State)">
+            <PostOnChange/>
+          </RangeInput>
+          <RangeInput
+            editable="(policyOwnerOfficer.Included == Inclusion.TC_INCL) and (policyOwnerOfficer.State != null) and policyOwnerOfficer.Branch.WorkersCompLine.getClassCodesForWCCoveredEmployees(gw.api.util.StateJurisdictionMappingUtil.getStateMappingForJurisdiction(policyOwnerOfficer.State)).Count &gt; 0"
+            id="ClassCode"
+            label="displaykey.Web.Policy.WC.InclExcl.ClassCode"
+            required="true"
+            value="policyOwnerOfficer.ClassCode"
+            valueRange="policyOwnerOfficer.Branch.WorkersCompLine.getClassCodesForWCCoveredEmployees(gw.api.util.StateJurisdictionMappingUtil.getStateMappingForJurisdiction(policyOwnerOfficer.State))"/>
+          <TextInput
+            editable="true"
+            id="Ownership"
+            label="displaykey.Web.Policy.WC.InclExcl.Ownership"
+            value="policyOwnerOfficer.OwnershipPct"/>
+          <TypeKeyInput
+            editable="true"
+            id="Relationship"
+            label="displaykey.Web.Policy.WC.InclExcl.Relationship"
+            value="policyOwnerOfficer.RelationshipTitle"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef
+        def="NewPolicyContactRoleDetailsCV(policyOwnerOfficer, false)"/>
+    </Screen>
+  </Popup>
+</PCF>

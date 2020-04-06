@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <MenuItemSet
+    id="RateRoutineInstructionMenuItemSet"
+    mode="default">
+    <Require
+      name="step"
+      type="CalcStepDefinition"/>
+    <Require
+      name="costDataUsages"
+      type="java.util.List&lt;gw.rating.flow.util.InScopeUsage&gt;"/>
+    <Require
+      name="writableParams"
+      type="List&lt;CalcRoutineParameter&gt;"/>
+    <Require
+      name="writableParamUsagesMap"
+      type="java.util.Map&lt;CalcRoutineParameter, List&lt;gw.rating.flow.util.InScopeUsage&gt;&gt;"/>
+    <Variable
+      initialValue="new gw.pcf.rating.rateroutine.RateRoutineInstructionUIHelper(step)"
+      name="helper"/>
+    <MenuItemIterator
+      elementName="costDataItem"
+      id="costDateItem"
+      value="costDataUsages">
+      <MenuItem
+        action="step.setAssignmentValuesForInScopeTarget(TC_COSTDATA, costDataItem.Path, costDataItem.FeatureType)"
+        id="item"
+        label="costDataItem.Path"
+        retainScrollPosition="true"/>
+    </MenuItemIterator>
+    <MenuItemDivider/>
+    <MenuItem
+      available="writableParams.Count &gt; 0"
+      hideIfDisabled="false"
+      id="RateRoutineEntityMenuItem"
+      label="displaykey.Web.Rating.Flow.CalcRoutine.EntityFieldMenuItem"
+      subMenuOnDemand="true">
+      <MenuItemIterator
+        elementName="writableParam"
+        id="WritableParameters"
+        value="writableParams">
+        <MenuItem
+          id="WritablePullRightMenuItem"
+          label="writableParam.Code.DisplayName">
+          <MenuItemIterator
+            elementName="inScopeUsage"
+            id="inScopeUsageList"
+            value="writableParamUsagesMap.get(writableParam)">
+            <MenuItem
+              action="step.setAssignmentValuesForInScopeTarget(writableParam.Code, inScopeUsage.Path, inScopeUsage.FeatureType)"
+              id="inScopeUsageMenuItem"
+              label="inScopeUsage.DisplayName"
+              retainScrollPosition="true"
+              subMenuOnDemand="true"/>
+          </MenuItemIterator>
+        </MenuItem>
+      </MenuItemIterator>
+    </MenuItem>
+    <MenuItemDivider/>
+    <MenuItem
+      available="true"
+      checked="step.StepType == TC_ASSIGNMENT and step.InScopeParam != TC_COSTDATA and step.StoreLocation.NotBlank"
+      id="RateRoutineVarMenuItem"
+      label="displaykey.Web.Rating.Flow.CalcRoutine.VariableMenuLabel"
+      subMenuOnDemand="true">
+      <MenuItemSetRef
+        def="RateRoutineInstructionVariableMenuItemSet(step)"
+        id="variables"/>
+      <MenuItemDivider/>
+      <MenuItem
+        action="RateRoutineNewVariablePopup.push(step, costDataUsages)"
+        id="NewVariableMenuItem"
+        label="displaykey.Web.Rating.Flow.CalcRoutine.NewVariableMenuLabel"
+        subMenuOnDemand="true"/>
+    </MenuItem>
+    <MenuItemDivider/>
+    <MenuItem
+      action="step.setStepToSectionComment()"
+      checked="step.IsSectionCommentStep"
+      id="RateRoutineInstructionCommentMenuItem"
+      label="CalcStepType.TC_COMMENT.DisplayName"
+      retainScrollPosition="true"/>
+    <MenuItemDivider/>
+    <MenuItemIterator
+      elementName="flowControlStepType"
+      value="CalcStepType.TF_FLOWCONTROLSTEPS.TypeKeys.toTypedArray().orderBy(\ cst -&gt; cst.Priority)">
+      <MenuItem
+        action="step.changeToFlowControlStepType(flowControlStepType)"
+        checked="step.StepType == flowControlStepType"
+        id="flowControlMenuItem"
+        label="flowControlStepType"
+        retainScrollPosition="true"
+        subMenuOnDemand="true"/>
+    </MenuItemIterator>
+    <MenuItemDivider/>
+    <MenuItem
+      action="helper.resetStepAndSetDefaultOperatorType()"
+      id="RateRoutineInstructionClearMenuItem"
+      label="displaykey.Web.Rating.Flow.CalcRoutine.ClearMenuItem"
+      retainScrollPosition="true"
+      subMenuOnDemand="true"/>
+  </MenuItemSet>
+</PCF>

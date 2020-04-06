@@ -1,0 +1,97 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Defining Base URLs for Fully-Qualified Domain Names</title>
+    <link rel="StyleSheet" href="css/plugins-other.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-plugins.html#2492146">Plugins</a> : <a class="WebWorks_Breadcrumb_Link" href="plugins-other.22.01.html#2492146">Other Plugin Interfaces</a> : Defining Base URLs for Fully-Qualified Domain Names</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2492146">Defining Base URLs for Fully-Qualified Domain Names</a></h3>
+      <div class="B_-_Body"><a name="2492151">If PolicyCenter generates HTML pages, it typically generates a </a><span class="e_-_emphasis">base URL</span> for the HTML page using a tag such as <span class="cv_-_computer_voice">&lt;base href="..."&gt;</span> at the top of the page. In almost all cases, PolicyCenter generates the most appropriate base URL, based on settings in <span class="cv_-_computer_voice">config.xml</span>.</div>
+      <div class="B_-_Body"><a name="2492158">In some cases, this behavior is inappropriate. For example, suppose you hide PolicyCenter behind a load balancing router that handles Secure Socket Layer (SSL) communication. In such a case, the external URL would include the prefix </a><span class="cv_-_computer_voice">https://</span>. The load balancer handles security and forwards a non-secure HTTP request to PolicyCenter with a URL prefix <span class="cv_-_computer_voice">http://</span>. The default implementation of the base URL includes the URL prefix <span class="cv_-_computer_voice">http://</span>. </div>
+      <div class="B_-_Body"><a name="2492162">The load balancer would not typically parse the HTML enough to know about this problem, so the base URL at the user starts with </a><span class="cv_-_computer_voice">http</span> instead of <span class="cv_-_computer_voice">https</span>. This breaks image loading and display because the browser tries to load the images relative to the <span class="cv_-_computer_voice">http</span> URL. The load balancer rejects the requests because they are insecure because they do not use HTTPS/SSL.</div>
+      <div class="B_-_Body"><a name="2492164">Avoid this problem by writing a custom base URL builder plugin (</a><span class="cv_-_computer_voice">IBaseURLBuilder</span>) plugin and registering it with the system.</div>
+      <div class="B_-_Body"><a name="2492165">You can base your implementation on the built-in example implementation found at the path:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2492169">PolicyCenter/java-api/examples/src/examples/plugins/baseurlbuilder</a></div>
+      <div class="B_-_Body"><a name="2492170">To handle the load balancer case mentioned earlier, the base URL builder plugin can look at the HTTP request’s header. If a property that you designate exists to indicate that the request came from the load balancer, return a base URL with the prefix </a><span class="cv_-_computer_voice">https</span> instead of <span class="cv_-_computer_voice">http</span>.</div>
+      <div class="B_-_Body"><a name="2492171">The built-in plugin implementation provides a parameter </a><span class="cv_-_computer_voice">FqdnForUrlRewrite</span> which is not set by default. If you enable browser-side integration features, you must specify this parameter to rewrite the URL for the external fully-qualified domain name (FQDN). The JavaScript security model prevents access across different domains. Therefore, if PolicyCenter and other third-party applications are installed on different hosts, the URLs must contain fully-qualified domain names. The fully-qualified domain name must be in the same domain. If the <span class="cv_-_computer_voice">FqdnForUrlRewrite</span> parameter is not set, the end user is responsible for entering a URL with a fully-qualified domain name.</div>
+      <div class="B_-_Body"><a name="2492175">There is another parameter called </a><span class="cv_-_computer_voice">auto</span> which tries to auto-configure the domain name. This setting is not recommended for clustering environments. For example, do not use this if the web server and application server are not on the same machine, or if multiple virtual hosts live in the same machine. In these cases, it is unlikely for the plugin to figure out the fully-qualified domain name automatically.</div>
+      <div class="B_-_Body"><a name="2492179">In Studio, under </a><span class="ui_-_UI_element">Resources</span>, click <span class="ui_-_UI_element">Plugins</span> → <span class="ui_-_UI_element">IBaseURLBuilder</span>, then add the parameter <span class="cv_-_computer_voice">FqdnForUrlRewrite</span> with the value of your domain name, such as <span class="cv_-_computer_voice">"mycompany.com"</span>. The domain name must specify the Fully Qualified Domain Name to be enforced in the URL. If the value is set to <span class="cv_-_computer_voice">"auto"</span>, the default plugin implementation makes the best effort to calculate the server FQDN from the underlying configuration.</div>
+      <h6 class="HS_-_Head_Sub"><a name="2492180">Implement </a><span class="cvh_-_computer_voice_in_heading">IBaseURLBuilder</span> and <span class="cvh_-_computer_voice_in_heading">InitializablePlugin</span></h6>
+      <div class="B_-_Body"><a name="2492181">Your </a><span class="cv_-_computer_voice">IBaseURLBuilder</span> plugin must explicitly implement <span class="cv_-_computer_voice">InitializablePlugin</span> in the class definition. Otherwise, PolicyCenter does not initialize your plugin.</div>
+      <div class="B_-_Body"><a name="2492185">For example, suppose your plugin implementation’s first line looks like this:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2492186">class MyURLBuilder implements IBaseURLBuilder {</a></PRE>
+      <div class="B_-_Body"><a name="2492187">Change it to this:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2492189">class MyURLBuilder implements IBaseURLBuilder, InitializablePlugin {</a></PRE>
+      <div class="B_-_Body"><a name="2492190">To conform to the new interface, you must also implement a </a><span class="cv_-_computer_voice">setParameters</span> method even if you do not need parameters from the plugin registry:</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2492191">function setParameters(map: java.util.Map)  { // this is part of InitializablePlugin</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2492192">&nbsp;&nbsp;&nbsp;&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2492193">&nbsp;&nbsp;&nbsp;&nbsp;// access values in the MAP to get parameters defined in plugin registry in Studio</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2492194">&nbsp;&nbsp;&nbsp;&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2492195">   }</a></PRE>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <PanelSet
+    editable="false"
+    id="RateTableDefinitionUsagePanelSet">
+    <Require
+      name="rateTables"
+      type="List&lt;RateTable&gt;"/>
+    <Variable
+      initialValue="new gw.web.admin.rating.RatingTableDefinitionUIHelper.OldData()"
+      name="oldData"
+      type="gw.web.admin.rating.RatingTableDefinitionUIHelper.OldData"/>
+    <PanelRef>
+      <Toolbar
+        visible="true"/>
+      <ListViewPanel
+        id="UsageLV">
+        <Variable
+          initialValue="gw.web.admin.rating.RatingTableDefinitionUIHelper.getOwningTables(rateTables, oldData)"
+          name="owningRateTables"
+          recalculateOnRefresh="true"/>
+        <RowTree
+          containerLabel="ratetable.RateBook.BookName"
+          containerType="RateTable"
+          contentType="RateTable"
+          elementName="ratetable"
+          id="rateTableTree"
+          pageSize="0"
+          value="owningRateTables">
+          <Row>
+            <Cell
+              action="RateBookDetail.go(ratetable.RateBook)"
+              align="left"
+              id="rateBook"
+              label="displaykey.Web.Rating.RateTableDefinition.Usage.RateBookEdition"
+              value="displaykey.Web.Rating.RateTableDefinition.Usage.RateBookLabel(ratetable.RateBook.BookName, ratetable.RateBook.BookEdition)"/>
+            <Cell
+              id="rateBookStatus"
+              label="displaykey.Web.Rating.RateTableDefinition.Usage.RateBookStatus"
+              sortDirection="descending"
+              sortOrder="1"
+              value="ratetable.RateBook.Status"/>
+            <Cell
+              id="rateBookEffDate"
+              label="displaykey.Web.Rating.RateTableDefinition.Usage.RateBookEffectiveDate"
+              sortDirection="descending"
+              sortOrder="2"
+              value="ratetable.RateBook.EffectiveDate"/>
+            <Cell
+              action="RateTableFactorList.go(gw.rating.rtm.domain.RateTableFactorListController.createDatabaseBasedController(), ratetable, ratetable.RateBook)"
+              id="rateTable"
+              label="displaykey.Web.Rating.RateTableDefinition.Usage.RateTable"
+              value="gw.rating.rtm.util.RatingUIUtil.getOwnershipLabel(ratetable)"/>
+          </Row>
+        </RowTree>
+      </ListViewPanel>
+    </PanelRef>
+  </PanelSet>
+</PCF>

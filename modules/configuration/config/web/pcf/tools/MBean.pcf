@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    autosaveable="false"
+    canEdit="true"
+    canVisit="perm.User.EditMBeans or perm.User.DevAllAccess"
+    countsAsWork="false"
+    id="MBean"
+    parent="ServerTools()"
+    startInEditMode="true"
+    title="displaykey.Web.InternalTools.MBean.MBean">
+    <LocationEntryPoint
+      signature="MBean(BeanCategory : String, GWMBeansData : gw.api.tools.MBeansData, GWMBeanName : String)"/>
+    <LocationEntryPoint
+      signature="MBean(BeanCategory : String, GWMBeansData : gw.api.tools.MBeansData, GWMBeanName : String, Result : String)"/>
+    <Variable
+      name="Result"
+      type="String"/>
+    <Variable
+      name="BeanCategory"
+      type="String"/>
+    <Variable
+      name="GWMBeansData"
+      type="gw.api.tools.MBeansData"/>
+    <Variable
+      name="GWMBeanName"
+      type="String"/>
+    <Variable
+      initialValue="GWMBeansData.getBeanByName(GWMBeanName)"
+      name="GWMBean"
+      recalculateOnRefresh="true"/>
+    <Screen
+      id="MBeanScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="MBeans.go(Result)"
+          id="MBean_BackButton"
+          label="displaykey.Web.InternalTools.MBean.Back"/>
+      </Toolbar>
+      <Verbatim
+        label="Result"/>
+      <PanelRef>
+        <ListViewPanel
+          id="MBeanOperationsLV"
+          validationExpression="GWMBeansData.getBeanOperations(GWMBeanName).HasElements">
+          <RowIterator
+            editable="true"
+            elementName="operation"
+            pageSize="0"
+            value="GWMBeansData.getBeanOperations(GWMBeanName)">
+            <IteratorSort
+              sortBy="operation"
+              sortOrder="1"/>
+            <Row>
+              <Cell
+                id="operation"
+                label="displaykey.Web.MBean.Operation"
+                value="operation"
+                width="500"/>
+              <LinkCell
+                id="execute"
+                label="displaykey.Button.Execute"
+                width="100">
+                <Link
+                  action="GWMBeansData.executeBeanOperation(GWMBean, operation)"
+                  id="doit"
+                  label="displaykey.Button.Execute"
+                  styleClass="miniButton"/>
+              </LinkCell>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+      </PanelRef>
+      <PanelRef
+        def="MBeanLV(BeanCategory, GWMBeansData, GWMBeanName)">
+        <Verbatim
+          label="GWMBeanName"/>
+      </PanelRef>
+    </Screen>
+  </Page>
+</PCF>

@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../../pcf.xsd">
+  <PanelSet
+    id="IMPartCumulDetailsPanelSet"
+    mode="IMSignPart">
+    <Require
+      name="imLine"
+      type="InlandMarineLine"/>
+    <Variable
+      initialValue="imLine.VersionList.IMCoverageParts.map( \ i -&gt; i.AllVersions.last() )"
+      name="covPartIterable"/>
+    <Variable
+      initialValue="covPartIterable.where( \ part -&gt; part typeis IMSignPart ).first() as IMSignPart"
+      name="imSignPart"/>
+    <PanelRef>
+      <TitleBar
+        title="displaykey.Web.Policy.IM.IMSigns"/>
+      <PanelRow>
+        <PanelColumn>
+          <PanelIterator
+            elementName="imSign"
+            value="imSignPart.VersionList.IMSigns.map( \ i -&gt; i.AllVersions.last() ).toTypedArray()">
+            <IteratorSort
+              sortBy="imSign.SignNumber"
+              sortOrder="1"/>
+            <PanelSet
+              id="RateCumulIMSignPanelSet">
+              <DetailViewPanel>
+                <InputColumn>
+                  <Label
+                    id="signdisplayname"
+                    label="imSign.DisplayName"/>
+                </InputColumn>
+              </DetailViewPanel>
+              <PanelRef
+                def="IMCostDV(imSign.VersionList.Coverages.flatMap(\ c -&gt; c.Costs ).flatMap(\ c -&gt; c.AllVersions).toList())"/>
+            </PanelSet>
+          </PanelIterator>
+        </PanelColumn>
+      </PanelRow>
+    </PanelRef>
+  </PanelSet>
+</PCF>

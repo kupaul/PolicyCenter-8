@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <PanelSet
+    id="AdditionalCoveragesPanelSet">
+    <Require
+      name="coverable"
+      type="Coverable"/>
+    <Require
+      name="coverageCategories"
+      type="String[]"/>
+    <Require
+      name="includeExclude"
+      type="boolean"/>
+    <PanelRef
+      def="AdditionalCoveragesDV(coverable, coverageCategories, includeExclude)">
+      <Toolbar>
+        <PickerToolbarButton
+          action="CoveragePatternSearchPopup.push(coverable, CoveragePatternSearchType.TC_COVERAGE, coverageCategories, includeExclude)"
+          hideIfReadOnly="true"
+          id="Add"
+          label="displaykey.Web.Policy.Coverages.AddCoverages"
+          onPick="createCoverageList(PickedValue.whereTypeIs( gw.api.productmodel.CoveragePattern ).toList())"/>
+      </Toolbar>
+    </PanelRef>
+    <Code><![CDATA[function createCoverageList(patterns: java.util.List<gw.api.productmodel.CoveragePattern>) {
+                    for (pattern in patterns) {
+                        coverable.createCoverage(pattern)
+                    }
+                }]]></Code>
+  </PanelSet>
+</PCF>

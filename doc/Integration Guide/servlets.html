@@ -1,0 +1,866 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Servlets</title>
+    <link rel="StyleSheet" href="css/servlets.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-claims.html#2380296">Other Integration Topics</a> : Servlets</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h2 class="CT_-_Chapter_Title"><a name="2380296">Servlets</a></h2>
+      <div class="B_-_Body"><a name="2421992">You can define simple web servlets for your PolicyCenter application using the </a><span class="cv_-_computer_voice">@Servlet</span> annotation.</div>
+      <h3 class="H1NB_-_Heading_1_No_Break"><a name="2421993">Implementing Servlets</a></h3>
+      <div class="B_-_Body"><a name="2421997">You can define simple web servlets inside your PolicyCenter application. You can define extremely simple HTTP entry points to custom code using this approach. These are separate from web services that use the SOAP protocol. These are separate also from the Guidewire PCF entrypoints feature. </a></div>
+      <div class="B_-_Body"><a name="2398419">Use this technique to define arbitrary Gosu code that a user or tool can call from a configurable URL. You can define a Gosu block that can determine from the URL whether your servlet owns the HTTP request. </a></div>
+      <div class="B_-_Body"><a name="2451603">Servlets provide no built-in object serialization or deserialization, such as is done in the SOAP protocol. </a></div>
+      <div class="B_-_Body"><a name="2451606">The PolicyCenter servlet implementation uses standard Java classes in the package </a><span class="cv_-_computer_voice">javax.servlet.http</span> to define the servlet request and response. The base class for your servlet must extend <span class="cv_-_computer_voice">javax.servlet.http.HttpServlet</span> directly, or extend a subclass of it.</div>
+      <div class="B_-_Body"><a name="2452782">Extending the base class </a><span class="cv_-_computer_voice">javax.servlet.http.HttpServlet</span> provides no inherent security for the servlet. By default users can trigger servlet code without authenticating. This is dangerous in a production system. PolicyCenter includes a utility class called <span class="cv_-_computer_voice">gw.servlet.ServletUtils</span> that you can use in your servlet to require authentication.</div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="2452768">You must add your own authentication system for servlets to protect information and data integrity. Carefully read </a><a href="javascript:WWHClickedPopup('integration', 'servlets.html#2452592', '');" title="Servlets">“Implementing Servlet Authentication”</a>. If you have any questions about server security, contact Guidewire Customer Support. </div>
+      <h4 class="H2_-_Heading_2"><a name="2452772">Creating a Basic Servlet</a></h4>
+      <h6 class="HS_-_Head_Sub"><a name="2381460">To create a basic servlet</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2381461">Write a Gosu class that extends the class </a><span style="font-family: &quot;Lucida Sans Typewriter&quot;; font-size: 7.0pt">javax.servlet.http.HttpServlet</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2454249">Register the servlet class in the file:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><a name="2454253">PolicyCenter/configuration/config/servlets.xml</a></div>
+      <div class="LP2_-_List_Para_002c_Level_2"><a name="2454254">Add one </a><span class="cv_-_computer_voice">&lt;servlet&gt;</span> element that references the fully qualified name of your class, for example:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2382117">&nbsp;&nbsp;&nbsp;&lt;servlets xmlns="http://guidewire.com/servlet"&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2382118">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;servlet class="com.example.servlets.MyServletClass"/&gt;</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2382119">&nbsp;&nbsp;&nbsp;&lt;/servlets&gt;</a></PRE>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2380344">Add the </a><span class="cv_-_computer_voice">@Servlet</span> annotation on the line before your class definition.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2458864">You must pass arguments to the constructors to specify which URLs your servlet handles. There are multiple versions of the constructors for different use cases. </a></div>
+      <div class="LP_-_List_Para"><a name="2460245">You provide a search pattern to test against the </a><span class="e_-_emphasis">servlet query path</span>. The servlet query path is every character after the computer name, the port, the web application name, and the word <span class="cv_-_computer_voice">"/service"</span>. In other words, your servlet gets the servlet URL substring identified as <span class="pc_-_parameter_in_code">YOUR_SERVLET_STRING</span> in the following URL syntax:</div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt; margin-bottom: 2.0pt; margin-top: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="2459961">@Servlet(pathPattern : String)</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP2_-_List_Para_002c_Level_2"><a name="2459962">Use this annotation constructor syntax for high-performance pattern matching, though with less flexibility than full regular expressions. </a></div>
+      <div class="LP2_-_List_Para_002c_Level_2"><a name="2461593">This annotation constructor declares the servlet URL pattern matching to use Apache </a><span class="cv_-_computer_voice">org.apache.commons.io.FilenameUtils</span> wildcard syntax. Apache <span class="cv_-_computer_voice">FilenameUtils</span> syntax supports Unix and Windows filenames with limited wildcard support for <span class="cv_-_computer_voice">?</span> (single character match) and <span class="cv_-_computer_voice">*</span> (multiple character match) similar to DOS filename syntax. The syntax also supports the Unix meaning of the <span class="cv_-_computer_voice">~</span> symbol. Matches are always case sensitive.</div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2460037">@Servlet(pathMatcher : block( path : String ) : boolean)</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP2_-_List_Para_002c_Level_2"><a name="2461111">Use this annotation constructor syntax for highly flexible pattern matching. </a></div>
+      <div class="LP2_-_List_Para_002c_Level_2"><a name="2461596">You pass a Gosu block that can do arbitrary matching on the servlet query path. Performance depends greatly on what you do in your block. As a parameter in parentheses for the annotation, pass a Gosu block that takes a URL </a><span class="cv_-_computer_voice">String</span>. Write the block such that the block returns <span class="cv_-_computer_voice">true</span> if and only if the user URL matches what your servlet handles.</div>
+      <div class="LP2_-_List_Para_002c_Level_2"><a name="2461411">If you only use the </a><span class="cv_-_computer_voice">startsWith</span> method of the <span class="cv_-_computer_voice">String</span> argument, for example <span class="cv_-_computer_voice">path.startsWith("myprefix")</span>, the servlet URL checking code is high performance. </div>
+      <div class="LP2_-_List_Para_002c_Level_2"><a name="2461366">You could do more flexible pattern matching with other APIs, such as full regular expressions. Using regular expressions lowers performance for high volumes of servlet calls. The following example uses regular expressions with the </a><span class="cv_-_computer_voice">matches</span> method on the <span class="cv_-_computer_voice">String</span> type:</div>
+      <div class="LP2_-_List_Para_002c_Level_2" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; margin-bottom: 2.0pt; margin-top: 2.0pt; text-transform: none; vertical-align: baseline"><span class="cv_-_computer_voice"><a name="2461367">@Servlet(\ path : String -&gt;path.matches("/test(/.*)?"))</a></span></div>
+      <div class="LP2_-_List_Para_002c_Level_2"><a name="2461234">This example servlet responds to URLs that start with the text </a><span class="cv_-_computer_voice">"/test"</span> in the servlet query path, and optionally a slash followed by other text. </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2452072">Override the </a><span class="cv_-_computer_voice">doGet</span> method to do your actual work. Your <span class="cv_-_computer_voice">doGet</span> method takes a servlet request object (<span class="cv_-_computer_voice">HttpServletRequest</span>) and a servlet response object (<span class="cv_-_computer_voice">HttpServletResponse</span>).</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2452182">In your </a><span class="cv_-_computer_voice">doGet</span> method, determine what work to do using the servlet request object.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="2454529">You must add your own authentication system for servlets to protect information and data integrity. Carefully read </a><a href="javascript:WWHClickedPopup('integration', 'servlets.html#2452592', '');" title="Servlets">“Implementing Servlet Authentication”</a>. If you have questions about server security, contact Guidewire Customer Support. </div>
+      <div class="LP_-_List_Para"><a name="2380349">Important properties on the request object include:</a></div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2380504">RequestURI</a></span> – Returns the part of this request’s URL from the protocol name up to the query string in the first line of the HTTP request.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2380577">RequestURL</a></span> – Reconstructs the URL the client used to make the request.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2380578">QueryString</a></span> – Returns the query string that is contained in the request URL after the path.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2380780">PathInfo</a></span> – Returns any extra path information associated with the URL the client sent when it made this request.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2380812">Headers</a></span> – Returns all the values of the specified request header as an <span class="cv_-_computer_voice">Enumeration</span> of <span class="cv_-_computer_voice">String</span> objects.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2398107">For full documentation on this class, refer to these Sun Javadoc pages:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2398110">http://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServletRequest.html </a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2422195">http://docs.oracle.com/javaee/6/api/javax/servlet/http/HttpServletResponse.html</a></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2422177">In your </a><span class="cv_-_computer_voice">doGet</span> method, write an HTTP response using the servlet response object. For example, the following simple response sets the content MIME type and the status of the response (<span class="cv_-_computer_voice">OK</span>): </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2380767">&nbsp;&nbsp;resp.ContentType = "text/plain"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2380856">&nbsp;&nbsp;resp.setStatus(HttpServletResponse.SC_OK)</a></PRE>
+      <div class="LP_-_List_Para"><a name="2380857">To write output text or binary data, use the </a><span class="cv_-_computer_voice">Writer</span> property of the response object. For example:</div>
+      <div class="CS_-_Code_Single_Line"><a name="2455796">&nbsp;&nbsp;resp.Writer.append("hello world output")</a></div>
+      <div class="B_-_Body"><a name="2455797">For example, the following simple Gosu servlet works although it provides no authentication: </a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2455801">package mycompany.test</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453881">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453882">uses gw.servlet.Servlet</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453883">uses javax.servlet.http.HttpServletRequest</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453884">uses javax.servlet.http.HttpServletResponse</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453885">uses javax.servlet.http.HttpServlet</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453886">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453887">@Servlet( \ path : String -&gt;path.matches("/test(/.*)?"))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453888">class TestingServlet extends HttpServlet {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453889">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453890">  override function doGet(req: HttpServletRequest, response: HttpServletResponse) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453891">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453892">    // ** SECURITY WARNING - FOR REAL PRODUCTION CODE, ADD AUTHENTICATION CHECKS HERE!</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453893">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453894">    // Trivial servlet response to test that the servlet responds</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453895">    response.ContentType = "text/plain"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453896">    response.setStatus(HttpServletResponse.SC_OK)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453897">    response.Writer.append("I am the page " + req.PathInfo)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453898">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453899">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2453873">}</a></PRE>
+      <div class="B_-_Body"><a name="2455713">Add an element in the </a><span class="cv_-_computer_voice">servlets.xml</span> file for your new servlet class. Run the QuickStart server at the command prompt: <span class="cv_-_computer_voice">gwpc dev-start</span> and test the servlet at the URL:</div>
+      <div class="CS_-_Code_Single_Line"><a name="2455721">http://localhost:PORT/pc/service/test</a></div>
+      <div class="B_-_Body"><a name="2454857">Change the port number as appropriate for your application.</a></div>
+      <div class="B_-_Body"><a name="2455078">For a production servlet, you must add authentication. See </a><a href="javascript:WWHClickedPopup('integration', 'servlets.html#2452592', '');" title="Servlets">“Implementing Servlet Authentication”</a>.</div>
+      <h4 class="H2_-_Heading_2"><a name="2452592">Implementing Servlet Authentication</a></h4>
+      <div class="B_-_Body"><a name="2452593">Extending the base class </a><span class="cv_-_computer_voice">javax.servlet.http.HttpServlet</span> provides no inherent security for your servlet. By default, anyone can trigger servlet code without authenticating. This is dangerous in a production system, generally speaking. PolicyCenter includes a utility class called <span class="cv_-_computer_voice">gw.servlet.ServletUtils</span> that you can use in your servlet to require authentication.</div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="2452467">You must add your own authentication for your servlet to protect information and data integrity. If you have any questions about server security, contact Guidewire Customer Support. </a></div>
+      <div class="B_-_Body"><a name="2452247">There are three methods in the </a><span class="cv_-_computer_voice">ServletUtils</span> class, each of which corresponds to a different source of authentication credentials. The following table summarizes each <span class="cv_-_computer_voice">ServletUtils</span> method. In all cases, the first argument is a standard Java <span class="cv_-_computer_voice">HttpServletRequest</span> object, which is an argument to your main servlet method <span class="cv_-_computer_voice">doWork</span>.</div>
+      <div class="T_-_Table"><a name="2452300">&nbsp;</a></div>
+      <table class="withHeading" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2452250">Source of credentials</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><span class="cvh_-_computer_voice_in_heading"><a name="2452252">ServletUtils</a></span> method name</div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2452254">Description</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2452256">Method arguments</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2452258">Existing PolicyCenter session</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2452263">getAuthenticatedUser</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2452265">If this servlet shares an application context with a running Guidewire application, there may be an active session token. If a user is currently logged into PolicyCenter, this method returns the associated </a><span class="cvt_-_computer_voice_table">User </span>object. </div>
+            <div class="TT_-_Table_Text"><a name="2452269">Always check the return value. The method returns </a><span class="cvt_-_computer_voice_table">null</span> if authentication failed. For example:</div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="2452270">there is no active authenticated session with correct credentials</a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="2452271">the user exited the application</a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="2452272">the session ID is not stored on the client</a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="2452273">the session </a><span class="cvt_-_computer_voice_table">ServiceToken</span> timeout has expired</div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><span class="cvt_-_computer_voice_table"><a name="2452275">HttpServletRequest</a></span> object</div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="2452276">A Boolean value that specifies whether to update the date and time of the session</a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2452278">HTTP Basic authentication headers</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2452280">getBasicAuthenticatedUser</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2452282">Even if there is no active session, you can use HTTP Basic authentication. This method gets the appropriate HTTP headers for name and password and attempts to authenticate. You can use this type of authentication style even if there is an active session. This method forces creation of a new session. The method gets the headers to find the user name and password and returns the associated </a><span class="cvt_-_computer_voice_table">User</span> object. </div>
+            <div class="TT_-_Table_Text"><a name="2457615">Always check the return value. The method returns </a><span class="cvt_-_computer_voice_table">null</span> if authentication failed.</div>
+            <div class="TT_-_Table_Text"><a name="2452283">For login problems, this method might throw the exception </a><span class="cvt_-_computer_voice_table">gw.api.webservice.exception.LoginException</span>.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><span class="cvt_-_computer_voice_table"><a name="2452285">HttpServletRequest</a></span> object</div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2452287">Arbitrary user/name pairs</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2452289">login</a></span></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2452291">Use the </a><span class="cvt_-_computer_voice_table">login</span> method to pass an arbitrary user and password as <span class="cvt_-_computer_voice_table">String</span> values and authenticate with PolicyCenter. For example, you might use a corporate implementation of single-sign-on (SSO) authentication that stores information in HTTP headers other than the HTTP Basic headers. You can get the username and password and call this method. This method forces creation of a new session. </div>
+            <div class="TT_-_Table_Text"><a name="2457721">Always check the return value. The method returns </a><span class="cvt_-_computer_voice_table">null</span> if authentication failed.</div>
+            <div class="TT_-_Table_Text"><a name="2452295">For login problems, this method might throw the exception </a><span class="cvt_-_computer_voice_table">gw.api.webservice.exception.LoginException</span>.</div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><span class="cvt_-_computer_voice_table"><a name="2452297">HttpServletRequest</a></span> object</div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="2452298">Username as a </a><span class="cvt_-_computer_voice_table">String</span></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="2452299">Password as a </a><span class="cvt_-_computer_voice_table">String</span></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </tr>
+      </table>
+      <div class="B_-_Body"><a name="2452301">You can combine the use of multiple methods of </a><span class="cv_-_computer_voice">ServletUtils</span> in your code. </div>
+      <div class="B_-_Body"><a name="2452302">For example, a typical design pattern is to first call the </a><span class="cv_-_computer_voice">getAuthenticatedUser</span> method to test whether there is an existing session token that represents valid credentials. If the <span class="cv_-_computer_voice">getAuthenticatedUser</span> method returns <span class="cv_-_computer_voice">null</span>, attempt to use HTTP Basic authentication by calling the method <span class="cv_-_computer_voice">getBasicAuthenticatedUser</span>.</div>
+      <div class="B_-_Body"><a name="2452303">The following code demonstrates this technique in the </a><span class="cv_-_computer_voice">doGet</span> method and calls to a separate method to do the main work of the servlet.</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2456710">package mycompany.test</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456711">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456712">uses gw.servlet.Servlet</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456713">uses javax.servlet.http.HttpServletRequest</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456714">uses javax.servlet.http.HttpServletResponse</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456715">uses javax.servlet.http.HttpServlet</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456716">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456717">@Servlet( \ path : String -&gt;path.matches("/test(/.*)?"))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456718">class TestingServlet extends HttpServlet {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456719">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456720">  override function doGet(req: HttpServletRequest, response: HttpServletResponse) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456721">    //print("Beginning call to doGet()...")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456722">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456723">    // SESSION AUTH : Get user from session if the client is already signed in.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456724">    var user = gw.servlet.ServletUtils.getAuthenticatedUser(req, true)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456725">    //print("Session user result = " + user?.DisplayName)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456726">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456727">    // HTTP BASIC AUTH : If the session user cannot be authenticated, try HTTP Basic</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456728">    if (user == null)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456729">      try {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456730">        user = gw.servlet.ServletUtils.getBasicAuthenticatedUser(req)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456731">        //print("HTTP Basic user result = " + user?.DisplayName)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456732">      }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456733">      catch (e) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456734">        response.sendError(HttpServletResponse.SC_UNAUTHORIZED,</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456735">           "Unauthorized. HTTP Basic authentication error.")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456736">       return // Be sure to RETURN early because authentication failed!</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456737">      }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456738">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456739">    if (user == null)    {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456740">      response.sendError(HttpServletResponse.SC_UNAUTHORIZED,</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456741">         "Unauthorized. No valid user with session context or HTTP Basic.")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456742">      return // Be sure to RETURN early because authentication failed!</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456743">    }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456744">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456745">    // IMPORTANT: Execution reaches here only if a user succeeds with authentication.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456746">    // Insert main servlet code here before end of function, which ends servlet request</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456747">    doMain(req, response, user )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456748">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456749">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456750">  // this method is called by our servlet AFTER successful authentication</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456751">  private function doMain(req: HttpServletRequest, response: HttpServletResponse, user : User)  {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456752">    assert(user != null)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456753">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456754">    var responseText =  "REQUEST SUCCEEDED\n"+</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456755">        "req.RequestURI: '${req.RequestURI}'\n" +</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456756">        "req.PathInfo: '${req.PathInfo}'\n" +</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456757">        "req.RequestURI: '${req.RequestURI}'\n" +</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456758">        "authenticated user name: '${user.DisplayName}'\n"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456759">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456760">    // debugging in the console</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456761">    //print(responseText)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456762">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456763">    // for output response</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456764">    response.ContentType = "text/plain"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456765">    response.setStatus(HttpServletResponse.SC_OK)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456766">    response.Writer.append(responseText)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456767">  }</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2456768">}</a></PRE>
+      <h6 class="HS_-_Head_Sub"><a name="2455324">To test session authentication servlet code</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2455485">In Studio, create the </a><span class="cv_-_computer_voice">mycompany.test.TestingServlet</span> as shown earlier in this topic.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2455584">Register this servlet in </a><span class="cv_-_computer_voice">servlets.xml</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2455615">Run the QuickStart server at the command prompt: </a><span class="cv_-_computer_voice">gwpc dev-start</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2456031">However, do not yet log into the PolicyCenter application.</a></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2455883">Test the servlet with no authentication by going to the URL:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><a name="2455948">http://localhost:PORT/pc/service/test</a></div>
+      <div class="LP_-_List_Para"><a name="2455671">You see a message:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2456608">HTTP ERROR 401</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2456610">Problem accessing /pc/service/test. Reason:</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2456604">Unauthorized. No valid user with session context or HTTP Basic.</a></PRE>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2456106">Log into the PolicyCenter application with valid credentials.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2456233">Test the servlet with no authentication by going to the URL:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><a name="2456237">http://localhost:PORT/pc/service/test</a></div>
+      <div class="LP_-_List_Para"><a name="2456238">You see a message:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2456652">REQUEST SUCCEEDED</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2456653">req.RequestURI: '/cc/service/test'</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2456654">req.PathInfo: '/test'</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2456655">req.RequestURI: '/cc/service/test'</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2456582">authenticated user name: 'Super User'</a></div>
+      <div class="B_-_Body"><a name="2456275">For testing of the HTTP Basic authentication, sign out of the PolicyCenter application to remove the session context. Next, re-test your servlet and use a tool that supports adding HTTP headers for HTTP Basic authentication.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="2452329">Alternative APIs for Authentication</a></h4>
+      <div class="B_-_Body"><a name="2453329">Guidewire recommends using the </a><span class="cv_-_computer_voice">ServletUtils</span> APIs for managing authentication. See <a href="javascript:WWHClickedPopup('integration', 'servlets.html#2452592', '');" title="Servlets">“Implementing Servlet Authentication”</a>. If you use <span class="cv_-_computer_voice">ServletUtils</span>, you can use the session key if available and if not you can use HTTP Basic authentication headers or custom headers. </div>
+      <div class="B_-_Body"><a name="2462447">An alternative approach for authentication is to use the legacy class </a><span class="cv_-_computer_voice">AbstractGWAuthServlet</span> to translate the security headers in the request and authenticate with the Guidewire server. There is a subclass called <span class="cv_-_computer_voice">AbstractBasicAuthenticationServlet</span>, which authenticates using HTTP Basic authentication. You can view the source code to both classes in Studio. These classes are provided primarily for legacy use because they do not support using more than one type of authentication at run time.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2461664">Abstract Guidewire Authentication Servlet Class</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2461717">To use the session key created from a Guidewire application that shares the same application context, you can write your servlet to extend the class </a><span class="cv_-_computer_voice">AbstractGWAuthServlet</span>. You must override the following methods:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2463604">doGet</a></span> – Your main task is to override the <span class="cv_-_computer_voice">doGet</span> method to do your main work. PolicyCenter already authenticates the session key if it exists before calling your <span class="cv_-_computer_voice">doWork</span> method. For more information about the parameters in this method, see <a href="javascript:WWHClickedPopup('integration', 'servlets.html#2452772', '');" title="Servlets">“Creating a Basic Servlet”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2463876">authenticate</a></span> – Create and return a session ID</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2462517">storeToken</a></span> – You can store the session token in this method, but you can also leave your method implementation empty.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2458685">invalidAuthentication</a></span> – Return a response for invalid authentication. For example:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2458668">override function invalidAuthentication( req: HttpServletRequest, </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2462764">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;resp: HttpServletResponse ) : void {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2458669">    resp.setHeader( "WWW-Authenticate", "Basic realm=\"Secure Area\"")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2458670">    resp.setStatus( HttpServletResponse.SC_UNAUTHORIZED )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2458671">  }</a></PRE>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2462000">Abstract HTTP Basic Authentication Servlet Class</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2462918">The </a><span class="cv_-_computer_voice">AbstractBasicAuthenticationServlet</span> class extends <span class="cv_-_computer_voice">AbstractGWAuthServlet</span> to support HTTP Basic authentication. </div>
+      <div class="B_-_Body"><a name="2462919">Your main task is to override the </a><span class="cv_-_computer_voice">doGet</span> method to do your main work. PolicyCenter already authenticates the using HTTP Basic authentication headers before calling your <span class="cv_-_computer_voice">doWork</span> method. For more information about the parameters in this method, see <a href="javascript:WWHClickedPopup('integration', 'servlets.html#2452772', '');" title="Servlets">“Creating a Basic Servlet”</a>.</div>
+      <div class="B_-_Body"><a name="2463199">Also, override the </a><span class="cv_-_computer_voice">isAuthenticationRequired</span> method and return <span class="cv_-_computer_voice">true</span> if authentication is required for this request.</div>
+      <div class="B_-_Body"><a name="2462920">The following example responds to servlet URL substrings that start with the string </a><span class="cv_-_computer_voice">/test/</span>. If an incoming URL matches that pattern, the servlet simply echoes back the <span class="cv_-_computer_voice">PathInfo</span> property of the response object, which contains the path.</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381760">package mycompany.test</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381761"> </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381762">uses gw.servlet.Servlet</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381763">uses javax.servlet.http.HttpServletRequest</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381764">uses javax.servlet.http.HttpServletResponse</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381765">uses javax.servlet.http.HttpServlet</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381766">uses gw.api.util.Logger</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381767"> </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381768">@Servlet( \ path : String -&gt;path.matches("/test(/.*)?"))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381769">class TestingServlet extends gw.servlet.AbstractBasicAuthenticationServlet {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2398327">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381770">&nbsp;&nbsp;override function doGet(req: HttpServletRequest, resp : HttpServletResponse) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381771">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2382314">&nbsp;&nbsp;&nbsp;&nbsp;print("servlet test url: " + req.RequestURI)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2382315">&nbsp;&nbsp;&nbsp;&nbsp;print("query string: " + req.QueryString)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381774">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381775">&nbsp;&nbsp;&nbsp;&nbsp;resp.ContentType = "text/plain"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381776">&nbsp;&nbsp;&nbsp;&nbsp;resp.setStatus(HttpServletResponse.SC_OK)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381777">&nbsp;&nbsp;&nbsp;&nbsp;resp.Writer.append("I am the page " + req.PathInfo)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381778">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2398361">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381779">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381780">&nbsp;&nbsp;override function isAuthenticationRequired( req: HttpServletRequest ) : boolean {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381781">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381782">&nbsp;&nbsp;&nbsp;&nbsp;// -- TODO -------------</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381783">&nbsp;&nbsp;&nbsp;&nbsp;// Read the headers and return true/false if user authentication is required</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381784">&nbsp;&nbsp;&nbsp;&nbsp;// ---------------------</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381785">    return true;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381786">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2398383">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2381787">}</a></PRE>
+      <div class="B_-_Body"><a name="2380369">This servlet responds to URLs with the word test in the service query path, such as the URL:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2381019">http://localhost:8080/pc/service</a><span class="s_-_strong">/test/</span>is/this/working</div>
+      <div class="B_-_Body"><a name="2381037">To test this, you must use a tool that supports adding HTTP Basic authentication headers for the username and password.</a></div>
+      <div class="B_-_Body"><a name="2463411">Note that the text </a><span class="cv_-_computer_voice">"/test"</span> in the URL is the important part that matches the servlet string. Change the port number and the server name to match your application.</div>
+      <div class="B_-_Body"><a name="2381059">Your web page displays the following:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2381464">I am the page /test/is/this/working</a></div>
+      <div class="B_-_Body"><a name="2381465">Use this basic design pattern to intercept any of the following:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2381466">A single page URL </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2381467">An entire virtual file hierarchy, as shown in the previous example</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2381468">Multiple page URLs that are not described in traditional file hierarchies as a single root directory with subdirectories. For example, you could intercept URLs with the regular expression:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><a name="2381469">"(/.*)?/my_magic_subfolder_one_level_down"</a></div>
+      <div class="LP_-_List_Para"><a name="2381470">That would match all of the following URLs:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2381471">http://localhost:8080/pc/service/test1/my_magic_subfolder_one_level_down</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2381472">http://localhost:8080/pc/service/test2/my_magic_subfolder_one_level_down</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2463545">http://localhost:8080/pc/service/test3/my_magic_subfolder_one_level_down</a></div>
+      <div class="B_-_Body"><a name="2381109">&nbsp;</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

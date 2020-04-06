@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<Schedule xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="scheduler-config.xsd">
+  <!-- Note that if you add batch processes to this list, you may also want to add them to
+    ServerTools.pcf so they can be individually run.
+
+    Or you may want to just add them there, so that they can be run manually.
+  -->
+
+  <!-- Retire canceled and dismissed activities every day at 12:30 AM -->
+  <ProcessSchedule process="ActivityRetire">
+    <CronSchedule hours="0" minutes="30"/>
+  </ProcessSchedule>
+  <!-- Check for archiving candidate PolicyTerms once a month at 1AM -->
+  <!--<ProcessSchedule process="ArchivePolicyTerm">
+    <CronSchedule dayofmonth="1" hours="1"/>
+  </ProcessSchedule>-->
+  <!-- Process requests to restore archived Policy Terms every night at 1:30AM -->
+  <!--<ProcessSchedule process="RestorePolicyTerm">
+    <CronSchedule hours="1" minutes="30"/>
+  </ProcessSchedule>-->
+  <!-- Delete orphaned FormTextData every day at 6AM -->
+  <ProcessSchedule process="FormTextDataDelete">
+    <CronSchedule hours="6"/>
+  </ProcessSchedule>
+  <!-- Start renewals for expiring policies every day at 1AM -->
+  <ProcessSchedule process="PolicyRenewalStart">
+    <CronSchedule hours="1"/>
+  </ProcessSchedule>
+  <!-- Policy Exception monitoring of open PolicyPeriods occurs every night at 2AM -->
+  <ProcessSchedule process="OpenPolicyException">
+    <CronSchedule hours="2"/>
+  </ProcessSchedule>
+  <!-- Policy Exception monitoring of most recent bound PolicyPeriods occurs at noon on the first Saturday of every month -->
+  <ProcessSchedule process="BoundPolicyException">
+    <CronSchedule hours="12" dayofweek="SAT#1" dayofmonth="?"/>
+  </ProcessSchedule>
+  <!-- Policy Exception monitoring of closed PolicyPeriods occurs at noon on the first Sunday of every month -->
+  <ProcessSchedule process="ClosedPolicyException">
+    <CronSchedule hours="12" dayofweek="SUN#1" dayofmonth="?"/>
+  </ProcessSchedule>
+  <!-- User Exception monitoring occurs every day at 3AM -->
+  <ProcessSchedule process="UserException">
+    <CronSchedule hours="3"/>
+  </ProcessSchedule>
+  <!-- Group Exception monitoring occurs every day at 4AM -->
+  <ProcessSchedule process="GroupException">
+    <CronSchedule hours="4"/>
+  </ProcessSchedule>
+  <!-- Activity Escalation happens every 30 minutes -->
+  <ProcessSchedule process="ActivityEsc">
+    <CronSchedule minutes="0,30"/>
+  </ProcessSchedule>
+  <!-- Generate Audits from AuditScheduleItems every day at 5AM -->
+  <ProcessSchedule process="AuditTask">
+    <CronSchedule hours="5"/>
+  </ProcessSchedule>
+  <!-- Run escalation rules on overdue premium reports every day at 4:30AM -->
+  <ProcessSchedule process="OverduePremiumReport">
+    <CronSchedule hours="4" minutes="30"/>
+  </ProcessSchedule>
+  <!-- Hourly user statistics generation at three minutes past the hour -->
+  <ProcessSchedule process="TeamScreens">
+    <CronSchedule minutes="3"/>
+  </ProcessSchedule>
+  <!-- Workflow process executes every ten minutes unless any WorkflowType is mapped
+       to the "fastinternal" handler, in which case the workflow process will execute
+       once every ten seconds.  Workflow cannot advance any faster in the background
+       than this schedule. -->
+  <ProcessSchedule process="Workflow">
+    <CronSchedule minutes="0/10" seconds="0"/>
+  </ProcessSchedule>
+  <!-- Expires specified jobs every day at 6AM -->
+  <ProcessSchedule process="JobExpire">
+    <CronSchedule hours="6"/>
+  </ProcessSchedule>
+  <!-- Geocode user contacts / account locations hourly -->
+  <!-- TODO: kjones: Uncomment this and change the registered GeocodePlugin OOTB once CC-51719 is implemented -->
+  <!--<ProcessSchedule process="PCGeocode">-->
+    <!--<CronSchedule minutes="0"/>-->
+  <!-- checks for mass recalculation of premium ceding every day at 3:30AM -->
+  <ProcessSchedule process="PremiumCeding">
+      <CronSchedule hours="3" minutes="30"/>
+  </ProcessSchedule>
+  <!-- Run the first of every month after midnight-->
+  <ProcessSchedule process="PurgeFailedWorkItems">
+    <CronSchedule dayofmonth="1" hours="1"/>
+  </ProcessSchedule>
+  <!-- Run the 10th of every month after midnight-->
+  <ProcessSchedule process="PurgeWorkflows">
+    <CronSchedule dayofmonth="10" hours="1"/>
+  </ProcessSchedule>
+  <!-- Run the twentieth of every month after midnight-->
+  <ProcessSchedule process="PurgeMessageHistory">
+    <CronSchedule dayofmonth="20" hours="1"/>
+  </ProcessSchedule>
+  <ProcessSchedule process="PurgeClusterMembers">
+    <CronSchedule dayofmonth="1" hours="2"/>
+  </ProcessSchedule>
+
+  <ProcessSchedule process="ProcessHistoryPurge">
+    <CronSchedule dayofmonth="3" hours="1" minutes="30"/>
+  </ProcessSchedule>
+  <ProcessSchedule process="PurgeWorkflows">
+    <CronSchedule dayofmonth="1" hours="1" minutes="30"/>
+  </ProcessSchedule>
+  <ProcessSchedule process="PurgeWorkflowLogs">
+    <CronSchedule dayofmonth="1" hours="2" minutes="30"/>
+  </ProcessSchedule>
+  <ProcessSchedule process="WorkItemSetPurge">
+    <CronSchedule dayofmonth="2" hours="1" minutes="30"/>
+  </ProcessSchedule>
+  <ProcessSchedule process="WorkQueueInstrumentationPurge">
+    <CronSchedule dayofmonth="2" hours="2" minutes="30"/>
+  </ProcessSchedule>
+
+    <!-- Sends activities on jobs with deactivated holds every day at 2AM -->
+  <ProcessSchedule process="PolicyHoldJobEval">
+    <CronSchedule hours="2"/>
+  </ProcessSchedule>
+  <!-- Apply any pending contact changes at every day at 12:10 AM -->
+  <ProcessSchedule process="ApplyPendingAccountDataUpdates">
+    <CronSchedule hours="0" minutes="10"/>
+  </ProcessSchedule>
+  <ProcessSchedule process="Purge">
+    <CronSchedule hours="4" minutes="30"/>
+  </ProcessSchedule>
+  <ProcessSchedule process="PurgeOrphanedPolicyPeriod">
+    <CronSchedule hours="12" dayofweek="WED#1" dayofmonth="?"/>
+  </ProcessSchedule>
+</Schedule>

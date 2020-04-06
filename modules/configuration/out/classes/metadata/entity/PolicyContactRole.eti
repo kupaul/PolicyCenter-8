@@ -1,0 +1,153 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  entity="PolicyContactRole"
+  type="effdated"
+  desc="A role that a contact plays within a policy period."
+  abstract="true"
+  effDatedBranchType="PolicyPeriod"
+  exportable="true"
+  extendable="true"
+  final="false"
+  subpackage="contact"
+  platform="false"
+  loadable="false"
+  table="policycontactrole">
+  <implementsInterface
+    iface="gw.api.domain.account.AccountSyncable"
+    impl="gw.contact.PolicyContactRoleAccountSyncableImpl"/>
+  <implementsInterface
+    iface="gw.api.effdate.UniqueOnPolicyPeriod"
+    impl="gw.api.effdate.PolicyContactRoleUniqueKeyGen"/>
+  <implementsInterface
+    iface="gw.api.copier.EffDatedCopyable"
+    impl="gw.contact.PolicyContactRoleCopier"/>
+  <implementsInterface
+    iface="gw.api.logicalmatch.EffDatedLogicalMatcher"
+    impl="gw.contact.PolicyContactRoleMatcher"/>
+  <implementsInterface
+    iface="gw.api.domain.account.Mergeable"
+    impl="gw.contact.PolicyContactRoleMergeableImpl"/>
+  <implementsInterface
+    iface="gw.api.domain.RefersOutOfDomainGraph"
+    impl="gw.contact.PolicyContactRoleRefersOutOfDomainGraphImpl"/>
+  <implementsInterface
+    iface="gw.api.domain.DenormalizedFKOutOfDomainGraph"
+    impl="gw.contact.PolicyContactRoleDenormalizedFKImpl"/>
+  <column
+    name="SeqNumber"
+    type="integer"
+    desc="The contact sequence number"
+    nullok="true"
+    setterScriptability="all"/>
+  <column
+    name="CompanyNameInternal"
+    type="companyname"
+    nullok="true"
+    desc="Internal field for sharing and revisioning the role's company name."
+    supportsLinguisticSearch="true"
+    getterScriptability="doesNotExist"
+    setterScriptability="doesNotExist">
+    <columnParam
+      name="logicalSize"
+      value="60"/>
+  </column>
+  <column
+    name="FirstNameInternal"
+    type="firstname"
+    nullok="true"
+    desc="Internal field for sharing and revisioning the role's first name."
+    supportsLinguisticSearch="true"
+    getterScriptability="doesNotExist"
+    setterScriptability="doesNotExist"/>
+  <column
+    name="LastNameInternal"
+    type="lastname"
+    nullok="true"
+    desc="Internal field for sharing and revisioning the role's last name."
+    supportsLinguisticSearch="true"
+    getterScriptability="doesNotExist"
+    setterScriptability="doesNotExist"/>
+  <column
+    name="DateOfBirthInternal"
+    type="datetime"
+    nullok="true"
+    desc="Internal field for sharing and revisioning the date of birth."
+    getterScriptability="doesNotExist"
+    setterScriptability="doesNotExist"/>
+  <typekey
+    name="MaritalStatusInternal"
+    desc="Internal field for sharing and revisioning the marital status."
+    typelist="MaritalStatus"
+    nullok="true"
+    getterScriptability="doesNotExist"
+    setterScriptability="doesNotExist"/>
+  <foreignkey
+    name="AccountContactRole"
+    desc="The account contact role this policy contact role may be synced with.  While the policy contact role contains policy contract information, the account contact role contains shared role information."
+    fkentity="AccountContactRole"
+    setterScriptability="doesNotExist"
+    nullok="false"/>
+  <foreignkey
+    name="ContactDenorm"
+    desc="The PolicyContactRole.AccountContactRole.AccountContact.Contact (denormalization)."
+    fkentity="Contact"
+    nullok="false"
+    setterScriptability="all"/>
+  <events/>
+ <index
+    name="acctcontrolebranch"
+    desc="For perf test search job by lastname/firstname"
+    unique="false">
+    <indexcol
+      name="AccountContactRole"
+      keyposition="1"/>
+    <indexcol
+      name="BranchID"
+      keyposition="2"/>
+  </index>
+  <index
+      name="contdnrmbranch"
+      desc="Policy Contact LastName/FirstName look-up performance index.  Subtype is exact match for Primary Named Insured."
+      unique="false">
+    <indexcol name="Subtype" keyposition="1"/>
+    <indexcol name="ContactDenorm" keyposition="2"/>
+    <indexcol
+      name="BranchID"
+      keyposition="3"/>
+  </index>
+  <index
+    name="companysearch"
+    desc="Index for partial-match search by company name."
+    unique="false">
+    <indexcol
+      name="CompanyNameInternalDenorm"
+      keyposition="1"/>
+    <indexcol
+      name="Subtype"
+      keyposition="2"/>
+    <indexcol
+      name="BranchID"
+      keyposition="3"/>
+  </index>
+  <index
+    name="lastfirstsearch"
+    desc="Index for partial-match search by last and first name."
+    unique="false">
+    <indexcol
+      name="LastNameInternalDenorm"
+      keyposition="1"/>
+    <indexcol
+      name="FirstNameInternalDenorm"
+      keyposition="2"/>
+    <indexcol
+      name="Subtype"
+      keyposition="3"/>
+    <indexcol
+      name="ContactDenorm"
+      keyposition="4"/>
+    <indexcol
+      name="BranchID"
+      keyposition="5"/>
+  </index>
+</entity>

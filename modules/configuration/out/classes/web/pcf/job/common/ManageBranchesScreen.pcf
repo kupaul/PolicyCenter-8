@@ -1,0 +1,164 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    id="ManageBranchesScreen">
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="policyPeriod.Job"
+      name="job"
+      type="Job"/>
+    <Variable
+      initialValue="job.ActivePeriods.sortBy( \ p -&gt; p.BranchNumber )"
+      name="periods"
+      recalculateOnRefresh="true"
+      type="PolicyPeriod[]"/>
+    <Variable
+      initialValue="new PolicyPeriod[]{null, null}"
+      name="diffPeriods"
+      type="PolicyPeriod[]"/>
+    <Variable
+      initialValue="null"
+      name="rootNode"
+      type="gw.api.tree.RowTreeRootNode"/>
+    <Variable
+      initialValue="policyPeriod.Policy.Product.DiffTreeConfig"
+      name="diffTreeConfig"
+      recalculateOnRefresh="true"
+      type="String"/>
+    <PanelRef>
+      <DetailViewPanel
+        id="Wizard_ManageBranchesDV">
+        <InputColumn>
+          <ListViewInput
+            boldLabel="true"
+            editable="true"
+            label=" policyPeriod.Job.SideBySide ? displaykey.Web.JobWizard.ManageBranches.SideBySideVersionLabel : displaykey.Web.JobWizard.ManageBranches.MultiVersionLabel"
+            labelAbove="true">
+            <Toolbar>
+              <CheckedValuesToolbarButton
+                allCheckedRowsAction="gw.pcf.job.common.ManageBranchesScreenHelper.makeSelected(jobWizardHelper, job, CheckedValues[0])"
+                flags="one branch"
+                id="Wizard_ManageBranchesDV_SelectBranchButton"
+                iterator="br"
+                label="displaykey.Web.JobWizard.ManageBranches.SelectBranch"/>
+              <CheckedValuesToolbarButton
+                allCheckedRowsAction="jobWizardHelper.renamePeriod(CheckedValues[0]); (CurrentLocation as pcf.api.Wizard).saveDraft()"
+                flags="one branch"
+                id="Wizard_ManageBranchesDV_RenameButton"
+                iterator="br"
+                label="displaykey.Web.JobWizard.ManageBranches.Rename"
+                promptQuestion="displaykey.Web.JobWizard.ManageBranches.PromptBranchName"/>
+              <CheckedValuesToolbarButton
+                allCheckedRowsAction="gw.pcf.job.common.ManageBranchesScreenHelper.withdrawPeriods(jobWizardHelper, CurrentLocation as pcf.api.Wizard, job, periods, CheckedValues)"
+                confirmMessage="displaykey.Job.Operation.Withdraw.Confirm"
+                flags="any branch"
+                id="Wizard_ManageBranchesDV_WithdrawButton"
+                iterator="br"
+                label="displaykey.Web.JobWizard.ManageBranches.Withdraw"/>
+              <CheckedValuesToolbarButton
+                allCheckedRowsAction="diffPeriods[0] = CheckedValues[0]; diffPeriods[1] = CheckedValues[1]; rootNode = gw.diff.tree.DiffTree.recalculateRootNode(diffPeriods[0], diffPeriods[1], DiffReason.TC_MULTIVERSIONJOB)"
+                flags="two branch"
+                id="Wizard_ManageBranchesDV_DiffButton"
+                iterator="br"
+                label="displaykey.Web.JobWizard.ManageBranches.Diff"/>
+            </Toolbar>
+            <ListViewPanel
+              id="Wizard_ManageBranchesLV">
+              <Row
+                useTitleStyle="true">
+                <Cell
+                  id="VersionNameHeader"
+                  value="displaykey.Web.JobWizard.ManageBranchesLV.VersionName"/>
+                <CellIterator
+                  elementName="period"
+                  id="br"
+                  value="periods">
+                  <ToolbarFlag
+                    name="branch"/>
+                  <Cell
+                    hasCheckBox="true"
+                    id="BranchName"
+                    value="period.BranchName"/>
+                </CellIterator>
+              </Row>
+              <Row>
+                <Cell
+                  id="IsActive"
+                  value="displaykey.Web.JobWizard.ManageBranchesLV.IsSelected"/>
+                <CellIterator
+                  elementName="period"
+                  id="act"
+                  value="periods">
+                  <Cell
+                    align="center"
+                    id="RevIsActive"
+                    value="period == job.SelectedVersion ? displaykey.Web.JobWizard.ManageBranches.Selected : &quot;&quot;"/>
+                </CellIterator>
+              </Row>
+              <Row>
+                <Cell
+                  id="PeriodDate"
+                  value="displaykey.Web.JobWizard.ManageBranchesLV.CreateTime"/>
+                <CellIterator
+                  elementName="period"
+                  id="time"
+                  value="periods">
+                  <DateCell
+                    dateFormat="short"
+                    id="CreateTime"
+                    timeFormat="short"
+                    value="period.CreateTime"/>
+                </CellIterator>
+              </Row>
+              <Row>
+                <Cell
+                  id="PeriodStatus"
+                  value="displaykey.Web.JobWizard.ManageBranchesLV.PeriodStatus"/>
+                <CellIterator
+                  elementName="period"
+                  id="stats"
+                  value="periods">
+                  <ToolbarFlag
+                    name="branch"/>
+                  <Cell
+                    id="Status"
+                    value="period.Status"/>
+                </CellIterator>
+              </Row>
+              <Row
+                visible="true">
+                <Cell
+                  enableSort="false"
+                  id="PremiumHeader"
+                  value="displaykey.Web.JobWizard.ManageBranchesLV.PremiumTotals"/>
+                <CellIterator
+                  elementName="period"
+                  id="premium"
+                  value="periods">
+                  <ToolbarFlag
+                    name="branch"/>
+                  <MonetaryAmountCell
+                    formatType="currency"
+                    id="SumAmount"
+                    value="period.ValidQuote ? period.TotalCostRPT : 0bd.ofCurrency(period.PreferredSettlementCurrency)"
+                    valueVisible="period.JobProcess.canViewQuote()"/>
+                </CellIterator>
+              </Row>
+            </ListViewPanel>
+          </ListViewInput>
+        </InputColumn>
+      </DetailViewPanel>
+    </PanelRef>
+    <PanelRef
+      available="diffPeriods[0] != null and diffPeriods[1] != null"
+      def="DifferencesPanelSet(&quot;MultiVersionJob&quot;, diffPeriods[0], diffPeriods[1], rootNode, diffTreeConfig)"
+      visible="diffPeriods[0] != null and diffPeriods[1] != null"/>
+  </Screen>
+</PCF>

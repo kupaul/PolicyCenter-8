@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <!-- WARNING: Internal Guidewire file. DO NOT EDIT. -->
+  <CardViewPanel
+    hideTabIfSingle="true"
+    id="ProfilerResultsCV"
+    mode="GroupFrames">
+    <Require
+      name="profilerDataSource"
+      type="gw.api.profiler.ProfilerDataSource"/>
+    <Card
+      id="Empty"
+      title="displaykey.Web.Profiler.Results"
+      visible="profilerDataSource.ProfilerFrameGroupSource == null">
+      <PanelRef
+        def="ProfilerResultsEmptyDV()"/>
+    </Card>
+    <Card
+      id="Card"
+      title="displaykey.Web.Profiler.Results"
+      visible="profilerDataSource.ProfilerFrameGroupSource != null">
+      <ListDetailPanel
+        selectionName="stack"
+        selectionType="gw.api.profiler.ProfilerStack">
+        <ListViewPanel
+          id="StacksLV">
+          <RowIterator
+            editable="false"
+            elementName="lvStack"
+            value="profilerDataSource.ProfilerStacks">
+            <Row>
+              <Cell
+                id="stackName"
+                label="displaykey.Web.Profiler.StackName"
+                sortOrder="1"
+                value="lvStack.StackName"/>
+              <Cell
+                id="frameCount"
+                label="displaykey.Web.Profiler.Frames"
+                value="lvStack.FrameCount"/>
+              <Cell
+                id="elapsedTime"
+                label="displaykey.Web.Profiler.ElapsedTime"
+                value="lvStack.TotalElapsedTime"/>
+              <LinkCell
+                label="displaykey.Web.Profiler.DbmsInstrumentationReports">
+                <Link
+                  action="gw.api.profiler.ProfilerPageHelper.downloadReport(lvStack.getDbmsReport(profilerDataSource))"
+                  available="lvStack.getDbmsReport(profilerDataSource) != null"
+                  download="true"
+                  id="reportLink"
+                  label="lvStack.getDbmsReport(profilerDataSource).Name"
+                  styleClass="miniButton"
+                  visible="lvStack.getDbmsReport(profilerDataSource) != null"/>
+              </LinkCell>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+        <CardViewPanel
+          hideTabIfSingle="true">
+          <Card
+            id="stackCard"
+            title="&quot;&quot;">
+            <DetailViewPanel
+              visible="stack != null">
+              <Variable
+                initialValue="stack == null?null:profilerDataSource.getProfilerFrameGroupSource( stack )"
+                name="profilerFrameGroupSource"
+                recalculateOnRefresh="true"/>
+              <InputColumn>
+                <Input
+                  id="frames"
+                  label="displaykey.Web.Profiler.Frames"
+                  value="profilerFrameGroupSource.FrameCount"/>
+                <Input
+                  id="time"
+                  label="displaykey.Web.Profiler.ElapsedTime"
+                  value="profilerFrameGroupSource.TotalElapsedTime"/>
+              </InputColumn>
+            </DetailViewPanel>
+            <PanelRef
+              def="ProfilerFrameGroupLV(profilerDataSource, profilerDataSource.getProfilerFrameGroupSource( stack ))"
+              visible="profilerDataSource.ProfilerFrameGroupSource.StackCount &gt; 1">
+              <Toolbar/>
+            </PanelRef>
+          </Card>
+        </CardViewPanel>
+      </ListDetailPanel>
+      <DetailViewPanel
+        editable="false"
+        visible="profilerDataSource.ProfilerFrameGroupSource.StackCount == 1">
+        <InputColumn>
+          <Label
+            label="displaykey.Web.Profiler.OnlyOneStackAnalysisNotMeaningful"/>
+        </InputColumn>
+      </DetailViewPanel>
+    </Card>
+  </CardViewPanel>
+</PCF>

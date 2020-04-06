@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    canEdit="false"
+    id="ExternalContactFile_Details"
+    title="displaykey.Web.ContactFile.Details.Title">
+    <LocationEntryPoint
+      signature="ExternalContactFile_Details(contactSearchResult : gw.plugin.contact.ContactResult)"/>
+    <Variable
+      name="contactSearchResult"
+      recalculateOnRefresh="true"
+      type="gw.plugin.contact.ContactResult"/>
+    <Screen
+      editable="false"
+      id="ContactSearchExternalScreen">
+      <Variable
+        initialValue="getContactFromContactSearch()"
+        name="contact"
+        type="Contact"/>
+      <CardViewPanel
+        id="InternalDetailsCardPanelCV">
+        <Card
+          id="AccountContactDetailsCard"
+          title="displaykey.Web.AccountContacts.AccountDetail">
+          <PanelRow>
+            <PanelColumn>
+              <PanelRef
+                def="AccountContactDV(contact,null)"/>
+            </PanelColumn>
+          </PanelRow>
+          <PanelRow/>
+        </Card>
+        <Card
+          id="AddressesCard"
+          title="displaykey.Web.Contact.Addresses.Title">
+          <PanelRef
+            def="AddressesPanelSet(contact,false,null,null)"/>
+        </Card>
+      </CardViewPanel>
+      <!-- <Card
+        id="ContactSearchResultAddressDetailCard"
+        title="displaykey.Web.Contact.Addresses.Title"
+        visible="contactSearchResult.External">
+        <PanelRef
+          def="AddressesSoapPanelSet(contactSearchResult)"/>
+      </Card> -->
+      <DetailViewPanel>
+        <InputColumn/>
+      </DetailViewPanel>
+    </Screen>
+    <Code><![CDATA[function getContactFromContactSearch() : Contact {
+  return contactSearchResult.convertToContact(gw.plugin.contact.ContactCreator.createNonPersistentContactCreator())
+}]]></Code>
+  </Page>
+</PCF>

@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    autosaveable="false"
+    canVisit="true"
+    countsAsWork="false"
+    id="PickExistingDocumentPopup"
+    returnType="Document"
+    title="displaykey.Web.DocumentSearch.Documents">
+    <LocationEntryPoint
+      signature="PickExistingDocumentPopup(docContainer : gw.api.domain.document.DocumentContainer)"/>
+    <Variable
+      name="docContainer"
+      type="gw.api.domain.document.DocumentContainer"/>
+    <Screen
+      id="DocumentsScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="CurrentLocation.cancel();"
+          id="PickExistingDocumentPopup_CancelButton"
+          label="displaykey.Button.Cancel"/>
+      </Toolbar>
+      <SearchPanel
+        criteriaName="documentSearchCriteria"
+        resultsName="documentList"
+        search="documentSearchCriteria.performSearch()"
+        searchCriteria="return createSearchCriteria();"
+        searchOnEnter="true"
+        searchResultsType="DocumentQuery">
+        <PanelRef
+          def="DocumentSearchDV(documentSearchCriteria, docContainer typeis PolicyPeriod ? docContainer : null)">
+          <TitleBar
+            title="displaykey.Web.DocumentSearch.Title"/>
+        </PanelRef>
+        <PanelRef>
+          <Toolbar/>
+          <ListViewPanel
+            id="PickExistingDocumentsLV">
+            <RowIterator
+              editable="false"
+              elementName="document"
+              pickValue="Document"
+              value="documentList">
+              <Row>
+                <DocumentIconCell
+                  id="Icon"
+                  document="document"
+                  value="true"/>
+                <Cell
+                  id="Name"
+                  label="displaykey.Web.DocumentSearch.DocumentsLV.Name"
+                  printWidth="4"
+                  value="document.Name"/>
+                <Cell
+                  id="Type"
+                  label="displaykey.Web.DocumentSearch.DocumentsLV.Type"
+                  printWidth="2"
+                  value="document.Type"/>
+                <Cell
+                  id="Status"
+                  label="displaykey.Web.DocumentSearch.DocumentsLV.Status"
+                  value="document.Status"/>
+                <Cell
+                  id="Author"
+                  label="displaykey.Web.DocumentSearch.DocumentsLV.Author"
+                  printWidth="2"
+                  value="document.Author"/>
+                <DateCell
+                  dateFormat="short"
+                  id="DateModified"
+                  label="displaykey.Web.DocumentSearch.DocumentsLV.DateModified"
+                  sortDirection="descending"
+                  sortOrder="1"
+                  timeFormat="short"
+                  value="document.DateModified"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+    <Code><![CDATA[function createSearchCriteria() : DocumentSearchCriteria {
+  var searchCriteria = new DocumentSearchCriteria()
+  if (docContainer typeis Account) {
+    searchCriteria.Account = docContainer
+  }
+  else {
+    searchCriteria.RelatedTo = docContainer
+  }
+  return searchCriteria
+}]]></Code>
+  </Popup>
+</PCF>

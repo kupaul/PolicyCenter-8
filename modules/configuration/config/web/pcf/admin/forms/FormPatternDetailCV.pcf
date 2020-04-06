@@ -1,0 +1,170 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <CardViewPanel
+    id="FormPatternDetailCV">
+    <Require
+      name="formPattern"
+      type="FormPattern"/>
+    <Variable
+      initialValue="{typekey.Job.TC_SUBMISSION, typekey.Job.TC_RENEWAL, typekey.Job.TC_REWRITE, typekey.Job.TC_POLICYCHANGE, typekey.Job.TC_REWRITENEWACCOUNT}"
+      name="issuanceAndChangeJobs"
+      type="typekey.Job[]"/>
+    <Card
+      id="BasicsDetailCard"
+      title="displaykey.Web.Admin.FormPatternDetail.Basics">
+      <PanelRef
+        def="FormPatternDetail_BasicsDV(formPattern)"/>
+      <PanelRef
+        def="LocalizedValuesDV(formPattern, { &quot;Description&quot;}, { displaykey.Web.Admin.FormPatternDetail.L10nDV.Name })"
+        visible="gw.api.util.LocaleUtil.canSwitchLanguage()"/>
+    </Card>
+    <Card
+      id="ProductsDetailCard"
+      title="displaykey.Web.Admin.FormPatternDetail.Products">
+      <PanelRef
+        def="FormPatternDetail_ProductsLV(formPattern)">
+        <Toolbar>
+          <AddButton
+            hideIfReadOnly="true"
+            id="AddProduct"
+            iterator="FormPatternDetail_ProductsLV.FormPatternDetail_ProductsLV"
+            label="displaykey.Web.Generic.Add">
+            <AddMenuItemIterator
+              elementName="product"
+              value="formPattern.getAvailableProducts()">
+              <IteratorSort
+                sortBy="product.DisplayName"
+                sortOrder="1"/>
+              <AddMenuItem
+                id="ProductItem"
+                iterator="FormPatternDetail_ProductsLV.FormPatternDetail_ProductsLV"
+                label="product.DisplayName"
+                toCreateAndAdd="formPattern.addProduct(product)"/>
+            </AddMenuItemIterator>
+          </AddButton>
+          <RemoveButton
+            flags="any product"
+            hideIfReadOnly="true"
+            id="RemoveProduct"
+            iterator="FormPatternDetail_ProductsLV.FormPatternDetail_ProductsLV"
+            label="displaykey.Web.Generic.Remove"/>
+        </Toolbar>
+      </PanelRef>
+    </Card>
+    <Card
+      id="JobsDetailCard"
+      title="displaykey.Web.Admin.FormPatternDetail.Jobs">
+      <PanelRef
+        def="FormPatternDetail_JobsLV(formPattern)">
+        <Toolbar>
+          <AddButton
+            hideIfReadOnly="true"
+            id="AddJob"
+            iterator="FormPatternDetail_JobsLV.FormPatternDetail_JobsLV"
+            label="displaykey.Web.Generic.Add">
+          <AddMenuItem
+              id="AllIssuanceAndChangeJobs"
+              iterator="FormPatternDetail_JobsLV.FormPatternDetail_JobsLV"
+              label="displaykey.Forms.Generic.AllIssuanceAndChangeJobs"
+              toCreateAndAdd="formPattern.addJobs(issuanceAndChangeJobs)"
+              visible="getIssuanceAndChangeJobsButtonVisibility()"/>
+            <AddMenuItemIterator
+              elementName="job"
+              value="formPattern.getAvailableJobs()">
+              <IteratorSort
+                sortBy="job.DisplayName"
+                sortOrder="1"/>
+              <AddMenuItem
+                id="JobItem"
+                iterator="FormPatternDetail_JobsLV.FormPatternDetail_JobsLV"
+                label="job.DisplayName"
+                toCreateAndAdd="formPattern.addJob(job)"/>
+            </AddMenuItemIterator>
+          </AddButton>
+          <RemoveButton
+            flags="any job"
+            hideIfReadOnly="true"
+            id="RemoveJob"
+            iterator="FormPatternDetail_JobsLV.FormPatternDetail_JobsLV"
+            label="displaykey.Web.Generic.Remove"/>
+        </Toolbar>
+      </PanelRef>
+    </Card>
+    <Card
+      id="JurisdictionsDetailCard"
+      title="displaykey.Web.Admin.FormPatternDetail.Jurisdictions">
+      <PanelRef
+        def="FormPatternDetail_JurisdictionsLV(formPattern)">
+        <TitleBar
+          title="displaykey.Web.Admin.FormPatternDetail.JurisdictionsLV.Title"/>
+        <Toolbar>
+          <AddButton
+            hideIfReadOnly="true"
+            id="AddLookup"
+            iterator="FormPatternDetail_JurisdictionsLV.FormPatternDetail_JurisdictionsLV"
+            label="displaykey.Web.Generic.Add"/>
+          <AddButton
+            flags="one lookup"
+            hideIfReadOnly="true"
+            id="DuplicateLookup"
+            iterator="FormPatternDetail_JurisdictionsLV.FormPatternDetail_JurisdictionsLV"
+            label="displaykey.Button.Duplicate">
+            <AddMenuItemIterator
+              elementName="numberOfTimes"
+              id="numberOfTimesOptions"
+              value="formPattern.NumberOfTimesThatRowsCanBeDuplicated">
+              <AddMenuItem
+                hideIfReadOnly="true"
+                id="numberOfTimesOption"
+                iterator="FormPatternDetail_JurisdictionsLV.FormPatternDetail_JurisdictionsLV"
+                label="numberOfTimes"
+                toCreateAndAdd="formPattern.duplicateMultipleLookups(numberOfTimes, CheckedValues as FormPatternLookup[])"/>
+            </AddMenuItemIterator>
+          </AddButton>
+          <RemoveButton
+            flags="any lookup"
+            hideIfReadOnly="true"
+            id="RemoveLookup"
+            iterator="FormPatternDetail_JurisdictionsLV.FormPatternDetail_JurisdictionsLV"
+            label="displaykey.Web.Generic.Remove"/>
+        </Toolbar>
+        <Verbatim
+          label="displaykey.Web.Admin.FormPatternDetail.JurisdictionsLV.SortOrder.Message"/>
+      </PanelRef>
+      <PanelDivider/>
+      <PanelRef
+        def="FormPatternDetail_JurisdictionsDV(formPattern)">
+        <TitleBar
+          title="displaykey.Web.Admin.FormPatternDetail.JurisdictionsDV.Title"/>
+      </PanelRef>
+    </Card>
+    <Card
+      id="PolicyChangeDetailCard"
+      title="displaykey.Web.Admin.FormPatternDetail.PolicyChange"
+      visible="formPattern.hasJob(typekey.Job.TC_POLICYCHANGE)">
+      <PanelRef
+        available="true"
+        def="FormPatternDetail_PolicyChangeDV(formPattern)">
+        <TitleBar
+          title="displaykey.Web.Admin.FormPatternDetail.PolicyChangeDV.Title"/>
+      </PanelRef>
+    </Card>
+    <Card
+      id="InferenceDetailCard"
+      onSelect="if(formPattern.PolicyLinePatternCode == null and formPattern.PolicyLinePatternRange.Count == 1) { formPattern.PolicyLinePatternCode = formPattern.PolicyLinePatternRange[0].Code }"
+      title="displaykey.Web.Admin.FormPatternDetail.Inference">
+      <PanelRef
+        def="FormPatternDetail_InferencePanelSet(formPattern)"/>
+    </Card>
+    <Code><![CDATA[function getIssuanceAndChangeJobsButtonVisibility() : boolean {
+  for (job in issuanceAndChangeJobs) {
+    if (not formPattern.Jobs.contains(job)) {
+      return true
+    }
+  }
+  return false
+}]]></Code>
+  </CardViewPanel>
+</PCF>

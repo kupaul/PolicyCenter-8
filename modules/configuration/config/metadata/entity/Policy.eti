@@ -1,0 +1,207 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  consistentchildren="true"
+  desc="Policy attributes including account, group and user assignment, product and policy type"
+  effDatedBranchesField="Periods"
+  effDatedRegistryTableName="policyregistry"
+  entity="Policy"
+  exportable="true"
+  loadable="false"
+  subpackage="policy"
+  table="policy"
+  type="effdatedcontainer">
+  <implementsInterface
+    iface="gw.api.history.CustomHistory"
+    impl="gw.api.history.PolicyCustomHistoryImpl"/>
+  <implementsEntity
+    name="Extractable"/>
+  <implementsEntity
+    adapter="com.guidewire.pc.domain.purge.PolicyInfoAdapter"
+    name="RootInfo"/>
+  <column
+    desc="The date on which this policy was issued by the issuing job."
+    name="IssueDate"
+    nullok="true"
+    setterScriptability="hidden"
+    type="dateonly"/>
+  <column
+    desc="The number of losses. Only applicable for a loss history type of 'attached'."
+    exportable="false"
+    name="NumPriorLosses"
+    nullok="true"
+    type="nonnegativeinteger"/>
+  <monetaryamount
+    amountColumnName="PriorTotalIncurred"
+    amountRange="nonnegative"
+    desc="The total incurred. Only applicable for a loss history type of 'attached'."
+    exportable="false"
+    name="PriorTotalIncurred"
+    nullok="true"/>
+  <column
+    desc="The Product defining what kind of Policy this is"
+    name="ProductCode"
+    nullok="false"
+    setterScriptability="hidden"
+    type="patterncode"/>
+  <column
+    default="false"
+    desc="Do not archive any of the terms for this Policy. Terms that are already archived will not be automatically retrieved."
+    name="DoNotArchive"
+    nullok="false"
+    setterScriptability="doesNotExist"
+    type="bit"/>
+  <column
+    default="false"
+    desc="Do not purge any jobs or policy periods for this policy."
+    name="DoNotPurge"
+    nullok="false"
+    setterScriptability="doesNotExist"
+    type="bit"/>
+  <column
+    desc="The date on which this policy was originally issued or bound."
+    name="OriginalEffectiveDate"
+    nullok="true"
+    type="dateonly"/>
+  <monetaryamount
+    amountColumnName="PriorPremiums"
+    amountRange="nonnegative"
+    desc="Premiums for policy terms prior to PC conversion. This value can be set during conversion on renewal."
+    name="PriorPremiums"
+    nullok="true"/>
+  <typekey
+    default="nol"
+    desc="How the loss history is described for this policy"
+    exportable="false"
+    name="LossHistoryType"
+    nullok="false"
+    typelist="LossHistoryType"/>
+  <typekey
+    desc="Package Risk Type"
+    name="PackageRisk"
+    nullok="true"
+    typelist="PackageRisk"/>
+  <typekey
+    createhistogram="true"
+    desc="The policy's preferred language"
+    name="PrimaryLanguage"
+    nullok="true"
+    typelist="LanguageType"/>
+  <typekey
+    createhistogram="true"
+    desc="The policy's preferred locale"
+    name="PrimaryLocale"
+    nullok="true"
+    typelist="LocaleType"/>
+  <foreignkey
+    columnName="AccountID"
+    desc="The Account to which this policy belongs.  Note that getting the value of this foreign key may result in the Account being re-retrieved if it is a non-SOR account."
+    fkentity="Account"
+    name="Account"
+    nullok="false"
+    soapnullok="true"/>
+  <foreignkey
+    columnName="MovedPolicySourceAccountID"
+    desc="The Account to which this policy comes from.  This field is populated if the policy is moved from other account."
+    fkentity="Account"
+    name="MovedPolicySourceAccount"
+    nullok="true"/>
+  <foreignkey
+    columnName="ProducerCodeOfServiceID"
+    desc="The producer code that manages this policy and can modify it.  If external user use producer code security, the user must have this producer code."
+    exportasid="true"
+    fkentity="ProducerCode"
+    name="ProducerCodeOfService"
+    nullok="false"/>
+  <onetoone
+    desc="Points to the join table of divided policies."
+    exportable="false"
+    fkentity="PolicyPolicyDivide"
+    getterScriptability="hidden"
+    linkField="DividedPolicy"
+    name="DividedToNewAccountSourceJoin"
+    nullok="true"
+    setterScriptability="doesNotExist"/>
+  <onetoone
+    desc="Points to the source policy part of the join table if the policy has been rewritten"
+    exportable="false"
+    fkentity="PolicyPolicyRewrite"
+    getterScriptability="hidden"
+    linkField="SourcePolicy"
+    name="RewrittenToNewAccountSourceJoin"
+    nullok="true"
+    setterScriptability="doesNotExist"/>
+  <onetoone
+    desc="Points to the destination policy part of the join table if the policy has a source policy which has been rewritten"
+    exportable="false"
+    fkentity="PolicyPolicyRewrite"
+    getterScriptability="hidden"
+    linkField="RewrittenPolicy"
+    name="RewrittenToNewAccountDestinationJoin"
+    nullok="true"
+    setterScriptability="doesNotExist"/>
+  <array
+    arrayentity="AuditInformation"
+    cascadeDelete="true"
+    desc="The audits for this policy"
+    exportable="false"
+    getterScriptability="hidden"
+    name="AuditInformations"
+    setterScriptability="hidden"/>
+  <array
+    arrayentity="Job"
+    desc="Jobs of this policy."
+    exportable="false"
+    name="Jobs"
+    owner="true"/>
+  <array
+    arrayentity="LossHistoryEntry"
+    cascadeDelete="true"
+    desc="Loss history detail entries. Only applicable for a loss history type of 'manually entered'."
+    exportable="false"
+    name="PriorLosses"/>
+  <array
+    arrayentity="Note"
+    cascadeDelete="true"
+    desc="Notes associated with this Policy"
+    getterScriptability="hidden"
+    name="Notes"
+    setterScriptability="hidden"/>
+  <array
+    arrayentity="PolicyPeriod"
+    cascadeDelete="true"
+    desc="Periods of this policy."
+    exportable="false"
+    name="Periods"/>
+  <array
+    arrayentity="PriorPolicy"
+    desc="Prior policy information for this policyholder."
+    exportable="false"
+    name="PriorPolicies"/>
+  <array
+    arrayentity="PolicyUserRoleAssignment"
+    cascadeDelete="true"
+    desc="Role Assignments for this bean."
+    exportable="false"
+    name="RoleAssignments"/>
+  <array
+    arrayentity="UWIssueHistory"
+    cascadeDelete="true"
+    desc="History of changes to all UW issues associated with this policy"
+    name="IssueHistories"/>
+  <array
+    arrayentity="UWReferralReason"
+    desc="Referral reasons of the policy"
+    name="UWReferralReasons"
+    owner="true"/>
+  <!-- NumPriorLosses = 0 if and only if PriorTotalIncurred = 0 (or both are NULL) -->
+  <checkconstraint
+    predicate="((NumPriorLosses is null) AND (PriorTotalIncurred is null)) OR ((NumPriorLosses = 0) AND (PriorTotalIncurred = 0)) OR ((NumPriorLosses &gt; 0) AND (PriorTotalIncurred &gt; 0))"/>
+  <events>
+    <event
+      description="Event fired when a policy period has been purged."
+      name="PolicyPurged"/>
+  </events>
+  <dbcheckbuilder
+    className="com.guidewire.pc.domain.policy.period.dbchecks.PolicyDBCheckBuilder"/>
+</entity>

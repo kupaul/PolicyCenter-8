@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InputSet
+    id="GroupDetailInputSet">
+    <Require
+      name="group"
+      type="Group"/>
+    <Require
+      name="isSupervisorRequired"
+      type="boolean"/>
+    <Require
+      name="existingUsers"
+      type="List&lt;User&gt;"/>
+    <Variable
+      initialValue="User.util.CurrentUser.findAvailableSecurityZones()"
+      name="allSecurityZones"
+      type="SecurityZoneQuery"/>
+    <Label
+      label="displaykey.Web.Admin.GroupDetailInputSet.Group"/>
+    <TextAreaInput
+      editable="true"
+      id="Description"
+      label="displaykey.Web.Admin.GroupDetailInputSet.Description"
+      numRows="2"
+      value="group.Description"/>
+    <InputDivider/>
+    <AltUserInput
+      action="UserDetailPage.go(group.Supervisor)"
+      actionAvailable="group.Supervisor != null and ((not User.util.CurrentUser.ExternalUser) or group.Supervisor.Organization == User.util.CurrentUser.Organization)"
+      editable="true"
+      id="Supervisor"
+      label="displaykey.Web.Admin.GroupDetailInputSet.Supervisor"
+      required="isSupervisorRequired"
+      validationExpression="(group.Organization.Carrier and group.Supervisor.ExternalUser) ? displaykey.Web.Admin.GroupDetailInputSet.Supervisor.ValidationError : null"
+      value="group.Supervisor">
+      <MenuItem
+        id="SelectUsers"
+        label="displaykey.Web.Admin.GroupDetailInputSet.ExistingUsers">
+        <MenuItemIterator
+          elementName="user"
+          id="UserIterator"
+          value="existingUsers.subtract( {group.Supervisor} ).toTypedArray()">
+          <IteratorSort
+            sortBy="user.DisplayName"
+            sortOrder="1"/>
+          <MenuItem
+            action="group.Supervisor = user"
+            id="UserMenuItem"
+            label="user.DisplayName"/>
+        </MenuItemIterator>
+      </MenuItem>
+    </AltUserInput>
+    <RangeInput
+      editable="not User.util.CurrentUser.ExternalUser"
+      id="SecurityZone"
+      label="displaykey.Web.Admin.GroupDetailInputSet.SecurityZone"
+      required="true"
+      value="group.SecurityZone"
+      valueRange="allSecurityZones"/>
+    <Input
+      editable="not User.util.CurrentUser.ExternalUser"
+      id="BranchCode"
+      label="displaykey.Web.Admin.GroupDetailInputSet.BranchCode"
+      required="true"
+      value="group.BranchCode"
+      visible="group.GroupType == &quot;branchuw&quot;"/>
+    <InputDivider/>
+    <Label
+      label="displaykey.Web.Admin.GroupDetailInputSet.Assignment"/>
+    <Input
+      editable="true"
+      id="LoadFactor"
+      label="displaykey.Web.Admin.GroupDetailInputSet.Assignment.LoadFactor"
+      required="true"
+      validationExpression="!(group.LoadFactor &lt; 0 or group.LoadFactor &gt; 100)              ? null : displaykey.Web.Admin.GroupDetailInputSet.Assignment.LoadFactor.OutOfRange"
+      value="group.LoadFactor"/>
+  </InputSet>
+</PCF>

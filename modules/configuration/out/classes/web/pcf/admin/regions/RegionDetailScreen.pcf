@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    id="RegionDetailScreen">
+    <Require
+      name="Region"
+      type="Region"/>
+    <Variable
+      initialValue="gw.api.admin.BaseAdminUtil.getDefaultCountry()"
+      name="country"
+      type="Country"/>
+    <Toolbar>
+      <EditButtons
+        editVisible="gw.api.admin.BaseAdminUtil.getRegionZoneTypesForDefaultCountry().length != 0"/>
+    </Toolbar>
+    <Verbatim
+      label="displaykey.Web.Regions.CannotEditRegions"
+      labelStyleClass="warning"
+      visible="gw.api.admin.BaseAdminUtil.getRegionZoneTypesForDefaultCountry().length == 0"/>
+    <PanelRef>
+      <DetailViewPanel
+        visible="true">
+        <InputColumn>
+          <Label
+            label="displaykey.Web.Admin.RegionDetailDV.Region"/>
+          <InputDivider
+            hideIfReadOnly="true"/>
+          <Input
+            editable="true"
+            id="Name"
+            label="displaykey.Web.Admin.RegionDetailDV.Name"
+            required="true"
+            value="Region.Name"/>
+          <TextAreaInput
+            id="Zones"
+            label="displaykey.Web.Admin.RegionDetailDV.Zones"
+            numCols="50"
+            numRows="5"
+            value="Region.Zones"/>
+          <RangeInput
+            editable="true"
+            hideIfReadOnly="true"
+            id="Country"
+            label="displaykey.Web.Admin.BusinessWeekDetailDV.Country"
+            required="true"
+            value="country"
+            valueRange="getPossibleCountries()">
+            <PostOnChange/>
+          </RangeInput>
+        </InputColumn>
+      </DetailViewPanel>
+    </PanelRef>
+    <PanelRef
+      def="RegionDetailDV(Region)"
+      editable="perm.Region.edit(Region)"
+      mode="country"/>
+    <PanelRef
+      def="LocalizedValuesDV(Region, { &quot;Name&quot;}, { displaykey.Web.Admin.RegionDetailDV.Name })"/>
+    <Code><![CDATA[function getPossibleCountries() : List<Country> {
+  var org = User.util.CurrentUser.Organization
+  if (org == null) {
+    org = User.util.UnrestrictedUser.Organization
+  }
+  return org.Countries
+}]]></Code>
+  </Screen>
+</PCF>

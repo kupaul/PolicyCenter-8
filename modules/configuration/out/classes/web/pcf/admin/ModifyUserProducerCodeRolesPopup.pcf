@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    canEdit="canEdit"
+    id="ModifyUserProducerCodeRolesPopup"
+    startInEditMode="canEdit"
+    title="displaykey.Web.Admin.UserAccessDV.ModifyRoles.Title(prodCode.Code, prodCode.Description != null ? prodCode.Description : &quot;&quot;)">
+    <LocationEntryPoint
+      signature="ModifyUserProducerCodeRolesPopup(user : User, prodCode : ProducerCode)"/>
+    <LocationEntryPoint
+      signature="ModifyUserProducerCodeRolesPopup(user : User, prodCode : ProducerCode, canEdit : boolean)"/>
+    <Variable
+      initialValue="true"
+      name="canEdit"
+      type="boolean"/>
+    <Variable
+      name="user"
+      type="User"/>
+    <Variable
+      name="prodCode"
+      type="ProducerCode"/>
+    <Variable
+      initialValue="computeSelectedRoles(user, prodCode)"
+      name="selectedRoles"
+      type="java.util.Map"/>
+    <Screen
+      id="ModifyUserProducerCodeRolesScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="CurrentLocation.commit()"
+          id="UpdateButton"
+          label="displaykey.Button.Update"
+          shortcut="U"
+          visible="canEdit"/>
+        <ToolbarButton
+          action="CurrentLocation.cancel()"
+          id="CancelButton"
+          label="displaykey.Button.Cancel"
+          shortcut="L"
+          visible="canEdit"/>
+        <ToolbarButton
+          action="CurrentLocation.cancel()"
+          id="OkButton"
+          label="displaykey.Button.OK"
+          shortcut="K"
+          visible="!canEdit"/>
+      </Toolbar>
+      <PanelRef>
+        <DetailViewPanel>
+          <InputColumn>
+            <ListViewInput>
+              <Toolbar/>
+              <ListViewPanel
+                id="RolesLV">
+                <RowIterator
+                  editable="true"
+                  elementName="pcRole"
+                  value="prodCode.ProducerCodeRoles">
+                  <Variable
+                    initialValue="pcRole.Role"
+                    name="role"
+                    type="Role"/>
+                  <Variable
+                    initialValue="selectedRoles.containsKey(role)"
+                    name="avail"
+                    type="boolean"/>
+                  <Row>
+                    <CheckBoxCell
+                      editable="true"
+                      id="Available"
+                      label="displaykey.Web.Admin.UserAccessDV.ModifyRoles.Available"
+                      value="avail">
+                      <PostOnChange
+                        onChange="modifySelection(avail, role)"/>
+                    </CheckBoxCell>
+                    <Cell
+                      id="Role"
+                      label="displaykey.Web.Admin.UserAccessDV.ModifyRoles.Role"
+                      value="role"/>
+                  </Row>
+                </RowIterator>
+              </ListViewPanel>
+            </ListViewInput>
+          </InputColumn>
+        </DetailViewPanel>
+      </PanelRef>
+    </Screen>
+    <Code><![CDATA[function computeSelectedRoles(u : User, pc : ProducerCode) : java.util.Map {
+        var upcs : UserProducerCode[] = pc.getUserProducerCodesFor(u)
+        var map : java.util.Map = new java.util.HashMap()
+        for (var upc in upcs) {
+          map.put(upc.Role, upc)
+        }
+        return map
+      }
+
+      function modifySelection(avail : boolean, role : Role) {
+        if (avail) {
+          var upc : UserProducerCode = prodCode.addUserProducerCodeRole(user, role)
+          selectedRoles.put(role, upc)
+        } else {
+          var upc = selectedRoles.remove(role) as UserProducerCode
+          prodCode.removeFromUserProducerCodes(upc)
+        }
+      }]]></Code>
+  </Popup>
+</PCF>

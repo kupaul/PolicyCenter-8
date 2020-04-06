@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <!-- The BOP Personal Property Cov requires its own CoverageInputSet because the valuation method impacts the
+    available choices for co-insurance. -->
+  <InputSet
+    id="CoverageInputSet"
+    mode="BOPPersonalPropCov">
+    <Require
+      name="coveragePattern"
+      type="gw.api.productmodel.ClausePattern"/>
+    <Require
+      name="coverable"
+      type="Coverable"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="coverable as BOPBuilding"
+      name="building"/>
+    <Variable
+      initialValue="getBOPPersonalPropCoinsuranceValue(building.BOPPersonalPropCov.BOPBPPValuationTerm.Value)"
+      name="coinsuranceTerm"
+      recalculateOnRefresh="true"/>
+    <HiddenInput
+      id="CovPatternDisplayName"
+      value="coveragePattern.DisplayName"/>
+    <InputGroup
+      allowToggle="coveragePattern.allowToggle(coverable)"
+      childrenVisible="coverable.getCoverageConditionOrExclusion(coveragePattern) != null"
+      id="CovPatternInputGroup"
+      label="coveragePattern.DisplayName"
+      onToggle="building.setCoverageConditionOrExclusionExists(coveragePattern, VALUE)">
+      <InputSetRef
+        def="CovTermDirectInputSet(building.BOPPersonalPropCov.BOPBPPBldgLimTerm)"
+        id="BOPPersonalPropCovLimit"
+        visible="building.BOPPersonalPropCov.hasCovTerm(&quot;BOPBPPBldgLim&quot;)"/>
+      <RangeInput
+        editable="true"
+        id="BOPPersonalPropCovValuationMethod"
+        label="building.BOPPersonalPropCov.BOPBPPValuationTerm.DisplayName"
+        required="building.BOPPersonalPropCov.BOPBPPValuationTerm.Pattern.Required"
+        value="building.BOPPersonalPropCov.BOPBPPValuationTerm.Value"
+        valueRange="building.BOPPersonalPropCov.BOPBPPValuationTerm?.Pattern.OrderedAvailableValues"
+        visible="building.BOPPersonalPropCov.hasCovTerm(&quot;BOPBPPValuation&quot;)">
+        <PostOnChange/>
+      </RangeInput>
+      <RangeInput
+        editable="openForEdit and gw.web.productmodel.ChoiceCovTermUtil.isEditable(coinsuranceTerm)"
+        id="BOPPersonalPropCovCoinsurance"
+        label="building.BOPPersonalPropCov.BOPPersonalPropCoinTerm.DisplayName"
+        required="building.BOPPersonalPropCov.BOPPersonalPropCoinTerm.Pattern.Required"
+        sortValueRange="false"
+        value="coinsuranceTerm.OptionValue"
+        valueRange="gw.web.productmodel.ChoiceCovTermUtil.getModelValueRange(coinsuranceTerm, openForEdit)"
+        visible="building.BOPPersonalPropCov.hasCovTerm(&quot;BOPPersonalPropCoin&quot;) and building.BOPPersonalPropCov.BOPBPPValuationTerm.Value != ValuationMethod.TC_FUNCVALUE"/>
+      <PostOnChange/>
+    </InputGroup>
+    <Code><![CDATA[function getBOPBuildingCoinsuranceValue(valMethodValue : gw.entity.TypeKey) : OptionBOPBuildingCoinType {
+  if (valMethodValue == ValuationMethod.TC_FUNCVALUE) { 
+    var optionValue = building.BOPBuildingCov.BOPBuildingCoinTerm.Pattern.getCovTermOpt("0")
+    building.BOPBuildingCov.BOPBuildingCoinTerm.setOptionValue(optionValue)
+  }
+  return building.BOPBuildingCov.BOPBuildingCoinTerm
+}
+
+function getBOPPersonalPropCoinsuranceValue(valMethodValue : gw.entity.TypeKey) : OptionBOPPersonalPropCoinType {
+  if (valMethodValue == ValuationMethod.TC_FUNCVALUE) { 
+    var optionValue = building.BOPPersonalPropCov.BOPPersonalPropCoinTerm.Pattern.getCovTermOpt("0")
+    building.BOPPersonalPropCov.BOPPersonalPropCoinTerm.setOptionValue(optionValue)
+  }
+  return building.BOPPersonalPropCov.BOPPersonalPropCoinTerm
+}]]></Code>
+  </InputSet>
+</PCF>

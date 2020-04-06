@@ -1,0 +1,308 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ListViewPanel
+    id="AuditRateCostDetailStateLV">
+    <Require
+      name="isPremiumReport"
+      type="boolean"/>
+    <Require
+      name="stateCosts"
+      type="java.util.Set&lt;WCCost&gt;"/>
+    <Require
+      name="basedOnStateCosts"
+      type="java.util.Set&lt;WCCost&gt;"/>
+    <Require
+      name="jurisdiction"
+      type="WCJurisdiction"/>
+    <Variable
+      initialValue="new gw.pcf.job.audit.AuditRateCostDetailStateLVHelper(jurisdiction)"
+      name="helper"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="stateCosts.byCalcOrder(401, 1000000)"
+      name="stateAggCosts"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="basedOnStateCosts.byCalcOrder(401, 1000000)"
+      name="basedOnAggCosts"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="helper.getAllCosts( stateAggCosts, basedOnAggCosts )"
+      name="allCosts"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="stateAggCosts.partitionUniquely( \ c -&gt; c.CostKey )"
+      name="stateCostMap"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="basedOnAggCosts.partitionUniquely( \ c -&gt; c.CostKey )"
+      name="basedOnCostMap"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="jurisdiction.Branch.PreferredSettlementCurrency"
+      name="currency"/>
+    <Row
+      renderAsSmartHeader="true">
+      <Cell
+        id="LocationNum"
+        value="displaykey.Web.SubmissionWizard.Quote.WC.Loc"/>
+      <Cell
+        id="ClassCode"
+        value="displaykey.Web.Quote.CumulDetail.Default.ClassCode"/>
+      <Cell
+        id="Description"
+        value="displaykey.Web.SubmissionWizard.Quote.WC.Desc"/>
+      <Cell
+        id="EstBasis"
+        value="helper.BasisLabel"
+        visible="not isPremiumReport"/>
+      <Cell
+        id="Rate"
+        value="displaykey.Web.SubmissionWizard.Quote.WC.Rate"
+        visible="not isPremiumReport"/>
+      <Cell
+        id="EstPremium"
+        value="helper.AmountLabel"
+        visible="not isPremiumReport"/>
+      <Cell
+        id="Basis"
+        value="isPremiumReport ? displaykey.Web.AuditWizard.Basis : displaykey.Web.AuditWizard.AuditedBasis"/>
+      <Cell
+        id="AuditedRate"
+        value="isPremiumReport ? displaykey.Web.AuditWizard.Premiums.Details.Rate : displaykey.Web.AuditWizard.Premiums.Details.AuditedRate"/>
+      <Cell
+        id="Amount"
+        value="isPremiumReport ? displaykey.Web.AuditWizard.Premiums.Details.Premium.Amount : displaykey.Web.AuditWizard.Premiums.Details.Premium.AuditedAmount"/>
+      <Cell
+        id="Difference"
+        value="displaykey.Web.AuditWizard.Premiums.Details.Change"
+        visible="not isPremiumReport"/>
+    </Row>
+    <RowIterator
+      editable="false"
+      elementName="cost"
+      id="f400t500"
+      pageSize="0"
+      type="WCJurisdictionCost"
+      value="allCosts.byCalcOrder( 401, 500 ).toTypedArray()">
+      <Variable
+        initialValue="stateCostMap.get( cost.CostKey )"
+        name="aggCost"
+        recalculateOnRefresh="true"/>
+      <Variable
+        initialValue="basedOnCostMap.get( cost.CostKey )"
+        name="basedOnAggCost"
+        recalculateOnRefresh="true"/>
+      <Variable
+        initialValue="aggCost == null ? java.math.BigDecimal.ZERO.ofCurrency(cost.Branch.PreferredSettlementCurrency) : aggCost.ActualTermAmountBilling"
+        name="aggCostTermAmount"
+        recalculateOnRefresh="true"
+        type="gw.pl.currency.MonetaryAmount"/>
+      <Variable
+        initialValue="basedOnAggCost == null ? java.math.BigDecimal.ZERO.ofCurrency(cost.Branch.PreferredSettlementCurrency) : basedOnAggCost.ActualTermAmountBilling"
+        name="basedOnTermAmt"
+        type="gw.pl.currency.MonetaryAmount"/>
+      <IteratorSort
+        sortBy="cost.CalcOrder"
+        sortOrder="1"/>
+      <Row
+        id="AggCostRow">
+        <Cell
+          id="empty"/>
+        <Cell
+          id="ClassCode"
+          value="cost.ClassCode"/>
+        <Cell
+          id="Description"
+          value="cost.Description"/>
+        <Cell
+          align="right"
+          id="EstBasis"
+          value="basedOnAggCost == null or basedOnAggCost.Basis == 0 ? &quot;&quot; : basedOnAggCost.Basis.DisplayValue"
+          visible="not isPremiumReport"/>
+        <Cell
+          align="right"
+          id="Rate"
+          value="basedOnAggCost == null or basedOnAggCost.ActualAdjRate == 0 ? &quot;&quot; : basedOnAggCost.ActualAdjRate as String"
+          visible="not isPremiumReport"/>
+        <MonetaryAmountCell
+          align="right"
+          formatType="currency"
+          id="EstPremium"
+          value="basedOnTermAmt"
+          visible="not isPremiumReport"/>
+        <Cell
+          align="right"
+          id="Basis"
+          value="aggCost == null or aggCost.Basis == 0 ? &quot;&quot; : aggCost.Basis.DisplayValue"/>
+        <Cell
+          align="right"
+          id="AuditedRateValue"
+          value="aggCost == null or aggCost.ActualAdjRate == 0 ? &quot;&quot; : aggCost.ActualAdjRate as String"/>
+        <MonetaryAmountCell
+          align="right"
+          formatType="currency"
+          id="TermAmount"
+          numCols="6"
+          value="aggCostTermAmount"/>
+        <MonetaryAmountCell
+          align="right"
+          formatType="currency"
+          id="Difference"
+          value="aggCostTermAmount - basedOnTermAmt"
+          visible="not isPremiumReport"/>
+      </Row>
+    </RowIterator>
+    <Row>
+      <Cell
+        id="Empty1"/>
+      <Cell
+        id="Empty2"/>
+      <Cell
+        bold="true"
+        id="DescriptionFoot400"
+        value="displaykey.Web.SubmissionWizard.Quote.WC.Subtotal.TotalPremium(jurisdiction.DisplayName)"/>
+      <Cell
+        id="Empty6"
+        visible="not isPremiumReport"/>
+      <Cell
+        id="Empty3"
+        visible="not isPremiumReport"/>
+      <Cell
+        align="right"
+        formatType="currency"
+        id="EstTotalPremium"
+        value="basedOnStateCosts.where( \ w -&gt; w.CalcOrder &lt; 501 ).AmountSum(currency)"
+        visible="not isPremiumReport"/>
+      <Cell
+        id="Empty9"/>
+      <Cell
+        id="Empty8"/>
+      <MonetaryAmountCell
+        align="right"
+        bold="true"
+        formatType="currency"
+        id="AmountSubtotal400"
+        value="stateCosts.where( \ w -&gt; w.CalcOrder &lt; 501 ).AmountSum(currency)"/>
+      <MonetaryAmountCell
+        align="right"
+        formatType="currency"
+        id="PremiumDifference"
+        value="stateCosts.where( \ w -&gt; w.CalcOrder &lt; 501 ).AmountSum(currency) - basedOnStateCosts.where( \ w -&gt; w.CalcOrder &lt; 501 ).AmountSum(currency)"
+        visible="not isPremiumReport"/>
+    </Row>
+    <RowIterator
+      editable="false"
+      elementName="cost"
+      id="gt500"
+      pageSize="0"
+      type="WCJurisdictionCost"
+      value="allCosts.byCalcOrder( 501, 1000000 ).toTypedArray()">
+      <Variable
+        initialValue="stateCostMap.get( cost.CostKey )"
+        name="aggCost"
+        recalculateOnRefresh="true"/>
+      <Variable
+        initialValue="basedOnCostMap.get( cost.CostKey )"
+        name="basedOnAggCost"
+        recalculateOnRefresh="true"/>
+      <Variable
+        initialValue="aggCost == null ? java.math.BigDecimal.ZERO.ofCurrency(cost.Branch.PreferredSettlementCurrency) : aggCost.ActualTermAmountBilling"
+        name="aggCostTermAmount"
+        recalculateOnRefresh="true"/>
+      <Variable
+        initialValue="basedOnAggCost == null ? java.math.BigDecimal.ZERO.ofCurrency(cost.Branch.PreferredSettlementCurrency) : basedOnAggCost.ActualTermAmountBilling"
+        name="basedOnTermAmt"/>
+      <IteratorSort
+        sortBy="cost.CalcOrder"
+        sortOrder="1"/>
+      <Row
+        id="AggCostRow">
+        <Cell
+          id="empty"/>
+        <Cell
+          id="ClassCode"
+          value="cost.ClassCode"/>
+        <Cell
+          id="Description"
+          value="cost.Description"/>
+        <Cell
+          align="right"
+          id="EstBasis"
+          value="basedOnAggCost == null or basedOnAggCost.Basis == 0 ? &quot;&quot; : basedOnAggCost.Basis.DisplayValue"
+          visible="not isPremiumReport"/>
+        <Cell
+          align="right"
+          id="Rate"
+          value="basedOnAggCost == null or basedOnAggCost.ActualAdjRate == 0 ? &quot;&quot; : basedOnAggCost.ActualAdjRate as String"
+          visible="not isPremiumReport"/>
+        <MonetaryAmountCell
+          align="right"
+          formatType="currency"
+          id="EstPremium"
+          value="basedOnTermAmt"
+          visible="not isPremiumReport"/>
+        <Cell
+          align="right"
+          id="Basis"
+          value="aggCost == null or aggCost.Basis == 0 ? &quot;&quot; : aggCost.Basis.DisplayValue"/>
+        <Cell
+          align="right"
+          id="AuditedRateValue1"
+          value="aggCost == null or aggCost.ActualAdjRate == 0 ? &quot;&quot; : aggCost.ActualAdjRate as String"/>
+        <MonetaryAmountCell
+          align="right"
+          formatType="currency"
+          id="TermAmount"
+          numCols="6"
+          value="aggCostTermAmount"/>
+        <MonetaryAmountCell
+          align="right"
+          formatType="currency"
+          id="Difference"
+          value="aggCostTermAmount - basedOnTermAmt"
+          visible="not isPremiumReport"/>
+      </Row>
+    </RowIterator>
+    <Row>
+      <Cell
+        id="Empty13"/>
+      <Cell
+        id="Empty14"/>
+      <Cell
+        bold="true"
+        id="DescriptionFoota500"
+        value="displaykey.Web.SubmissionWizard.Quote.WC.Subtotal.TotalCost(jurisdiction.DisplayName)"/>
+      <Cell
+        id="Empty20"
+        visible="not isPremiumReport"/>
+      <Cell
+        id="Empty17"
+        visible="not isPremiumReport"/>
+      <MonetaryAmountCell
+        align="right"
+        formatType="currency"
+        id="EstSubtotal"
+        value="basedOnStateCosts.AmountSum(currency)"
+        visible="not isPremiumReport"/>
+      <Cell
+        id="Empty23"/>
+      <Cell
+        id="Empty22"/>
+      <MonetaryAmountCell
+        align="right"
+        bold="true"
+        formatType="currency"
+        id="CumulAmountSubtotal500"
+        value="stateCosts.AmountSum(currency)"/>
+      <MonetaryAmountCell
+        align="right"
+        formatType="currency"
+        id="SubtotalDifference"
+        value="stateCosts.AmountSum(currency) - basedOnStateCosts.AmountSum(currency)"
+        visible="not isPremiumReport"/>
+    </Row>
+  </ListViewPanel>
+</PCF>

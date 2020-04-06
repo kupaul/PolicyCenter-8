@@ -1,0 +1,98 @@
+<xs:schema
+    targetNamespace="http://guidewire.com/importing"
+    xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:i="http://guidewire.com/importing"
+    xmlns:gw="http://guidewire.com/xsd"
+    elementFormDefault="qualified"
+    version="2.4"
+    >
+  <xs:import namespace="http://guidewire.com/xsd" />
+
+  <xs:attribute name="default-value" type="xs:string"/>
+
+  <xs:attribute name="is-encrypted" type="xs:boolean" default="false"/>
+
+  <xs:attribute name="domain-type" type="i:domain-type">
+    <xs:annotation>
+      <xs:documentation>
+        Annotates an element definition to be domain entity type, reference entity type or undefined as domain graph
+        support is not available at the time of exporting domain schema. This attribute is for Guidewire internal use.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+
+  <xs:simpleType name="domain-type">
+    <xs:restriction base="xs:string">
+      <xs:enumeration value="domain"/>
+      <xs:enumeration value="reference"/>
+      <xs:enumeration value="undefined"/>
+    </xs:restriction>
+  </xs:simpleType>
+
+  <xs:attribute name="cross-domain-publicid" type="xs:string">
+    <xs:annotation>
+      <xs:documentation>
+        Annotates an element's cross domain information.
+      </xs:documentation>
+    </xs:annotation>
+  </xs:attribute>
+
+  <xs:element name="import" type="i:import"/>
+  <xs:complexType name="import">
+    <xs:sequence>
+      <xs:choice maxOccurs="unbounded">
+        <xs:element ref="i:typekey"/>
+        <xs:element ref="i:referenced-entity"/>
+        <xs:any namespace="##other" processContents="strict"/>
+      </xs:choice>
+      <xs:element ref="i:encryption" minOccurs="0" maxOccurs="1"/>
+    </xs:sequence>
+    <xs:attribute name="importing-schema-version" type="xs:string"/>
+    <xs:attribute name="platform-major" type="xs:int"/>
+    <xs:attribute name="platform-minor" type="xs:int"/>
+    <xs:attribute name="application-major" type="xs:int"/>
+    <xs:attribute name="application-minor" type="xs:int"/>
+    <xs:attribute name="extension" type="xs:int"/>
+    <xs:anyAttribute namespace="##other" processContents="lax"/>
+  </xs:complexType>
+
+  <xs:element name="typekey">
+    <xs:complexType>
+      <xs:sequence/>
+      <xs:attribute name="id" type="xs:ID" use="required"/>
+      <xs:attribute name="code" type="xs:string" use="required"/>
+      <xs:attribute name="retired" type="xs:boolean"/>
+      <xs:attribute name="display-name" type="xs:string" />
+      <xs:attribute name="type" type="xs:string" gw:itype="gw.lang.reflect.IType" use="required"/>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:element name="referenced-entity">
+    <xs:complexType>
+      <xs:complexContent>
+        <xs:extension base="i:entity">
+          <xs:attribute name="display-name" type="xs:string"/>
+          <xs:attribute name="type" gw:itype="gw.lang.reflect.IType" use="required"/>
+        </xs:extension>
+      </xs:complexContent>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="entity">
+    <xs:attribute name="id" type="xs:ID" use="required"/>
+    <xs:attribute name="public-id" type="xs:string"/>
+    <xs:attribute name="db-id" type="xs:long"/>
+    <xs:attribute name="to-be-retired" type="xs:boolean" default="false"/>
+  </xs:complexType>
+
+  <xs:element name="encryption">
+    <xs:complexType>
+      <xs:simpleContent>
+        <xs:extension base="xs:string">
+          <xs:attribute name="identifier" type="xs:string"/>
+        </xs:extension>
+      </xs:simpleContent>
+    </xs:complexType>
+  </xs:element>
+
+</xs:schema>

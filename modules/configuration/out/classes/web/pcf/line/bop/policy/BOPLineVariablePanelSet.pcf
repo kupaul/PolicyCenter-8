@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <PanelSet
+    id="BOPLineVariablePanelSet">
+    <Require
+      name="policyLine"
+      type="PolicyLine"/>
+    <Variable
+      initialValue="policyLine as BOPLine"
+      name="bopLine"/>
+    <Variable
+      initialValue="bopLine.Pattern.getCoverageCategory(&quot;BOPContractorCat&quot;)"
+      name="bopContractorCat"/>
+    <Variable
+      initialValue="bopLine.Pattern.getCoverageCategory(&quot;BOPGuestCovCat&quot;)"
+      name="bopGuestCovCat"/>
+    <DetailViewPanel
+      id="BOPMotelCovsDV"
+      visible="bopLine.SmallBusinessType == &quot;motel&quot;">
+      <Variable
+        initialValue="bopGuestCovCat.coveragePatternsForEntity(BusinessOwnersLine).whereSelectedOrAvailable(bopLine, CurrentLocation.InEditMode)"
+        name="bopGuestCovCatCoveragePatterns"
+        recalculateOnRefresh="true"/>
+      <InputColumn>
+        <InputIterator
+          elementName="coveragePattern"
+          forceRefreshDespiteChangedEntries="true"
+          id="BOPGuestCovs"
+          value="bopGuestCovCatCoveragePatterns">
+          <InputSetRef
+            def="CoverageInputSet(coveragePattern, bopLine, true)"
+            mode="coveragePattern.Code"/>
+        </InputIterator>
+      </InputColumn>
+    </DetailViewPanel>
+    <DetailViewPanel
+      id="BOPContractorCovsDV"
+      visible="bopLine.SmallBusinessType == &quot;contractor&quot; or bopLine.SmallBusinessType==&quot;contractor_land&quot;">
+      <Variable
+        initialValue="bopContractorCat.coveragePatternsForEntity(BusinessOwnersLine).whereSelectedOrAvailable(bopLine, CurrentLocation.InEditMode)"
+        name="bopContractorCatCoveragePatterns"
+        recalculateOnRefresh="true"/>
+      <InputColumn>
+        <InputIterator
+          elementName="coveragePattern"
+          forceRefreshDespiteChangedEntries="true"
+          id="BOPContractorCovs"
+          value="bopContractorCatCoveragePatterns">
+          <InputSetRef
+            def="CoverageInputSet(coveragePattern, bopLine, true)"
+            mode="coveragePattern.Code"/>
+        </InputIterator>
+      </InputColumn>
+    </DetailViewPanel>
+  </PanelSet>
+</PCF>

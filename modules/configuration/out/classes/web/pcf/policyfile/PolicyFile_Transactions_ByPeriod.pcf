@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    id="PolicyFile_Transactions_ByPeriod"
+    parent="PolicyFile(period, asOfDate)"
+    title="displaykey.Web.PolicyFile.Transactions.ByPeriod">
+    <LocationEntryPoint
+      signature="PolicyFile_Transactions_ByPeriod(period : PolicyPeriod, asOfDate : java.util.Date)"/>
+    <Variable
+      name="period"
+      type="PolicyPeriod"/>
+    <Variable
+      name="asOfDate"
+      type="java.util.Date"/>
+    <Screen>
+      <Toolbar/>
+      <ListViewPanel>
+        <RowIterator
+          editable="false"
+          elementName="repPeriod"
+          pageSize="0"
+          value="findRepresentativePeriods()">
+          <Row>
+            <Cell
+              id="PeriodStart"
+              label="displaykey.Web.PolicyFile.Transactions.ByJob.PeriodStart"
+              value="repPeriod.PeriodStart"/>
+            <Cell
+              id="PeriodEnd"
+              label="displaykey.Web.PolicyFile.Transactions.ByJob.PeriodEnd"
+              value="repPeriod.PeriodEnd"/>
+            <Cell
+              id="CancellationDate"
+              label="displaykey.Web.PolicyFile.Transactions.ByJob.CancellationDate"
+              value="repPeriod.CancellationDate"/>
+            <Cell
+              action="PolicyFile_Transactions_ByCostKeyPopup.push(repPeriod)"
+              id="ByCostKey"
+              label="displaykey.Web.PolicyFile.Transactions.ByJob.ViewByCostKey"
+              value="displaykey.Web.PolicyFile.Transactions.ByJob.ViewByCostKey"/>
+            <Cell
+              action="PolicyFile_Transactions_ByCostPopup.push(repPeriod)"
+              id="ByCost"
+              label="displaykey.Web.PolicyFile.Transactions.ByJob.ViewByCost"
+              value="displaykey.Web.PolicyFile.Transactions.ByJob.ViewByCost"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </Screen>
+    <Code><![CDATA[function findRepresentativePeriods() : entity.PolicyPeriod[] {
+  return period.Policy.BoundPeriods.where(\p -> p.MostRecentModel).orderBy(\p -> p.PeriodStart) as entity.PolicyPeriod[]
+}]]></Code>
+  </Page>
+</PCF>

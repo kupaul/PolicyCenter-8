@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Territory Code Plugin</title>
+    <link rel="StyleSheet" href="css/plugins-other.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-plugins.html#2543752">Plugins</a> : <a class="WebWorks_Breadcrumb_Link" href="plugins-other.22.01.html#2543752">Other Plugin Interfaces</a> : Territory Code Plugin</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2543752">Territory Code Plugin</a></h3>
+      <div class="B_-_Body"><a name="2543753">PolicyCenter tracks territories, which are geographic regions, for each line of business. Each territory must have a unique territory code that identifies the region and the line of business. PolicyCenter supports two different usage models for territories and how to load them into PolicyCenter.</a></div>
+      <div class="B_-_Body"><a name="2543754">The system table data is stored in the entity </a><span class="cv_-_computer_voice">DB_Territory</span>. The entity called <span class="cv_-_computer_voice">Territory</span> is an extension that is a non-persisted entity consisting only of an foreign key to a <span class="cv_-_computer_voice">DB_territory</span> entity. </div>
+      <div class="B_-_Body"><a name="2543755">Use the territory code plugin (</a><span class="cv_-_computer_voice">TerritoryCodePlugin)</span> to help map territory search criteria (city, state, postal code, and policy line type) and return an array of <span class="cv_-_computer_voice">Territory</span> entities. This plugin could consult an external system to do the lookup.</div>
+      <div class="B_-_Body"><a name="2543756">If you want territories to work very differently, you can modify the data model for the (new) </a><span class="cv_-_computer_voice">Territory</span> entity type in PolicyCenter to be anything you want. Just be sure to modify the territory code plugin accordingly with any changes including custom fields. This would allow you to look up territory data directly from the plugin. The plugin could call out using a web service to an external system, thus you would not need to import territory data locally.</div>
+      <h6 class="HS_-_Head_Sub"><a name="2543757">Default System Table Approach</a></h6>
+      <div class="B_-_Body"><a name="2543758">In the default approach, you can load </a><span class="cv_-_computer_voice">Territory</span> entities as part of the PolicyCenter product model reference data as a system table. You can modify the file:</div>
+      <div class="CS_-_Code_Single_Line"><a name="2543759">PolicyCenter/modules/configuration/config/resources/productmodel/systables/territory_codes.xml</a></div>
+      <div class="B_-_Body"><a name="2543760">This file loads into the local PolicyCenter database if loading the product model. Populate this file with territory codes, each of which looks like:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543761">&lt;Territory public-id="demo_sample:25"&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543762">&nbsp;&nbsp;&lt;City&gt;San Mateo&lt;/City&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543763">&nbsp;&nbsp;&lt;Code&gt;AAA&lt;/Code&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543764">&nbsp;&nbsp;&lt;County&gt;San Mateo&lt;/County&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543765">&nbsp;&nbsp;&lt;Description/&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543766">&nbsp;&nbsp;&lt;EffectiveDate&gt;2000-01-01 00:00:00.000&lt;/EffectiveDate&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543767">&nbsp;&nbsp;&lt;ExpirationDate/&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543768">&nbsp;&nbsp;&lt;PolicyLinePattern public-id="BusinessAutoLine"/&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543769">&nbsp;&nbsp;&lt;PostalCode&gt;99999&lt;/PostalCode&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543770">&nbsp;&nbsp;&lt;State&gt;CA&lt;/State&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543771">&lt;/Territory&gt;</a></PRE>
+      <div class="B_-_Body"><a name="2543772">Typically, this data is derived from government agency data that manages the territory codes.</a></div>
+      <div class="B_-_Body"><a name="2543773">To use this data, simply use the built-in implementation of the territory plugin, </a><span class="cv_-_computer_voice">TerritoryCodeDemoPlugin</span>, which is registered for you in the default <span class="cv_-_computer_voice">config.xml</span> file:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2543774">&lt;plugin-java name="ITerritoryCodePlugin"</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2543775">&nbsp;&nbsp;javaclass="com.guidewire.pc.plugin.territorycode.internal.TerritoryCodeDemoPlugin"/&gt;</a></PRE>
+      <div class="B_-_Body"><a name="2543776">This plugin simply searches for </a><span class="cv_-_computer_voice">Territory</span> entities in an internal system table created from the product model XML file mentioned earlier. </div>
+      <div class="B_-_Body"><a name="2543777">In the alternative approach, design a new plugin implementation that fetches </a><span class="cv_-_computer_voice">Territory</span> entities from an external system or performs some other dynamic calculation of territory codes. For example, if you have a legacy system that stores this information centrally, the territory plugin could query that system. In that case, PolicyCenter would ignore the territory system table created from the product model XML file mentioned earlier.</div>
+      <div class="B_-_Body"><a name="2543779">The territory code plugin interface (</a><span class="cv_-_computer_voice">ITerritoryCodePlugin</span>) contains only one method (<span class="cv_-_computer_voice">getTerritoryCode</span>). This method takes a territory lookup criteria (<span class="cv_-_computer_voice">TerritoryLookupCriteria</span>) object. This lookup criteria object includes information like the city, state, postal code, and policy line type. The method must populate and return an array of <span class="cv_-_computer_voice">Territory</span> entities returned from the external system. If there is a single match on the search, return an array of length one containing a single <span class="cv_-_computer_voice">Territory</span>. </div>
+      <div class="B_-_Body"><a name="2543781">If there are multiple results, return an array with more items. If you return multiple results, PolicyCenter provides a user interface to select a territory code among the results. You can go to the </a><span class="ui_-_UI_element">Locations</span> page, open a location, and select a territory code. If this plugin returns multiple results, the order of the items within the array are irrelevant to the user interface. Make the number of returned codes a small number. Smaller numbers create a better user experience. Your plugin is responsible for limiting the number of results returned to a manageable number.</div>
+      <div class="B_-_Body"><a name="2543782">Return an empty array if no territory codes can be found. Throw an exception if there is an error somewhere, and PolicyCenter displays a user interface based on the type of exception. </a></div>
+      <div class="B_-_Body"><a name="2543783">The following is an example of this plugin. It returns the territory associated with the passed-in search criteria. * The territory contains a code and a physical place. The criteria is required to have non-null values for state, policy line pattern and effective date. In the default configuration, the territory has a foreign key to the database entity </a><span class="cv_-_computer_voice">DBTerritory</span>, which is a system table. </div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543784">public class TerritoryCodePlugin implements ITerritoryCodePlugin {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543785">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543786">override function getTerritoryCodes(criteria: TerritoryLookupCriteria): Territory[] {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543787">    if (criteria.State == null) throwError(displaykey.Java.TerritoryCodePlugin.Error.MissingState)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543788">    if (criteria.PolicyLinePattern == null)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543789">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throwError(displaykey.Java.TerritoryCodePlugin.Error.MissingPolicyLinePattern)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543790">    if (criteria.EffectiveOnDate == null)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543791">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throwError(displaykey.Java.TerritoryCodePlugin.Error.MissingEffectiveOnDate)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543792">    var query = PCDependencies.getTerritoryFinder().findTerritoriesByCriteria(criteria)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543793">    var territories = new ArrayList&lt;Territory&gt;()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543794">    var iterator = query.iterator()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543795">    while (iterator.hasNext()) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543796">      territories.add(new Territory(criteria) {:DBTerritory = iterator.next()})</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543797">    }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543798">    return territories as Territory[]</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543799">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543800">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543801">  private static function throwError(message : String) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543802">    throw new DisplayableException(message)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543803">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2543804">}</a></PRE>
+      <div class="B_-_Body"><a name="2543805">If you do not want to use the system table, you have two options:</a></div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2543806">Change the plugin implementation to get territory information from an other entity type that stores this information rather than system tables.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2543807">Reconfigure the </a><span class="cv_-_computer_voice">Territory</span> entity to have additional relevant properties and populate those with values from an external system.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

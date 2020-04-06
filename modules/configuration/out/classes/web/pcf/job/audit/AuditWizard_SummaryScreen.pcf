@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="policyPeriod.Status == PolicyPeriodStatus.TC_DRAFT"
+    id="AuditWizard_SummaryScreen">
+    <Require
+      name="audit"
+      type="Audit"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="new gw.document.DocumentProduction()"
+      name="documentProduction"
+      type="gw.document.DocumentProduction"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, audit, jobWizardHelper)"/>
+      <ToolbarButton
+        action="policyPeriod.printDocument(&quot;AuditPackage&quot;, &quot;Audit Package&quot;)"
+        download="true"
+        id="CreateAuditPackage"
+        label="displaykey.Button.AuditPackage"
+        visible="policyPeriod.AuditProcess.canCreateAuditPackage().Okay"/>
+    </Toolbar>
+    <PanelRef
+      def="WarningsPanelSet(policyPeriod.getAuditWizardWarningMessages())"
+      editable="policyPeriod.OpenForEdit"/>
+    <DetailViewPanel
+      editable="policyPeriod.OpenForEdit"
+      id="AuditSummaryDV">
+      <InputColumn>
+        <Label
+          label="displaykey.Web.AuditWizard.Summary.Audit"/>
+        <TypeKeyInput
+          id="Type"
+          label="displaykey.Web.AuditWizard.Summary.Type"
+          value="audit.AuditInformation.AuditScheduleType"/>
+        <TypeKeyInput
+          id="MethodPlanned"
+          label="displaykey.Web.AuditWizard.Summary.MethodPlanned"
+          value="audit.AuditInformation.AuditMethod"/>
+        <TypeKeyInput
+          editable="true"
+          id="MethodActual"
+          label="displaykey.Web.AuditWizard.Summary.MethodActual"
+          value="audit.AuditInformation.ActualAuditMethod"/>
+        <Input
+          id="PeriodStart"
+          label="displaykey.Web.AuditWizard.Period.Start"
+          value="audit.AuditInformation.AuditPeriodStartDate"/>
+        <Input
+          id="PeriodEnd"
+          label="displaykey.Web.AuditWizard.Period.End"
+          value="audit.PolicyPeriod.CancellationDate == null ? audit.AuditInformation.AuditPeriodEndDate : audit.PolicyPeriod.CancellationDate"/>
+        <InputSetRef
+          def="AuditProcessingInputSet(audit)"
+          mode="audit.AuditInformation.AuditScheduleType"/>
+      </InputColumn>
+    </DetailViewPanel>
+  </Screen>
+</PCF>

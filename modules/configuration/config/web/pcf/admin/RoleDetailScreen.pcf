@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Screen
+    id="RoleDetailScreen">
+    <Require
+      name="role"
+      type="Role"/>
+    <Toolbar>
+      <EditButtons
+        editVisible="perm.Role.edit"/>
+    </Toolbar>
+    <CardViewPanel>
+      <Card
+        id="RoleDetail_RolesCard"
+        title="displaykey.Web.Admin.RoleDetail.Roles">
+        <PanelRef
+          def="RoleDetailDV(role)"/>
+        <PanelRef
+          def="LocalizedValuesDV(Role, { &quot;Name&quot;, &quot;Description&quot;}, { displaykey.Web.Admin.RoleDetailDV.Name, displaykey.Web.Admin.RoleDetailDV.Description})"/>
+      </Card>
+      <Card
+        id="RoleDetail_UsersCard"
+        title="displaykey.Web.Admin.RoleDetail.Users"
+        visible="role.RoleType == null or role.RoleType == &quot;user&quot; or role.RoleType == &quot;userproducercode&quot;">
+        <PanelRef
+          def="RoleUsersLV(role)"
+          editable="perm.User.grantroles">
+          <Toolbar>
+            <IteratorButtons
+              iterator="RoleUsersLV.RoleUsersLV"/>
+          </Toolbar>
+        </PanelRef>
+      </Card>
+      <Card
+        id="RoleDetail_ProducerCodesCard"
+        title="displaykey.Web.Admin.RoleDetail.ProducerCodes"
+        visible="role.RoleType == null or role.RoleType == &quot;producercode&quot; or role.RoleType == &quot;userproducercode&quot;">
+        <PanelRef
+          def="RoleProducerCodesLV(role)">
+          <Toolbar>
+            <IteratorButtons
+              iterator="RoleProducerCodesLV.RoleProducerCodesLV"/>
+          </Toolbar>
+        </PanelRef>
+      </Card>
+    </CardViewPanel>
+  </Screen>
+</PCF>

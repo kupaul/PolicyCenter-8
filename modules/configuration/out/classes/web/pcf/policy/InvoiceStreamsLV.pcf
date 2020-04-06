@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    id="InvoiceStreamsLV">
+    <Require
+      name="billingUIHelper"
+      type="gw.web.policy.BillingAdjustmentsUIHelper"/>
+    <RowIterator
+      editable="true"
+      elementName="stream"
+      value="billingUIHelper.InvoiceStreams">
+      <Row
+        editable="true">
+        <RadioButtonCell
+          action="billingUIHelper.PolicyPeriod.InvoiceStreamCode = stream.PublicID"
+          align="center"
+          editable="billingUIHelper.PolicyPeriod.canSelectInvoiceStream(stream)"
+          id="InvoiceStream"
+          label="displaykey.Web.Policy.Payment.InstallmentsPlansLV.Select"
+          radioButtonGroup="InvoiceStreamsGroup"
+          required="true"
+          value="(billingUIHelper.PolicyPeriod.InvoiceStreamCode == stream.PublicID ) or (billingUIHelper.getAvailableInvoiceStreams().length == 1)">
+          <PostOnChange/>
+        </RadioButtonCell>
+        <Cell
+          id="Description"
+          label="displaykey.Web.Policy.Payment.InvoiceStreamsLV.Description"
+          sortOrder="1"
+          value="stream.Description"
+          width="300"
+          wrap="true"/>
+        <Cell
+          id="Payment"
+          label="displaykey.Web.Policy.Payment.InvoiceStreamsLV.Payment"
+          sortOrder="1"
+          value="stream.PaymentInstrumentName"/>
+        <Cell
+          id="Invoice"
+          label="displaykey.Web.Policy.Payment.InvoiceStreamsLV.Invoice"
+          value="stream.DueDateBilling ? displaykey.Web.Policy.Payment.InvoiceStreamsLV.DueDate : displaykey.Web.Policy.Payment.InvoiceStreamsLV.InvoiceDate"/>
+        <Cell
+          id="Days"
+          label="displaykey.Web.Policy.Payment.InvoiceStreamsLV.Days"
+          value="stream.Days"/>
+      </Row>
+    </RowIterator>
+  </ListViewPanel>
+</PCF>

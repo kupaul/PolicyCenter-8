@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InputSet
+    id="ContactNameInputSet"
+    mode="person|usercontact">
+    <Require
+      name="contact"
+      type="Contact"/>
+    <Variable
+      initialValue="new gw.api.name.PersonNameDelegate(contact as Person)"
+      name="personNameDelegate"
+      recalculateOnRefresh="true"/>
+    <Label
+      label="displaykey.Web.ContactDetail.Person"/>
+    <InputSetRef
+      def="GlobalPersonNameInputSet(new gw.api.name.RequiredBasicNameOwner(personNameDelegate))"
+      mode="gw.api.name.NameLocaleSettings.PCFMode"/>
+    <DateInput
+      editable="true"
+      id="DateOfBirth"
+      label="displaykey.Web.ContactDetail.Person.DateOfBirth"
+      required="false"
+      value="(contact as Person).DateOfBirth"/>
+    <Input
+      editable="true"
+      id="MaritalStatus"
+      label="displaykey.Web.ContactDetail.Person.MaritalStatus"
+      required="false"
+      value="(contact as Person).MaritalStatus"/>
+    <TypeKeyInput
+      editable="true"
+      id="PrimaryPhone"
+      label="displaykey.Web.ContactDetail.Person.PrimaryPhone"
+      required="false"
+      value="(contact as Person).PrimaryPhone">
+      <PostOnChange/>
+    </TypeKeyInput>
+    <InputSetRef
+      def="GlobalPhoneInputSet(new gw.contact.PersonPhoneOwner(new gw.api.phone.ContactPhoneDelegate(contact, Contact#HomePhone),displaykey.Web.ContactDetail.Person.HomePhone,(contact as Person).PrimaryPhone == TC_HOME))"
+      editable="true"
+      id="HomePhone"/>
+    <InputSetRef
+      def="GlobalPhoneInputSet(new gw.contact.PersonPhoneOwner(new gw.api.phone.ContactPhoneDelegate(contact, Contact#WorkPhone), displaykey.Web.ContactDetail.Person.WorkPhone, (contact as Person).PrimaryPhone == TC_WORK))"
+      id="WorkPhone"/>
+    <InputSetRef
+      def="GlobalPhoneInputSet(new gw.contact.PersonPhoneOwner(new gw.api.phone.ContactPhoneDelegate(contact, Person#CellPhone), displaykey.Web.ContactDetail.Person.CellPhone, (contact as Person).PrimaryPhone == TC_MOBILE))"
+      id="CellPhone"/>
+    <InputSetRef
+      def="GlobalPhoneInputSet(new gw.contact.PersonPhoneOwner(new gw.api.phone.ContactPhoneDelegate(contact, Contact#FaxPhone), displaykey.Web.ContactDetail.Person.FaxPhone, false))"
+      editable="true"
+      id="FaxPhone"/>
+    <Input
+      editable="true"
+      id="EmailAddress1"
+      label="displaykey.Web.ContactDetail.Person.EmailAddress1"
+      value="(contact as Person).EmailAddress1"/>
+    <Input
+      editable="true"
+      id="EmailAddress2"
+      label="displaykey.Web.ContactDetail.Person.EmailAddress2"
+      value="(contact as Person).EmailAddress2"/>
+  </InputSet>
+</PCF>

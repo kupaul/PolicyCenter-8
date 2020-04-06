@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    id="BillingAccountSearchPopup"
+    returnType="String"
+    title="displaykey.Web.Billing.SearchBillingAccounts">
+    <LocationEntryPoint
+      signature="BillingAccountSearchPopup(accountCurrency: Currency)"/>
+    <Variable
+      initialValue="gw.plugin.Plugins.get(gw.plugin.billing.IBillingSystemPlugin)"
+      name="billingSystemPlugin"/>
+    <Variable
+      name="accountCurrency"
+      type="Currency"/>
+    <Screen>
+      <SearchPanel
+        criteriaName="searchCriteria"
+        resultsName="searchResults"
+        search="searchCriteria.performSearch()"
+        searchCriteria="createCriteria()"
+        searchResultsType="gw.plugin.billing.BillingAccountSearchResult[]">
+        <DetailViewPanel>
+          <InputColumn>
+            <Input
+              editable="true"
+              id="AccountNumber"
+              inputConversion="VALUE?.trim()"
+              label="displaykey.Web.AccountSearch.AccountNumber"
+              value="searchCriteria.AccountNumber"/>
+            <Input
+              editable="true"
+              id="AccountName"
+              label="gw.web.policy.BillingAdjustmentsUIHelper.showKanjiFields() ? displaykey.Web.AccountSearch.AccountNamePhonetic : displaykey.Web.AccountSearch.AccountName"
+              value="searchCriteria.AccountName"/>
+            <Input
+              editable="true"
+              id="AccountNameKanji"
+              label="displaykey.Web.AccountSearch.AccountName"
+              value="searchCriteria.AccountNameKanji"
+              visible="gw.web.policy.BillingAdjustmentsUIHelper.showKanjiFields()"/>
+          </InputColumn>
+          <InputFooterSection>
+            <InputSetRef
+              def="SearchAndResetInputSet()"/>
+          </InputFooterSection>
+        </DetailViewPanel>
+        <PanelRef>
+          <Toolbar/>
+          <ListViewPanel>
+            <RowIterator
+              editable="false"
+              elementName="searchResult"
+              pickValue="searchResult.AccountNumber"
+              value="searchResults">
+              <Row>
+                <Cell
+                  id="AccountNumber"
+                  label="displaykey.Web.AccountSearchResults.AccountNumber"
+                  value="searchResult.AccountNumber"/>
+                <Cell
+                  id="AccountName"
+                  label="gw.web.policy.BillingAdjustmentsUIHelper.showKanjiFields() ? displaykey.Web.AccountSearchResults.NamePhonetic : displaykey.Web.AccountSearchResults.Name"
+                  value="searchResult.AccountName"/>
+                <Cell
+                  id="AccountNameKanji"
+                  label="displaykey.Web.AccountSearchResults.Name"
+                  value="searchResult.AccountNameKanji"
+                  visible="gw.web.policy.BillingAdjustmentsUIHelper.showKanjiFields()"/>
+                <Cell
+                  id="PrimaryPayer"
+                  label="displaykey.Web.AccountSearch.PrimaryPayer"
+                  value="searchResult.PrimaryPayer"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+    <Code><![CDATA[function createCriteria() : gw.plugin.billing.BillingAccountSearchCriteria{
+  return new gw.plugin.billing.BillingAccountSearchCriteria(){
+    :ListBill = true,
+    :Currency = accountCurrency
+  }
+}]]></Code>
+  </Popup>
+</PCF>

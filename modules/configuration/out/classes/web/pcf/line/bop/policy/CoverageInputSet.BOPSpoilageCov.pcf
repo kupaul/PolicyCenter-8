@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <!-- The reason a specific input set is used for this coverage is that the
+coverage requires a risk grade.  The risk grade is an fk on BOPLocation
+and that value cannot be handled in the default input set. -->
+  <InputSet
+    id="CoverageInputSet"
+    mode="BOPSpoilageCov">
+    <Require
+      name="coveragePattern"
+      type="gw.api.productmodel.ClausePattern"/>
+    <Require
+      name="coverable"
+      type="Coverable"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="coverable as BOPLocation"
+      name="location"/>
+    <HiddenInput
+      id="PatternDisplayName"
+      value="coveragePattern.DisplayName"/>
+    <InputGroup
+      allowToggle="coveragePattern.allowToggle(coverable)"
+      childrenVisible="coveragePattern != null"
+      id="CovPatternInputGroup"
+      label="coveragePattern.DisplayName"
+      onToggle="location.setCoverageConditionOrExclusionExists(coveragePattern, VALUE)">
+      <Input
+        editable="true"
+        id="BOPSpoilageDescription"
+        label="displaykey.Web.Policy.BOP.ProductDescription"
+        value="location.BOPSpoilageCov.BOPSpoilageCovDescriptionTerm.Value"
+        visible="location.BOPSpoilageCov?.hasCovTerm(&quot;BOPSpoilageCovDescription&quot;)"/>
+      <InputSetRef
+        def="CovTermDirectInputSet(location.BOPSpoilageCov.BOPSpoilageLimTerm)"
+        id="BOPSpoilageCovLimit"
+        visible="location.BOPSpoilageCov?.hasCovTerm(&quot;BOPSpoilageLim&quot;)"/>
+      <RangeInput
+        editable="openForEdit and gw.web.productmodel.ChoiceCovTermUtil.isEditable(location.BOPSpoilageCov.BOPSpoilageDedTerm)"
+        id="BOPSpoilageCovDeduct"
+        label="location.BOPSpoilageCov.BOPSpoilageDedTerm.DisplayName"
+        sortValueRange="false"
+        value="location.BOPSpoilageCov.BOPSpoilageDedTerm.OptionValue"
+        valueRange="gw.web.productmodel.ChoiceCovTermUtil.getModelValueRange(location.BOPSpoilageCov.BOPSpoilageDedTerm, openForEdit)"
+        visible="location.BOPSpoilageCov?.hasCovTerm(&quot;BOPSpoilageDed&quot;)"/>
+      <Input
+        editable="true"
+        id="BOPSpoilageCovBreakContam"
+        label="displaykey.Web.Policy.LocationContainer.Location.Building.Spoilage.BreakContam"
+        value="location.BOPSpoilageCov.BOPBreakContamTerm.Value"
+        visible="location.BOPSpoilageCov?.hasCovTerm(&quot;BOPBreakContam&quot;)"/>
+      <Input
+        editable="true"
+        id="BOPSpoilageCovPowerOutage"
+        label="displaykey.Web.Policy.LocationContainer.Location.Building.Spoilage.PowerOutage"
+        value="location.BOPSpoilageCov.BOPPowerOutageTerm.Value"
+        visible="location.BOPSpoilageCov?.hasCovTerm(&quot;BOPPowerOutage&quot;)"/>
+      <Input
+        editable="true"
+        id="BOPSpoilageCovFridgeMaintenance"
+        label="displaykey.Web.Policy.LocationContainer.Location.Building.Spoilage.FridgeMaintenance"
+        value="location.BOPSpoilageCov.BOPFridgeMaintenanceTerm.Value"
+        visible="location.BOPSpoilageCov?.hasCovTerm(&quot;BOPFridgeMaintenance&quot;)"/>
+      <RiskClassInput
+        coveragePattern="coveragePattern"
+        editable="true"
+        id="RiskClassCode"
+        label="displaykey.Web.Policy.LocationContainer.Location.Building.Spoilage.RiskDescription"
+        pickLocation="RiskClassSearchPopup.push(location.PolicyLine.Pattern, coveragePattern as gw.api.productmodel.CoveragePattern )"
+        policyLinePattern="location.PolicyLine.Pattern"
+        required="true"
+        value="location.RiskClass">
+        <PostOnChange
+          target="RiskDescription"/>
+      </RiskClassInput>
+      <Input
+        id="RiskDescription"
+        label="displaykey.Web.Policy.LocationContainer.Location.Building.Spoilage.RiskClass"
+        value="location.RiskClass.Hazard"/>
+    </InputGroup>
+    <InputDivider
+      visible="openForEdit or coverable.getCoverageConditionOrExclusion(coveragePattern) != null"/>
+  </InputSet>
+</PCF>

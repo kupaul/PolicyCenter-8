@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" desc="A reinsurance program (a collection of agreements that together cover a risk)." entity="RIProgram" loadable="false" subpackage="reinsurance" table="RIProgram" type="retireable">
+  <implementsEntity name="RIContract"/>
+  <implementsInterface iface="gw.api.reinsurance.Cedeable" impl="gw.reinsurance.risk.RIProgramCedeableAdapter"/>
+  <column desc="The name of this contract." name="Name" nullok="false" type="shorttext">
+    <localization nullok="false" tableName="riprog_name_l10n"/>
+  </column>
+  <monetaryamount amountColumnName="SingleRiskMaximum" amountRange="nonnegative" desc="A value that the user can set to show their intended max number. This may also be used by rules to decide whether a risk falls within the max allowed by the program." name="SingleRiskMaximum" nullok="true"/>
+  <column default="false" desc="Indicates if this Program has been modified and requires a recalculation of any related Ceded Premiums" name="RequiresRecalculation" nullok="true" type="bit"/>
+  <monetaryamount amountColumnName="TargetMaxRetention" amountRange="nonnegative" desc="The net amount of risk which the ceding company" name="TargetMaxRetention" nullok="true"/>
+  <column createhistogram="true" desc="Expiration date may change; this field holds the maximum Expiration Date since the prior ceding calculation" name="CedingRecalcExpirationDate" nullok="false" setterScriptability="hidden" type="datetime"/>
+  <array arrayentity="ProgramTreaty" cascadeDelete="true" desc="All reinsurance agreements included in this program." getterScriptability="doesNotExist" name="ProgramTreaties" owner="true" setterScriptability="doesNotExist"/>
+  <array arrayentity="ProgramCoverageGroup" desc="All RI coverage groups this agreement applies to." getterScriptability="doesNotExist" name="RICoverageGroups" owner="true" setterScriptability="doesNotExist"/>
+  <foreignkey desc="The last user to update the program" fkentity="User" name="ResponsibleUser" nullok="false"/>
+  <checkconstraint predicate="ExpirationDate IS NOT NULL"/>
+ <dbcheckbuilder className="com.guidewire.pc.domain.reinsurance.dbchecks.ProgramTreatyDBCheckBuilder"/>
+  <index desc="Index for performance of program search." name="programidx1" unique="true">
+    <indexcol keyposition="1" name="Name"/>
+    <indexcol keyposition="2" name="Retired"/>
+  </index>
+</entity>

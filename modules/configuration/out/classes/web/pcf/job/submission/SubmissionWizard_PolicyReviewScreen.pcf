@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="false"
+    id="SubmissionWizard_PolicyReviewScreen">
+    <Require
+      name="submission"
+      type="Submission"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, submission, jobWizardHelper)"/>
+    </Toolbar>
+    <PanelRef
+      def="SubmissionWizard_ReviewSummaryDV(policyPeriod, submission)"/>
+    <CardViewPanel
+      hideTabIfSingle="true"
+      id="ReviewSummaryCV">
+      <Card
+        id="LineSummary"
+        title="displaykey.Web.SubmissionWizard.PolicyReview.Card.Summary">
+        <PanelIterator
+          elementName="line"
+          value="policyPeriod.Lines">
+          <PanelRef
+            def="PolicyLineSummaryPanelSet(line, jobWizardHelper)"
+            mode="line.Pattern.Code">
+            <TitleBar
+              title="line.DisplayName"
+              visible="policyPeriod.Lines.Count &gt; 1"/>
+          </PanelRef>
+        </PanelIterator>
+      </Card>
+    </CardViewPanel>
+  </Screen>
+</PCF>

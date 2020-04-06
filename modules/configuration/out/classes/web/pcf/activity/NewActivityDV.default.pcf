@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="NewActivityDV"
+    mode="default">
+    <Require
+      name="activity"
+      type="Activity"/>
+    <Require
+      name="assignmentPopup"
+      type="assignment.AssignmentPopup"/>
+    <Require
+      name="assigneePicker"
+      type="gw.assignment.PCAssigneePicker"/>
+    <Variable
+      initialValue="gw.api.util.SymbolTableUtil.populateBeans(activity)"
+      name="symbolTable"/>
+    <InputColumn>
+      <Input
+        editable="true"
+        id="Subject"
+        label="displaykey.Web.NewActivity.Subject"
+        value="activity.Subject"/>
+      <Input
+        editable="true"
+        id="Description"
+        label="displaykey.Web.NewActivity.Description"
+        value="activity.Description"/>
+      <Input
+        editable="true"
+        id="TargetDate"
+        label="displaykey.Web.NewActivity.TargetDate"
+        value="activity.TargetDate"/>
+      <Input
+        editable="true"
+        id="EscalationDate"
+        label="displaykey.Web.NewActivity.EscalationDate"
+        value="activity.EscalationDate"/>
+      <Input
+        editable="true"
+        id="Priority"
+        label="displaykey.Web.NewActivity.Priority"
+        required="true"
+        value="activity.Priority"/>
+      <Input
+        editable="true"
+        id="Mandatory"
+        label="displaykey.Web.NewActivity.Mandatory"
+        value="activity.Mandatory"/>
+      <Input
+        editable="true"
+        id="Recurring"
+        label="displaykey.Web.NewActivity.Recurring"
+        value="activity.Recurring"
+        visible="activity.ActivityPattern.Code!=&quot;approve_submission&quot;                       and activity.ActivityPattern.Code!=&quot;approve_general&quot;                       and activity.ActivityPattern.Code!=&quot;approve_submission_postbind&quot;                       and activity.ActivityPattern.Code!=&quot;approve_policy_change&quot;                       and activity.ActivityPattern.Code!=&quot;approve_cancellation&quot;                       and activity.ActivityPattern.Code!=&quot;decide_renewal&quot;"/>
+      <DocumentTemplateInput
+        conversionExpression="PickedValue.TemplateId"
+        editable="true"
+        freeInputEnabled="false"
+        id="DocumentTemplate"
+        label="displaykey.Web.ActivityDetail.CreateDocument"
+        pickLocation="DocumentTemplateSearchPopup.push(symbolTable.Keys)"
+        value="activity.DocumentTemplate"/>
+      <PickerInput
+        conversionExpression="PickedValue.Filename"
+        editable="true"
+        freeInputEnabled="false"
+        id="EmailTemplate"
+        label="displaykey.Web.ActivityDetail.EmailTemplate"
+        outputConversion="getEmailDisplayName(VALUE)"
+        pickLocation="PickEmailTemplatePopup.push(new gw.api.email.EmailTemplateSearchCriteria(symbolTable.Keys as String[]))"
+        value="activity.EmailTemplate"/>
+      <RangeInput
+        available="assignmentPopup.SelectionType == &quot;FromList&quot;"
+        editable="true"
+        filter="VALUE as String != &quot;Default Assignment Role&quot;"
+        id="SelectFromList"
+        label="displaykey.Web.Assignment.Popup.AssignTo"
+        required="true"
+        sortValueRange="false"
+        value="assigneePicker.SelectedAssignee"
+        valueRange="assigneePicker.buildSuggestedAssignees(assignmentPopup.SuggestedAssignees)">
+        <MenuItem
+          action="PCAssigneePickerPopup.push( assigneePicker )"
+          icon="&quot;search.png&quot;"
+          id="AssigneePicker"/>
+      </RangeInput>
+      <InputDivider/>
+    </InputColumn>
+    <Code><![CDATA[function getEmailDisplayName(templateFilename : String) : String {
+  if (templateFilename == null) {
+    return null
+  }
+  var ets = gw.plugin.Plugins.get(gw.plugin.email.IEmailTemplateSource)
+  return ets.getEmailTemplate(templateFilename).getName();
+}]]></Code>
+  </DetailViewPanel>
+</PCF>

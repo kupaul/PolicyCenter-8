@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Adding Line-specific Cost Properties and Methods</title>
+    <link rel="StyleSheet" href="css/rating-external.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-forms.html#3061657">Policy-related Integrations</a> : <a class="WebWorks_Breadcrumb_Link" href="rating-external.28.01.html#3061657">Rating Integration</a> : <a class="WebWorks_Breadcrumb_Link" href="rating-external.28.08.html#3061657">Implementing Rating for a New Line of Business</a> : Adding Line-specific Cost Properties and Methods</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h4 class="H2B_-_Heading_2_Break"><a name="3061657">Adding Line-specific Cost Properties and Methods</a></h4>
+      <div class="B_-_Body"><a name="3060151">Remember that each line of business defines its own root cost entity. Every root </a><span class="cv_-_computer_voice">Cost</span> entity must implement the <span class="cv_-_computer_voice">CostAdapter</span> interface and delegate it to a separate class that you create. This <span class="e_-_emphasis">cost adapter</span> interface has a single method on it called <span class="cv_-_computer_voice">createTransaction</span>. This method must create a <span class="cv_-_computer_voice">Transaction</span> object appropriate for that <span class="cv_-_computer_voice">Cost</span> type. Typically, the root <span class="cv_-_computer_voice">Cost</span> entity for a given line (such as <span class="cv_-_computer_voice">PACost</span> or <span class="cv_-_computer_voice">BOPCost</span>) would implement this interface, so typically you do not need to reimplement it in any subtypes.</div>
+      <div class="B_-_Body"><a name="3059939">For example:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059961">package gw.lob.ba.financials</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059962">uses gw.api.domain.financials.CostAdapter</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059963">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059964">@Export</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059965">class BACostAdapter implements CostAdapter</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059966">{</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059967">  var _owner : BACost</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059968">  construct(owner : BACost) { _owner = owner }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059969">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059970">  override function createTransaction( branch : PolicyPeriod ) : Transaction</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059971">  {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059972">    var transaction = new BATransaction( branch, branch.PeriodStart, branch.PeriodEnd )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059973">    transaction.BACost = _owner.Unsliced</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059974">    return transaction</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059975">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059976">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3059977">}</a></PRE>
+      <div class="B_-_Body"><a name="3059991">Additionally, most line-specific costs (subtypes of the root cost entity) must implement a set of methods (and properties) specific to the line. The line encapsulates these required methods and properties in a line-specific interface with the name of the line followed by the suffix </a><span class="cv_-_computer_voice">CostMethods</span>. </div>
+      <div class="B_-_Body"><a name="3062011">For example, personal auto cost entities must implement all the methods and properties in the interface </a><span class="cv_-_computer_voice">PACostMethods</span>. Each subtype must override (implement) these methods. </div>
+      <div class="B_-_Body"><a name="3062022">The line-specific methods typically include methods that the user interface requires to display the cost or to collate entities for display in the Quote page.</a></div>
+      <div class="B_-_Body"><a name="3060007">For example, for the personal auto line of business, all costs must contain </a><span class="cv_-_computer_voice">Coverage</span> and <span class="cv_-_computer_voice">Vehicle</span> properties, which are links to the relevant coverage and vehicle entity instances.</div>
+      <div class="B_-_Body"><a name="3066073">The code looks like the following:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3060029">package gw.lob.pa.financials</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3060030">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3060031">/**</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3060032"> * Additional methods and properties provided by the costs that supply this interface.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3060033"> */</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3060034">@Export</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3060035">interface PACostMethods</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3060036">{</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3060037">  property get Coverage() : Coverage</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3060038">  property get Vehicle() : PersonalVehicle</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3060039">}</a></PRE>
+      <div class="B_-_Body"><a name="3066087">These line-specific properties on a cost from these adapters also appear on the corresponding cost data object.</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

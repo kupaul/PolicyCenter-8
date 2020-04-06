@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><internalExtension xmlns="http://guidewire.com/datamodel" entityName="Group">
+  <!-- Extend Name to support linguistic search... -->
+  <column-override name="Name" supportsLinguisticSearch="true"/>
+  <column desc="The code that identifies an internal carrier group as a branch." name="BranchCode" nullok="true" type="shorttext"/>
+  <column desc="A description for this group." name="Description" nullok="true" type="mediumtext">
+    <localization nullok="true" tableName="group_desc_i18n"/>
+  </column>
+  <array arrayentity="GroupProducerCode" desc="Available producer codes to a group." name="GroupProducerCodes" owner="true"/>
+  <checkconstraint desc="In PolicyCenter, every Group must be associated with an Organization." predicate="OrganizationID IS NOT NULL"/>
+  <customconsistencycheck className="com.guidewire.pc.domain.community.dbchecks.GroupCustomDBChecks" desc="Checks that branch codes are non-null only for groups that are descendants of the carrier organization." staticMethodName="checkBranchesUnderCarrier"/>
+  <dbcheckbuilder className="com.guidewire.pc.domain.community.dbchecks.GroupDBCheckBuilder"/>
+  <description>Groups and related attributes. Attributes include security and visibility zones, parent group, group type and name, branch code (if applicable) and supervisor.</description>
+  <events/>
+  <index desc="Perf index for finding groups that are branches." expectedtobecovering="true" name="GroupBranchPerf1" unique="true">
+    <indexcol keyposition="1" name="BranchCode"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="ID"/>
+  </index>
+  <index desc="Group Organization index with GroupType to support excluding root type." expectedtobecovering="true" name="GroupOrgPerf1" unique="true">
+    <indexcol keyposition="1" name="OrganizationId"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="GroupType"/>
+    <indexcol keyposition="4" name="ID"/>
+  </index>
+  <index desc="Group Name partial-match look-up index on de-normalization mirror column." name="GroupName" unique="false">
+      <indexcol keyposition="1" name="NameDenorm"/>
+      <indexcol keyposition="2" name="Retired"/>
+  </index>
+  <index desc="Group Type look-up index." expectedtobecovering="true" name="GroupType" unique="true">
+    <indexcol keyposition="1" name="GroupType"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="Name"/>
+    <indexcol keyposition="4" name="ID"/>
+  </index>
+</internalExtension>

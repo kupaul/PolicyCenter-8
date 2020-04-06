@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    canEdit="perm.Account.edit(account)"
+    canVisit="perm.Account.view(account) and perm.System.accountrelations"
+    id="AccountFile_RelatedAccounts"
+    parent="AccountFile(account)"
+    title="displaykey.Web.AccountFile.RelatedAccounts.Title"
+    validationParameter="account">
+    <LocationEntryPoint
+      signature="AccountFile_RelatedAccounts(account : Account)"/>
+    <Variable
+      name="account"
+      type="Account"/>
+    <Screen>
+      <Toolbar
+        visible="perm.Account.edit(account)">
+        <ToolbarButton
+          action="RelatedAccountPopup.push(account)"
+          id="AddRelatedAccount"
+          label="displaykey.Button.Add"/>
+        <CheckedValuesToolbarButton
+          allCheckedRowsAction="removeCheckedRelationships(CheckedValues)"
+          id="RemoveRelatedAccount"
+          iterator="RelatedAccountsLV"
+          label="displaykey.Button.Remove"/>
+      </Toolbar>
+      <ListViewPanel
+        id="RelatedAccountsLV">
+        <RowIterator
+          editable="true"
+          elementName="accountAccount"
+          hasCheckBoxes="true"
+          value="account.getAllRelatedAccounts(User.util.CurrentUser)">
+          <Variable
+            initialValue="accountAccount.getRelationship(account)"
+            name="relationship"/>
+          <Variable
+            initialValue="relationship.OtherAccount"
+            name="otherAccount"/>
+          <Row>
+            <TypeKeyCell
+              action="RelatedAccountPopup.push(account, accountAccount)"
+              available="perm.Account.edit(account)"
+              id="RelationshipType"
+              label="displaykey.Web.AccountFile.RelatedAccounts.Relationship"
+              sortOrder="1"
+              value="relationship.RelationshipType"
+              wrap="true"
+              wrapLabel="true"/>
+            <Cell
+              action="AccountFileForward.go(otherAccount)"
+              id="AccountNumber"
+              label="displaykey.Web.AccountFile.RelatedAccounts.AccountNumber"
+              sortOrder="2"
+              value="otherAccount.AccountNumber"/>
+            <Cell
+              id="Name"
+              label="displaykey.Web.AccountFile.RelatedAccounts.Name"
+              value="otherAccount.AccountHolderContact.DisplayName"
+              wrap="true"/>
+            <Cell
+              id="Address"
+              label="displaykey.Web.AccountFile.RelatedAccounts.Address"
+              value="otherAccount.AccountHolderContact.PrimaryAddressDisplayValue"
+              width="500"
+              wrap="true"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+      <PanelRow/>
+      <SearchPanel
+        criteriaName="searchCriteria"
+        id="SharedContactSearchPanel"
+        maxSearchResults="100"
+        resultsName="accountSummaries"
+        search="searchCriteria.performSearch()"
+        searchCriteria="new gw.account.SharedContactAccountSearchCriteria() { :Secure = true, :AccountNumber = account.AccountNumber }"
+        searchResultsType="AccountSummaryQuery">
+        <PanelRef
+          def="AccountSearchResultsLV(accountSummaries)">
+          <TitleBar
+            title="displaykey.Web.AccountFile.RelatedAccounts.SharedContact"/>
+          <Toolbar>
+            <ToolbarButton
+              action="util.SearchUtil.search()"
+              id="Search"
+              label="displaykey.Button.Search"/>
+          </Toolbar>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+    <Code><![CDATA[function removeCheckedRelationships(relationships : AccountAccount[]) {
+  gw.transaction.Transaction.runWithNewBundle(\ bundle -> {
+    for (relationship in relationships) {
+      bundle.add(relationship).remove()
+    }
+  })
+}]]></Code>
+  </Page>
+</PCF>

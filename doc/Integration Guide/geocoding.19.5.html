@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Geocoding an Address</title>
+    <link rel="StyleSheet" href="css/geocoding.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-plugins.html#2101021">Plugins</a> : <a class="WebWorks_Breadcrumb_Link" href="geocoding.19.1.html#2101021">Geographic Data Integration</a> : <a class="WebWorks_Breadcrumb_Link" href="geocoding.19.4.html#2101021">Writing a Geocoding Plugin</a> : Geocoding an Address</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h4 class="H2B_-_Heading_2_Break"><a name="2101021">Geocoding an Address</a></h4>
+      <div class="B_-_Body"><a name="2057620">The </a><span class="cv_-_computer_voice">GeocodePlugin</span> interface has one required method, <span class="cv_-_computer_voice">geocodeAddressBestMatch</span>. The method takes an address (<span class="cv_-_computer_voice">Address</span>) instance and returns a different address instance. The address returned from the plugin has a <span class="cv_-_computer_voice">GeocodeStatus</span> value that indicates whether the geocoding request succeeded and how precisely the geocode coordinates match the incoming address. Valid values for <span class="cv_-_computer_voice">GeocodeStatus</span> include <span class="cv_-_computer_voice">exact</span>, <span class="cv_-_computer_voice">failure</span>, <span class="cv_-_computer_voice">street</span>, <span class="cv_-_computer_voice">postalcode</span>, or <span class="cv_-_computer_voice">city</span>. If the status is anything other than <span class="cv_-_computer_voice">failure</span>, the <span class="cv_-_computer_voice">Latitude</span> and <span class="cv_-_computer_voice">Longitude</span> properties in the returned address are correct for the returned address. </div>
+      <div class="B_-_Body"><a name="2139333">Your implementation of the </a><span class="cv_-_computer_voice">geocodeAddressBestMatch</span> method must not modify the incoming address instance with data returned from the geocoding service, or for any reason. Instead, make a copy of the incoming address by using the <span class="cv_-_computer_voice">clone()</span> method on it. Or, create a new address instance by using the Gosu expression <span class="cv_-_computer_voice">new&nbsp;Address()</span>. Set the properties on the cloned or new address from the values returned by the geocoding service and use that address as the return value of your <span class="cv_-_computer_voice">geocodeAddressBestMatch</span> method. </div>
+      <div class="B_-_Body"><a name="2062981">The following example creates a new address and sets the geocoding status and the geocode coordinates. </a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2059156">a = new Address()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2059166">a.GeocodeStatus = GeocodeStatus.TC_EXACT</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2059195">a.Latitude = 42.452389</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2059211">a.Longitude = -71.375942</a></PRE>
+      <div class="B_-_Body"><a name="2059403">In a real implementation, your code assigns coordinate values obtained from the external geocoding service, not from numeric literals as the example shows.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="2139971">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'geocoding.19.9.html#2101015', '');" title="Geocoding Status Codes" name="2139991">“Geocoding Status Codes”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2139013">Geocoding an Address from the User Interface</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2139020">If PolicyCenter wants to geocode an address immediately, PolicyCenter calls one of the geocoding plugin methods. In situations in which PolicyCenter wants only the best match for a geocoding request, it calls the plugin method </a><span class="cv_-_computer_voice">geocodeAddressBestMatch</span>.</div>
+      <div class="B_-_Body"><a name="2139024">If you trigger geocoding from the user interface, geocoding is synchronous. In other words, the user interface blocks until the plugin returns the geocoding result. There is no built-in timeout between the application and the geocoding plugin. Your own geocoding plugin must encode a timeout so it can give up on the external service, throw a </a><span class="cv_-_computer_voice">RemoteException</span>, and let the user interface continue.</div>
+      <h6 class="HS_-_Head_Sub"><a name="2140694">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'geocoding.19.5.html#2062859', '');" title="Geocoding an Address" name="2140707">“Handling Address Clarifications for a Geocoded Address”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2139025">Geocoding an Address from a Batch Process</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2139029">PolicyCenter geocodes addresses in the background with batch processes that call the geocoding plugin as necessary to geocode an address. For more information about how to configure the batch processes, See the </a><a href="javascript:WWHClickedPopup('admin', 'configndeploy.03.5.html#1972862', '');" title="Using the Geocoding Feature">“Working with the Geocode Distributed Work Queue” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('admin', 'configndeploy.03.5.html#1972862', '');" title="Using the Geocoding Feature">System Administration Guide</a></span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2062859">Handling Address Clarifications for a Geocoded Address</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2140839">If </a><span class="cv_-_computer_voice">geocodeAddressBestMatch</span> is the only method from <span class="cv_-_computer_voice">AbstractGeocodePlugin</span> that you override, your plugin does really handle address correction. To support address correction, override the <span class="cv_-_computer_voice">geocodeAddressWithCorrections</span> and <span class="cv_-_computer_voice">pluginSupportsCorrections</span> methods. Also, you must implement a PCF to display multiple address and let the user select the correct one. </div>
+      <div class="B_-_Body"><a name="2140840">However, the </a><span class="cv_-_computer_voice">geocodeAddressBestMatch</span> method can provide address clarifications or leave some properties blank if the service did not use them to generate the coordinates. If the geocoding service modified properties on the submitted address, set those properties on the address that the your plugin returns to match. </div>
+      <div class="B_-_Body"><a name="2141850">Callers of the plugin must assume that blank properties in a returned address are blank purposely. For example, certain address properties in return data might be unknown or inappropriate if the geocoding status is other than </a><span class="cv_-_computer_voice">exact</span>. If the geocode status represents the weighted center of a city, the street address might be blank because the returned geocode coordinates do not represent a specific street address. PolicyCenter treats the set of properties returned by the geocoding plugin to be the full set of properties to show to the user or log to the geocoding corrections table.</div>
+      <div class="B_-_Body"><a name="2141649">Sometimes a geocoding service returns variations of an address. For example, the street address “123&nbsp;Main&nbsp;Street” might “123&nbsp;North&nbsp;Main Street” and “123&nbsp;South&nbsp;Main Street”, each with different geocode coordinates. The geocoding service might return both results so a user can select the appropriate one. Some variations might be due to differences in abbreviations, such </a><span class="cv_-_computer_voice">Street</span> versus <span class="cv_-_computer_voice">St</span>. Some services provide variants with and without suite, apartment, and floor numbers from addresses, or provide variants that contain other kinds of adjustments. For the <span class="cv_-_computer_voice">geocodeAddressBestMatch</span> method, return only the best match. </div>
+      <h6 class="HS_-_Head_Sub"><a name="2141227">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'geocoding.19.5.html#2062484', '');" title="Geocoding an Address" name="2141230">“Supporting Multiple Address Corrections with a List of Possible Matches”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2062484">Supporting Multiple Address Corrections with a List of Possible Matches</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2063252">If your geocoding service can provide a list of potential addresses for address correction, implement the </a><span class="cv_-_computer_voice">geocodeAddressWithCorrections</span> method. Additionally, implement the <span class="cv_-_computer_voice">pluginSupportsCorrections</span> method and return <span class="cv_-_computer_voice">true</span> to tell PolicyCenter that your implementation supports multiple address corrections.</div>
+      <div class="B_-_Body"><a name="2138624">In contrast to the </a><span class="cv_-_computer_voice">geocodeAddressBestMatch</span> method, the <span class="cv_-_computer_voice">geocodeAddressWithCorrections</span> method returns a list of addresses rather than a single address. Both methods can return address corrections or clarifications, or leave some properties blank if they were not used to generate the coordinates. However, the system calls the <span class="cv_-_computer_voice">geocodeAddressWithCorrections</span> method if the user interface context can handle a list of corrections. For example, your user interface might support letting a user choose the intended address from a list of near matches. </div>
+      <div class="B_-_Body"><a name="2063234">The result list that your </a><span class="cv_-_computer_voice">geocodeAddressWithCorrections</span> method returns must be a standard <span class="cv_-_computer_voice">List</span> (<span class="cv_-_computer_voice">java.util.List</span>) that contains only <span class="cv_-_computer_voice">Address</span> entities. You declare this type of object in Gosu by using the generic syntax <span class="cv_-_computer_voice">List&lt;Address&gt;</span>. </div>
+      <div class="B_-_Body"><a name="2138620">If the geocoding service does not support multiple corrections, this method must return a one-item list that contains the results of a call to </a><span class="cv_-_computer_voice">geocodeAddressBestMatch</span>. If you base your implementation on the built-in <span class="cv_-_computer_voice">AbstractGeocodePlugin</span> class, the abstract class implements this behavior for you.</div>
+      <h6 class="HS_-_Head_Sub"><a name="2138646">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'geocoding.19.5.html#2062859', '');" title="Geocoding an Address" name="2138631">“Handling Address Clarifications for a Geocoded Address”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('gosu', 'generics.19.1.html#1455314', '');" title="Gosu Generics" name="2138782">“Gosu Generics” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'generics.19.1.html#1455314', '');" title="Gosu Generics">Gosu Reference Guide</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2138621">Geocoding Error Handling</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2061666">If your plugin implementation fails to connect to the external geocoding service, this method throws the exception </a><span class="cv_-_computer_voice">java.rmi.RemoteException</span>. Your implementation must never set the geocode status of an address to <span class="cv_-_computer_voice">none</span>. Instead, throw an exception if the error is retryable. For more information, see <a href="javascript:WWHClickedPopup('integration', 'geocoding.19.9.html#2101015', '');" title="Geocoding Status Codes">“Geocoding Status Codes”</a>.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

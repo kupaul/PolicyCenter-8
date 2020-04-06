@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Popup
+    canEdit="true"
+    id="AssigneePickerPopup"
+    returnType="gw.api.assignment.Assignee"
+    startInEditMode="true"
+    title="displaykey.Web.AssigneePicker.Title">
+    <LocationEntryPoint
+      signature="AssigneePickerPopup(AssigneePicker : assignment.AssigneePicker)"/>
+    <Variable
+      name="AssigneePicker"
+      type="assignment.AssigneePicker"/>
+    <Screen
+      id="AssigneePickerScreen">
+      <SearchPanel
+        criteriaName="SearchCriteria"
+        resultsName="SearchResult"
+        search="SearchCriteria.performSearch()"
+        searchCriteria="new gw.api.assignment.AssignmentSearchCriteria()"
+        searchResultsType="gw.api.assignment.AssignmentSearchResult">
+        <PanelRef
+          def="AssignmentSearchDV(AssigneePicker.AllowedAssignmentSearchTypes as AssignmentSearchType[], SearchResult, SearchCriteria)"/>
+        <PanelRef
+          def="AssignmentUserLV(SearchResult.Users)"
+          visible="SearchCriteria.SearchType == &quot;User&quot;">
+          <Toolbar/>
+        </PanelRef>
+        <PanelRef
+          def="AssignmentGroupLV(SearchResult.Groups)"
+          visible="SearchCriteria.SearchType == &quot;Group&quot;">
+          <Toolbar/>
+        </PanelRef>
+        <PanelRef
+          def="AssignmentQueueLV(SearchResult.Queues)"
+          visible="SearchCriteria.SearchType == &quot;Queue&quot;">
+          <Toolbar/>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+  </Popup>
+</PCF>

@@ -1,0 +1,181 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  desc="Contains data that varies by contractual period but not in effective time or real time."
+  entity="PolicyTerm"
+  exportable="true"
+  loadable="false"
+  subpackage="policy.period"
+  table="policyterm"
+  type="retireable">
+  <implementsInterface
+    iface="gw.api.history.CustomHistory"
+    impl="gw.api.history.PolicyTermCustomHistoryImpl"/>
+  <column
+    desc="Additional explanation why this policy marked for non renewal"
+    name="NonRenewAddExplanation"
+    nullok="true"
+    type="shorttext"/>
+  <column
+    desc="The date to next evaluate this PolicyTerm for renewal, null indicates to check at the next opportunity"
+    name="NextRenewalCheckDate"
+    nullok="true"
+    type="dateonly"/>
+  <column
+    desc="The date to next evaluate this PolicyTerm for archiving or null if archiving should be checked at the next opportunity"
+    name="NextArchiveCheckDate"
+    nullok="true"
+    type="dateonly"/>
+  <column
+    desc="The date when one or more PolicyPeriod from this PolicyTerm was last retrieved from the archive"
+    name="LastRestoreDate"
+    nullok="true"
+    type="dateonly"/>
+  <monetaryamount
+    amountColumnName="TotalEstimatedPremium"
+    desc="The amount of premium estimated for this policy period"
+    name="TotalEstimatedPremium"
+    nullok="false"/>
+  <monetaryamount
+    amountColumnName="TotalReportedPremium"
+    desc="The amount of premium reported for this policy period"
+    name="TotalReportedPremium"
+    nullok="false"/>
+  <column
+    default="0"
+    desc="The number of days for which the total reported premium applies"
+    name="DaysReported"
+    nullok="false"
+    type="nonnegativeinteger"/>
+  <monetaryamount
+    amountColumnName="DepositAmount"
+    amountRange="nonnegative"
+    desc="The current deposit amount of the policy"
+    name="DepositAmount"
+    nullok="true"/>
+  <column
+    default="false"
+    desc="True if the deposit amount has been released"
+    name="DepositReleased"
+    nullok="false"
+    type="bit"/>
+  <column
+    default="false"
+    desc="True on promoting Submission, Rewrite and for Renewal if current mode is not 'Confirm Renewals'."
+    name="Bound"
+    nullok="false"
+    type="bit"/>
+  <column
+    default="false"
+    desc="Flags the future-most term for a policy."
+    exportable="false"
+    ignoreforevents="true"
+    name="MostRecentTerm"
+    nullok="false"
+    setterScriptability="doesNotExist"
+    type="bit"/>
+  <column
+    default="false"
+    desc="Flag for generating reinsurables for reinsurance"
+    name="GenerateReinsurables"
+    nullok="false"
+    setterScriptability="hidden"
+    type="bit"/>
+  <typekey
+    default="NotArchived"
+    desc="Combined archive state of the policy periods in the policy term."
+    name="PolicyTermArchiveState"
+    nullok="false"
+    setterScriptability="doesNotExist"
+    typelist="PolicyTermArchiveState"/>
+  <typekey
+    desc="Classifies the reason that the policy is marked as non-renew"
+    name="NonRenewReason"
+    nullok="true"
+    typelist="NonRenewalCode"/>
+  <typekey
+    desc="Indicates the pre-renewal direction,if any, of this policy"
+    name="PreRenewalDirection"
+    nullok="true"
+    typelist="PreRenewalDirection"/>
+  <typekey
+    default="Rules"
+    desc="When false, final audit not scheduled; when true, the underwriter forces the audit to be scheduled and started; otherwise, final audit is scheduled, and rules determine whether to start it."
+    name="FinalAuditOption"
+    nullok="false"
+    typelist="FinalAuditOption"/>
+  <foreignkey
+    columnName="PolicyID"
+    desc="The policy that this term applies to"
+    fkentity="Policy"
+    name="Policy"
+    nullok="false"
+    setterScriptability="hidden"/>
+  <array
+    arrayentity="NonRenewalExplanation"
+    desc="Non-renewal explanations"
+    exportable="false"
+    name="NonRenewalExplanations"
+    owner="true"/>
+  <array
+    arrayentity="AuditInformation"
+    cascadeDelete="true"
+    desc="The audits for this policy"
+    exportable="false"
+    getterScriptability="hidden"
+    name="AuditInformations"
+    setterScriptability="hidden"/>
+  <array
+    arrayentity="UWIssueUniqueID"
+    cascadeDelete="true"
+    desc="The issues on which have had manual actions have been performed"
+    exportable="false"
+    name="HumanTouchedIssues"/>
+  <array
+    arrayentity="PolicyTermRestoreRequest"
+    cascadeDelete="true"
+    desc="Requests that have been made to retrieve this term from the Archive"
+    exportable="false"
+    name="RestoreRequests"/>
+  <array
+    arrayentity="WorksheetContainer"
+    desc="WorksheetContainer objects on each period in the PolicyTerm"
+    exportable="false"
+    name="WorksheetContainers"/>
+  <index
+    desc="Index for Most Recent Term."
+    name="mostrecentterm"
+    unique="true">
+    <indexcol
+      keyposition="1"
+      name="ID"/>
+    <indexcol
+      keyposition="2"
+      name="MostRecentTerm"/>
+    <indexcol
+      keyposition="3"
+      name="Retired"/>
+  </index>
+  <index
+    desc="Index for the archiving candidates query."
+    name="archivecheckdate"
+    unique="true">
+    <indexcol
+      keyposition="1"
+      name="NextArchiveCheckDate"/>
+    <indexcol
+      keyposition="2"
+      name="Retired"/>
+    <indexcol
+      keyposition="3"
+      name="ID"/>
+  </index>
+  <dbcheckbuilder
+    className="com.guidewire.pc.domain.policy.period.dbchecks.PolicyTermDBCheckBuilder"/>
+  <foreignkey
+    columnName="AffinityGroupID"
+    desc="The affinity group assigned to this term"
+    fkentity="AffinityGroup"
+    name="AffinityGroup"
+    nullok="true"/>
+</entity>

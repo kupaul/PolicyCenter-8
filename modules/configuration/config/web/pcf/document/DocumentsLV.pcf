@@ -1,0 +1,113 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    id="DocumentsLV">
+    <ExposeIterator
+      flags="document,editableDocument,hidden"
+      valueType="entity.Document"
+      widget="DocumentsLV"/>
+    <Require
+      name="documents"
+      type="DocumentQuery"/>
+    <Require
+      name="viewOnly"
+      type="boolean"/>
+    <RowIterator
+      editable="false"
+      elementName="document"
+      hasCheckBoxes="true"
+      value="documents">
+      <ToolbarFlag
+        name="document"/>
+      <ToolbarFlag
+        condition="perm.document.edit(Document)"
+        name="editableDocument"/>
+      <ToolbarFlag
+        condition="document.Obsolete"
+        name="hidden"/>
+      <Row>
+        <DocumentIconCell
+          action="DocumentDetailsPopup.push(Document, viewOnly)"
+          id="Icon"
+          value="true"
+          document="document"
+          visible="not viewOnly"/>
+        <Cell
+          action="DocumentDetailsPopup.push(Document, viewOnly)"
+          id="Name"
+          label="displaykey.Web.DocumentsLV.Name"
+          printWidth="4"
+          value="document.Name"/>
+        <LinkCell
+          id="Actions"
+          width="156"
+          label="displaykey.Web.DocumentsLV.Actions">
+          <DocumentLink
+            document="Document"
+            documentAction="viewRepositoryVersion"
+            id="DocumentsLV_ViewLink"
+            label="displaykey.Web.DocumentsLV.Button.View"
+            styleClass="miniButton"
+            visible="document.DMS and perm.document.view(Document)"/>
+          <DocumentLink
+            document="Document"
+            documentAction="editRepositoryVersion"
+            id="DocumentsLV_EditLink"
+            label="displaykey.Web.DocumentsLV.Button.Edit"
+            styleClass="miniButton"
+            visible="not viewOnly and ( web.document.DocumentsHelper.showEditButtons() and document.DMS) and perm.document.edit(Document)"/>
+          <DocumentLink
+            document="Document"
+            documentAction="editLocalVersion"
+            id="DocumentsLV_EditLocalLink"
+            label="displaykey.Web.DocumentsLV.Button.EditLocal"
+            styleClass="miniButton"
+            visible="not viewOnly and  ( web.document.DocumentsHelper.showEditButtons() and document.DMS) and perm.document.edit(Document)"/>
+          <DocumentLink
+            document="Document"
+            documentAction="uploadLocalVersion"
+            id="DocumentsLV_UpdateLink"
+            label="displaykey.Web.DocumentsLV.Button.Update"
+            styleClass="miniButton"
+            visible="not viewOnly and ( web.document.DocumentsHelper.showEditButtons() and document.DMS) and perm.document.edit(Document)"/>
+          <DocumentLink
+            document="Document"
+            documentAction="discardLocalVersion"
+            id="DocumentsLV_DiscardLink"
+            label="displaykey.Web.DocumentsLV.Button.Discard"
+            styleClass="miniButton"
+            visible="not viewOnly and ( web.document.DocumentsHelper.showEditButtons() and document.DMS) and perm.document.edit(Document)"/>
+        </LinkCell>
+        <TypeKeyCell
+          id="Type"
+          label="displaykey.Web.DocumentsLV.Type"
+          value="document.Type"/>
+        <TypeKeyCell
+          id="Status"
+          label="displaykey.Web.DocumentsLV.Status"
+          value="document.Status"/>
+        <Cell
+          id="Author"
+          label="displaykey.Web.DocumentsLV.Author"
+          value="document.Author"/>
+        <DateCell
+          id="Date"
+          label="displaykey.Web.DocumentsLV.Date"
+          value="document.DateModified"/>
+        <LinkCell
+          id="Delete"
+          label="displaykey.Web.DocumentsLV.Delete">
+          <Link
+            action="web.document.DocumentsHelper.deleteDocument(Document)"
+            confirmMessage="displaykey.Web.DocumentsLV.Button.Delete.Confirm"
+            id="DocumentsLV_DeleteLink"
+            label="displaykey.Web.DocumentsLV.Button.Delete"
+            styleClass="miniButton"
+            visible="not viewOnly and perm.document.delete(Document)"/>
+        </LinkCell>
+      </Row>
+    </RowIterator>
+  </ListViewPanel>
+</PCF>

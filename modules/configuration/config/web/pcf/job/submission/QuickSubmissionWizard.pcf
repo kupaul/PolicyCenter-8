@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <JobWizard
+    acceleratedMenuActions="MultiQuoteAcceleratedMenuActions(submission, policyPeriod, jobWizardHelper)"
+    canEdit="(not job.Complete) and (perm.Submission.edit(submission))"
+    canVisit="perm.Submission.view(submission)"
+    desc="The main Wizard for submitting a quick Policy."
+    id="QuickSubmissionWizard"
+    independentStepsTitle="displaykey.Web.PolicyFile.ToolsMenuTitle"
+    independentStepsTitleIcon="&quot;ToolsMenuTitle.png&quot;"
+    infoBar="JobWizardInfoBar(submission, policyPeriod)"
+    initialStep="jobWizardHelper.getInitialWizardStepId( policyPeriod )"
+    isDraftOnEnter="true"
+    jobType="Submission"
+    menuActions="WizardMenuActions(jobWizardHelper,submission,policyPeriod)"
+    onConcurrentDataChange="CurrentLocation.cancel(); JobForward.go(job)"
+    parent="JobForward(submission)"
+    subtitle="policyPeriod.Status.DisplayName"
+    title="displaykey.Web.SubmissionWizard.Title(submission.JobNumber)">
+    <LocationEntryPoint
+      signature="QuickSubmissionWizard(submission : Submission, policyPeriod : PolicyPeriod)"/>
+    <Variable
+      name="submission"
+      type="Submission"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="gw.util.concurrent.LockingLazyVar.make(\ -&gt; policyPeriod.OpenForEdit)"
+      name="openForEditInit"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="openForEditInit.get()"
+      name="openForEdit"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="submission"
+      name="job"/>
+    <Variable
+      initialValue="policyPeriod.Policy"
+      name="policy"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="policy.Account"
+      name="account"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="policy.Product.Code"
+      name="productCode"
+      type="String"/>
+    <Variable
+      initialValue="new web.job.JobWizardHelper(CurrentLocation)"
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="policy.Product.getAvailableQuestionSetsByType(QuestionSetType.TC_PREQUAL,policyPeriod).Count &gt; 0"
+      name="preQualNecessary"
+      type="boolean"/>
+    <Variable
+      initialValue="policy.Product.Offerings.Count &gt; 0"
+      name="offeringNecessary"
+      type="boolean"/>
+    <Variable
+      initialValue="isPaymentScreenEditable()"
+      name="billingPageEditable"
+      recalculateOnRefresh="true"/>
+    <WizardStepGroup
+      id="LOBWizardStepGroup"
+      label="displaykey.Web.Wizard.LineWizardStepGroup">
+      <WizardStepSetRef
+        def="LineQuickWizardStepSet(job, policyPeriod, jobWizardHelper, openForEdit)"
+        mode="productCode"/>
+    </WizardStepGroup>
+    <JobWizardStep
+      allowFinish="false"
+      id="ViewQuote"
+      onEnter="gw.lob.pa.PAWizardStepHelper.onViewQuoteStepEnter(policyPeriod, jobWizardHelper)"
+      screen="PAQuickSubmission_QuoteScreen(policyPeriod, openForEdit, jobWizardHelper)"
+      title="displaykey.Web.SubmissionWizardMenu.ViewQuote"
+      visible="!policyPeriod.MultiLine"/>
+    <WizardStepSetRef
+      def="JobWizardToolsMenuWizardStepSet(jobWizardHelper, policyPeriod)"/>
+    <Code><![CDATA[function isPaymentScreenEditable() : boolean {
+  if (policyPeriod.Status == "New" or policyPeriod.Status == "Draft" or policyPeriod.Status == "Quoted") {
+    return perm.Submission.edit(policyPeriod.Job)
+  }
+  return false
+}]]></Code>
+  </JobWizard>
+</PCF>

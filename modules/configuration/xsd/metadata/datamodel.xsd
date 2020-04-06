@@ -1,0 +1,1763 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://guidewire.com/datamodel" xmlns="http://guidewire.com/datamodel">
+  
+  <!-- ======================================================================= -->
+  <xsd:simpleType name="ContainerMatchType">
+    <xsd:restriction base="xsd:string">
+      <!-- Applies to all containers -->
+      <xsd:enumeration value="all"/>
+      <!-- Does not apply to any containers -->
+      <xsd:enumeration value="none"/>
+      <!-- Applies only to non-retired containers -->
+      <xsd:enumeration value="nonretired"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <!-- ======================================================================= -->
+  <xsd:simpleType name="InternalEntityType">
+    <xsd:restriction base="xsd:string">
+      <!-- An editable entity has an id as well as a version, create/update user and time.  Items
+           of this type are deleted from the DB when deleted. -->
+      <xsd:enumeration value="editable"/>
+      <!-- An effDated entity has effective date fields and is autosplit when edited (in some
+           modes) -->
+      <xsd:enumeration value="effdated"/>
+      <!-- An effDateBranch entity defines the entity type of the root of a tree that contains
+           effdated entities -->
+      <xsd:enumeration value="effdatedbranch"/>
+      <!-- An effDateContainer entity defines the entity type that has branch children -->
+      <xsd:enumeration value="effdatedcontainer"/>
+      <!-- A joinarray entity is a table which can only be edited as part of a container that
+           has an array reference to this table.  Items of this type are deleted from the DB
+           when deleted. -->
+      <xsd:enumeration value="joinarray"/>
+      <!-- A keyable entity has an id but isn't editable.  Items of this type are deleted from
+           the DB when deleted. -->
+      <xsd:enumeration value="keyable"/>
+      <!-- An entity that doesn't have a key.  The only use for this is lookup tables, like maxkey.
+            Items of this type are deleted from the DB when deleted. -->
+      <xsd:enumeration value="nonkeyable"/>
+      <!-- A retireable entity has an id as well as a version, create/update user and time, and
+           a retired column.  Objects of this type are not deleted from the DB, rather they are
+           marked retired. -->
+      <xsd:enumeration value="retireable"/>
+      <!-- An versionable entity has an id as well as a version.  Items of this type are deleted
+           from the DB when deleted. -->
+      <xsd:enumeration value="versionable"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <!-- ======================================================================= -->
+  <xsd:simpleType name="MonetaryAmountRange">
+    <xsd:restriction base="xsd:string">
+      <!-- Allows any amount value -->
+      <xsd:enumeration value="any"/>
+      <!-- Allows amount values < 0 -->
+      <xsd:enumeration value="negative"/>
+      <!-- Allows amount values >= 0 -->
+      <xsd:enumeration value="nonnegative"/>
+      <!-- Allows amount values <= 0 -->
+      <xsd:enumeration value="nonpositive"/>
+      <!-- Allows amount values > 0 -->
+      <xsd:enumeration value="positive"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="Operator">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="LE"/>
+      <xsd:enumeration value="LT"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:simpleType name="ScriptabilityType">
+    <xsd:restriction base="xsd:string">
+      <!-- exposed to all scripting -->
+      <xsd:enumeration value="all"/>
+      <!-- not exposed to scripting or in the java stub interface -->
+      <xsd:enumeration value="doesNotExist"/>
+      <!-- not exposed to scripting -->
+      <xsd:enumeration value="hidden"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+  
+  <xsd:element name="array">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="array-association" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="link-association" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <xsd:attribute name="arrayentity" type="xsd:NMTOKEN" use="required"/>
+      <!-- arrayfield [optional] Name of field in array table that is foreign key back to this
+           table.  This attribute is useful when the array table is an edge table.  (Array table
+           has multiple foreign keys to the same table.) In that case, the owning table can only
+           have 1 array field for the edge table, so arrayfield should match the name of the
+           field in the array table that corresponds to the owning row. -->
+      <xsd:attribute name="arrayfield" type="xsd:NMTOKEN"/>
+      <!-- If true when this entity with the array is deleted then the elements of thsi array
+           will be deleted. -->
+      <xsd:attribute name="cascadeDelete" type="xsd:boolean" default="false"/>
+      <!-- Is the column deprecated? If so the description should explain why -->
+      <xsd:attribute name="deprecated" type="xsd:boolean" default="false"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- exportable [default = true] True if the column can be transmitted as part of any SOAP
+           argument or result, in which case only a subset of the containing entity will be transmitted.
+           This attribute is ignored if the containing table is not also marked exportable. If
+           this field is applied to a foreign key field, then a reference to a Data object of
+           the type defined by the referenced table will be created. -->
+      <xsd:attribute name="exportable" type="xsd:boolean" default="true"/>
+      <!-- The scriptibility for the getter. -->
+      <xsd:attribute name="getterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- ignoreforevents When true, this field will be ignored for purposes of determining
+           if events ought to be generated for an updated entity -->
+      <xsd:attribute name="ignoreforevents" type="xsd:boolean" default="false"/>
+      <!-- Name of the column on the table AND and the field on the entity.  The name maps to
+           accesor and mutator methods of a field on the entity, not the actual private member
+           field (e.g. "name" maps to "setName" and "getName", not the private "_name" member
+           field). Please follow use the following naming conventions: o Column names should
+           contain letters only, no underscores -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- owner [optional] If true this entity owns the objects in the array.  When this object
+           is deleted, the array items themselves will be deleted. -->
+      <xsd:attribute name="owner" type="xsd:boolean" default="false"/>
+      <!-- requiredmatch This attribute is deprecated and should no longer be used.  -->
+      <xsd:attribute name="requiredmatch" type="ContainerMatchType" default="none"/>
+      <!-- The scriptibility for the setter. -->
+      <xsd:attribute name="setterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- Whether or not to changes to the object pointed to by this foreign key should trigger
+           validation -->
+      <xsd:attribute name="triggersValidation" type="xsd:boolean" default="false"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="array-association">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="constant-map" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="subtype-map" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="typelist-map" minOccurs="0" maxOccurs="1"/>
+      </xsd:choice>
+      <xsd:attribute name="hasContains" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="hasGetter" type="xsd:boolean" default="true"/>
+      <xsd:attribute name="hasSetter" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="valueField" type="xsd:string" default="ID"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="array-override">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- Whether or not to changes to the object pointed to by this array should trigger validation -->
+      <xsd:attribute name="triggersValidation" type="xsd:boolean"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Value of predicate attribute must be a legal sql expression that does not contain
+       any table references. NOTE: This means no joins and no subqueries! The value of the
+       predicate attribute (and the stagingtablepredicate, if applicable) must be expressed
+       in the positive.  (The database layer will translate into the negative consistency
+       check.) If table is loadable, then value of applicabletostagingtable signifies whether
+       or not the check constraint can be applied unchanged to the staging table.  applicabletostagingtable
+       should have a value of false (just to be safe) if the value of stagingtablepredicate
+       is non-null. If table is loadable, but the predicate cannot be directly applied to
+       the staging table, then the value of the stagingtablepredicate, if supplied, will
+       be used in the load validation.  Unlike the predicate attribute, the stagingtablepredicate
+       may contain table references. (Check constraint cannot be applied unchanged to the
+       staging table if references a column which is not importable, etc.) -->
+  <xsd:element name="checkconstraint">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="applicabletostagingtable" type="xsd:boolean" default="true"/>
+      <!-- Description of this constraint. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <xsd:attribute name="predicate" type="xsd:string"/>
+      <xsd:attribute name="stagingtablepredicate" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="column">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="columnParam" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="localization" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Only integer columns can be declared as autoincrement columns.  An autoincrement column
+           is a column where we rely on the database to generate a unique montonically ascending
+           value for us.  The value of this attribute must match the name of a sequence.  That
+           sequence will be the source of the values for the column in those database implementations
+           where we use sequences. NOTE: Do not share a sequence across multiple autoincrement
+           columns. NOTE: There can be at most 1 autoincrement column per table. -->
+      <xsd:attribute name="autoincrement" type="xsd:NMTOKEN"/>
+      <!-- Name to use for the database column corresponding to this property. If unspecified,
+           the property's name will be used. -->
+      <xsd:attribute name="columnName" type="xsd:NMTOKEN"/>
+      <!-- Whether or not to create a histogram on the column when updating the database statistics -->
+      <xsd:attribute name="createhistogram" type="xsd:boolean" default="false"/>
+      <!-- The default value for the column -->
+      <xsd:attribute name="default" type="xsd:string"/>
+      <!-- Is the column deprecated? If so the description should explain why -->
+      <xsd:attribute name="deprecated" type="xsd:boolean" default="false"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- exportable [default = true] True if the column can be transmitted as part of any SOAP
+           argument or result, in which case only a subset of the containing entity will be transmitted.
+           This attribute is ignored if the containing table is not also marked exportable. If
+           this field is applied to a foreign key field, then a reference to a Data object of
+           the type defined by the referenced table will be created. -->
+      <xsd:attribute name="exportable" type="xsd:boolean" default="true"/>
+      <!-- The scriptibility for the getter. -->
+      <xsd:attribute name="getterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- When true, this field will be ignored for purposes of determining if events ought
+           to be generated for an updated entity -->
+      <xsd:attribute name="ignoreforevents" type="xsd:boolean" default="false"/>
+      <!-- If true (default), then a staging table will contain a column mapping to the column. -->
+      <xsd:attribute name="loadable" type="xsd:boolean" default="true"/>
+      <!-- If true then the loading code will not use a default value nor report a warning if
+           the column is nullable without a default. Not usable by customers -->
+      <xsd:attribute name="loadedByCallback" type="xsd:boolean" default="false"/>
+      <!-- Name of the column on the table AND and the field on the entity.  The name maps to
+           accesor and mutator methods of a field on the entity, not the actual private member
+           field (e.g. "name" maps to "setName" and "getName", not the private "_name" member
+           field). Please follow use the following naming conventions: o Column names should
+           contain letters only, no underscores -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- Indicates if the column is nullable. -->
+      <xsd:attribute name="nullok" type="xsd:boolean" use="required"/>
+      <!-- If true (not the default) and loadable, then the staging table will contain a column
+           mapping to the column, but the loader will overwrite any user supplied data. (In other
+           words, the user should not populate the column.) NOTE: This attribute is provided
+           for informational purposes only.  The only place that it should be used is in the
+           data dictionary. -->
+      <xsd:attribute name="overwrittenInStagingTable" type="xsd:boolean" default="false"/>
+      <!-- Whether this value scales as the effective and expired dates change. Only applicable
+           to numbers (e.g. you can't scale a varchar) and only applicable to effective dated
+           types. -->
+      <xsd:attribute name="scalable" type="xsd:boolean" default="false"/>
+      <!-- The scriptibility for the setter. -->
+      <xsd:attribute name="setterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- Indicates if the column can be nullable in soap calls.  If not set, defaults to the
+           value of nullok. -->
+      <xsd:attribute name="soapnullok" type="xsd:boolean"/>
+      <!-- If true a denormalized column will be created and maintained.  The new column will
+           be the linguistic insensitive version (lower case for english) of this column. The
+           name of the new column will be this column + Denorm. This attribute is only valid
+           on columns that are of type varchar in the database. -->
+      <xsd:attribute name="supportsLinguisticSearch" type="xsd:boolean" default="false"/>
+      <!-- Data type of the column (and field). -->
+      <xsd:attribute name="type" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="column-override">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="columnParam" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="localization" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <xsd:attribute name="createhistogram" type="xsd:boolean"/>
+      <xsd:attribute name="default" type="xsd:string"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <xsd:attribute name="nullok" type="xsd:boolean"/>
+      <xsd:attribute name="supportsLinguisticSearch" type="xsd:boolean"/>
+      <!-- Data type of the column (and field).  See COLTYPE for possible values. Each coltype
+           maps to a database column type and a Java class field type. -->
+      <xsd:attribute name="type" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- A parameter that can be passed as an argument to a delegate -->
+  <xsd:element name="columnParam">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <xsd:attribute name="value" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Represents a computed column in a view entity.  A computed column is a field that
+       has some type of transformation applied to it when querying from the DB.  Typical
+       transformations are columns that compute a simple value (col1 + col2) or even aggregate
+       columns (SUM(col1)) -->
+  <xsd:element name="computedcolumn">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Is the column deprecated? If so the description should explain why -->
+      <xsd:attribute name="deprecated" type="xsd:boolean" default="false"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- exportable [default = true] True if the column can be transmitted as part of any SOAP
+           argument or result, in which case only a subset of the containing entity will be transmitted.
+           This attribute is ignored if the containing table is not also marked exportable. If
+           this field is applied to a foreign key field, then a reference to a Data object of
+           the type defined by the referenced table will be created. -->
+      <xsd:attribute name="exportable" type="xsd:boolean" default="true"/>
+      <!-- expression.  The expression for this column.  An expression is of the form ${1} -
+           ${2} where ${1} is the first column and ${2} is the second. -->
+      <xsd:attribute name="expression" type="xsd:string" use="required"/>
+      <!-- function.  The SQL function that can be applied to this expression.  Legal values
+           are: SUM, AVG, COUNT, MIN, MAX. If the function aggregates data, a SQL group by will
+           automatically be applied. -->
+      <xsd:attribute name="function" type="xsd:string"/>
+      <!-- The scriptibility for the getter. -->
+      <xsd:attribute name="getterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- Name of the column on the table AND and the field on the entity.  The name maps to
+           accesor and mutator methods of a field on the entity, not the actual private member
+           field (e.g. "name" maps to "setName" and "getName", not the private "_name" member
+           field). Please follow use the following naming conventions: o Column names should
+           contain letters only, no underscores -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- paths.  The columns that apply to this computed column.  The column names are separated
+           by commas. -->
+      <xsd:attribute name="paths" type="xsd:string" use="required"/>
+      <!-- The Primary path for this column.  This defaults to the first path if not specified -->
+      <xsd:attribute name="primaryPath" type="xsd:string"/>
+      <!-- The scriptibility for the setter. -->
+      <xsd:attribute name="setterScriptability" type="ScriptabilityType" default="all"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Represents a computed typekey in a view entity.  A computed typekey is a field that
+       has some type of transformation applied to it when querying from the DB.  Typekeys
+       are limited in the type of operations that can be performed against them, i.e. more
+       types will work here but the results are nonsensical.  The typical use for this is
+       with a case statement, i.e.: expression="case when (a = 10) then typekey1 else typekey2
+       where the typekey1 and typekey two columns are of the same typelist. -->
+  <xsd:element name="computedtypekey">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Is the column deprecated? If so the description should explain why -->
+      <xsd:attribute name="deprecated" type="xsd:boolean" default="false"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- exportable [default = true] True if the column can be transmitted as part of any SOAP
+           argument or result, in which case only a subset of the containing entity will be transmitted.
+           This attribute is ignored if the containing table is not also marked exportable. If
+           this field is applied to a foreign key field, then a reference to a Data object of
+           the type defined by the referenced table will be created. -->
+      <xsd:attribute name="exportable" type="xsd:boolean" default="true"/>
+      <!-- expression.  The expression for this column.  An expression is of the form ${1} -
+           ${2} where ${1} is the first column and ${2} is the second. -->
+      <xsd:attribute name="expression" type="xsd:string" use="required"/>
+      <!-- The scriptibility for the getter. -->
+      <xsd:attribute name="getterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- Name of the column on the table AND and the field on the entity.  The name maps to
+           accesor and mutator methods of a field on the entity, not the actual private member
+           field (e.g. "name" maps to "setName" and "getName", not the private "_name" member
+           field). Please follow use the following naming conventions: o Column names should
+           contain letters only, no underscores -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- paths.  The columns that apply to this computed column.  The column names are separated
+           by commas. -->
+      <xsd:attribute name="paths" type="xsd:string" use="required"/>
+      <!-- The Primary path for this column.  This defaults to the first path if not specified -->
+      <xsd:attribute name="primaryPath" type="xsd:string"/>
+      <!-- The scriptibility for the setter. -->
+      <xsd:attribute name="setterScriptability" type="ScriptabilityType" default="all"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="constant-map">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="property" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <xsd:attribute name="customAccessor" type="xsd:string"/>
+      <xsd:attribute name="field" type="xsd:string" use="required"/>
+      <xsd:attribute name="propertyPrefix" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- A custom consistency check.  Implementer specifies a public static method on a class
+       that returns a DBConsistencyCheckResult. -->
+  <xsd:element name="customconsistencycheck">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="className" type="xsd:string" use="required"/>
+      <!-- desc (required) The desc should give an informative description of what is being tested
+           as it will be printed out if the consistency check fails. -->
+      <xsd:attribute name="desc" type="xsd:string" use="required"/>
+      <!-- runafterpopulatingsourcetables (optional, default="true") Value determines whether
+           or not the consistency check gets run by the loader after populating the source tables.
+           Hand-coded consistency checks are too complex to programatically transform into loader
+           validations, so we end up running almost all of them after populating the source tables.
+            However, some checks do not need to be run then, so this attribute can be used to
+           notify the loader of that. -->
+      <xsd:attribute name="runafterpopulatingsourcetables" type="xsd:boolean" default="true"/>
+      <xsd:attribute name="staticMethodName" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- ======================================================================= -->
+  <xsd:element name="datetimeordering">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="firstcolumnname" type="xsd:NMTOKEN" use="required"/>
+      <xsd:attribute name="operator" type="Operator" use="required"/>
+      <xsd:attribute name="secondcolumnname" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Class that implements DBCheckBuilder and is called to build custom consistency checks
+       and/or loader validations. The desc for each check or validation should give an informative
+       description of what is being tested as it will be printed out if the check/validation
+       fails. -->
+  <xsd:element name="dbcheckbuilder">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="className" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="delegate">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="datetimeordering" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="dbcheckbuilder" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="foreignkey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="implementsEntity" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="implementsInterface" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="index" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="monetaryamount" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="typekey" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- True if this delegate can only be used on eff dated entities -->
+      <xsd:attribute name="effdatedOnly" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="extendable" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- Whether this is a platform entity. -->
+      <xsd:attribute name="platform" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="requires" type="xsd:string"/>
+      <!-- Sub-package to which the class corresponding to this entity belongs. -->
+      <xsd:attribute name="subpackage" type="xsd:NMTOKEN"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="deleteEntity">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <!-- Used to hide out-of-box extension entities. -->
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="description">
+    <xsd:complexType>
+      <xsd:simpleContent>
+        <xsd:extension base="xsd:string"/>
+      </xsd:simpleContent>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- <xsd:complexContent> <xsd:extension base="foreignkeyBase"> <xsd:attribute name="revisableEntity"
+       type="xsd:NMTOKEN" use="required" /> </xsd:extension> </xsd:complexContent> </xsd:complexType>
+       </xsd:element> -->
+  <xsd:element name="edgeForeignKey">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Whether or not to create a histogram on the column when updating the database statistics -->
+      <xsd:attribute name="createhistogram" type="xsd:boolean" default="false"/>
+      <!-- Is the column deprecated? If so the description should explain why -->
+      <xsd:attribute name="deprecated" type="xsd:boolean" default="false"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- The name of the edge table entity.  If this isn't specified, one will automatically
+           be created. -->
+      <xsd:attribute name="edgeTableEntityName" type="xsd:NMTOKEN"/>
+      <!-- The name of the edge table to create. -->
+      <xsd:attribute name="edgeTableName" type="xsd:NMTOKEN" use="required"/>
+      <!-- exportable [default = true] True if the column can be transmitted as part of any SOAP
+           argument or result, in which case only a subset of the containing entity will be transmitted.
+           This attribute is ignored if the containing table is not also marked exportable. If
+           this field is applied to a foreign key field, then a reference to a Data object of
+           the type defined by the referenced table will be created. -->
+      <xsd:attribute name="exportable" type="xsd:boolean" default="true"/>
+      <!-- If specified this causes the creation of an ExternalIdentifier instance of a type
+           appropriate to the referred to entity, e.g. ClaimIdentifier if the foreign key points
+           to the claim table. -->
+      <xsd:attribute name="exportasid" type="xsd:boolean" default="false"/>
+      <!-- Indicates whether the edge entity should be marked 'Extractable' for archiving -->
+      <xsd:attribute name="extractable" type="xsd:boolean" default="false"/>
+      <!-- The entity this FK points to. -->
+      <xsd:attribute name="fkentity" type="xsd:NMTOKEN" use="required"/>
+      <!-- The scriptibility for the getter. -->
+      <xsd:attribute name="getterScriptability" type="ScriptabilityType" default="all"/>
+      <xsd:attribute name="ignoreforevents" type="xsd:boolean" default="false"/>
+      <!-- If true (default) and importable, then the value in the staging table can be a reference
+           to an existing object. (The publicid of a row in the source table for the referenced
+           object.) -->
+      <xsd:attribute name="importableagainstexistingobject" type="xsd:boolean" default="true"/>
+      <!-- If true (default), then a staging table edge table will be created for the edge table -->
+      <xsd:attribute name="loadable" type="xsd:boolean" default="false"/>
+      <!-- If true then the loading code will not use a default value nor report a warning if
+           the column is nullable without a default. Not usable by customers -->
+      <xsd:attribute name="loadedByCallback" type="xsd:boolean" default="false"/>
+      <!-- Name of the column on the table AND and the field on the entity.  The name maps to
+           accesor and mutator methods of a field on the entity, not the actual private member
+           field (e.g. "name" maps to "setName" and "getName", not the private "_name" member
+           field). Please follow use the following naming conventions: o Column names should
+           contain letters only, no underscores -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- nullok See COLUMN -->
+      <xsd:attribute name="nullok" type="xsd:boolean" use="required"/>
+      <!-- Indicates whether the edge entity should be marked 'OverlapTable' for archiving -->
+      <xsd:attribute name="overlapTable" type="xsd:boolean" default="false"/>
+      <!-- If true (not the default) and loadable, then the staging table will contain a column
+           mapping to the column, but the loader will overwrite any user supplied data. (In other
+           words, the user should not populate the column.) NOTE: This attribute is provided
+           for informational purposes only.  The only place that it should be used is in the
+           data dictionary. -->
+      <xsd:attribute name="overwrittenInStagingTable" type="xsd:boolean" default="false"/>
+      <!-- The scriptibility for the setter. -->
+      <xsd:attribute name="setterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- Indicates if the column can be nullable in soap calls.  If not set, defaults to the
+           value of nullok. -->
+      <xsd:attribute name="soapnullok" type="xsd:boolean"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="edgeForeignKey-override">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- Indicates whether the edge entity should be marked 'Extractable' for archiving -->
+      <xsd:attribute name="extractable" type="xsd:boolean"/>
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- Indicates whether the edge entity should be marked 'OverlapTable' for archiving -->
+      <xsd:attribute name="overlapTable" type="xsd:boolean"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Defines regular, persistent objects, just like Mom used to make. -->
+  <xsd:element name="entity">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="array" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="checkconstraint" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="customconsistencycheck" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="datetimeordering" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="dbcheckbuilder" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="edgeForeignKey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="events" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="foreignkey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="implementsEntity" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="implementsInterface" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="index" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="jointableconsistencycheck" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="monetaryamount" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="onetoone" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="remove-index" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="searchColumn" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="searchTypekey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="tableAugmenter" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="typekey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="validatetypekeyinset" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="validatetypekeynotinset" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Defines whether this type can be created.  True denotes a bean of this type cannot
+           be created and the generated code will be abstract -->
+      <xsd:attribute name="abstract" type="xsd:boolean" default="false"/>
+      <!-- admin Whether or not the tables declared in this file are admin tables (default is
+           false).  Rows in admin tables can always be referenced from rows in the staging tables. -->
+      <xsd:attribute name="admin" type="xsd:boolean" default="false"/>
+      <!-- For effdated entities, whether or not the entity is auto-split. Defaults to true. -->
+      <xsd:attribute name="autoSplit" type="xsd:boolean" default="true"/>
+      <!-- If set to false then entities of this type (and all subtypes of course) are disallowed
+           from existing in the global cache. Attempting to add a GC configuration for this type
+           will cause the server to go boom on startup. By default all entities are cacheable. -->
+      <xsd:attribute name="cacheable" type="xsd:boolean" default="true"/>
+      <!-- consistentchildren True if this table has the following behavior: Take the group of
+           tables which directly reference this table (pktable) via a foreign key For every table
+           in the group (fktable1) that references another table in this group (fktable2) Every
+           row in fktable1 that has a non-null reference to a row in fktable2 references the
+           same row in pktable as the row that it references in fktable2. -->
+      <xsd:attribute name="consistentchildren" type="xsd:boolean" default="false"/>
+      <!-- Description of the table. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- A more human-readable form of the entity's name.  This name can be accessed via the
+           DisplayName on the typeinfo for the entity, i.e. as entity.TypeInfo.DisplayName. 
+           In the case of subtypes this will also be used as the name on the subtype key.  If
+           this isn't specified, the name will be used as the displayName instead. -->
+      <xsd:attribute name="displayName" type="xsd:string"/>
+      <!-- For the purposes of archiving, whether or not the entity has the semantics of an edge
+           table (see edgeForeignKey). Defaults to false. -->
+      <xsd:attribute name="edgeTable" type="xsd:boolean" default="false"/>
+      <!-- Only relevent for entities of type effDated, this defines the type of the root of
+           the tree the effDated entity lives in -->
+      <xsd:attribute name="effDatedBranchType" type="xsd:string"/>
+      <!-- Only relevent for entities of type effDatedContainer, this defines the field that
+           refers to this container's branches -->
+      <xsd:attribute name="effDatedBranchesField" type="xsd:string"/>
+      <!-- Only relevent for entities of type effDatedBranch, this defines the field that refers
+           to this branch's container -->
+      <xsd:attribute name="effDatedContainerField" type="xsd:string"/>
+      <!-- Only relevent for entities of type effDatedContainer, this defines the name of the
+           table that stores the effdated table registry for this container entity -->
+      <xsd:attribute name="effDatedRegistryTableName" type="xsd:string"/>
+      <!-- entity [required] Name of the Java class to which this table maps (this is the class
+           name without the package). -->
+      <xsd:attribute name="entity" type="xsd:NMTOKEN" use="required"/>
+      <!-- exportable [default = false] True if the entity can be transmitted as part of any
+           SOAP argument or result. If false, an error occurs if the system attempts to transmit
+           an instance of this entity in a SOAP call. If false, all foreign keys to this entity
+           should also have a value of false for their "exportable" attributes. -->
+      <xsd:attribute name="exportable" type="xsd:boolean" default="false"/>
+      <!-- extendable [default = true] True if this table can be extended by customer extensions. -->
+      <xsd:attribute name="extendable" type="xsd:boolean" default="true"/>
+      <!-- Whether or not this entity should be considered final and thus not subclassable. 
+           Defaults to true. -->
+      <xsd:attribute name="final" type="xsd:boolean" default="true"/>
+      <!-- generateinternallyifabsent Can only be true if importable is true.  When true, then
+           we automatically generate an entity (row) for each potentially referencing object
+           with a null reference.  There can be exactly 1 referencing foreign key to this table.
+           (This is useful for individual/ContactIndividual, where the user knows nothing about
+           that entity.) -->
+      <xsd:attribute name="generateinternallyifabsent" type="xsd:boolean" default="false"/>
+      <!-- True to have this object stop the chain of event generation.  No events will be generated
+           for this object or any object lower than this in the object graph. -->
+      <xsd:attribute name="ignoreForEvents" type="xsd:boolean" default="false"/>
+      <!-- If true (not the default), then the table is an instrumentation table. Moving forward,
+           we will provide functionality to generate the DDL for instrumentation tables and to
+           export their contents, so that we can analyze performance on a different database
+           instance. -->
+      <xsd:attribute name="instrumentationtable" type="xsd:boolean" default="false"/>
+      <!-- If true (default), then a staging table will be generated containing the importable
+           columns. -->
+      <xsd:attribute name="loadable" type="xsd:boolean" default="true"/>
+      <!-- lockable If true (default is false), then the application can acquire update locks
+           on this table. A lockable table will have one additional column added to its definition.
+            This column must not appear as a key column in any index on that table: o lockingcolum
+           - bit -->
+      <xsd:attribute name="lockable" type="xsd:boolean" default="false"/>
+      <!-- If true (not the default) and loadable, then the staging table will be generated,
+           but the loader will overwrite any user supplied data. (In other words, the user should
+           not populate the staging table.) NOTE: This attribute is provided for informational
+           purposes only.  The only place that it should be used is in the data dictionary. -->
+      <xsd:attribute name="overwrittenInStagingTable" type="xsd:boolean" default="false"/>
+      <!-- Whether this is a platform entity. -->
+      <xsd:attribute name="platform" type="xsd:boolean" default="false"/>
+      <!-- For supertypes and subtypes, this will be the priority of the corresponding subtype
+           key. -->
+      <xsd:attribute name="priority" type="xsd:integer" default="-1"/>
+      <xsd:attribute name="readOnly" type="xsd:boolean"/>
+      <!-- setterScriptabilty If set to HIDDEN then all columns will have their setter scriptability
+           set to HIDDEN. Essentially ignored otherwise. -->
+      <xsd:attribute name="setterScriptability" type="ScriptabilityType"/>
+      <!-- Sub-package to which the class corresponding to this entity belongs. -->
+      <xsd:attribute name="subpackage" type="xsd:NMTOKEN"/>
+      <!-- Name of the table.  If this is a sub-type definition then the table name is the name
+           of the sub-type's super-type table. Please use the following naming conventions: o
+           The table name should *NOT* begin with any product-related prefix, e.g. "cc_". o If
+           this is a table only used for testing, it should begin with "test_". o Table names
+           should be all lowercase. o Table names should contain letters only, no underscores
+           (except for "test_"). -->
+      <xsd:attribute name="table" type="xsd:NMTOKEN" use="required"/>
+      <!-- temporary True if this table is a work table only used during installation or upgrade;
+           the default value is false.  Note, these aren't tables that can be accessed by code
+           but are work tables.  These tables are NOT deleted after the install or upgrade is
+           complete. -->
+      <xsd:attribute name="temporary" type="xsd:boolean" default="false"/>
+      <!-- The type of this entity.  See internalentitytype enumeration for more info. -->
+      <xsd:attribute name="type" type="InternalEntityType" use="required"/>
+      <!-- For non-final entities, the name of the corresponding subtype typelist table. If unspecified,
+           then the name of the entity is used as the subtype typelist table name. Illegal for
+           final entities. -->
+      <xsd:attribute name="typelistTableName" type="xsd:string"/>
+      <xsd:attribute name="validateOnCommit" type="xsd:boolean" default="true"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- The event tag is used to add a new event to an entity type. -->
+  <xsd:element name="event">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <!-- description (required) The description of the event -->
+      <xsd:attribute name="description" type="xsd:string" use="required"/>
+      <!-- name (required) The name of the additional event -->
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- The events tag is used to tell the system this table raises events. -->
+  <xsd:element name="events">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="event" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="extension">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="array" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="array-override" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="column-override" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="description" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="edgeForeignKey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="edgeForeignKey-override" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="events" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="foreignkey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="foreignkey-override" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="implementsEntity" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="implementsInterface" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="index" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="internalonlyfields" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="monetaryamount" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="onetoone" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="onetoone-override" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="remove-index" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="searchColumn" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="searchTypekey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="typekey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="typekey-override" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- The name of the entity being extended. -->
+      <xsd:attribute name="entityName" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Referred to by: INDEX.  Used to force an index to be created when running against
+       1 or more databases.  This is useful because the index generation algorithm can throw
+       away some declared indexes as being redundant and 1 or more of those indexes may be
+       required to work around an optimizer problem. db2 - optional, whether or not index
+       should be forced when running against DB2 oracle - optional, whether or not index
+       should be forced when running against Oracle sqlserver - optional, whether or not
+       index should be forced when running against SQL Server -->
+  <xsd:element name="forceindex">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="db2" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="oracle" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="sqlserver" type="xsd:boolean" default="false"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="foreignkey">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Name to use for the database column corresponding to this property. If unspecified,
+           the property's name will be used. -->
+      <xsd:attribute name="columnName" type="xsd:NMTOKEN"/>
+      <!-- Tells the database to create a foreign key constraint for this FK. Defaults to true. -->
+      <xsd:attribute name="createConstraint" type="xsd:boolean" default="true"/>
+      <!-- Tells the database to create a backing index for this foreign key. Defaults to true. -->
+      <xsd:attribute name="createbackingindex" type="xsd:boolean" default="true"/>
+      <!-- Whether or not to create a histogram on the column when updating the database statistics -->
+      <xsd:attribute name="createhistogram" type="xsd:boolean" default="false"/>
+      <!-- Is the column deprecated? If so the description should explain why -->
+      <xsd:attribute name="deprecated" type="xsd:boolean" default="false"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- If loadable and importableagainstexistingobject and false (not the default), then
+           the value in the staging table can only be a reference to an existing object if there
+           are no rows in the matching source table that reference that same object. Given cc_root(id)
+           and cc_node(id, rootid), where we allow rows from ccst_node to reference rows in cc_root,
+           but we only allow that to happen once per root.  (Once there are rows in cc_node that
+           reference a row in cc_root, we want to prevent any new rows that reference the row
+           in cc_root from being added via ccst_node.)  This attribute will do that. -->
+      <xsd:attribute name="existingreferencesallowed" type="xsd:boolean" default="true"/>
+      <!-- exportable [default = true] True if the column can be transmitted as part of any SOAP
+           argument or result, in which case only a subset of the containing entity will be transmitted.
+           This attribute is ignored if the containing table is not also marked exportable. If
+           this field is applied to a foreign key field, then a reference to a Data object of
+           the type defined by the referenced table will be created. -->
+      <xsd:attribute name="exportable" type="xsd:boolean" default="true"/>
+      <!-- If specified this causes the creation of an ExternalIdentifier instance of a type
+           appropriate to the referred to entity, e.g. ClaimIdentifier if the foreign key points
+           to the claim table. -->
+      <xsd:attribute name="exportasid" type="xsd:boolean" default="false"/>
+      <!-- The entity this FK points to. -->
+      <xsd:attribute name="fkentity" type="xsd:NMTOKEN" use="required"/>
+      <!-- The scriptibility for the getter. -->
+      <xsd:attribute name="getterScriptability" type="ScriptabilityType" default="all"/>
+      <xsd:attribute name="ignoreforevents" type="xsd:boolean" default="false"/>
+      <!-- If true (default) and loadable, then the value in the staging table can be a reference
+           to an existing object. (The publicid of a row in the source table for the referenced
+           object.) -->
+      <xsd:attribute name="importableagainstexistingobject" type="xsd:boolean" default="true"/>
+      <!-- Whether or not to include the id as the last column in the backing index for the foreign
+           key. This is useful when the access pattern in 1 or more important queries is to join
+           to this table through the foreign key and use the id to probe into a referencing table,
+           where the only columns that are accessed from the table are this foreign key, retired
+           and id.  In that case, adding the id column to the index creates a covering index
+           and eliminates the need to access the table. -->
+      <xsd:attribute name="includeIdInIndex" type="xsd:boolean" default="false"/>
+      <!-- If true (default), then a staging table will contain a column for the PublicID of
+           the referenced object, instead of the internal id. -->
+      <xsd:attribute name="loadable" type="xsd:boolean" default="true"/>
+      <!-- If true then the loading code will not use a default value nor report a warning if
+           the column is nullable without a default. Not usable by customers -->
+      <xsd:attribute name="loadedByCallback" type="xsd:boolean" default="false"/>
+      <!-- Name of the column on the table AND and the field on the entity.  The name maps to
+           accesor and mutator methods of a field on the entity, not the actual private member
+           field (e.g. "name" maps to "setName" and "getName", not the private "_name" member
+           field). Please follow use the following naming conventions: o Column names should
+           contain letters only, no underscores -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- This applies only to FKs that are between effdated elements. If an FK is between effdated
+           elements and this attribute is true then a real FK is created between the elements.
+           Essentially this attribute allows one to say "FK to a specific version of the given
+           entity". It is an error to set this attribute on a reverse FK. It is simply ignored
+           if the FK is not effdated. -->
+      <xsd:attribute name="nonEffDated" type="xsd:boolean" default="false"/>
+      <!-- nullok See COLUMN -->
+      <xsd:attribute name="nullok" type="xsd:boolean" use="required"/>
+      <!-- If true (not the default) and loadable, then the staging table will contain a column
+           mapping to the column, but the loader will overwrite any user supplied data. (In other
+           words, the user should not populate the column.) NOTE: This attribute is provided
+           for informational purposes only.  The only place that it should be used is in the
+           data dictionary. -->
+      <xsd:attribute name="overwrittenInStagingTable" type="xsd:boolean" default="false"/>
+      <!-- Usually, the direction of a foreign key indicates the direction of "is owned by".
+           If owner is true, the direction of this relationship is reversed. -->
+      <xsd:attribute name="owner" type="xsd:boolean" default="false"/>
+      <!-- The scriptibility for the setter. -->
+      <xsd:attribute name="setterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- Indicates if the column can be nullable in soap calls.  If not set, defaults to the
+           value of nullok. -->
+      <xsd:attribute name="soapnullok" type="xsd:boolean"/>
+      <!-- Whether or not to changes to the object pointed to by this foreign key should trigger
+           validation -->
+      <xsd:attribute name="triggersValidation" type="xsd:boolean" default="false"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="foreignkey-override">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <xsd:attribute name="importableagainstexistingobject" type="xsd:boolean"/>
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <xsd:attribute name="nullok" type="xsd:boolean"/>
+      <!-- Whether or not to changes to the object pointed to by this foreign key should trigger
+           validation -->
+      <xsd:attribute name="triggersValidation" type="xsd:boolean"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="fulldescription">
+    <xsd:complexType>
+      <xsd:simpleContent>
+        <xsd:extension base="xsd:string"/>
+      </xsd:simpleContent>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Indicates that this element implements the specified delegate -->
+  <xsd:element name="implementsEntity">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="adapter" type="xsd:string"/>
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Indicates that this element implements the specified interface -->
+  <xsd:element name="implementsInterface">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="iface" type="xsd:string" use="required"/>
+      <xsd:attribute name="impl" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="index">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="forceindex" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="indexcol" minOccurs="1" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <xsd:attribute name="clustered" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <xsd:attribute name="expectedtobecovering" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <xsd:attribute name="trackUsage" type="xsd:boolean" default="true"/>
+      <xsd:attribute name="unique" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="verifyInLoader" type="xsd:boolean" default="true"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- ======================================================================= -->
+  <xsd:element name="indexcol">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <!-- keyposition - required, 1-based position of column within the key -->
+      <xsd:attribute name="keyposition" type="xsd:integer" use="required"/>
+      <!-- name - required, name of index -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- sortascending - optional, whether sort direction is ascending. Default is true -->
+      <xsd:attribute name="sortascending" type="xsd:boolean" default="true"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="internalExtension">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="array" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="array-override" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="checkconstraint" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="column-override" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="customconsistencycheck" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="dbcheckbuilder" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="description" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="edgeForeignKey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="edgeForeignKey-override" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="events" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="foreignkey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="foreignkey-override" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="implementsEntity" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="implementsInterface" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="index" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="jointableconsistencycheck" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="monetaryamount" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="onetoone" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="onetoone-override" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="remove-index" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="searchColumn" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="searchTypekey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="typekey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="typekey-override" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- The name of the entity being extended. -->
+      <xsd:attribute name="entityName" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Simply names a column in the internalonly list of fields -->
+  <xsd:element name="internalfield">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- This is used to define a list of fields on a table which are not supported by any
+       external system which might be contacted through an adaptor to load such objects. -->
+  <xsd:element name="internalonlyfields">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="internalfield" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- A consistency check that verifies the contents of a table with multiple foreign keys
+       against the contents of a specified join table. Take join table AB, with foreign keys
+       AID to table A and BID to table B and another table ASDF which also contains foreign
+       keys to both tables A and B.  In this case, we often want to ensure that for every
+       row in ASDF with non-null values for both of the foreign keys of interest, there is
+       a matching row in the join table (AB). NOTE: This property has to be declared as it
+       cannot be safely derived.  (The premise is not always true, sometimes because the
+       table may have multiple foreign keys to the same table and sometimes because the semantics
+       are different. (A row may include both a group and a user but the user is not required
+       to be a member of that group.) -->
+  <xsd:element name="jointableconsistencycheck">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="matchingcolumn" minOccurs="1" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <xsd:attribute name="jointable" type="xsd:NMTOKEN" use="required"/>
+      <!-- runafterpopulatingsourcetables (optional, default="true") Value determines whether
+           or not the consistency check gets run by the loader after populating the source tables.
+           Hand-coded consistency checks are too complex to programatically transform into loader
+           validations, so we end up running almost all of them after populating the source tables.
+            However, some checks do not need to be run then, so this attribute can be used to
+           notify the loader of that. -->
+      <xsd:attribute name="runafterpopulatingsourcetables" type="xsd:boolean" default="true"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="keyfilter">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- ============================================================================ KEYFILTERS
+       ============================================================================ A keyfilters
+       names a set of typekeys that a typekeys set of legal values is filtered on -->
+  <xsd:element name="keyfilters">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="keyfilter" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- ============================================================================ KEYFILTERS-OVERRIDE
+       ============================================================================ A keyfilters-override
+       redefines a set of typekeys that a typekeys set of legal values is filtered on -->
+  <xsd:element name="keyfilters-override">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="keyfilter" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="link-association">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="constant-map" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="subtype-map" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="typelist-map" minOccurs="0" maxOccurs="1"/>
+      </xsd:choice>
+      <xsd:attribute name="hasGetter" type="xsd:boolean" default="true"/>
+      <xsd:attribute name="hasSetter" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="valueField" type="xsd:string" default="ID"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- ======================================================================= -->
+  <xsd:element name="localization">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <!-- Indicates whether the localized data entity should be marked 'Extractable' for archiving -->
+      <xsd:attribute name="extractable" type="xsd:boolean" default="false"/>
+      <!-- nullok - report null values at startup, i.e., missing (language, value) pairs. -->
+      <xsd:attribute name="nullok" type="xsd:boolean" use="required"/>
+      <!-- Indicates whether the localized data entity should be marked 'OverlapTable' for archiving -->
+      <xsd:attribute name="overlapTable" type="xsd:boolean" default="false"/>
+      <!-- tableName - required table name of the localized data table for this column. -->
+      <xsd:attribute name="tableName" type="xsd:NMTOKEN" use="required"/>
+      <!-- unique - enforce uniqueness with (language, value) index. -->
+      <xsd:attribute name="unique" type="xsd:boolean" default="false"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Referred to by: JOINTABLECONSISTENCYCHECK This element is used to declare the relationships
+       between the foreign key columns (name attribute) in the table in the encompassing
+       element and the foreign key columns (joincolumn attribute) in the join table. -->
+  <xsd:element name="matchingcolumn">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="joincolumn" type="xsd:NMTOKEN" use="required"/>
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="monetaryamount">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <xsd:attribute name="amountColumnName" type="xsd:string"/>
+      <xsd:attribute name="amountName" type="xsd:string"/>
+      <!-- Specifies the allowed range of amount values -->
+      <xsd:attribute name="amountRange" type="MonetaryAmountRange" default="any"/>
+      <xsd:attribute name="currencyColumnName" type="xsd:string"/>
+      <xsd:attribute name="currencyName" type="xsd:string"/>
+      <!-- Is the column deprecated? If so the description should explain why -->
+      <xsd:attribute name="deprecated" type="xsd:boolean" default="false"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- exportable [default = true] True if the column can be transmitted as part of any SOAP
+           argument or result, in which case only a subset of the containing entity will be transmitted.
+           This attribute is ignored if the containing table is not also marked exportable. If
+           this field is applied to a foreign key field, then a reference to a Data object of
+           the type defined by the referenced table will be created. -->
+      <xsd:attribute name="exportable" type="xsd:boolean" default="true"/>
+      <!-- The scriptibility for the getter. -->
+      <xsd:attribute name="getterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- When true, this field will be ignored for purposes of determining if events ought
+           to be generated for an updated entity -->
+      <xsd:attribute name="ignoreforevents" type="xsd:boolean" default="false"/>
+      <!-- If true (default), then a staging table will contain a column mapping to the column. -->
+      <xsd:attribute name="loadable" type="xsd:boolean" default="true"/>
+      <!-- If true then the loading code will not use a default value nor report a warning if
+           the column is nullable without a default. Not usable by customers -->
+      <xsd:attribute name="loadedByCallback" type="xsd:boolean" default="false"/>
+      <!-- Name of the column on the table AND and the field on the entity.  The name maps to
+           accesor and mutator methods of a field on the entity, not the actual private member
+           field (e.g. "name" maps to "setName" and "getName", not the private "_name" member
+           field). Please follow use the following naming conventions: o Column names should
+           contain letters only, no underscores -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- Indicates if the column is nullable. -->
+      <xsd:attribute name="nullok" type="xsd:boolean" use="required"/>
+      <!-- If true (not the default) and loadable, then the staging table will contain a column
+           mapping to the column, but the loader will overwrite any user supplied data. (In other
+           words, the user should not populate the column.) NOTE: This attribute is provided
+           for informational purposes only.  The only place that it should be used is in the
+           data dictionary. -->
+      <xsd:attribute name="overwrittenInStagingTable" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="precision" type="xsd:integer"/>
+      <!-- Whether this value scales as the effective and expired dates change. Only applicable
+           to numbers (e.g. you can't scale a varchar) and only applicable to effective dated
+           types. -->
+      <xsd:attribute name="scalable" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="scale" type="xsd:integer"/>
+      <!-- When true, not the default, written values will be verified to fit within the scale
+           of the currency, read values will be scaled based on the currency of the value. No
+           rounding takes place. -->
+      <xsd:attribute name="scaleToCurrency" type="xsd:boolean" default="false"/>
+      <!-- The scriptibility for the setter. -->
+      <xsd:attribute name="setterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- Indicates if the column can be nullable in soap calls.  If not set, defaults to the
+           value of nullok. -->
+      <xsd:attribute name="soapnullok" type="xsd:boolean"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- This element represents non-persistent objects, which have metadata and generated
+       stub classes and BeanInfo, but not rows in a database table. Primarily used to define
+       objects for use with NVVs, since NVVs are metadata- based, and thus required metadata-defined
+       objects. Non persistent entity definition.  Use this to declare entities that should
+       exist in the system, but cannot be stored in the database.  Useful if the entity needs
+       to be extended. -->
+  <xsd:element name="nonPersistentEntity">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="array" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="edgeForeignKey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="foreignkey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="implementsEntity" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="implementsInterface" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="monetaryamount" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="onetoone" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="typekey" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Defines whether this type can be created.  True denotes a bean of this type cannot
+           be created and the generated code will be abstract -->
+      <xsd:attribute name="abstract" type="xsd:boolean" default="false"/>
+      <!-- Description of the table. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- A more human-readable form of the entity's name.  This name can be accessed via the
+           DisplayName on the typeinfo for the entity, i.e. as entity.TypeInfo.DisplayName. 
+           In the case of subtypes this will also be used as the name on the subtype key.  If
+           this isn't specified, the name will be used as the displayName instead. -->
+      <xsd:attribute name="displayName" type="xsd:string"/>
+      <!-- entity [required] Name of the Java class to which this table maps (this is the class
+           name without the package). -->
+      <xsd:attribute name="entity" type="xsd:NMTOKEN" use="required"/>
+      <!-- exportable [default = false] True if the entity can be transmitted as part of any
+           SOAP argument or result. If false, an error occurs if the system attempts to transmit
+           an instance of this entity in a SOAP call. If false, all foreign keys to this entity
+           should also have a value of false for their "exportable" attributes. -->
+      <xsd:attribute name="exportable" type="xsd:boolean" default="false"/>
+      <!-- extendable [default = true] True if this table can be extended by customer extensions. -->
+      <xsd:attribute name="extendable" type="xsd:boolean" default="true"/>
+      <!-- Whether or not this entity should be considered final and thus not subclassable. 
+           Defaults to true. -->
+      <xsd:attribute name="final" type="xsd:boolean" default="true"/>
+      <!-- Whether this is a platform entity. -->
+      <xsd:attribute name="platform" type="xsd:boolean" default="false"/>
+      <!-- For supertypes and subtypes, this will be the priority of the corresponding subtype
+           key. -->
+      <xsd:attribute name="priority" type="xsd:integer" default="-1"/>
+      <!-- Sub-package to which the class corresponding to this entity belongs. -->
+      <xsd:attribute name="subpackage" type="xsd:NMTOKEN"/>
+      <!-- For non-final entities, the name of the corresponding subtype typelist table. If unspecified,
+           then the name of the entity is used as the subtype typelist table name. Illegal for
+           final entities. -->
+      <xsd:attribute name="typelistTableName" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="onetoone">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- If true when this entity with the onetone is deleted then the pointed to element will
+           be deleted -->
+      <xsd:attribute name="cascadeDelete" type="xsd:boolean" default="false"/>
+      <!-- Is the column deprecated? If so the description should explain why -->
+      <xsd:attribute name="deprecated" type="xsd:boolean" default="false"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- exportable [default = true] True if the column can be transmitted as part of any SOAP
+           argument or result, in which case only a subset of the containing entity will be transmitted.
+           This attribute is ignored if the containing table is not also marked exportable. If
+           this field is applied to a foreign key field, then a reference to a Data object of
+           the type defined by the referenced table will be created. -->
+      <xsd:attribute name="exportable" type="xsd:boolean" default="true"/>
+      <!-- The entity this FK points to. -->
+      <xsd:attribute name="fkentity" type="xsd:NMTOKEN" use="required"/>
+      <!-- The scriptibility for the getter. -->
+      <xsd:attribute name="getterScriptability" type="ScriptabilityType" default="all"/>
+      <xsd:attribute name="ignoreforevents" type="xsd:boolean" default="false"/>
+      <!-- The FK field that points back to this object.  This is optional. -->
+      <xsd:attribute name="linkField" type="xsd:NMTOKEN"/>
+      <!-- Name of the column on the table AND and the field on the entity.  The name maps to
+           accesor and mutator methods of a field on the entity, not the actual private member
+           field (e.g. "name" maps to "setName" and "getName", not the private "_name" member
+           field). Please follow use the following naming conventions: o Column names should
+           contain letters only, no underscores -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- nullok See COLUMN -->
+      <xsd:attribute name="nullok" type="xsd:boolean" use="required"/>
+      <!-- If true this entity 'owns' the referenced object.  When this object is deleted, the
+           referenced object will also be deleted, and changes to the referenced object will
+           result in this object being considered to be changed.  Note that this is essentially
+           the same meaning as the 'owner' flag on an array declaration, rather than the foreignkey
+           declaration. -->
+      <xsd:attribute name="owner" type="xsd:boolean" default="false"/>
+      <!-- The scriptibility for the setter. -->
+      <xsd:attribute name="setterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- Whether or not to changes to the object pointed to by this foreign key should trigger
+           validation -->
+      <xsd:attribute name="triggersValidation" type="xsd:boolean" default="false"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="onetoone-override">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- Whether or not to changes to the object pointed to by this onetoone should trigger
+           validation -->
+      <xsd:attribute name="triggersValidation" type="xsd:boolean"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="property">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="nullOk" type="xsd:string"/>
+      <xsd:attribute name="value" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Used to remove an index declared in the base datamodel. Only performance-related indexes
+       may be removed. Unique indexes that don't include the ID column may not be removed,
+       as these indexes exist to enforce data constraints. -->
+  <xsd:element name="remove-index">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <!-- The name of the index to remove. -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="searchColumn">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Name to use for the database column corresponding to this property. If unspecified,
+           the property's name will be used. -->
+      <xsd:attribute name="columnName" type="xsd:NMTOKEN"/>
+      <!-- Is the column deprecated? If so the description should explain why -->
+      <xsd:attribute name="deprecated" type="xsd:boolean" default="false"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- Name of the column on the table AND and the field on the entity.  The name maps to
+           accesor and mutator methods of a field on the entity, not the actual private member
+           field (e.g. "name" maps to "setName" and "getName", not the private "_name" member
+           field). Please follow use the following naming conventions: o Column names should
+           contain letters only, no underscores -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- Name of the column on the source entity, whose value this column will copy -->
+      <xsd:attribute name="sourceColumn" type="xsd:string" use="required"/>
+      <!-- Name of a foreignkey field on this entity, which refers to the source entity for this
+           search denorm column -->
+      <xsd:attribute name="sourceForeignKey" type="xsd:string" use="required"/>
+      <!-- Optional name of the particular subtype on which the source column is defined. If
+           not specified, then the source column is assumed to exist on the entity referred to
+           by sourceObject -->
+      <xsd:attribute name="sourceSubtype" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="searchTypekey">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Name to use for the database column corresponding to this property. If unspecified,
+           the property's name will be used. -->
+      <xsd:attribute name="columnName" type="xsd:NMTOKEN"/>
+      <!-- Is the column deprecated? If so the description should explain why -->
+      <xsd:attribute name="deprecated" type="xsd:boolean" default="false"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- Name of the column on the table AND and the field on the entity.  The name maps to
+           accesor and mutator methods of a field on the entity, not the actual private member
+           field (e.g. "name" maps to "setName" and "getName", not the private "_name" member
+           field). Please follow use the following naming conventions: o Column names should
+           contain letters only, no underscores -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- Name of a foreignkey field on this entity, which refers to the source entity for this
+           search denorm column -->
+      <xsd:attribute name="sourceForeignKey" type="xsd:string" use="required"/>
+      <!-- Optional name of the particular subtype on which the source column is defined. If
+           not specified, then the source column is assumed to exist on the entity referred to
+           by sourceObject -->
+      <xsd:attribute name="sourceSubtype" type="xsd:string"/>
+      <!-- Name of the typekey on the source entity, whose value this typekey will copy -->
+      <xsd:attribute name="sourceTypekey" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="subtype">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="array" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="checkconstraint" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="column" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="customconsistencycheck" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="datetimeordering" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="dbcheckbuilder" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="edgeForeignKey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="events" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="foreignkey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="implementsEntity" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="implementsInterface" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="index" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="jointableconsistencycheck" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="monetaryamount" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="onetoone" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="searchColumn" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="searchTypekey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="tableAugmenter" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="typekey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="validatetypekeyinset" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="validatetypekeynotinset" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Whether or not this entity is abstract.  Defaults to false. -->
+      <xsd:attribute name="abstract" type="xsd:boolean" default="false"/>
+      <!-- Description of this entity. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- A more human-readable form of the entity's name.  This name can be accessed via the
+           DisplayName on the typeinfo for the entity, i.e. as entity.TypeInfo.DisplayName. 
+           In the case of subtypes this will also be used as the name on the subtype key.  If
+           this isn't specified, the name will be used as the displayName instead. -->
+      <xsd:attribute name="displayName" type="xsd:string"/>
+      <!-- Name of this entity.  Required. -->
+      <xsd:attribute name="entity" type="xsd:NMTOKEN" use="required"/>
+      <!-- Whether or not this entity should be considered final and thus not subclassable. 
+           Defaults to false. -->
+      <xsd:attribute name="final" type="xsd:boolean" default="false"/>
+      <!-- Whether this is a platform entity. -->
+      <xsd:attribute name="platform" type="xsd:boolean" default="false"/>
+      <!-- For supertypes and subtypes, this will be the priority of the corresponding subtype
+           key. -->
+      <xsd:attribute name="priority" type="xsd:integer" default="-1"/>
+      <xsd:attribute name="readOnly" type="xsd:boolean"/>
+      <!-- setterScriptabilty If set to HIDDEN then all columns will have their setter scriptability
+           set to HIDDEN. Essentially ignored otherwise. -->
+      <xsd:attribute name="setterScriptability" type="ScriptabilityType"/>
+      <!-- Sub-package to which the class corresponding to this entity belongs. -->
+      <xsd:attribute name="subpackage" type="xsd:NMTOKEN"/>
+      <!-- Name of the entity that this is a subtype of.  Required. -->
+      <xsd:attribute name="supertype" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="subtype-map">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="customAccessor" type="xsd:string"/>
+      <xsd:attribute name="propertyPrefix" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Class that implements TableAugmenter and is called to potentially augment the base
+       datamodel based on configuration (or other) information outside of the data model.
+        (For example, which columns to include on the unique index on PolicyPeriod.) -->
+  <xsd:element name="tableAugmenter">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="className" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="tag">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <xsd:attribute name="value" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="typecode">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="typecode" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="typecodes">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="typecode" minOccurs="1" maxOccurs="unbounded"/>
+      </xsd:choice>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="typekey">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="keyfilters" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Name to use for the database column corresponding to this property. If unspecified,
+           the property's name will be used. -->
+      <xsd:attribute name="columnName" type="xsd:NMTOKEN"/>
+      <!-- createhistogram Whether or not to create a histogram on the column when updating the
+           database statistics -->
+      <xsd:attribute name="createhistogram" type="xsd:boolean" default="false"/>
+      <xsd:attribute name="default" type="xsd:string"/>
+      <!-- Is the column deprecated? If so the description should explain why -->
+      <xsd:attribute name="deprecated" type="xsd:boolean" default="false"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- exportable [default = true] True if the column can be transmitted as part of any SOAP
+           argument or result, in which case only a subset of the containing entity will be transmitted.
+           This attribute is ignored if the containing table is not also marked exportable. If
+           this field is applied to a foreign key field, then a reference to a Data object of
+           the type defined by the referenced table will be created. -->
+      <xsd:attribute name="exportable" type="xsd:boolean" default="true"/>
+      <!-- The scriptibility for the getter. -->
+      <xsd:attribute name="getterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- importable If true (default), then a staging table will contain a column for the Code,
+           as a String, of the typekey. -->
+      <xsd:attribute name="loadable" type="xsd:boolean" default="true"/>
+      <!-- If true then the loading code will not use a default value nor report a warning if
+           the column is nullable without a default. Not usable by customers -->
+      <xsd:attribute name="loadedByCallback" type="xsd:boolean" default="false"/>
+      <!-- Name of the column on the table AND and the field on the entity.  The name maps to
+           accesor and mutator methods of a field on the entity, not the actual private member
+           field (e.g. "name" maps to "setName" and "getName", not the private "_name" member
+           field). Please follow use the following naming conventions: o Column names should
+           contain letters only, no underscores -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- nullok See COLUMN -->
+      <xsd:attribute name="nullok" type="xsd:boolean" use="required"/>
+      <!-- If true (not the default) and loadable, then the staging table will contain a column
+           mapping to the column, but the loader will overwrite any user supplied data. (In other
+           words, the user should not populate the column.) NOTE: This attribute is provided
+           for informational purposes only.  The only place that it should be used is in the
+           data dictionary. -->
+      <xsd:attribute name="overwrittenInStagingTable" type="xsd:boolean" default="false"/>
+      <!-- The scriptibility for the setter. -->
+      <xsd:attribute name="setterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- Indicates if the column can be nullable in soap calls.  If not set, defaults to the
+           value of nullok. -->
+      <xsd:attribute name="soapnullok" type="xsd:boolean"/>
+      <!-- typefilter Name of a typefilter associated with the typekey's typelist. [see TYPEFILTER
+           in typelists.xsd] -->
+      <xsd:attribute name="typefilter" type="xsd:string"/>
+      <!-- typelist [required] Name of the type list from which this type key finds its value
+           (and the set of potential values) [see TYPELIST in typelists.xsd] -->
+      <xsd:attribute name="typelist" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="typekey-override">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="keyfilters-override" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <xsd:attribute name="default" type="xsd:NMTOKEN"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <xsd:attribute name="nullok" type="xsd:boolean"/>
+      <!-- if specified, will override the "typefilter" attribute defined on the typekey, if
+           any -->
+      <xsd:attribute name="typefilter" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="typelist-map">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="customAccessor" type="xsd:string"/>
+      <xsd:attribute name="field" type="xsd:string" use="required"/>
+      <xsd:attribute name="propertyPrefix" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- =======================================================================  validatetypekeyinset
+       Validation that values in a typekey column must have 1 of the specified legal values
+       when loading from the staging tables. -->
+  <xsd:element name="validatetypekeyinset">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="typecodes" minOccurs="1" maxOccurs="1"/>
+      </xsd:choice>
+      <xsd:attribute name="columnname" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- validatetypekeynotinset Validation that values in a typekey column must not have any
+       of the specified illegal values when loading from the staging tables. -->
+  <xsd:element name="validatetypekeynotinset">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="typecodes" minOccurs="1" maxOccurs="1"/>
+      </xsd:choice>
+      <xsd:attribute name="columnname" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Defines a view entity in the system.  View entities shadow primary a primary entity
+       allowing a subset of columns to be retrieved when the bean is retrieved.  View entities
+       also allow paths from the primary entity to be returned. View entities can also be
+       exportable, which simply means the SOAP interfaces will be generated. View entities
+       can NOT be stored in the DB. -->
+  <xsd:element name="viewEntity">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="computedcolumn" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="computedtypekey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="viewEntityColumn" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="viewEntityLink" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="viewEntityName" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="viewEntityTypekey" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Defines whether this entity can be instantiated.  True means an entity of this type
+           cannot be instantiated, and its generated code will be abstract. -->
+      <xsd:attribute name="abstract" type="xsd:boolean" default="false"/>
+      <!-- Description of the view entity. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- A more human-readable form of the entity's name.  This name can be accessed via the
+           DisplayName on the typeinfo for the entity, i.e. as entity.TypeInfo.DisplayName. 
+           In the case of subtypes this will also be used as the name on the subtype key.  If
+           this isn't specified, the name will be used as the displayName instead. -->
+      <xsd:attribute name="displayName" type="xsd:string"/>
+      <!-- The name of this entity -->
+      <xsd:attribute name="entity" type="xsd:string" use="required"/>
+      <!-- exportable [default = true] True if the column can be transmitted as part of any SOAP
+           argument or result, in which case only a subset of the containing entity will be transmitted.
+           This attribute is ignored if the containing table is not also marked exportable. If
+           this field is applied to a foreign key field, then a reference to a Data object of
+           the type defined by the referenced table will be created. -->
+      <xsd:attribute name="exportable" type="xsd:boolean" default="true"/>
+      <!-- extendable True if this table can be extended by customer extensions; the default
+           value is true. -->
+      <xsd:attribute name="extendable" type="xsd:boolean" default="true"/>
+      <!-- Whether or not this entity should be considered final and thus not subclassable. Defaults
+           to true. -->
+      <xsd:attribute name="final" type="xsd:boolean" default="true"/>
+      <!-- Whether this is a platform entity. -->
+      <xsd:attribute name="platform" type="xsd:boolean" default="false"/>
+      <!-- The primary entity type for this view entity. -->
+      <xsd:attribute name="primaryEntity" type="xsd:string" use="required"/>
+      <!-- For supertypes and subtypes, this will be the priority of the corresponding subtype
+           key. -->
+      <xsd:attribute name="priority" type="xsd:integer" default="-1"/>
+      <!-- Whether or not to show retired beans in the view iff this view implicitly links to
+           another table and those beans are retired -->
+      <xsd:attribute name="showRetiredBeans" type="xsd:boolean"/>
+      <!-- Sub-package to which the class corresponding to this entity belongs. -->
+      <xsd:attribute name="subpackage" type="xsd:NMTOKEN"/>
+      <!-- The entity name of the super type for this entity. This type value is stored in its
+           super-table's "type" column.  There is no actual table associated with a sub-type,
+           all sub-types of a super-type are stored in the super-type table and resolved to the
+           correct sub-type based on the value of the "type" column. The "name" attribute refers
+           to an existing super-type table. A sub-type  definition has a number of unique properties:
+           o To declare this sub-type as an extension to a base sub-type set the "subtype" value
+           to be equal to the "subtype" value of its base sub-type; "extends" is never used with
+           sub-types.  A derived sub-type is similar to a derived table, where the dervied sub-type
+           inherits all the objects of its base sub-type. o Any columns defined in a sub-type
+           definition must be nullable. o NOTE: This attribute should only be defined if this
+           is a sub-type of an existing super-type table. -->
+      <xsd:attribute name="supertypeEntity" type="xsd:NMTOKEN"/>
+      <!-- For non-final entities, the name of the corresponding subtype typelist table. If unspecified,
+           then the name of the entity is used as the subtype typelist table name. Illegal for
+           final entities. -->
+      <xsd:attribute name="typelistTableName" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Represents a column in a viewEntity. -->
+  <xsd:element name="viewEntityColumn">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Is the column deprecated? If so the description should explain why -->
+      <xsd:attribute name="deprecated" type="xsd:boolean" default="false"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- exportable [default = true] True if the column can be transmitted as part of any SOAP
+           argument or result, in which case only a subset of the containing entity will be transmitted.
+           This attribute is ignored if the containing table is not also marked exportable. If
+           this field is applied to a foreign key field, then a reference to a Data object of
+           the type defined by the referenced table will be created. -->
+      <xsd:attribute name="exportable" type="xsd:boolean" default="true"/>
+      <!-- The scriptibility for the getter. -->
+      <xsd:attribute name="getterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- Name of the column on the table AND and the field on the entity.  The name maps to
+           accesor and mutator methods of a field on the entity, not the actual private member
+           field (e.g. "name" maps to "setName" and "getName", not the private "_name" member
+           field). Please follow use the following naming conventions: o Column names should
+           contain letters only, no underscores -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- Bean path for the column.  The path cannot traverse arrays. -->
+      <xsd:attribute name="path" type="xsd:string" use="required"/>
+      <!-- The scriptibility for the setter. -->
+      <xsd:attribute name="setterScriptability" type="ScriptabilityType" default="all"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="viewEntityExtension">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="computedcolumn" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="computedtypekey" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="description" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="viewEntityColumn" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="viewEntityLink" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="viewEntityName" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="viewEntityTypekey" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- The name of the entity being extended. -->
+      <xsd:attribute name="entityName" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Represents a column in a viewEntity. -->
+  <xsd:element name="viewEntityLink">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Is the column deprecated? If so the description should explain why -->
+      <xsd:attribute name="deprecated" type="xsd:boolean" default="false"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- exportable [default = true] True if the column can be transmitted as part of any SOAP
+           argument or result, in which case only a subset of the containing entity will be transmitted.
+           This attribute is ignored if the containing table is not also marked exportable. If
+           this field is applied to a foreign key field, then a reference to a Data object of
+           the type defined by the referenced table will be created. -->
+      <xsd:attribute name="exportable" type="xsd:boolean" default="true"/>
+      <!-- The scriptibility for the getter. -->
+      <xsd:attribute name="getterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- Name of the column on the table AND and the field on the entity.  The name maps to
+           accesor and mutator methods of a field on the entity, not the actual private member
+           field (e.g. "name" maps to "setName" and "getName", not the private "_name" member
+           field). Please follow use the following naming conventions: o Column names should
+           contain letters only, no underscores -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- Bean path for the column.  The path cannot traverse arrays. -->
+      <xsd:attribute name="path" type="xsd:string" use="required"/>
+      <!-- The scriptibility for the setter. -->
+      <xsd:attribute name="setterScriptability" type="ScriptabilityType" default="all"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Represents an entity name column in a view entity.  An entity name is a string column
+       that containing the display name for the entity.  This is formed using displayNames.xml. -->
+  <xsd:element name="viewEntityName">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Is the column deprecated? If so the description should explain why -->
+      <xsd:attribute name="deprecated" type="xsd:boolean" default="false"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- exportable [default = true] True if the column can be transmitted as part of any SOAP
+           argument or result, in which case only a subset of the containing entity will be transmitted.
+           This attribute is ignored if the containing table is not also marked exportable. If
+           this field is applied to a foreign key field, then a reference to a Data object of
+           the type defined by the referenced table will be created. -->
+      <xsd:attribute name="exportable" type="xsd:boolean" default="true"/>
+      <!-- The scriptibility for the getter. -->
+      <xsd:attribute name="getterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- Name of the column on the table AND and the field on the entity.  The name maps to
+           accesor and mutator methods of a field on the entity, not the actual private member
+           field (e.g. "name" maps to "setName" and "getName", not the private "_name" member
+           field). Please follow use the following naming conventions: o Column names should
+           contain letters only, no underscores -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- Bean path for the column.  The path cannot traverse arrays. -->
+      <xsd:attribute name="path" type="xsd:string" use="required"/>
+      <!-- The scriptibility for the setter. -->
+      <xsd:attribute name="setterScriptability" type="ScriptabilityType" default="all"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- Represents a column in a viewEntity. -->
+  <xsd:element name="viewEntityTypekey">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="fulldescription" minOccurs="0" maxOccurs="1"/>
+        <xsd:element ref="tag" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Is the column deprecated? If so the description should explain why -->
+      <xsd:attribute name="deprecated" type="xsd:boolean" default="false"/>
+      <!-- Description of the column's use. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- exportable [default = true] True if the column can be transmitted as part of any SOAP
+           argument or result, in which case only a subset of the containing entity will be transmitted.
+           This attribute is ignored if the containing table is not also marked exportable. If
+           this field is applied to a foreign key field, then a reference to a Data object of
+           the type defined by the referenced table will be created. -->
+      <xsd:attribute name="exportable" type="xsd:boolean" default="true"/>
+      <!-- The scriptibility for the getter. -->
+      <xsd:attribute name="getterScriptability" type="ScriptabilityType" default="all"/>
+      <!-- Name of the column on the table AND and the field on the entity.  The name maps to
+           accesor and mutator methods of a field on the entity, not the actual private member
+           field (e.g. "name" maps to "setName" and "getName", not the private "_name" member
+           field). Please follow use the following naming conventions: o Column names should
+           contain letters only, no underscores -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+      <!-- Bean path for the column.  The path cannot traverse arrays. -->
+      <xsd:attribute name="path" type="xsd:string" use="required"/>
+      <!-- The scriptibility for the setter. -->
+      <xsd:attribute name="setterScriptability" type="ScriptabilityType" default="all"/>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

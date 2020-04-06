@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <InputSet
+    id="WCModifiersInputSet">
+    <Require
+      name="modifiers"
+      type="List&lt;Modifier&gt;"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <InputIterator
+      elementName="rateModifier"
+      id="ModIteratorEligible"
+      value="modifiers.where( \ mod -&gt; mod.DataType == &quot;rate&quot; and not mod.ScheduleRate).toTypedArray()">
+      <IteratorSort
+        sortBy="rateModifier.Pattern.Priority"
+        sortOrder="1"/>
+      <IteratorSort
+        sortBy="RateModifier.Pattern.Name"
+        sortDirection="descending"
+        sortOrder="2"/>
+      <InputGroup
+        allowToggle="true"
+        childrenVisible="RateModifier.Eligible"
+        id="EligibilityInputGroup"
+        label="displaykey.Web.Policy.Modifiers.Eligibility(RateModifier.Pattern.Name)"
+        onToggle="toggleEligible(RateModifier)">
+        <HiddenInput
+          id="ModifierName"
+          value="RateModifier.Pattern.Name"/>
+        <TextInput
+          action="WCScheduleCreditPopup.push(RateModifier, policyPeriod.OpenForEdit)"
+          actionAvailable="RateModifier.Pattern.Code == &quot;WCScheduleCredits&quot;"
+          editable="RateModifier.Pattern.Code != &quot;WCScheduleCredits&quot;"
+          id="ModifierInput"
+          label="RateModifier.Pattern.Name"
+          numCols="5"
+          requestValidationExpression="rateModifier.getModifierValidation(VALUE as String)"
+          value="rateModifier.RateWithinLimits"/>
+        <BooleanRadioInput
+          editable="true"
+          id="ValueFinal"
+          label="displaykey.Web.Policy.Modifiers.ExModFinal"
+          value="rateModifier.ValueFinal"
+          visible="rateModifier.PatternCode == &quot;ExpMod&quot; or rateModifier.PatternCode == &quot;GLExperienceMod&quot;"/>
+      </InputGroup>
+    </InputIterator>
+    <InputIterator
+      elementName="modifier"
+      id="ModIterator"
+      value="modifiers.where( \ mod -&gt; mod.DataType != &quot;rate&quot; or mod.ScheduleRate).toTypedArray()">
+      <IteratorSort
+        sortBy="modifier.Pattern.Priority"
+        sortOrder="1"/>
+      <IteratorSort
+        sortBy="modifier.Pattern.Name"
+        sortDirection="descending"
+        sortOrder="2"/>
+      <HiddenInput
+        id="ModifierName"
+        value="modifier.Pattern.Name"/>
+      <TextInput
+        action="WCScheduleCreditPopup.push(modifier, policyPeriod.OpenForEdit)"
+        actionAvailable="policyPeriod.CanViewModifiers and modifier.Pattern.Code == &quot;WCScheduleCredits&quot;"
+        editable="modifier.Pattern.Code != &quot;WCScheduleCredits&quot;"
+        id="ModifierInput_Rate"
+        label="modifier.Pattern.Name"
+        numCols="5"
+        requestValidationExpression="modifier.getModifierValidation(VALUE as String)"
+        value="modifier.RateWithinLimits"
+        visible="modifier.DataType == ModifierDataType.TC_RATE"/>
+      <BooleanRadioInput
+        editable="true"
+        id="ModifierInput_Boolean"
+        label="modifier.Pattern.Name"
+        numCols="5"
+        value="modifier.BooleanModifier"
+        visible="modifier.DataType == ModifierDataType.TC_BOOLEAN"/>
+      <RangeInput
+        editable="true"
+        id="ModifierInput_TypeKey"
+        label="modifier.Pattern.Name"
+        numCols="5"
+        value="modifier.TypeKeyModifier"
+        valueRange="gw.util.TypekeyUtil.getTypeKeys(modifier.TypeList)"
+        visible="modifier.DataType == ModifierDataType.TC_TYPEKEY"/>
+      <DateInput
+        editable="true"
+        id="ModifierInput_Date"
+        label="modifier.Pattern.Name"
+        numCols="5"
+        value="modifier.DateModifier"
+        visible="modifier.DataType == ModifierDataType.TC_DATE"/>
+    </InputIterator>
+    <Code><![CDATA[function toggleEligible(mod : Modifier) {
+  if (mod.Eligible) {
+    mod.RateModifier = null
+    mod.Eligible = false
+  } else {
+    mod.Eligible = true
+  }
+}]]></Code>
+  </InputSet>
+</PCF>

@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Using SSL with PolicyCenter</title>
+    <link rel="StyleSheet" href="css/serversecurity.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter System Administration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="serversecurity.09.1.html#1486679">Securing PolicyCenter Communications</a> : Using SSL with PolicyCenter</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1486679">Using SSL with PolicyCenter</a></h3>
+      <div class="B_-_Body"><a name="1475093">A strong password policy is the first and best line of defense. Consider encrypting communication between the Internet and the application server. Consider configuring a separate server to act as an intermediary layer between the Internet and application server. Typically, this intermediary server is located in a “DMZ” you establish through your network architecture. </a></div>
+      <div class="B_-_Body"><a name="1272076">You can use a web server or proxy both to encrypt communications and to provide a layer between the Internet and application server. Using a server as an intermediary in this manner is called a reverse proxy. If you offload encryption to a server, be aware that non-native encryption processing is not as efficient. Native applications generally use optimized encryption modules. The example in this documentation uses encryption provided by a native application.</a></div>
+      <div class="B_-_Body"><a name="1272077">There are multiple methods you can use to achieve an encrypted proxy solution. The example in this document creates a reverse proxy that interacts with the PolicyCenter application server through HTTP. This is similar to how a regular user accesses the server. </a></div>
+      <h4 class="H2_-_Heading_2"><a name="1272081">Overview of the Steps</a></h4>
+      <div class="B_-_Body"><a name="1272082">This example uses the Apache HTTP server as the reverse proxy server. To set up the proxy server, you must first download and install the Apache HTTP server software appropriate to your environment (for example, </a><span class="cv_-_computer_voice">httpd-2.2.22-win32-x86-openssl-0.9.8t.msi</span>). Follow the directions supplied by the Apache documentation to install the CRT<span class="cv_-_computer_voice"> </span>and PEM certificate. Then, follow the procedures in the following sections:</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a href="javascript:WWHClickedPopup('admin', 'serversecurity.09.2.html#1272086', '');" title="Using SSL with PolicyCenter" name="1272084">Editing the httpd.conf File</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a href="javascript:WWHClickedPopup('admin', 'serversecurity.09.2.html#1272111', '');" title="Using SSL with PolicyCenter" name="1475037">Editing the httpd-ssl.conf File</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a href="javascript:WWHClickedPopup('admin', 'serversecurity.09.2.html#1475187', '');" title="Using SSL with PolicyCenter" name="1475042">Editing the server.xml File</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="1272086">Editing the </a><span class="cvh_-_computer_voice_in_heading">httpd.conf</span> File</h4>
+      <div class="B_-_Body"><a name="1272087">You configure the Apache server by using directives placed in plain-text configuration files. On start up, the server locates and reads the </a><span class="cv_-_computer_voice">/Apache2/conf/httpd.conf</span> file within the Apache installation directory. Modify this file to load the following modules:</div>
+      <div class="T_-_Table"><a name="1272105">&nbsp;</a></div>
+      <table class="withoutHeading" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1272090">mod_proxy</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1272092">Enables proxying.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1272094">mod_proxy_http</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1272096">Enables HTTP proxying.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1272098">mod_ssl</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1272100">Enables SSL tunneling.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1272102">mod_deflate</a></span></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1272104">Compresses output from the server.</a></div>
+          </td>
+        </tr>
+      </table>
+      <div class="B_-_Body"><a name="1272106">Edit the </a><span class="cv_-_computer_voice">httpd.conf</span> file, look for and uncomment the following lines.</div>
+      <PRE class="CF_-_Code_First_Line"><a name="1272107">LoadModule proxy_module modules/mod_proxy.so</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272108">LoadModule proxy_http_module modules/mod_proxy_http.so</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272109">LoadModule ssl_module modules/mod_ssl.so</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272110">LoadModule deflate_module modules/mod_deflate.so</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1495391">Include conf/extra/httpd-ssl.conf </a></PRE>
+      <h4 class="H2_-_Heading_2"><a name="1272111">Editing the </a><span class="cvh_-_computer_voice_in_heading">httpd-ssl.conf</span> File</h4>
+      <div class="B_-_Body"><a name="1272112">The </a><span class="cv_-_computer_voice">/Apache2/conf/extra/httpd-ssl.conf </span>file within the Apache installation directory defines configuration settings for the SSL module. </div>
+      <h6 class="HS_-_Head_Sub"><a name="1475140">To edit the Apache SSL module</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="1272113">Add SSL listening port numbers for each port number. The default provided in the file is:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><a name="1272114">Listen 443</a></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1272115">For every new listening port add a virtual host context.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CF_-_Code_First_Line"><a name="1272116">#Encrypted Reverse Proxy</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272117">&lt;VirtualHost *:</a><span class="pc_-_parameter_in_code">portnumber</span>&gt;</PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272118"> </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272119">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#Allow from the authorized remote sites only </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272120">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;Proxy *&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272121">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Order Deny,Allow</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272122">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Allow from all</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272123">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/Proxy&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272124"> </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272125">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Access to the root directory of the application server is not allowed</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272126">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;Directory /&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272127">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Order Deny,Allow</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272128">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Deny from all</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272129">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/Directory&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272130"> </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272137">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#Access is allowed to the pc8.0.2 and </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1448622">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#its subdirectories for the authorized sites only</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272144">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;Directory /pc8.0.2&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272145">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Order Deny,Allow</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272146">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Allow from all</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272147"> </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272148">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;# Never allow communications to be not encrypted</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272149">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SSLRequireSSL</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272150"> </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272151">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#The Cipher strength should be 128 (maximal cipher size authorized</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272152">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#all communication will be secured</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272153">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SSLRequire %{SSL_CIPHER_USEKEYSIZE} &gt;= 128 and %{HTTPS} eq "true"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272154">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&lt;/Directory&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272155"> </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272156">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#Classic command to take into account an Internet Explorer issue</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272157">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SetEnvIf User-Agent ".*MSIE.*" \</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272158">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;nokeepalive ssl-unclean-shutdown \</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272159">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;downgrade-1.0 force-response-1.0</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272160"> </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272161">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#Encryption secures the Internet to Encrypted Reverse Proxy communication</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272162">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#Listing of available encryption levels available to Apache</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272163">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SSLEngine&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; on</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272164">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SSLCipherSuite&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272165"> </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272166">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#The Virtual Host authenticates to the user providing its certificate</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272167">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SSLCertificateFile&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; conf/&lt;certificate_filename&gt;.crt&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272168">#The communication security is achieved using the PrivateKey, which is secured through</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272169">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;#a pass-phrase script.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272170">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;SSLCertificateKeyFile&nbsp;&nbsp;&nbsp;conf/&lt;certificate_filename&gt;-secured.pem</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272171">#The Virtual Host associates the request to the internal Guidewire product instance </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272172">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProxyPass&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; /pc&nbsp;http://MyPolicyCenterHost:8080/pc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272173">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ProxyPassReverse&nbsp;&nbsp;&nbsp;&nbsp;/pc&nbsp;http://MyPolicyCenterHost:8080/pc&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272174">#Logs redirected to appropriate location</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272175">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ErrorLog&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;logs/encrypted_&lt;product&gt;.log</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1272176">&lt;/VirtualHost&gt;</a></PRE>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1272177">Save and close the file.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1475176">Install Apache as a service with SSL support:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><span class="pc_-_parameter_in_code"><a name="1475162">APACHE_INSTALL_DIR</a></span>/Apache2/bin/httpd –D SSL –k install</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1475163">Start Apache.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><a name="1475164">net start Apache2</a></div>
+      <div class="B_-_Body"><a name="1475181">At this point, you have configured the reverse proxy. Users make requests through their browser to this server. The reverse proxy server encrypts the requests and forwards them to the application server.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1475187">Editing the </a><span class="cvh_-_computer_voice_in_heading">server.xml</span> File</h4>
+      <div class="B_-_Body"><a name="1432512">When PolicyCenter responds to a request, it requires the URL and port that originated the request. By default, this location is directly accessible to users. When you add a reverse proxy, as in this example, that proxy lies between the user making the request and the PolicyCenter application server. To support the reverse proxy server, you must edit the application server configuration so it is aware of:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1272191">the externally-visible domain name of the reverse proxy server</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1272192">the port number of the reverse proxy server</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1272193">the protocol the client used to access the proxy server (in this case HTTPS)</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1272194">This example assumes you are using the Apache Tomcat application server. To make the server aware of the proxy, edit the </a><span class="cv_-_computer_voice">CATALINA_HOME/conf/server.xml</span> on the deployment server and add an additional connector:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="1272195">&lt;!-- Define a non-SSL HTTP/1.1 Connector on port &lt;port number&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1448631">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;to receive decrypted communicated communication from Apache</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1448633">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;reverse proxy on port 11410&nbsp;--&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1272196">&lt;Connector acceptCount="100" </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1448635">&nbsp;&nbsp;connectionTimeout="20000" </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1448636">&nbsp;&nbsp;disableUploadTimeout="true" </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1448637">&nbsp;&nbsp;enableLookups="false"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1500282">&nbsp;&nbsp;maxHttpHeaderSize="8192" </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1448638">&nbsp;&nbsp;maxSpareThreads="75" </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1448651">&nbsp;&nbsp;maxThreads="150" </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1448652">&nbsp;&nbsp;minSpareThreads="25" </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><span class="s_-_strong"><a name="1448653">&nbsp;&nbsp;port</a></span>="<span class="pc_-_parameter_in_code">portnumber</span>" </PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1448654">&nbsp;&nbsp;redirectPort="8443" </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><span class="s_-_strong"><a name="1448655">&nbsp;&nbsp;scheme</a></span>="https" </PRE>
+      <PRE class="CM_-_Code_Middle_Line"><span class="s_-_strong"><a name="1448656">&nbsp;&nbsp;proxyName</a></span>="<span class="pc_-_parameter_in_code">hostname</span>" </PRE>
+      <PRE class="CM_-_Code_Middle_Line"><span class="s_-_strong"><a name="1448657">&nbsp;&nbsp;proxyPort</a></span>="<span class="pc_-_parameter_in_code">portnumber</span>"&gt;</PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1272197">&lt;/Connector&gt;</a></PRE>
+      <div class="B_-_Body"><a name="1272198">Specify the following:</a></div>
+      <div class="T_-_Table"><a name="1272216">&nbsp;</a></div>
+      <table class="withoutHeading" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1272201">port</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1272203">Specifies the port number for the additional connector for access through the proxy. For example, </a><span class="cvt_-_computer_voice_table">8080</span>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1272205">proxyName</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1272207">Identifies the deployment server’s name. For example, </a><span class="cvt_-_computer_voice_table">MyApacheHost</span>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1272209">proxyPort</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1272211">Specifies the port for encrypted access through Apache. For example, </a><span class="cvt_-_computer_voice_table">443</span>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1272213">scheme</a></span></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1272215">Identifies the protocol used by the client to access the server.</a></div>
+          </td>
+        </tr>
+      </table>
+      <div class="B_-_Body"><a name="1272217">After configuring the </a><span class="cv_-_computer_voice">server.xml</span> file, restart the application server.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

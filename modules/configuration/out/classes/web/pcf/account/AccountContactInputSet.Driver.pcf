@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InputSet
+    editable="true"
+    id="AccountContactInputSet"
+    mode="Driver">
+    <Require
+      name="acctContactRole"
+      type="AccountContactRole"/>
+    <Variable
+      initialValue="acctContactRole as Driver"
+      name="driver"
+      recalculateOnRefresh="true"
+      type="Driver"/>
+    <Variable
+      initialValue="gw.lob.pa.mvr.InternalMVRService.getInstance()"
+      name="mvrService"/>
+    <Variable
+      initialValue="mvrService.getAllExistingMVRs(((driver.AccountContact.Contact as Person).getMVRSearchCriteria()))"
+      name="driverMVRs"/>
+    <DateInput
+      editable="true"
+      id="datecompletedtrainingclass"
+      label="displaykey.Web.Account.Contact.Driver.DateCompletedTrainingClass"
+      value="driver.DateCompletedTrainingClass"/>
+    <TypeKeyInput
+      editable="true"
+      id="trainingclasstype"
+      label="displaykey.Web.Account.Contact.Driver.TrainingClassType"
+      value="driver.TrainingClassType"/>
+    <TypeKeyInput
+      editable="true"
+      id="numberofaccidents"
+      label="displaykey.Web.Account.Contact.Driver.NumberOfAccidents"
+      value="driver.NumberofAccidents"/>
+    <TypeKeyInput
+      editable="true"
+      id="numberofviolations"
+      label="displaykey.Web.Account.Contact.Driver.NumberOfViolations"
+      value="driver.NumberofViolations"/>
+    <Input
+      editable="true"
+      id="student"
+      label="displaykey.Web.Account.Contact.Driver.Student"
+      value="driver.Student"/>
+    <Input
+      editable="true"
+      id="yearlicensed"
+      label="displaykey.Web.Account.Contact.Driver.YearGotLicence"
+      value="driver.YearLicensed"/>
+    <BooleanRadioInput
+      editable="true"
+      id="gooddriverdiscount"
+      label="displaykey.Web.Account.Contact.Driver.GoodDriverDiscount"
+      value="driver.GoodDriverDiscount"/>
+    <InputSet>
+      <Label
+        label="displaykey.Web.PersonalAuto.MotorVehicleRecord.NoRecordsOnFile"
+        visible="mvrUnavailable()"/>
+      <ButtonInput
+        action="DriverMVRInfoPopup.push(driverMVRs)"
+        available="mvrAvailable()"
+        id="MVRReportButton"
+        value="displaykey.Web.PersonalAuto.MotorVehicleRecord.MVRReportDetails"/>
+    </InputSet>
+    <Code><![CDATA[function mvrUnavailable() : boolean {
+  return driverMVRs == null or (driverMVRs.length == 1 and driverMVRs.first().getOrderStatus() == typekey.MVRStatus.TC_ORDERED) or driverMVRs.allMatch(\ m -> m.getOrderStatus() == typekey.MVRStatus.TC_ORDERED)
+}
+
+function mvrAvailable() : boolean {
+  return driverMVRs <> null and not driverMVRs.where(\ m -> m.getOrderStatus() == typekey.MVRStatus.TC_RECEIVED).IsEmpty  
+}]]></Code>
+  </InputSet>
+</PCF>

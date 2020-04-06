@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    afterCommit=" DividePoliciesLandingPage.go(periodToDivide, destinationSubmission)"
+    beforeCommit="createSubmissions()"
+    canEdit="true"
+    canVisit="true"
+    id="SpinPolicy"
+    parent="PolicyFile(periodToDivide, asOfDate)"
+    startInEditMode="true"
+    title="displaykey.Web.PolicyFile.SpinPolicy">
+    <LocationEntryPoint
+      signature="SpinPolicy(periodToDivide : PolicyPeriod, asOfDate : DateTime)"/>
+    <Variable
+      name="periodToDivide"
+      type="PolicyPeriod"/>
+    <Variable
+      name="asOfDate"
+      type="DateTime"/>
+    <Variable
+      initialValue="new gw.product.DividePolicySelection(periodToDivide)"
+      name="dividePolicySelection"/>
+    <Variable
+      initialValue="null"
+      name="destinationSubmission"
+      type="Submission"/>
+    <Screen>
+      <Toolbar>
+        <ToolbarButton
+          action="CurrentLocation.commit()"
+          id="CreateButton"
+          label="displaykey.Web.SpinPolicy.Button.Create"/>
+        <ToolbarButton
+          action="CurrentLocation.cancel(); PolicyFileForward.go(periodToDivide, asOfDate)"
+          id="CancelButton"
+          label="displaykey.Web.SplitPolicy.Button.Cancel"/>
+      </Toolbar>
+      <PanelRow>
+        <PanelColumn>
+          <PanelRef
+            def="DividePolicyPanelSet(periodToDivide, dividePolicySelection)"
+            editable="true"
+            id="SpinPolicy"/>
+        </PanelColumn>
+      </PanelRow>
+    </Screen>
+    <Code><![CDATA[function createSubmissions() {
+  try {
+    destinationSubmission = dividePolicySelection.createSubmission()
+  } catch (ise : java.lang.IllegalStateException) {  // might occur because of product unavailability
+    throw new gw.api.util.DisplayableException(ise.LocalizedMessage)
+  }
+}]]></Code>
+  </Page>
+</PCF>

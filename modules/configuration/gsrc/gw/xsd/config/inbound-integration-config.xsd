@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema targetNamespace="http://guidewire.com/config/integration/inbound" xmlns="http://www.w3.org/2001/XMLSchema" xmlns:cii="http://guidewire.com/config/integration/inbound">
+    <element name="integration" type="cii:integration-config" nillable="false" />
+    <complexType name="threadpool">
+        <sequence>
+            <element name="workmanagerjndi" type="string" minOccurs="0" maxOccurs="1" />
+            <element name="gwthreadpoolsize" type="string" default="10" minOccurs="0" maxOccurs="1" />
+            <element name="gwthreadpooltype" type="string" default="forkjoin" minOccurs="0" maxOccurs="1" />
+        </sequence>
+        <attribute name="name" type="string" use="required" />
+        <attribute name="disabled" type="boolean" default="false" />
+    </complexType>
+    <group name="baseattributes">
+        <sequence>
+            <element name="pluginhandler" type="string" minOccurs="0" maxOccurs="1" />
+            <element name="pollinginterval" type="string" default="60" minOccurs="0" maxOccurs="1" />
+            <element name="throttleinterval" type="string" default="60" minOccurs="0" maxOccurs="1" />
+            <element name="threadpool" type="string" default="gw_default" minOccurs="0" maxOccurs="1" />
+            <element name="ordered" type="string" default="true" minOccurs="0" maxOccurs="1" />
+            <element name="stoponerror" type="string" default="true" minOccurs="0" maxOccurs="1" />
+            <element name="transactional" type="string" default="false" minOccurs="0" maxOccurs="1" />
+            <element name="osgiservice" type="string" default="true" minOccurs="0" maxOccurs="1" />
+        </sequence>
+    </group>
+    <element name="inbound-integration" type="cii:inbound-integration" abstract="true" />
+    <complexType name="inbound-integration" abstract="true">
+        <sequence>
+            <group ref="cii:baseattributes" />
+        </sequence>
+        <attribute name="name" type="string" use="required" />
+        <attribute name="distributed" type="boolean" default="false" />
+        <attribute name="disabled" type="boolean" default="false" />
+    </complexType>
+    <element name="file-integration" type="cii:file-integration" substitutionGroup="cii:inbound-integration" />
+    <complexType name="file-integration">
+        <complexContent>
+            <extension base="cii:inbound-integration">
+                <sequence>
+                    <element name="processingmode" type="string" default="line" />
+                    <element name="incoming" type="string" />
+                    <element name="processing" type="string" />
+                    <element name="error" type="string" />
+                    <element name="done" type="string" />
+                    <element name="charset" type="string" default="UTF-8" minOccurs="0" maxOccurs="1" />
+                    <element name="createdirectories" type="string" default="false" minOccurs="0" maxOccurs="1" />
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="jms-integration" type="cii:jms-integration" substitutionGroup="cii:inbound-integration" />
+    <complexType name="jms-integration">
+        <complexContent>
+            <extension base="cii:inbound-integration">
+                <sequence>
+                    <element name="connectionfactoryjndi" type="string" />
+                    <element name="destinationjndi" type="string" />
+                    <element name="user" type="string" minOccurs="0" maxOccurs="1" />
+                    <element name="password" type="string" minOccurs="0" maxOccurs="1" />
+                    <element name="batchlimit" type="string" default="5" minOccurs="0" maxOccurs="1" />
+                    <element name="messagereceivetimeout" type="string" default="15" minOccurs="0" maxOccurs="1" />
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="db-integration" type="cii:db-integration" substitutionGroup="cii:inbound-integration" />
+    <complexType name="db-integration">
+        <complexContent>
+            <extension base="cii:inbound-integration">
+                <sequence>
+                    <element name="dbselector" type="string" />
+                    <element name="dbprocessor" type="string" />
+                    <element name="datasourcejndi" type="string" />
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <element name="custom-integration" type="cii:custom-integration" substitutionGroup="cii:inbound-integration" />
+    <complexType name="custom-integration">
+        <complexContent>
+            <extension base="cii:inbound-integration">
+                <sequence>
+                    <element name="workagentimpl" type="string" minOccurs="1" maxOccurs="1" />
+                    <group ref="cii:baseattributes" />
+                    <element name="parameters" type="cii:keyvaluepair" minOccurs="0" maxOccurs="unbounded" />
+                </sequence>
+            </extension>
+        </complexContent>
+    </complexType>
+    <complexType name="keyvaluepair">
+        <sequence>
+            <element name="key" type="string" />
+            <element name="value" type="string" />
+        </sequence>
+    </complexType>
+    <complexType name="integration-config">
+        <sequence>
+            <element name="threadpools" minOccurs="0" maxOccurs="1">
+                <complexType>
+                    <sequence>
+                        <element name="threadpool" type="cii:threadpool" minOccurs="0" maxOccurs="unbounded" />
+                    </sequence>
+                </complexType>
+            </element>
+            <element name="integrations" minOccurs="0" maxOccurs="1">
+                <complexType>
+                    <sequence>
+                        <element ref="cii:inbound-integration" minOccurs="0" maxOccurs="unbounded" />
+                    </sequence>
+                </complexType>
+            </element>
+        </sequence>
+        <attribute name="env" type="string" use="optional" />
+    </complexType>
+</schema>

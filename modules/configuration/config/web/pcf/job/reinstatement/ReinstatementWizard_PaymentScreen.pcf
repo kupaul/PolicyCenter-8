@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="editScreen"
+    id="ReinstatementWizard_PaymentScreen">
+    <Require
+      name="reinstatement"
+      type="Reinstatement"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="editScreen"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, reinstatement, jobWizardHelper)"/>
+    </Toolbar>
+    <PanelRef
+      def="WarningsPanelSet(policyPeriod.getWizardWarningMessages())"/>
+    <PanelRef
+      def="BindSummaryDV(policyPeriod)"
+      mode="&quot;MidtermChange&quot;"/>
+    <PanelRef
+      def="BillingAdjustmentsDV(policyPeriod)"
+      mode="getEditMode()"/>
+    <Code><![CDATA[function getEditMode() : String {
+         if (editScreen) {
+            if (policyPeriod.ReportingPlanSelected)
+                return "MidtermReporting"
+            else
+                return "MidtermInstallments"
+         }
+         else {
+            if (policyPeriod.ReportingPlanSelected)
+                return "MidtermReportingReadOnly"
+            else
+                return "MidtermInstallmentsReadOnly"
+         }
+        }]]></Code>
+  </Screen>
+</PCF>

@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="NewTemplateDocumentDV">
+    <Require
+      name="DocumentCreationInfo"
+      type="gw.document.DocumentCreationInfo"/>
+    <Require
+      name="document"
+      type="Document"/>
+    <Require
+      name="account"
+      type="Account"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="activity"
+      type="Activity"/>
+    <Variable
+      initialValue="document.Language"
+      name="language"
+      type="LanguageType"/>
+    <InputColumn>
+      <Label
+        label="displaykey.Web.DocumentCreation.DocumentContents.Header"/>
+      <Label
+        label="displaykey.Java.Document.Creation.Template.Step1"/>
+      <DocumentTemplateInput
+        clearEnabled="false"
+        editable="true"
+        freeInputEnabled="false"
+        id="TemplatePicker"
+        label="displaykey.Java.Document.Creation.Template"
+        onPick="resetTemplateBasedInfo()"
+        pickLocation="DocumentTemplateSearchPopup.push(policyPeriod, account)"
+        required="true"
+        value="DocumentCreationInfo.DocumentTemplateDescriptor"/>
+      <Input
+        editable="true"
+        id="Language"
+        label="displaykey.Web.DocumentTemplateSearch.Language"
+        required="false"
+        value="language"
+        visible="LanguageType.getTypeKeys( false ).Count &gt; 1 and activity.DocumentTemplate != null">
+        <PostOnChange
+          onChange="changeLanguage()"/>
+      </Input>
+      <InputSet
+        visible="DocumentCreationInfo.DocumentTemplateDescriptor != null">
+        <Label
+          label="displaykey.Java.Document.Creation.Template.Step2"/>
+        <InputSetRef
+          def="DocumentTemplateContextObjectInputSet(DocumentCreationInfo,document,account,policyPeriod,job)"
+          mode="DocumentCreationInfo.DocumentTemplateDescriptor.TemplateId"/>
+        <Label
+          label="displaykey.Java.Document.Creation.Template.Step3"/>
+        <!-- Note that two versions of the CreateDocument button are required
+              depending on whether the Document Assistant is enabled. This is
+              because the "download" attribute cannot contain a Gosu expression -->
+        <ButtonInput
+          action="web.document.DocumentsHelper.renderDocumentContents(DocumentCreationInfo, gw.document.DocumentProduction.createDocumentSynchronously(DocumentCreationInfo.DocumentTemplateDescriptor, web.document.DocumentsHelper.getDocumentCreationParameters(DocumentCreationInfo), DocumentCreationInfo.Document))"
+          available="web.document.DocumentsHelper.isDocumentAssistantEnabled()"
+          id="CreateDocumentWithAssistant"
+          value="displaykey.Java.Document.Creation.CreateDocument"
+          visible="web.document.DocumentsHelper.isDocumentAssistantEnabled()"/>
+        <ButtonInput
+          action="web.document.DocumentsHelper.renderDocumentContents(DocumentCreationInfo, gw.document.DocumentProduction.createDocumentSynchronously(DocumentCreationInfo.DocumentTemplateDescriptor, web.document.DocumentsHelper.getDocumentCreationParameters(DocumentCreationInfo), DocumentCreationInfo.Document))"
+          available="!web.document.DocumentsHelper.isDocumentAssistantEnabled()"
+          download="true"
+          id="CreateDocument"
+          value="displaykey.Java.Document.Creation.CreateDocument"
+          visible="!web.document.DocumentsHelper.isDocumentAssistantEnabled()"/>
+        <Label
+          label="displaykey.Java.Document.Creation.Template.Step4"
+          visible="!web.document.DocumentsHelper.isDocumentAssistantEnabled()"/>
+        <!-- This widget is always rendered hidden -->
+        <DocumentFilePathInput
+          editable="true"
+          id="DocumentFilePath"
+          value="DocumentCreationInfo.DocumentFilePath"/>
+        <!-- When the Document Assistant is enabled, this widget will be rendered hidden. The end user should
+             not see nor need to edit the client-side path used by the Document Assistant -->
+        <DocumentScript
+          available="(!web.document.DocumentsHelper.isDocumentAssistantEnabled()) or (DocumentCreationInfo.File != null) or (DocumentCreationInfo.DocumentCreationScript != null)"
+          editable="true"
+          id="DocumentFile"
+          label="displaykey.Java.Document.Creation.FileLocation"
+          required="true"
+          value="DocumentCreationInfo.File"/>
+      </InputSet>
+    </InputColumn>
+    <InputColumn>
+      <InputSetRef
+        def="DocumentMetadataInputSet(document, account, policyPeriod.Policy, job, true)"
+        editable="true"/>
+    </InputColumn>
+    <Code><![CDATA[function changeLanguage() {
+  var templatePlugin = gw.plugin.Plugins.get(gw.plugin.document.IDocumentTemplateSource)
+  var template = templatePlugin.getDocumentTemplate(DocumentCreationInfo.DocumentTemplateDescriptor.TemplateId, gw.api.util.LocaleUtil.toLanguage(language))
+  if (template == null) {
+    throw new gw.api.util.DisplayableException(displaykey.Web.Activity.DocumentTemplate.NotFound(DocumentCreationInfo.DocumentTemplateDescriptor.TemplateId, language))
+  }
+  else {
+    DocumentCreationInfo.DocumentTemplateDescriptor = template
+    resetTemplateBasedInfo()
+  }
+}
+
+function resetTemplateBasedInfo() {
+  DocumentCreationInfo.setDocumentFilePath(null)
+  DocumentCreationInfo.Document.Name = DocumentCreationInfo.DocumentTemplateDescriptor.Name
+  DocumentCreationInfo.Document.MimeType = DocumentCreationInfo.DocumentTemplateDescriptor.MimeType
+  DocumentCreationInfo.Document.SecurityType = DocumentCreationInfo.DocumentTemplateDescriptor.DefaultSecurityType
+  DocumentCreationInfo.Document.Type = DocumentCreationInfo.DocumentTemplateDescriptor.TemplateType
+  DocumentCreationInfo.Document.Section = (DocumentCreationInfo.DocumentTemplateDescriptor.getMetadataPropertyValue( "section" ) as String)
+  DocumentCreationInfo.Document.Locale = DocumentCreationInfo.DocumentTemplateDescriptor.Locale
+  
+  for (dynamicWidgetInfo in DocumentCreationInfo.DynamicWidgetInformation) {
+    DocumentCreationInfo.setDefaultContextObjectValue(dynamicWidgetInfo.Name, eval(dynamicWidgetInfo.DefaultValueExpression))
+    DocumentCreationInfo.setPossibleContextObjectValues(dynamicWidgetInfo.Name, eval(dynamicWidgetInfo.PossibleValuesExpression) as Object[])
+  }
+}]]></Code>
+  </DetailViewPanel>
+</PCF>

@@ -1,0 +1,311 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://api.webservices.pc.guidewire.com/" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://api.webservices.pc.guidewire.com/" xmlns:intf="http://api.webservices.pc.guidewire.com/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns1="http://fault.webservices.pc.guidewire.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><wsdl:types><schema targetNamespace="http://fault.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="SOAPException"><xsd:annotation><xsd:documentation>A generic SOAP exception.</xsd:documentation></xsd:annotation><sequence><element name="Message" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>The message associated with this exception</xsd:documentation></xsd:annotation></element><element name="OtherMessages" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>Other messages attached to this exception.  This message may contain information
+related to other exceptions that occurred during a SOAP call, but not directly
+associated with this particular exception.</xsd:documentation></xsd:annotation></element></sequence></complexType><complexType name="SOAPSenderException"><xsd:annotation><xsd:documentation>SOAPSenderException is the base class for all exceptions that resulted from
+a sender error. This usually means that required data was not properly encoded
+or was absent. Senders should not send the message again unless some steps have
+been taken to make the encoded data valid.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="DataConversionException"><xsd:annotation><xsd:documentation>Thrown by many APIs when they encounter a problem translating a SOAP data object into
+an internal system object.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="BadIdentifierException"><xsd:annotation><xsd:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect).</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="PermissionException"><xsd:annotation><xsd:documentation>Thrown when the authenticated SOAP user does not have permission to
+perform the requested operation</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="LoginException"><xsd:annotation><xsd:documentation>Class of exceptions thrown when a user tries to log in and an authentication failure occurs.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:PermissionException"><sequence/></extension></complexContent></complexType><complexType name="SOAPServerException"><xsd:annotation><xsd:documentation>SOAPServerException is the base class for all exceptions that resulted from
+a server error. This is something of a catch-all exception type insofar as
+some things which might in fact be considered SOAPSenderExceptions are reported
+as SOAPServerExceptions. Perhaps a rule failed or something else. Generally it
+indicates a problem in the server that is likely retryable at some future time.
+The database being down, an unavailable plugin, etc would fall into this catagory.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="ServerStateException"><xsd:annotation><xsd:documentation>ServerStateException is thrown when a request is made at a time the
+server is in a state that disallows the request. An example is if
+an attempt is made to add a claim and the server is in maintenance
+mode.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPServerException"><sequence/></extension></complexContent></complexType><complexType name="SOAPRetryableException"><xsd:annotation><xsd:documentation>SOAPRetryableException is the class for all exceptions that are retryable
+immediately.  The primary example of this is ConcurrentDataChangeException.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="EntityStateException"><xsd:annotation><xsd:documentation>Thrown when an attempt is made to manipulate an object that is in a state
+that prevents the operation from being performed. An example is trying to
+modify a Claim that is marked as closed.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="DuplicateKeyException"><xsd:annotation><xsd:documentation>Throws if a duplicate data exception is detected in the database.  I.e. a unique index violation.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="FieldConversionException"><xsd:annotation><xsd:documentation>Thrown when a data type cannot be converted into the native data type.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="FieldFormatException"><xsd:annotation><xsd:documentation>Thrown when the input type does not match the format specified in the metadata.  I.e. a string is too long.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="RequiredFieldException"><xsd:annotation><xsd:documentation>Thrown when required data is missing from a bean.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="UnknownTypeKeyException"><xsd:annotation><xsd:documentation>Thrown when a typekey value isn't available on the server.  This exception can only
+happen if the SOAP WSDL that is being used on the remote side is invalid.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="BatchProcessException"><xsd:annotation><xsd:documentation>SOAP Exception specific to batch process operations</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPServerException"><sequence/></extension></complexContent></complexType><complexType name="AlreadyExecutedException"><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType></schema></wsdl:types>
+  <wsdl:message name="logoutResponse">
+  </wsdl:message>
+  <wsdl:message name="LoginException">
+    <wsdl:part name="fault" type="tns1:LoginException">
+<wsdl:documentation>if the user cannot be authenticated or was denied access for some reason.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="WSSLogoutRequest">
+    <wsdl:part name="userName" type="soapenc:string">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ServerStateException">
+    <wsdl:part name="fault" type="tns1:ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SOAPException">
+    <wsdl:part name="fault" type="tns1:SOAPException">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="loginRequest">
+    <wsdl:part name="userName" type="soapenc:string">
+<wsdl:documentation>The user name to authenticate.</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="password" type="soapenc:string">
+<wsdl:documentation>The password to authenticate with.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BadIdentifierException">
+    <wsdl:part name="fault" type="tns1:BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="logoutRequest">
+    <wsdl:part name="sessionID" type="soapenc:string">
+<wsdl:documentation>the session ID of the server session.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="WSSLoginRequest">
+    <wsdl:part name="userName" type="soapenc:string">
+<wsdl:documentation/>
+    </wsdl:part>
+    <wsdl:part name="password" type="soapenc:string">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PermissionException">
+    <wsdl:part name="fault" type="tns1:PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="WSSLoginResponse">
+    <wsdl:part name="WSSLoginReturn" type="soapenc:string">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="WSSLogoutResponse">
+  </wsdl:message>
+  <wsdl:message name="loginResponse">
+    <wsdl:part name="loginReturn" type="soapenc:string">
+<wsdl:documentation>A valid session ID.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="ILoginAPI">
+<wsdl:documentation>&lt;p&gt;
+A remote interface that allows a user to log in and out of a system. The system uses conversations to implement SOAP
+authentication in a Guidewire application  (e.g. BillingCenter, ClaimCenter, PolicyCenter). When connecting to Guidewire
+applications the caller must first authenticate using the &lt;code&gt;ILoginAPI.login()&lt;/code&gt; method.  This method returns the
+the session ID of the server session.
+&lt;/p&gt;
+&lt;p&gt;
+On each successive call in the conversation, pass the session ID in the SOAP header
+{@link gw.pl.util.webservices.Globals#GW_AUTHENTICATION_SECURITY_TOKEN_CONTEXT_PROPERTY}. You must call
+&lt;code&gt;logout()&lt;/code&gt; when you are done with the conversation.
+&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;NOTE:&lt;/b&gt; This API is intended for users who are using Guidewire's web services from languages other
+than Java.   If you are using Java, you should use the &lt;code&gt;APILocator&lt;/code&gt; instead.
+&lt;/p&gt;
+@deprecated Use WS-I webservice gw.wsi.pl.LoginAPI instead.
+</wsdl:documentation>
+    <wsdl:operation name="WSSLogin" parameterOrder="userName password">
+<wsdl:documentation>&lt;p&gt;
+Logs the user in preparation for a Web Service Security (WSS) conversation. A WSS conversation is one in which
+user credentials are passed using the WSS &lt;code&gt;UsernameToken&lt;/code&gt; profile.
+&lt;/p&gt;&lt;p&gt;
+&lt;b&gt;NOTE:&lt;/b&gt; The Guidewire Toolkit does not currently support this method. This method is available
+for access by all other SOAP clients.
+&lt;/p&gt;
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:WSSLoginRequest" name="WSSLoginRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:WSSLoginResponse" name="WSSLoginResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:LoginException" name="LoginException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="WSSLogout" parameterOrder="userName">
+<wsdl:documentation>Terminates a WSS conversation. Attempts to log out a user not logged in are siltently ignored.
+&lt;p/&gt;
+NOTE: Usage of this method by the Guidewire Toolkit is not currently supported. This is available
+for access by all other SOAP clients.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:WSSLogoutRequest" name="WSSLogoutRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:WSSLogoutResponse" name="WSSLogoutResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="login" parameterOrder="userName password">
+<wsdl:documentation>Logs the user into a Guidewire application (e.g. ClaimCenter, PolicyCenter, BillingCenter). Returns the session ID
+of the server session.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:loginRequest" name="loginRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:loginResponse" name="loginResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:LoginException" name="LoginException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="logout" parameterOrder="sessionID">
+<wsdl:documentation>Logs the user out of the session.  The session will timeout if this method is not called.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:logoutRequest" name="logoutRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:logoutResponse" name="logoutResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ILoginAPISoapBinding" type="impl:ILoginAPI">
+    <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="WSSLogin">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="WSSLoginRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="WSSLoginResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="LoginException">
+<wsdl:documentation>if the user cannot be authenticated or was denied access for some reason.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="LoginException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="WSSLogout">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="WSSLogoutRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="WSSLogoutResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>If the user does not have sufficient permissions</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="login">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="loginRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="loginResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="LoginException">
+<wsdl:documentation>if the user cannot be authenticated.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="LoginException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="logout">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="logoutRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="logoutResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ILoginAPIService">
+<wsdl:documentation>&lt;p&gt;
+A remote interface that allows a user to log in and out of a system. The system uses conversations to implement SOAP
+authentication in a Guidewire application  (e.g. BillingCenter, ClaimCenter, PolicyCenter). When connecting to Guidewire
+applications the caller must first authenticate using the &lt;code&gt;ILoginAPI.login()&lt;/code&gt; method.  This method returns the
+the session ID of the server session.
+&lt;/p&gt;
+&lt;p&gt;
+On each successive call in the conversation, pass the session ID in the SOAP header
+{@link gw.pl.util.webservices.Globals#GW_AUTHENTICATION_SECURITY_TOKEN_CONTEXT_PROPERTY}. You must call
+&lt;code&gt;logout()&lt;/code&gt; when you are done with the conversation.
+&lt;/p&gt;
+&lt;p&gt;&lt;b&gt;NOTE:&lt;/b&gt; This API is intended for users who are using Guidewire's web services from languages other
+than Java.   If you are using Java, you should use the &lt;code&gt;APILocator&lt;/code&gt; instead.
+&lt;/p&gt;
+@deprecated Use WS-I webservice gw.wsi.pl.LoginAPI instead.
+</wsdl:documentation>
+    <wsdl:port binding="impl:ILoginAPISoapBinding" name="ILoginAPI">
+      <wsdlsoap:address location="http://dontuse.defaultvalue.com/ILoginAPI"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

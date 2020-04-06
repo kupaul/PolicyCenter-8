@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Screen
+    editable="openForEdit"
+    id="BOPScreen">
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, job, jobWizardHelper)"/>
+    </Toolbar>
+    <PanelRef
+      def="PreferredCoverageCurrencyPanelSet(policyPeriod.BOPLine, openForEdit, jobWizardHelper)"
+      id="PreferredCoverageCurrencySelectorRef"/>
+    <PanelRef
+      def="OOSEPanelSet(policyPeriod, jobWizardHelper)"/>
+    <CardViewPanel>
+      <Card
+        id="BOP_IncludedCard"
+        title="displaykey.Web.LineWizard.IncludedCoverages">
+        <PanelRef
+          def="BOPLinePanelSet(policyPeriod.BOPLine, openForEdit, jobWizardHelper)"/>
+        <PanelRef
+          def="AdditionalInsuredsDV(policyPeriod.BOPLine, openForEdit, false)">
+          <TitleBar
+            title="displaykey.Web.LineWizard.AdditionalInsured"/>
+        </PanelRef>
+      </Card>
+      <Card
+        id="BOP_AdditionalCard"
+        title="displaykey.Web.LineWizard.AdditionalCoverages">
+        <PanelRef
+          def="AdditionalCoveragesPanelSet(policyPeriod.BOPLine, policyPeriod.BOPLine.getAdditionalCoverageCategories(), true)"/>
+      </Card>
+      <Card
+        id="ExclusionsAndConditionsCard"
+        title="displaykey.Web.LineWizard.ExclusionsAndConditions">
+        <PanelRef
+          def="AdditionalExclusionsAndConditionsPanelSet(policyPeriod.BOPLine, policyPeriod.BOPLine.getAdditionalCoverageCategories(), true)"/>
+      </Card>
+    </CardViewPanel>
+  </Screen>
+</PCF>

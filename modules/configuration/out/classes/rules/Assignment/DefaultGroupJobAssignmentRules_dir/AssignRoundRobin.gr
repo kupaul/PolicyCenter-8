@@ -1,0 +1,30 @@
+package rules.Assignment.DefaultGroupJobAssignmentRules_dir
+
+@gw.rules.RuleName("Assign Round Robin")
+internal class AssignRoundRobin {
+  static function doCondition(job : entity.Job) : boolean {
+    
+/*start00rule*/
+return true
+/*end00rule*/
+
+  }
+
+  static function doAction(job : entity.Job, actions : gw.rules.Action) {
+
+/*start00rule*/
+var assignment = job.CurrentRoleAssignment
+if(!((job typeis Submission) && (job.isNew()))) {
+  if ((assignment.assignUserByRoundRobin(false, assignment.CurrentAssignment.AssignedGroup))) {
+    gw.assignment.AssignmentUtil.logUserRoleAssignment(assignment, actions as java.lang.String)
+    actions.exit() 
+  }
+} else {  
+  var user = User.util.CurrentUser
+  assignment.assign(user.DefaultAssignmentGroup, user)
+  gw.assignment.AssignmentUtil.logUserRoleAssignment(assignment, actions as java.lang.String)
+}
+/*end00rule*/
+
+  }
+}

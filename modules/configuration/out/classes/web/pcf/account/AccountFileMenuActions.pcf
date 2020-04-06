@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <MenuActions
+    flatten="true"
+    id="AccountFileMenuActions">
+    <Require
+      name="account"
+      type="Account"/>
+    <MenuItem
+      id="AccountFileMenuActions_Create"
+      label="displaykey.Web.AccountFile.Create"
+      shortcut="C"
+      visible="perm.Account.edit(account)">
+      <MenuItem
+        action="NewAccountNoteWorksheet.goInWorkspace(account)"
+        id="AccountFileMenuActions_NewNote"
+        label="displaykey.Web.AccountFile.NewNote"
+        shortcut="N"
+        visible="perm.Note.create and account.AccountStatus != AccountStatus.TC_WITHDRAWN"/>
+      <MenuItem
+        id="AccountFileMenuActions_NewDocument"
+        label="displaykey.Web.AccountFile.NewDocument"
+        shortcut="O"
+        visible="perm.Document.create and account.AccountStatus != AccountStatus.TC_WITHDRAWN">
+        <MenuItemSetRef
+          def="AccountNewDocumentMenuItemSet(account)"/>
+      </MenuItem>
+      <MenuItem
+        action="EmailWorksheet.goInWorkspace(account)"
+        id="AccountFileMenuActions_NewEmail"
+        label="displaykey.Web.AccountFile.NewEmail"
+        shortcut="N"
+        visible="account.AccountStatus != AccountStatus.TC_WITHDRAWN"/>
+      <MenuItem
+        action="NewSubmission.go(account)"
+        id="AccountFileMenuActions_NewSubmission"
+        label="displaykey.Web.AccountFile.NewSubmission"
+        shortcut="B"
+        visible="perm.Account.newSubmission(account) and !account.Frozen and account.AccountStatus != AccountStatus.TC_WITHDRAWN"/>
+      <MenuItem
+        id="AccountFileMenuActions_NewActivity"
+        label="displaykey.Web.AccountFile.NewActivity"
+        shortcut="A"
+        visible="perm.System.actcreate and account.AccountStatus != AccountStatus.TC_WITHDRAWN">
+        <MenuItemSetRef
+          def="NewActivityMenuItemSet(account, null, null)"/>
+      </MenuItem>
+    </MenuItem>
+    <MenuItemDivider/>
+    <MenuItem
+      action="updateAccountStatusAndCommit(AccountStatus.TC_WITHDRAWN)"
+      id="AccountFileMenuActions_WithdrawAccount"
+      label="displaykey.Web.Account.Status.WithdrawAccount"
+      visible="account.AccountStatus == AccountStatus.TC_PENDING and perm.Account.withdraw(account)"/>
+    <MenuItem
+      action="updateAccountStatusAndCommit(AccountStatus.TC_PENDING)"
+      id="AccountFileMenuActions_ReopenAccount"
+      label="displaykey.Web.Account.Status.ReopenAccount"
+      visible="account.AccountStatus == AccountStatus.TC_WITHDRAWN and perm.Account.reopen(account)"/>
+    <MenuItem
+      action="AccountFile_AccountSearch.go(account, typekey.AccountSearchType.TC_MOVEPOLICIES)"
+      id="AccountFileMenuActions_MovePolicies"
+      label="displaykey.Web.AccountFile.MovePolicies"
+      visible="perm.Account.movePolicies(account) and !account.Frozen and account.AccountStatus != AccountStatus.TC_WITHDRAWN"/>
+    <MenuItem
+      action="AccountFile_AccountSearch.go(account, typekey.AccountSearchType.TC_REWRITEPOLICIES)"
+      id="AccountFileMenuActions_RewritePolicies"
+      label="displaykey.Web.AccountFile.RewritePolicies"
+      visible="perm.Account.rewritePolicies(account) and !account.Frozen and account.AccountStatus != AccountStatus.TC_WITHDRAWN"/>
+    <MenuItem
+      action="AccountFile_AccountSearch.go(account, typekey.AccountSearchType.TC_MERGEACCOUNTS)"
+      id="AccountFileMenuActions_MergeAccounts"
+      label="displaykey.Web.AccountFile.MergeAccounts.MergeAccount"
+      visible="perm.Account.mergeAccounts(account) and !account.Frozen and account.AccountStatus != AccountStatus.TC_WITHDRAWN"/>
+    <Code><![CDATA[function updateAccountStatusAndCommit(newStatus : AccountStatus) {
+  gw.transaction.Transaction.runWithNewBundle(\ bundle -> {
+    var localAccount = bundle.add(account)
+    localAccount.AccountStatus = newStatus
+  })
+}]]></Code>
+  </MenuActions>
+</PCF>

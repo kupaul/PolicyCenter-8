@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="AccountContactDV">
+    <Require
+      name="contact"
+      type="Contact"/>
+    <Require
+      name="anAccount"
+      type="Account"/>
+    <Variable
+      initialValue="CurrentLocation.InEditMode"
+      name="openForEdit"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="contact.PrimaryAddress"
+      name="selectedAddress"
+      recalculateOnRefresh="true"/>
+    <InputColumn>
+      <InputSetRef
+        def="ContactNameInputSet(contact)"
+        mode="contact.Subtype.Code"
+        visible="contact != null"/>
+      <InputDivider/>
+      <InputSetRef
+        def="LinkedAddressInputSet(selectedAddress, contact, null, anAccount, openForEdit)"/>
+      <InputSetRef
+        def="AddressInputSet(new gw.pcf.contacts.AddressInputSetAddressOwner(selectedAddress, false, true))"
+        editable="selectedAddress.LinkedAddress == null"
+        visible="contact != null"/>
+      <TypeKeyInput
+        editable="selectedAddress.LinkedAddress == null"
+        id="AddressType"
+        label="displaykey.Web.AddressDetail.AddressType"
+        required="true"
+        value="contact.PrimaryAddress.AddressType"
+        visible="contact != null"/>
+      <Input
+        editable="selectedAddress.LinkedAddress == null"
+        id="AddressDescription"
+        label="displaykey.Web.AddressDetail.Description"
+        value="contact.PrimaryAddress.Description"
+        visible="contact != null"/>
+      <InputSetRef
+        def="ContactCurrencyInputSet(contact, selectedAddress, contact.New)"
+        editable="true"
+        id="ContactCurrency"/>
+      <InputDivider/>
+      <InputSet
+        id="LicenseInputSet"
+        visible="contact typeis Person">
+        <Input
+          editable="true"
+          id="LicenseNumber"
+          label="displaykey.Web.PolicyLine.Drivers.LicenseNumber"
+          required="false"
+          value="(contact as Person).LicenseNumber"/>
+        <Input
+          editable="true"
+          id="LicenseState"
+          label="displaykey.Web.PolicyLine.Drivers.LicenseState"
+          required="false"
+          value="(contact as Person).LicenseState"/>
+        <InputDivider/>
+      </InputSet>
+      <Label
+        label="displaykey.Web.AccountFile.Summary.OfficialIDs"
+        visible="contact != null"/>
+      <InputSetRef
+        def="OfficialIDInputSet(contact)"
+        mode="contact.Subtype"
+        visible="contact != null"/>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="openForEdit"
+    id="OfferingScreen">
+    <Require
+      name="period"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="period.Policy.Product"
+      name="product"/>
+    <Variable
+      initialValue="product.getQuestionSetsByType(QuestionSetType.TC_OFFERING)"
+      name="offeringQuestionSets"/>
+    <Variable
+      name="policyLineName"
+      type="String"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="period.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(period, period.Job, jobWizardHelper)"/>
+    </Toolbar>
+    <PanelRef
+      def="OOSEPanelSet(period, jobWizardHelper)"/>
+    <PanelRef>
+      <Verbatim
+        id="unavailableLineWarningLabel"
+        label="policyLineName"
+        visible="unavailableLineExists()"
+        warning="true"/>
+      <DetailViewPanel>
+        <InputColumn>
+          <RangeInput
+            boldLabel="true"
+            editable="true"
+            filter="VALUE.isOfferingAvailable(period)"
+            id="OfferingSelection"
+            label="displaykey.Web.Job.Offering.Selection"
+            required="product.OfferingRequired"
+            value="period.Offering"
+            valueRange="product.Offerings">
+            <PostOnChange/>
+          </RangeInput>
+        </InputColumn>
+      </DetailViewPanel>
+    </PanelRef>
+    <PanelDivider/>
+    <PanelRef
+      def="QuestionSetsDV(offeringQuestionSets, period, \ -&gt; gw.web.productmodel.ProductModelSyncIssuesHandler.syncOffering(period, jobWizardHelper))"
+      id="OfferingQuestionSetsDV"
+      visible="offeringQuestionSets.Count &gt; 0"/>
+    <Code><![CDATA[function unavailableLineExists(): boolean {
+  var issues = period.checkPolicyLinesAgainstProductModel()
+      .whereTypeIs( gw.api.web.productmodel.UnavailablePolicyLineIssue).toTypedArray()
+  if (issues.length == 0) {
+    return false
+  } else if (issues.length == 1) {
+    policyLineName = displaykey.Web.JobWizard.ProductModelSync.UnavailablePolicyLineWillBeRemoved1(issues[0].Pattern.DisplayName)
+    return true
+  } else {
+    policyLineName = ""
+    issues.eachWithIndex( \ issue, i -> {policyLineName += issue.Pattern.Name + (i != issues.length - 1 ? " and " : "")})
+    policyLineName = displaykey.Web.JobWizard.ProductModelSync.UnavailablePolicyLineWillBeRemoved2(policyLineName)
+    return true
+  }
+}]]></Code>
+  </Screen>
+</PCF>

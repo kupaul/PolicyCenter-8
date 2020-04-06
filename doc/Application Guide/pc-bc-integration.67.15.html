@@ -1,0 +1,307 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Multicurrency Integration Between BillingCenter and PolicyCenter</title>
+    <link rel="StyleSheet" href="css/pc-bc-integration.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Application&nbsp;Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-integrations.html#1281983">External System Integration</a> : <a class="WebWorks_Breadcrumb_Link" href="pc-bc-integration.67.01.html#1281983">Billing System Integration</a> : Multicurrency Integration Between BillingCenter and PolicyCenter</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1281983">Multicurrency Integration Between BillingCenter and PolicyCenter</a></h3>
+      <div class="B_-_Body"><a name="1281984">BillingCenter and PolicyCenter support integration of multicurrency accounts and producers. PolicyCenter manages the relationship aspects of accounts and producers. BillingCenter manages the accounts receivable, commissions payable, and cash application aspects of accounts and producers. Because the two applications manage different aspects of accounts and producers, each application represents them differently for multicurrency purposes.</a></div>
+      <div class="B_-_Body"><a name="1281985">PolicyCenter manages the relationship between the insurer and an insured through policies. An account in PolicyCenter represents this relationship. PolicyCenter permits an account to have policies that cover assets valued in different currencies. For example, a commercial property policy might cover properties in multiple countries, with each property on the policy valued in the currency of its location. </a></div>
+      <div class="B_-_Body"><a name="1281986">BillingCenter manages billing activities for policies, and it pays commissions earned by producers of policies. To maintain accounting integrity, BillingCenter does not permit an account to have transactions in multiple currencies. Instead, BillingCenter manages each account to be certain that transactions can occur in only one currency. Similarly, BillingCenter tracks commission earned by each producer in only one currency.</a></div>
+      <div class="B_-_Body"><a name="1281987">Therefore, while PolicyCenter has a single account or producer regardless of currencies, BillingCenter must have multiple affiliated accounts and producers, one for each currency. </a></div>
+      <h4 class="H2_-_Heading_2"><a name="1281989">Multicurrency Account Correspondence between BillingCenter and PolicyCenter</a></h4>
+      <div class="B_-_Body"><a name="1281990">A PolicyCenter account with policies and assets in a single currency has a single correspondent account in BillingCenter. In contrast, a PolicyCenter account with policies and assets in a mix of currencies has a correspondent set of affiliated BillingCenter accounts, one for each currency in the PolicyCenter account. The currencies in a PolicyCenter account are the currencies in all policy periods of all policies associated with the account. </a></div>
+      <div class="B_-_Body"><a name="1281992">Within a set of BillingCenter accounts affiliated with a PolicyCenter account, one account is the </a><span class="e_-_emphasis">primary</span> <span class="e_-_emphasis">affiliated account</span>. A primary affiliated account retains the public ID of its correspondent multicurrency account in PolicyCenter. PolicyCenter retains the public ID only of the primary affiliated account and remains unaware of any secondary affiliated accounts created by BillingCenter. </div>
+      <div class="B_-_Body"><a name="1281993">Whenever PolicyCenter sends integration messages to BillingCenter that involve multicurrency accounts, PolicyCenter passes a currency parameter and the public ID of the account in BillingCenter that PolicyCenter first created. BillingCenter uses the currency that PolicyCenter passes to determine whether to:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1281994">Split the account into a primary affiliated account and a secondary affiliated account for the new currency.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1281995">Create an additional affiliated account for the new currency.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1281996">Locate the affiliated account for the currency.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1281997">Regardless of the actions that BillingCenter takes, PolicyCenter remains aware of one account only in BillingCenter.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="1281998">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('app', 'account_management.37.02.html#4439416', '');" title="Account Overview" name="1282002">“Account Overview”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="1282008">Multicurrency Producer Correspondence between BillingCenter and PolicyCenter</a></h4>
+      <div class="B_-_Body"><a name="1282009">In PolicyCenter, an </a><span class="e_-_emphasis">organization</span> represents a producer, such as an agency or a broker. In BillingCenter, a <span class="e_-_emphasis">producer</span> corresponds to a producer organization in PolicyCenter. Both entities represent agencies and brokers, not individuals. A producer organization produces policies through individual producers, such as agents. </div>
+      <h6 class="HS_-_Head_Sub"><a name="1282010">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('app', 'pc_security.59.02.html#4722947', '');" title="Community Model Overview" name="1282014">“Community Model Overview”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1282019">Commission Plans Set Currencies for Producer Codes</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1282020">Individual producers earn commissions on the policies they produce. In BillingCenter and PolicyCenter, producer codes identify individual producers for commission purposes. In some cases, individual producers share the same producer code. PolicyCenter tracks which producer codes produced which policies. BillingCenter tracks commissions earned by each producer code and periodically initiates commission payments. Commissions generally are not paid directly to individual producers. Instead, aggregate commissions are paid to the producer organization, which in turn disburses commission payments to individual producers. </a></div>
+      <div class="B_-_Body"><a name="1282021">In PolicyCenter, you add commission plans to producer codes. In BillingCenter, you define the commission plans that you can add to producer codes in PolicyCenter. A commission plan covers commissions in a single currency. For a producer code to produce policies in a mix of currencies, you must add a commission plan for each currency. BillingCenter receives new producer organizations and producer codes from PolicyCenter, along with their currencies.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1282022">Single Currency Producer Codes and Producer Organizations</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1282023">A producer code in PolicyCenter with one commission plan has a single correspondent producer code in BillingCenter. All commissions are earned and paid in that currency. The producer code in BillingCenter retains the public ID of its correspondent producer code in PolicyCenter, and the producer code in PolicyCenter retains the public ID of its BillingCenter counterpart. In addition, the producer code in BillingCenter is associated with its BillingCenter producer in the same currency. </a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1282025">Multicurrency Producer Codes and Producer Organizations</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1282026">A producer code in PolicyCenter with commission plans in a mix of currencies has a correspondent set of affiliated producer codes and producer organizations in BillingCenter. Each affiliated producer organization aggregates commissions earned by its producer codes in one of the currencies of the organization’s commission plans. Each affiliated producer code for a specific currency is associated with its affiliated producer organization of the same currency. </a></div>
+      <div class="B_-_Body"><a name="1282028">Within a set of BillingCenter affiliated producer codes associated with a PolicyCenter producer code, one producer code is the </a><span class="e_-_emphasis">primary</span> <span class="e_-_emphasis">affiliated producer code</span>. A primary affiliated producer code retains the public ID of its correspondent multicurrency producer code in PolicyCenter. PolicyCenter retains the public ID only of the primary affiliated producer code and remains unaware of any secondary affiliated producer codes created by BillingCenter. </div>
+      <div class="B_-_Body"><a name="1282029">Whenever PolicyCenter sends integration messages that involve multicurrency producers codes, PolicyCenter passes a currency parameter and the public ID of the producer code in BillingCenter that PolicyCenter first created. BillingCenter uses the currency that PolicyCenter passes to determine whether to:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1282030">Split the producer code into a primary affiliated producer code and a secondary affiliated producer code for the new currency.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1282031">Create an additional affiliated producer code for the new currency.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1282032">Locate the affiliated producer code for the currency.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1282033">Regardless of the actions that BillingCenter takes, PolicyCenter remains aware of one producer code only in BillingCenter.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1282035">Default Multicurrency Integration between BillingCenter and PolicyCenter</a></h4>
+      <div class="B_-_Body"><a name="1282036">The default implementations of plugins and web services in BillingCenter and PolicyCenter handle the differences in multicurrency accounts and producers automatically. However, your must configure both application instances to enable their multicurrency integration successfully. For example, you must set up each instance with the currencies they share. </a></div>
+      <h6 class="HS_-_Head_Sub"><a name="1282037">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('config', 'multicurrency_config_pc.52.9.html#1181636', '');" title="Multicurrency Configuration for BillingCenter Integration with PolicyCenter" name="1282040">“Multicurrency Configuration for BillingCenter Integration with PolicyCenter” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('config', 'multicurrency_config_pc.52.9.html#1181636', '');" title="Multicurrency Configuration for BillingCenter Integration with PolicyCenter">Configuration Guide</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="1282047">Limitations of Multicurrency Integration between BillingCenter and PolicyCenter</a></h4>
+      <div class="B_-_Body"><a name="1282048">Multicurrency integration between BillingCenter and PolicyCenter has the following limitations in their default configurations:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="1282049">Delinquency Processing</a></span> – In the base configuration of BillingCenter, each affiliated account has its own delinquency process. If one affiliated account becomes delinquent, the other affiliated BillingCenter accounts do not become delinquent automatically. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="1282050">List Bill Accounts</a></span> – In the base configurations of BillingCenter and PolicyCenter, list bill accounts do not support multicurrency integration. List bill accounts are payers for policies in a single currency only.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1282051">You can overcome the preceding limitations with configuration. </a></div>
+      <h6 class="HS_-_Head_Sub"><a name="1282052">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'multicurrency-bc-pc.34.1.html#1141219', '');" title="Multicurrency Integration between BillingCenter and PolicyCenter" name="1282056">“Multicurrency Integration between BillingCenter and PolicyCenter” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('integration', 'multicurrency-bc-pc.34.1.html#1141219', '');" title="Multicurrency Integration between BillingCenter and PolicyCenter">Integration Guide</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1271601">&nbsp;</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

@@ -1,0 +1,1080 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://api.webservices.pc.guidewire.com/" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://api.webservices.pc.guidewire.com/" xmlns:intf="http://api.webservices.pc.guidewire.com/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns1="http://entity.webservices.pc.guidewire.com/" xmlns:tns2="http://fault.webservices.pc.guidewire.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><wsdl:types><schema targetNamespace="http://entity.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://fault.webservices.pc.guidewire.com/"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="TemplateImportResults"><xsd:annotation><xsd:documentation>Table Import Results</xsd:documentation></xsd:annotation><sequence><element name="FileContents" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>Returns the new content of the file as produced by the import process.</xsd:documentation></xsd:annotation></element><element name="Output" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>Returns the human-readable output of the import process.</xsd:documentation></xsd:annotation></element></sequence></complexType><complexType name="NameTypePair"><sequence><element name="Name" nillable="true" type="soapenc:string"/><element name="Type" nillable="true" type="soapenc:string"/></sequence></complexType><complexType name="ArrayOfNameTypePair"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="tns1:NameTypePair[]"/></restriction></complexContent></complexType></schema><schema targetNamespace="http://fault.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://entity.webservices.pc.guidewire.com/"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="SOAPException"><xsd:annotation><xsd:documentation>A generic SOAP exception.</xsd:documentation></xsd:annotation><sequence><element name="Message" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>The message associated with this exception</xsd:documentation></xsd:annotation></element><element name="OtherMessages" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>Other messages attached to this exception.  This message may contain information
+related to other exceptions that occurred during a SOAP call, but not directly
+associated with this particular exception.</xsd:documentation></xsd:annotation></element></sequence></complexType><complexType name="SOAPSenderException"><xsd:annotation><xsd:documentation>SOAPSenderException is the base class for all exceptions that resulted from
+a sender error. This usually means that required data was not properly encoded
+or was absent. Senders should not send the message again unless some steps have
+been taken to make the encoded data valid.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="DataConversionException"><xsd:annotation><xsd:documentation>Thrown by many APIs when they encounter a problem translating a SOAP data object into
+an internal system object.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="BadIdentifierException"><xsd:annotation><xsd:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect).</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="PermissionException"><xsd:annotation><xsd:documentation>Thrown when the authenticated SOAP user does not have permission to
+perform the requested operation</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="SOAPServerException"><xsd:annotation><xsd:documentation>SOAPServerException is the base class for all exceptions that resulted from
+a server error. This is something of a catch-all exception type insofar as
+some things which might in fact be considered SOAPSenderExceptions are reported
+as SOAPServerExceptions. Perhaps a rule failed or something else. Generally it
+indicates a problem in the server that is likely retryable at some future time.
+The database being down, an unavailable plugin, etc would fall into this catagory.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="ServerStateException"><xsd:annotation><xsd:documentation>ServerStateException is thrown when a request is made at a time the
+server is in a state that disallows the request. An example is if
+an attempt is made to add a claim and the server is in maintenance
+mode.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:SOAPServerException"><sequence/></extension></complexContent></complexType><complexType name="SOAPRetryableException"><xsd:annotation><xsd:documentation>SOAPRetryableException is the class for all exceptions that are retryable
+immediately.  The primary example of this is ConcurrentDataChangeException.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="LoginException"><xsd:annotation><xsd:documentation>Class of exceptions thrown when a user tries to log in and an authentication failure occurs.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:PermissionException"><sequence/></extension></complexContent></complexType><complexType name="EntityStateException"><xsd:annotation><xsd:documentation>Thrown when an attempt is made to manipulate an object that is in a state
+that prevents the operation from being performed. An example is trying to
+modify a Claim that is marked as closed.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="DuplicateKeyException"><xsd:annotation><xsd:documentation>Throws if a duplicate data exception is detected in the database.  I.e. a unique index violation.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="FieldConversionException"><xsd:annotation><xsd:documentation>Thrown when a data type cannot be converted into the native data type.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="FieldFormatException"><xsd:annotation><xsd:documentation>Thrown when the input type does not match the format specified in the metadata.  I.e. a string is too long.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="RequiredFieldException"><xsd:annotation><xsd:documentation>Thrown when required data is missing from a bean.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="UnknownTypeKeyException"><xsd:annotation><xsd:documentation>Thrown when a typekey value isn't available on the server.  This exception can only
+happen if the SOAP WSDL that is being used on the remote side is invalid.</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="BatchProcessException"><xsd:annotation><xsd:documentation>SOAP Exception specific to batch process operations</xsd:documentation></xsd:annotation><complexContent><extension base="tns2:SOAPServerException"><sequence/></extension></complexContent></complexType><complexType name="AlreadyExecutedException"><complexContent><extension base="tns2:SOAPSenderException"><sequence/></extension></complexContent></complexType></schema></wsdl:types>
+  <wsdl:message name="validateAllNoteTemplatesResponse">
+    <wsdl:part name="validateAllNoteTemplatesReturn" type="soapenc:string">
+<wsdl:documentation>A human-readable string detailing the operations performed and any errors encountered.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateDocumentTemplateInLocaleRequest">
+    <wsdl:part name="templateID" type="soapenc:string">
+<wsdl:documentation>- The ID of the template (e.g. ReservationRights.doc)</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="locale" type="soapenc:string">
+<wsdl:documentation>- the locale to testing</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="importFormFieldsResponse">
+    <wsdl:part name="importFormFieldsReturn" type="tns1:TemplateImportResults">
+<wsdl:documentation>A results object with fields for the new contents of the descriptor file, and a human-readable string detailing
+the operations performed and any errors encountered.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateAllEmailTemplatesRequest">
+    <wsdl:part name="beanNamesAndTypes" type="tns1:ArrayOfNameTypePair">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="listNoteTemplatesResponse">
+    <wsdl:part name="listNoteTemplatesReturn" type="soapenc:string">
+<wsdl:documentation>A human-readable string detailing the templates available to the server.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateEmailTemplateInLocaleResponse">
+    <wsdl:part name="validateEmailTemplateInLocaleReturn" type="soapenc:string">
+<wsdl:documentation>validation result</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateAllTemplatesRequest">
+  </wsdl:message>
+  <wsdl:message name="validateAllNoteTemplatesInLocaleRequest">
+    <wsdl:part name="beanNamesAndTypes" type="tns1:ArrayOfNameTypePair">
+<wsdl:documentation/>
+    </wsdl:part>
+    <wsdl:part name="locale" type="soapenc:string">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateAllEmailTemplatesResponse">
+    <wsdl:part name="validateAllEmailTemplatesReturn" type="soapenc:string">
+<wsdl:documentation>A human-readable string detailing the operations performed and any errors encountered.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateEmailTemplateRequest">
+    <wsdl:part name="templateFileName" type="soapenc:string">
+<wsdl:documentation>file name of the template to validate</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="beanNamesAndTypes" type="tns1:ArrayOfNameTypePair">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BadIdentifierException">
+    <wsdl:part name="fault" type="tns2:BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateEmailTemplateResponse">
+    <wsdl:part name="validateEmailTemplateReturn" type="soapenc:string">
+<wsdl:documentation>validation result</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateAllDocumentTemplatesInLocaleResponse">
+    <wsdl:part name="validateAllDocumentTemplatesInLocaleReturn" type="soapenc:string">
+<wsdl:documentation>A human-readable string detailing the operations performed and any errors encountered.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateAllNoteTemplatesRequest">
+    <wsdl:part name="beanNamesAndTypes" type="tns1:ArrayOfNameTypePair">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateAllEmailTemplatesInLocaleRequest">
+    <wsdl:part name="beanNamesAndTypes" type="tns1:ArrayOfNameTypePair">
+<wsdl:documentation/>
+    </wsdl:part>
+    <wsdl:part name="locale" type="soapenc:string">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateAllEmailTemplatesInLocaleResponse">
+    <wsdl:part name="validateAllEmailTemplatesInLocaleReturn" type="soapenc:string">
+<wsdl:documentation>A human-readable string detailing the operations performed and any errors encountered.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateAllTemplatesResponse">
+    <wsdl:part name="validateAllTemplatesReturn" type="soapenc:string">
+<wsdl:documentation>- A human-readable string detailing the operations performed and
+any errors encountered.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateAllDocumentTemplatesRequest">
+  </wsdl:message>
+  <wsdl:message name="validateDocumentTemplateRequest">
+    <wsdl:part name="templateID" type="soapenc:string">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PermissionException">
+    <wsdl:part name="fault" type="tns2:PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="listEmailTemplatesResponse">
+    <wsdl:part name="listEmailTemplatesReturn" type="soapenc:string">
+<wsdl:documentation>A human-readable string detailing the templates available to the server.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="listTemplatesRequest">
+  </wsdl:message>
+  <wsdl:message name="importFormFieldsRequest">
+    <wsdl:part name="contextObjectFileContents" type="soapenc:string">
+<wsdl:documentation>The contents of a file containing the context objects to be imported, in CSV format</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="fieldGroupFileContents" type="soapenc:string">
+<wsdl:documentation>The contents of a file contianing the field groups to be imported, in CSV format</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="fieldFileContents" type="soapenc:string">
+<wsdl:documentation>The contents of a file containing the fields to be imported, in CSV format.</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="descriptorFileContents" type="soapenc:string">
+<wsdl:documentation>The contents of the descriptor file.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateNoteTemplateRequest">
+    <wsdl:part name="templateFileName" type="soapenc:string">
+<wsdl:documentation>of the template to validate</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="beanNamesAndTypes" type="tns1:ArrayOfNameTypePair">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateEmailTemplateInLocaleRequest">
+    <wsdl:part name="templateFileName" type="soapenc:string">
+<wsdl:documentation>file name of the template to validate</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="beanNamesAndTypes" type="tns1:ArrayOfNameTypePair">
+<wsdl:documentation/>
+    </wsdl:part>
+    <wsdl:part name="locale" type="soapenc:string">
+<wsdl:documentation>locale of the template</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateTemplateRequest">
+    <wsdl:part name="templateID" type="soapenc:string">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateDocumentTemplateInLocaleResponse">
+    <wsdl:part name="validateDocumentTemplateInLocaleReturn" type="soapenc:string">
+<wsdl:documentation>A human-readable string detailing the operations performed and any errors encountered.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="listDocumentTemplatesResponse">
+    <wsdl:part name="listDocumentTemplatesReturn" type="soapenc:string">
+<wsdl:documentation>A human-readable string detailing the templates available to the server.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateDocumentTemplateResponse">
+    <wsdl:part name="validateDocumentTemplateReturn" type="soapenc:string">
+<wsdl:documentation>- A human-readable string detailing the operations performed and
+any errors encountered.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="listNoteTemplatesRequest">
+  </wsdl:message>
+  <wsdl:message name="ServerStateException">
+    <wsdl:part name="fault" type="tns2:ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SOAPException">
+    <wsdl:part name="fault" type="tns2:SOAPException">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateNoteTemplateInLocaleResponse">
+    <wsdl:part name="validateNoteTemplateInLocaleReturn" type="soapenc:string">
+<wsdl:documentation>validation result</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateAllDocumentTemplatesInLocaleRequest">
+    <wsdl:part name="locale" type="soapenc:string">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateTemplateResponse">
+    <wsdl:part name="validateTemplateReturn" type="soapenc:string">
+<wsdl:documentation>- A human-readable string detailing the operations performed and
+any errors encountered.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateNoteTemplateResponse">
+    <wsdl:part name="validateNoteTemplateReturn" type="soapenc:string">
+<wsdl:documentation>validation result</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="listEmailTemplatesRequest">
+  </wsdl:message>
+  <wsdl:message name="listTemplatesResponse">
+    <wsdl:part name="listTemplatesReturn" type="soapenc:string">
+<wsdl:documentation>- A human-readable string detailing the templates available to the
+server.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateAllDocumentTemplatesResponse">
+    <wsdl:part name="validateAllDocumentTemplatesReturn" type="soapenc:string">
+<wsdl:documentation>A human-readable string detailing the operations performed and any errors encountered.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="validateAllNoteTemplatesInLocaleResponse">
+    <wsdl:part name="validateAllNoteTemplatesInLocaleReturn" type="soapenc:string">
+<wsdl:documentation>A human-readable string detailing the operations performed and any errors encountered.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="listDocumentTemplatesRequest">
+  </wsdl:message>
+  <wsdl:message name="validateNoteTemplateInLocaleRequest">
+    <wsdl:part name="templateFileName" type="soapenc:string">
+<wsdl:documentation>file name of the template to validate</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="beanNamesAndTypes" type="tns1:ArrayOfNameTypePair">
+<wsdl:documentation/>
+    </wsdl:part>
+    <wsdl:part name="locale" type="soapenc:string">
+<wsdl:documentation>locale of the template</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="ITemplateToolsAPI">
+<wsdl:documentation>ITemplateToolsAPI provides adminstrative and programmer support tools for
+document templates.
+@deprecated As of 8.0 use gw.webservice.pc.pc800.TemplateToolsAPI instead
+</wsdl:documentation>
+    <wsdl:operation name="importFormFields" parameterOrder="contextObjectFileContents fieldGroupFileContents fieldFileContents descriptorFileContents">
+<wsdl:documentation>Imports context objects, field groups, and fields from the provided .csv file contents into the corresponding
+template descriptor file.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:importFormFieldsRequest" name="importFormFieldsRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:importFormFieldsResponse" name="importFormFieldsResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="listDocumentTemplates">
+<wsdl:documentation>List the templates which the server currently knows about. Useful for sanity-checking arguments to
+the validation commands.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:listDocumentTemplatesRequest" name="listDocumentTemplatesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:listDocumentTemplatesResponse" name="listDocumentTemplatesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="listEmailTemplates">
+<wsdl:documentation>List the email templates which the server currently knows about. Useful for sanity-checking arguments to
+the validation commands.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:listEmailTemplatesRequest" name="listEmailTemplatesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:listEmailTemplatesResponse" name="listEmailTemplatesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="listNoteTemplates">
+<wsdl:documentation>List the note templates which the server currently knows about. Useful for sanity-checking arguments to
+the validation commands.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:listNoteTemplatesRequest" name="listNoteTemplatesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:listNoteTemplatesResponse" name="listNoteTemplatesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="listTemplates">
+<wsdl:documentation>List the document templates which the server currently knows about. Useful for
+sanity-checking the arguments to validation commands.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:listTemplatesRequest" name="listTemplatesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:listTemplatesResponse" name="listTemplatesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateAllDocumentTemplates">
+<wsdl:documentation>Performs the validation done in validateDocumentTemplate for all of the template descriptors the server can find
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:validateAllDocumentTemplatesRequest" name="validateAllDocumentTemplatesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:validateAllDocumentTemplatesResponse" name="validateAllDocumentTemplatesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateAllDocumentTemplatesInLocale" parameterOrder="locale">
+<wsdl:documentation>Performs the validation done in validateDocumentTemplate for all of the template descriptors the server can find
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:validateAllDocumentTemplatesInLocaleRequest" name="validateAllDocumentTemplatesInLocaleRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:validateAllDocumentTemplatesInLocaleResponse" name="validateAllDocumentTemplatesInLocaleResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateAllEmailTemplates" parameterOrder="beanNamesAndTypes">
+<wsdl:documentation>Performs validation of all available email templates for default locale.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:validateAllEmailTemplatesRequest" name="validateAllEmailTemplatesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:validateAllEmailTemplatesResponse" name="validateAllEmailTemplatesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateAllEmailTemplatesInLocale" parameterOrder="beanNamesAndTypes locale">
+<wsdl:documentation>Performs validation of all available email templates for specified locale.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:validateAllEmailTemplatesInLocaleRequest" name="validateAllEmailTemplatesInLocaleRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:validateAllEmailTemplatesInLocaleResponse" name="validateAllEmailTemplatesInLocaleResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateAllNoteTemplates" parameterOrder="beanNamesAndTypes">
+<wsdl:documentation>Performs validation of all available note templates for default locale.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:validateAllNoteTemplatesRequest" name="validateAllNoteTemplatesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:validateAllNoteTemplatesResponse" name="validateAllNoteTemplatesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateAllNoteTemplatesInLocale" parameterOrder="beanNamesAndTypes locale">
+<wsdl:documentation>Performs validation of all available email templates for specified locale.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:validateAllNoteTemplatesInLocaleRequest" name="validateAllNoteTemplatesInLocaleRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:validateAllNoteTemplatesInLocaleResponse" name="validateAllNoteTemplatesInLocaleResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateAllTemplates">
+<wsdl:documentation>Performs the validation done in validateTemplate for all of the template
+descriptors the server can find
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:validateAllTemplatesRequest" name="validateAllTemplatesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:validateAllTemplatesResponse" name="validateAllTemplatesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateDocumentTemplate" parameterOrder="templateID">
+<wsdl:documentation>Validate that the format of the given template descriptor is valid, and
+that, given the current datamodel all of the Gosu used in the descriptor
+(for ContextObjects and FormFields) is valid . Validation currently
+includes the following items:
+1) Check the Gosu expressions in the descriptor:
+a) ContextObject default and possible value expressions are
+defined in terms of the available objects
+b) FormField expressions are defined in terms of either available
+objects or ContestObjects.
+2) Check that the permissionRequired attribute, if specified, is a valid
+system permission code.
+3) Check that the default-security-type attribute, if specified, is a
+valid document security type code.
+4) Check that the type attribute, if specified, is a valid document type
+code.
+5) Check that the section attribute, if specified, is a valid section
+type code.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:validateDocumentTemplateRequest" name="validateDocumentTemplateRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:validateDocumentTemplateResponse" name="validateDocumentTemplateResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateDocumentTemplateInLocale" parameterOrder="templateID locale">
+<wsdl:documentation>Validate that the given template descriptor is in a valid format, and that all of the Gosu used in the descriptor
+(for ContextObjects and FormFields) is valid given the current datamodel.
+Current Validation includes the following items:
+1) Check that the Gosu expressions in the descriptor (including ContextObject default and possible
+value expressions, which must be defined in terms of the available objects, and FormField expressions, which
+must be defined in terms of those objects plus the ContestObjects).
+2) Check that the permissionRequired attribute, if specified, is a valid system permission code.
+3) Check that the default-security-type attribute, if specified, is a valid document security type code.
+4) Check that the type attribute, if specified, is a valid document type code.
+5) Check that the section attribute, if specified, is a valid section type code.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:validateDocumentTemplateInLocaleRequest" name="validateDocumentTemplateInLocaleRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:validateDocumentTemplateInLocaleResponse" name="validateDocumentTemplateInLocaleResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateEmailTemplate" parameterOrder="templateFileName beanNamesAndTypes">
+<wsdl:documentation>Validating a particular email template by name for default locale
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:validateEmailTemplateRequest" name="validateEmailTemplateRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:validateEmailTemplateResponse" name="validateEmailTemplateResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateEmailTemplateInLocale" parameterOrder="templateFileName beanNamesAndTypes locale">
+<wsdl:documentation>Validating a particular email template by name and locale
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:validateEmailTemplateInLocaleRequest" name="validateEmailTemplateInLocaleRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:validateEmailTemplateInLocaleResponse" name="validateEmailTemplateInLocaleResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateNoteTemplate" parameterOrder="templateFileName beanNamesAndTypes">
+<wsdl:documentation>Validating a particular note template by name for default locale
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:validateNoteTemplateRequest" name="validateNoteTemplateRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:validateNoteTemplateResponse" name="validateNoteTemplateResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateNoteTemplateInLocale" parameterOrder="templateFileName beanNamesAndTypes locale">
+<wsdl:documentation>Validating a particular note template by name and locale
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:validateNoteTemplateInLocaleRequest" name="validateNoteTemplateInLocaleRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:validateNoteTemplateInLocaleResponse" name="validateNoteTemplateInLocaleResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateTemplate" parameterOrder="templateID">
+<wsdl:documentation>Validate that the format of the given document template descriptor is valid, and
+that, given the current datamodel all of the Gosu used in the descriptor
+(for ContextObjects and FormFields) is valid . Validation currently
+includes the following items:
+1) Check the Gosu expressions in the descriptor:
+a) ContextObject default and possible value expressions are
+defined in terms of the available objects
+b) FormField expressions are defined in terms of either available
+objects or ContestObjects.
+2) Check that the permissionRequired attribute, if specified, is a valid
+system permission code.
+3) Check that the default-security-type attribute, if specified, is a
+valid document security type code.
+4) Check that the type attribute, if specified, is a valid document type
+code.
+5) Check that the section attribute, if specified, is a valid section
+type code.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:validateTemplateRequest" name="validateTemplateRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:validateTemplateResponse" name="validateTemplateResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ITemplateToolsAPISoapBinding" type="impl:ITemplateToolsAPI">
+    <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="importFormFields">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="importFormFieldsRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="importFormFieldsResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="listDocumentTemplates">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="listDocumentTemplatesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="listDocumentTemplatesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="listEmailTemplates">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="listEmailTemplatesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="listEmailTemplatesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="listNoteTemplates">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="listNoteTemplatesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="listNoteTemplatesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="listTemplates">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="listTemplatesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="listTemplatesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateAllDocumentTemplates">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="validateAllDocumentTemplatesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="validateAllDocumentTemplatesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateAllDocumentTemplatesInLocale">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="validateAllDocumentTemplatesInLocaleRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="validateAllDocumentTemplatesInLocaleResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateAllEmailTemplates">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="validateAllEmailTemplatesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="validateAllEmailTemplatesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateAllEmailTemplatesInLocale">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="validateAllEmailTemplatesInLocaleRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="validateAllEmailTemplatesInLocaleResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateAllNoteTemplates">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="validateAllNoteTemplatesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="validateAllNoteTemplatesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateAllNoteTemplatesInLocale">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="validateAllNoteTemplatesInLocaleRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="validateAllNoteTemplatesInLocaleResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateAllTemplates">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="validateAllTemplatesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="validateAllTemplatesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateDocumentTemplate">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="validateDocumentTemplateRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="validateDocumentTemplateResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateDocumentTemplateInLocale">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="validateDocumentTemplateInLocaleRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="validateDocumentTemplateInLocaleResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateEmailTemplate">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="validateEmailTemplateRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="validateEmailTemplateResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateEmailTemplateInLocale">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="validateEmailTemplateInLocaleRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="validateEmailTemplateInLocaleResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateNoteTemplate">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="validateNoteTemplateRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="validateNoteTemplateResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateNoteTemplateInLocale">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="validateNoteTemplateInLocaleRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="validateNoteTemplateInLocaleResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="validateTemplate">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="validateTemplateRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="validateTemplateResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ITemplateToolsAPIService">
+<wsdl:documentation>ITemplateToolsAPI provides adminstrative and programmer support tools for
+document templates.
+@deprecated As of 8.0 use gw.webservice.pc.pc800.TemplateToolsAPI instead
+</wsdl:documentation>
+    <wsdl:port binding="impl:ITemplateToolsAPISoapBinding" name="ITemplateToolsAPI">
+      <wsdlsoap:address location="http://dontuse.defaultvalue.com/ITemplateToolsAPI"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

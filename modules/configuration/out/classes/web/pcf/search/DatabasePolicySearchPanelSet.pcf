@@ -1,0 +1,240 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <PanelSet
+    id="DatabasePolicySearchPanelSet">
+    <SearchPanel
+      criteriaName="searchCriteria"
+      maxSearchResults="1000"
+      resultsName="searchResult"
+      search="searchCriteria.search()"
+      searchCriteria="new PolicySearchCriteria() { :Secure = true, :Producer = gw.web.admin.SearchUIHelper.getProducerBasedOnCurrentUser(), :FirstNameExact = true, :LastNameExact = true, :CompanyNameExact = true, :PermissiveSearch = false}"
+      searchResultsType="PolicyPeriodSummaryQuery">
+      <DetailViewPanel
+        id="PolicySearchDV">
+        <Variable
+          initialValue="gw.api.system.PCDependenciesGateway.getProductModel().getAllInstances(gw.api.productmodel.Product) as gw.api.productmodel.Product[]"
+          name="products"/>
+        <Variable
+          initialValue="UWCompany.finder.findUWCompanies().toList()"
+          name="uwCompanies"/>
+        <Variable
+          initialValue="new gw.globalization.PolicySearchNameAdapter(searchCriteria)"
+          name="policyNameAdapter"
+          recalculateOnRefresh="true"/>
+        <Variable
+          initialValue="new gw.globalization.PolicySearchAddressAdapter(searchCriteria)"
+          name="policyAddrAdapter"
+          recalculateOnRefresh="true"/>
+        <Variable
+          initialValue="new gw.pcf.ProductSearchHelper(products)"
+          name="helper"/>
+        <InputColumn>
+          <RangeInput
+            editable="true"
+            id="IncludeArchived"
+            label="displaykey.Web.PolicySearch.Source"
+            optionLabel="gw.web.admin.SearchUIHelper.sourceLabel(VALUE)"
+            value="searchCriteria.IncludeArchived"
+            valueRange="{false, true}"
+            visible="gw.api.system.PLConfigParameters.ArchiveEnabled.Value">
+            <PostOnChange/>
+          </RangeInput>
+          <TypeKeyInput
+            editable="true"
+            id="SearchFor"
+            label="displaykey.Web.PolicySearch.SearchFor"
+            required="true"
+            value="searchCriteria.SearchObjectType">
+            <PostOnChange
+              onChange="util.SearchUtil.resetResultOnly()"/>
+          </TypeKeyInput>
+          <InputDivider/>
+          <Label
+            label="displaykey.Web.PolicySearch.PrimaryInsured.Title"/>
+          <InputSetRef
+            def="GlobalPersonNameInputSet(new gw.search.BasicNameOwner(policyNameAdapter))"
+            mode="gw.api.name.NameLocaleSettings.PCFMode"/>
+          <CheckBoxInput
+            editable="true"
+            id="FirstNameExact"
+            label="displaykey.Web.AccountSearch.FirstNameExactMatch"
+            required="false"
+            value="searchCriteria.FirstNameExact"/>
+          <CheckBoxInput
+            editable="true"
+            id="LastNameExact"
+            label="displaykey.Web.AccountSearch.LastNameExactMatch"
+            required="false"
+            value="searchCriteria.LastNameExact"/>
+          <InputSetRef
+            def="AddressOwnerAddressInputSet(new gw.pcf.contacts.AddressCountryCityStatePostalCodeOwner (policyAddrAdapter))"/>
+          <Input
+            editable="true"
+            helpText="displaykey.Java.PhoneUtil.Example.ToolTip(gw.api.util.PhoneUtil.getDefaultPhoneCountryCode(), gw.api.util.PhoneUtil.getExampleNumberWithExtension(gw.api.util.PhoneUtil.getDefaultPhoneCountryCode()))"
+            id="Phone"
+            label="displaykey.Web.Account.Locations.Phone"
+            value="searchCriteria.PrimaryInsuredPhone"/>
+          <InputSetRef
+            def="GlobalContactNameInputSet(new gw.search.BasicNameOwner(policyNameAdapter))"
+            mode="gw.api.name.NameLocaleSettings.PCFMode"/>
+          <CheckBoxInput
+            editable="true"
+            id="CompanyNameExact"
+            label="displaykey.Web.AccountSearch.CompanyNameExactMatch"
+            required="false"
+            value="searchCriteria.CompanyNameExact"/>
+          <Input
+            editable="true"
+            id="TaxID"
+            label="displaykey.Web.PolicySearch.OfficialID"
+            required="false"
+            value="searchCriteria.NameCriteria.OfficialId"/>
+          <InputDivider/>
+          <Input
+            editable="true"
+            id="AccountNumber"
+            label="displaykey.Web.PolicySearch.AccountNumber"
+            required="false"
+            value="searchCriteria.AccountNumber"/>
+          <Input
+            editable="true"
+            id="PolicyNumberCriterion"
+            label="displaykey.Web.PolicySearch.PolicyNumber"
+            required="false"
+            value="searchCriteria.PolicyNumber"
+            visible="searchCriteria.SearchObjectType != &quot;Submission&quot;"/>
+          <Input
+            editable="true"
+            id="SubmissionNumber"
+            label="displaykey.Web.PolicySearch.SubmissionNumber"
+            required="false"
+            value="searchCriteria.JobNumber"
+            visible="searchCriteria.SearchObjectType == &quot;Submission&quot;"/>
+          <!-- Search configurability OOTB fields -->
+          <Input
+            editable="true"
+            id="AssignedRisk"
+            label="displaykey.Web.PolicySearch.AssignedRisk"
+            required="false"
+            value="searchCriteria.AssignedRisk"/>
+          <RangeInput
+            editable="true"
+            id="UWCompany"
+            label="displaykey.Web.PolicySearch.UWCompany"
+            required="false"
+            value="searchCriteria.UWCompany"
+            valueRange="uwCompanies"/>
+          <TypeKeyInput
+            editable="true"
+            id="RejectReason"
+            label="displaykey.Web.PolicySearch.DeclinationReason"
+            required="false"
+            value="searchCriteria.RejectReason"
+            visible="searchCriteria.SearchObjectType == &quot;Submission&quot;"/>
+          <TypeKeyInput
+            editable="true"
+            id="NonRenewalCode"
+            label="displaykey.Web.PolicySearch.NonRenewalCode"
+            required="false"
+            value="searchCriteria.NonRenewalCode"
+            visible="searchCriteria.SearchObjectType == &quot;Renewal&quot;"/>
+          <TypeKeyInput
+            editable="true"
+            id="AuditMethod"
+            label="displaykey.Web.PolicyFile.Audits.AuditMethod"
+            required="false"
+            value="searchCriteria.AuditInfoCriteria.ActualAuditMethod"
+            visible="searchCriteria.SearchObjectType == &quot;FinalAudit&quot; or searchCriteria.SearchObjectType == &quot;PremiumReport&quot;"/>
+        </InputColumn>
+        <InputColumn>
+          <RangeInput
+            editable="true"
+            id="ProductName"
+            label="displaykey.Web.PolicySearch.ProductName"
+            optionLabel="helper.getUniqueProductDisplayName(VALUE)"
+            value="searchCriteria.Product"
+            valueRange="products"/>
+          <Input
+            editable="true"
+            id="State"
+            label="displaykey.Web.PolicySearch.Jurisdiction"
+            required="false"
+            value="searchCriteria.State"/>
+          <OrgInput
+            editable="not User.util.CurrentUser.ExternalUser"
+            id="Producer"
+            label="displaykey.Web.PolicySearch.Agency"
+            pickLocation="OrganizationSearchPopup.push(null, true)"
+            required="false"
+            value="searchCriteria.Producer"/>
+          <ProducerCodeInput
+            editable="true"
+            id="ProducerCode"
+            label="displaykey.Web.PolicySearch.Code"
+            pickLocation="ProducerCodeSearchPopup.push()"
+            required="false"
+            value="searchCriteria.ProducerCode"/>
+          <InputDivider/>
+          <!-- Date criteria -->
+          <InputSet
+            visible="searchCriteria.SearchObjectType != &quot;Policy&quot;">
+            <RangeInput
+              editable="true"
+              id="DateFieldToSearchType"
+              label="displaykey.Web.PolicySearch.Date.Field"
+              value="searchCriteria.DateCriteria.DateFieldToSearch"
+              valueRange="searchCriteria.DateFieldsSearchType"/>
+            <DateCriterionChoiceInput
+              editable="true"
+              id="DateRangeForJobSearch"
+              label="displaykey.Web.PolicySearch.Date"
+              value="searchCriteria.DateCriteria"
+              visible="true"/>
+          </InputSet>
+          <DateInput
+            editable="true"
+            id="AsOfDate"
+            label="displaykey.Web.PolicySearch.AsOfDate"
+            value="searchCriteria.AsOfDate"
+            visible="searchCriteria.SearchObjectType == &quot;Policy&quot;"/>
+        </InputColumn>
+        <InputFooterSection>
+          <InputSetRef
+            def="SearchAndResetInputSet()"/>
+        </InputFooterSection>
+      </DetailViewPanel>
+      <PanelRef
+        def="PolicySearch_ResultsLV(searchResult)"
+        mode="searchCriteria.ResultsLVMode">
+        <TitleBar
+          appendListViewPaging="true"
+          title="displaykey.Web.PolicySearch.Results"/>
+        <Toolbar
+          id="SearchResultsToolbar">
+          <ToolbarButton
+            action="gw.api.print.ListViewPrintOptionPopupAction.printListViewOnlyWithOptions( &quot;PolicySearch_ResultsLV&quot; )"
+            id="PrintMe"
+            label="displaykey.Web.PolicySearch.Export"/>
+          <CheckedValuesToolbarButton
+            flags="all openUserRoleOwner"
+            id="ReassignmentButton"
+            iterator="PolicySearch_ResultsLV.PolicyPeriodSummaryIterator"
+            label="displaykey.Web.Team.Reassign"
+            visible="perm.System.userroleassignmentbulkassign">
+            <CheckedValuesMenuItemIterator
+              elementName="typekeyMenuItem"
+              id="RoleMenuItemIterator"
+              value="gw.assignment.AssignmentUtil.getMultipleAssignmentRoles(gw.assignment.AssignmentUtil.getMultipleAssignmentCategory(searchCriteria.SearchObjectType))">
+              <CheckedValuesMenuItem
+                allCheckedRowsAction="gw.web.admin.SearchUIHelper.jumpToAssignUserRoleOwnerPopup(searchCriteria, CheckedValues.cast(PolicyPeriodSummary), typekeyMenuItem)"
+                id="AssignmentMenuItem"
+                label="typekeyMenuItem.DisplayName"/>
+            </CheckedValuesMenuItemIterator>
+          </CheckedValuesToolbarButton>
+        </Toolbar>
+      </PanelRef>
+    </SearchPanel>
+  </PanelSet>
+</PCF>

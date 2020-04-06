@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="DataFlowMaskDetailDV">
+    <Require
+      name="mask"
+      type="EntityFlowMaskData"/>
+    <Variable
+      initialValue="mask.New"
+      name="skipValidationAfterTypeChange"
+      type="boolean"/>
+    <InputColumn>
+      <Label
+        label="displaykey.Web.Admin.DataFlowMasksDV.Mask"/>
+      <Input
+        editable="true"
+        id="Name"
+        label="displaykey.Web.Admin.DataFlowMaskDetailDV.Name"
+        requestValidationExpression="gw.web.admin.flowmeta.DataFlowMaskDetailDVUIHelper.validateName(mask, VALUE)"
+        required="true"
+        value="mask.Name"/>
+      <RangeInput
+        editable="mask.New"
+        id="Type"
+        label="displaykey.Web.Admin.DataFlowMaskDetailDV.EntityType"
+        optionLabel="gw.exportimport.ExportLocaleUtil.lookupEntityTypeDisplayName(VALUE)"
+        required="true"
+        value="mask.EntityTypeName"
+        valueRange="gw.exportimport.EntityInfo.Registry.getRegisteredEntityTypes().map(\ t -&gt; t.Name)">
+        <PostOnChange
+          onChange="skipValidationAfterTypeChange = true"/>
+      </RangeInput>
+      <Label
+        hideIfEditable="true"
+        label="displaykey.Web.Admin.DataFlowMaskDetailDV.IncludedColumns"/>
+      <InputIterator
+        elementName="id"
+        hideIfEditable="true"
+        id="ReadOnlyColumns"
+        value="mask.AllIncludedColumnNames">
+        <ContentInput>
+          <Link
+            id="RequiredColumnId"
+            label="gw.api.domain.DisplayKey.getDisplayKeyValue(id)"/>
+        </ContentInput>
+      </InputIterator>
+      <Label
+        hideIfReadOnly="true"
+        label="displaykey.Web.Admin.DataFlowMaskDetailDV.RequiredColumns"/>
+      <InputIterator
+        elementName="id"
+        hideIfReadOnly="true"
+        value="mask.RequiredColumnNames">
+        <ContentInput>
+          <Link
+            id="RequiredColumnId"
+            label="gw.api.domain.DisplayKey.getDisplayKeyValue(id)"/>
+        </ContentInput>
+      </InputIterator>
+      <Label
+        hideIfReadOnly="true"
+        label="displaykey.Web.Admin.DataFlowMaskDetailDV.AvailableColumns"/>
+      <RangeInput
+        editable="true"
+        hideIfReadOnly="true"
+        id="IncludedColumns"
+        numRows="15"
+        optionLabel="gw.api.domain.DisplayKey.getDisplayKeyValue(VALUE)"
+        requestValidationExpression="gw.web.admin.flowmeta.DataFlowMaskDetailDVUIHelper.validateSelectedList(skipValidationAfterTypeChange, mask, VALUE)"
+        shuttleList="true"
+        value="mask.SelectedColumnNames"
+        valueRange="mask.SelectableColumnNames"/>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

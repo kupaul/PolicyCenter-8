@@ -1,0 +1,227 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+
+  <xsd:element name="SolrSchemaMapping">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0" maxOccurs="1">
+        <xsd:element ref="Indexer" minOccurs="1" maxOccurs="1"/>
+        <xsd:element ref="Query" minOccurs="1" maxOccurs="1"/>
+        <xsd:element ref="QueryResult" minOccurs="1" maxOccurs="1"/>
+      </xsd:sequence>
+      <xsd:attribute name="version" type="xsd:integer" default="1"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!--
+        Indexer definition and related types
+  -->
+  <xsd:element name="Indexer">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="1" maxOccurs="1">
+        <xsd:element ref="Root" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+          <xsd:element ref="IndexField"/>
+        </xsd:sequence>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="IndexField">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+        <xsd:element ref="DataProperty"/>
+      </xsd:sequence>
+      <xsd:attribute name="field" type="xsd:string" use="required"/>
+      <xsd:attribute name="mapper" type="xsd:string" default="gw.solr.mapper.Copy"/>
+      <xsd:attribute name="key" type="xsd:boolean" default="false"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Root">
+    <xsd:complexType>
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="type" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="DataProperty">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+         <xsd:element ref="DataProperty"/>
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:string"/>
+      <xsd:attribute name="property" type="xsd:string"/>
+      <xsd:attribute name="path" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <!--
+        Query definition and related types
+  -->
+  <xsd:element name="Query">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="1" maxOccurs="1">
+        <xsd:element ref="Root" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="Group" minOccurs="0" maxOccurs="1"/>
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+          <xsd:choice>
+            <xsd:element ref="QueryTerm"/>
+          </xsd:choice>
+        </xsd:sequence>
+        <xsd:element ref="QueryFilter" minOccurs="0" maxOccurs="1"/>
+      </xsd:sequence>
+      <xsd:attribute name="applyFilterOnEmptyQuery" type="xsd:boolean" default="false"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="Group">
+    <xsd:complexType>
+      <xsd:attribute name="enabled" type="xsd:boolean" default="true"/>
+      <xsd:attribute name="field" type="xsd:string" use="required"/>
+      <xsd:attribute name="limit" type="xsd:integer" default="1"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="QueryTerm">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="1" maxOccurs="1">
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+          <xsd:element ref="DataProperty"/>
+        </xsd:sequence>
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+          <xsd:element ref="QueryField"/>
+        </xsd:sequence>
+      </xsd:sequence>
+      <xsd:attribute name="type" type="QueryType" use="required"/>
+      <xsd:attribute name="phraseSlop" type="xsd:integer" use="optional"/>
+      <xsd:attribute name="encoded" type="xsd:boolean" default="true"/>
+      <xsd:attribute name="mapper" type="xsd:string" default="gw.solr.mapper.Copy"/>
+      <xsd:attribute name="tagger" type="xsd:string" default=""/>
+      <xsd:attribute name="encoder" type="xsd:string" default="gw.solr.mapper.query.DefaultEncoder"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:simpleType name="QueryType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="term"/>
+      <xsd:enumeration value="subquery"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <xsd:element name="QueryFilter">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+        <xsd:choice>
+          <xsd:element ref="FilterTerm"/>
+          <xsd:element ref="OrFilter"/>
+          <xsd:element ref="AndFilter"/>
+          <xsd:element ref="NotFilter"/>
+        </xsd:choice>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="NotFilter">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="1" maxOccurs="1">
+        <xsd:choice>
+          <xsd:element ref="FilterTerm"/>
+          <xsd:element ref="OrFilter"/>
+          <xsd:element ref="AndFilter"/>
+          <xsd:element ref="NotFilter"/>
+        </xsd:choice>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="AndFilter">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+        <xsd:choice>
+          <xsd:element ref="FilterTerm"/>
+          <xsd:element ref="OrFilter"/>
+          <xsd:element ref="AndFilter"/>
+          <xsd:element ref="NotFilter"/>
+        </xsd:choice>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="OrFilter">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+        <xsd:choice>
+          <xsd:element ref="FilterTerm"/>
+          <xsd:element ref="OrFilter"/>
+          <xsd:element ref="AndFilter"/>
+        </xsd:choice>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="FilterTerm">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="1" maxOccurs="1">
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+          <xsd:element ref="DataProperty"/>
+        </xsd:sequence>
+        <xsd:sequence minOccurs="1" maxOccurs="unbounded">
+          <xsd:element ref="QueryField"/>
+        </xsd:sequence>
+      </xsd:sequence>
+      <xsd:attribute name="encoded" type="xsd:boolean" default="true"/>
+      <xsd:attribute name="mapper" type="xsd:string" default="gw.solr.mapper.Copy"/>
+      <xsd:attribute name="encoder" type="xsd:string" default="gw.solr.mapper.query.DefaultEncoder"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="QueryField">
+    <xsd:complexType>
+      <xsd:attribute name="field" type="xsd:string" use="required"/>
+      <xsd:attribute name="match" type="MatchType" default="exact"/>
+      <xsd:attribute name="boost" type="xsd:string"/>
+      <xsd:attribute name="phraseQuery" type="xsd:boolean" default="false"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:simpleType name="MatchType">
+    <xsd:restriction base="xsd:string">
+      <xsd:enumeration value="exact"/>
+      <xsd:enumeration value="prefix"/>
+      <xsd:enumeration value="range"/>
+      <xsd:enumeration value="phonetic"/>
+      <xsd:enumeration value="synonym"/>
+      <xsd:enumeration value="custom"/>
+    </xsd:restriction>
+  </xsd:simpleType>
+
+  <!--
+        QueryResult definition and related types
+  -->
+  <xsd:element name="QueryResult">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="ResultProperty"/>
+      </xsd:sequence>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ResultProperty">
+    <xsd:complexType>
+      <xsd:sequence minOccurs="1" maxOccurs="1">
+        <xsd:element ref="ResultField" minOccurs="1" maxOccurs="unbounded"/>
+        <xsd:element ref="DataProperty" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:sequence>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="mapper" type="xsd:string" default="gw.solr.mapper.Copy"/>
+    </xsd:complexType>
+  </xsd:element>
+
+  <xsd:element name="ResultField">
+    <xsd:complexType>
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <xsd:attribute name="key" type="xsd:string" use="optional"/>
+      <xsd:attribute name="sortFieldName" type="xsd:string" use="optional"/>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

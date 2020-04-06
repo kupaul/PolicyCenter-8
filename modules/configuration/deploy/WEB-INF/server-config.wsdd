@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<deployment name="defaultClientConfig"
+  xmlns="http://xml.apache.org/axis/wsdd/"
+  xmlns:java="http://xml.apache.org/axis/wsdd/providers/java"
+  xmlns:handler="http://xml.apache.org/axis/wsdd/providers/handler">
+
+  <globalConfiguration>
+    <parameter name="disablePrettyXML" value="true"/>
+    <requestFlow>
+      <handler type="java:com.guidewire.pl.system.integration.plugins.SOAPPluginOutboundHandler"/>
+      <handler type="java:com.guidewire.pl.system.webservices.SOAPAuthAndContextHandler"/>
+      <!-- uncomment this if you want the SOAP monitor -->
+      <!--
+      <handler type="java:org.apache.axis.handlers.SOAPMonitorHandler"/>
+      -->
+    </requestFlow>
+
+    <responseFlow>
+      <handler type="java:com.guidewire.pl.system.webservices.SOAPAuthAndContextHandler"/>
+      <!-- uncomment this if you want the SOAP monitor -->
+      <!--
+      <handler type="java:org.apache.axis.handlers.SOAPMonitorHandler"/>
+      -->
+    </responseFlow>
+    <parameter name="axis.servicesPath" value="/soap/"/>
+  </globalConfiguration>
+
+  <handler type="java:org.apache.axis.handlers.http.URLMapper" name="URLMapper"/>
+  <handler type="java:org.apache.axis.transport.local.LocalResponder" name="LocalResponder"/>
+
+  <transport name="http">
+    <requestFlow>
+      <handler type="URLMapper"/>
+    </requestFlow>
+  </transport>
+
+  <transport name="local">
+    <responseFlow>
+      <handler type="LocalResponder"/>
+    </responseFlow>
+  </transport>
+</deployment>

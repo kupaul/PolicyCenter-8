@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity xmlns="http://guidewire.com/datamodel" desc="An exposure that can be covered." displayName="Exposure" effDatedBranchType="PolicyPeriod" entity="GLExposure" exportable="true" loadable="false" platform="false" subpackage="lob.gl" table="glexposure" type="effdated">
+  <column desc="Basis amount of exposure if it's a scalable amount" name="ScalableBasisAmount" nullok="true" scalable="true" type="nonnegativeinteger"/>
+  <column desc="Basis amount of exposure if it's not a scalable amount" name="FixedBasisAmount" nullok="true" type="positiveinteger"/>
+  <column desc="Description of exposure" name="Description" nullok="true" type="shorttext"/>
+  <column desc="The basis amount deteremined by an auditor." name="AuditedBasis" nullok="true" type="positiveinteger"/>
+  <foreignkey columnName="ClassCodeID" desc="Class code of exposure" fkentity="GLClassCode" getterScriptability="hidden" name="ClassCodeInternal" nullok="true" setterScriptability="hidden"/>
+  <foreignkey fkentity="GeneralLiabilityLine" name="GLLine" nullok="false"/>
+  <foreignkey desc="Location of exposure" exportable="true" fkentity="PolicyLocation" name="Location" nullok="false"/>
+  <array arrayentity="GLCovExposureCost" cascadeDelete="true" name="Costs"/>
+  <checkconstraint desc="Either ScalableBasisAmount or FixedBasisAmount, but not both, must be non-null." predicate="(ScalableBasisAmount IS NOT NULL AND FixedBasisAmount IS NULL) OR (ScalableBasisAmount IS NULL AND FixedBasisAmount IS NOT NULL)"/>
+</entity>

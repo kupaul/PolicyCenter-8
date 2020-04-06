@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="RegionDetailDV"
+    mode="CA">
+    <Require
+      name="Region"
+      type="Region"/>
+    <Variable
+      initialValue="null"
+      name="zoneType"
+      type="ZoneType"/>
+    <Variable
+      initialValue="null"
+      name="linkedZone"
+      type="Zone"/>
+    <Variable
+      initialValue="typekey.Country.TC_CA"
+      name="country"
+      type="Country"/>
+    <InputColumn>
+      <RangeInput
+        editable="true"
+        hideIfReadOnly="true"
+        id="zoneType"
+        label="displaykey.Web.Admin.RegionDetailDV.RegionType"
+        value="zoneType"
+        valueRange="gw.api.admin.BaseAdminUtil.getRegionZoneTypes(country)">
+        <PostOnChange
+          onChange="linkedZone=null;Region.filterCriteria.LinkedZone=null;                         Region.filterCriteria.ZoneType=zoneType"/>
+      </RangeInput>
+      <ListViewInput
+        def="RegionZonesLV(Region, zoneType, country)"
+        editable="true"
+        hideIfReadOnly="true"
+        label="displaykey.Web.Admin.RegionsLV.Zones"
+        visible="Region.filterCriteria.ZoneType==&quot;fsa&quot;">
+        <Toolbar
+          visible="true">
+          <IteratorButtons
+            iterator="RegionZonesLV.RegionZonesLV"/>
+        </Toolbar>
+      </ListViewInput>
+      <!-- filter for cities, filter on province before showing
+           shuttlelist -->
+      <RangeInput
+        editable="true"
+        hideIfReadOnly="true"
+        id="province"
+        label="displaykey.Java.Admin.Regions.SelectProvince"
+        value="linkedZone"
+        valueRange="Zone.finder.findZones(country,typekey.ZoneType.TC_PROVINCE)"
+        visible="Region.filterCriteria.ZoneType == &quot;city&quot;">
+        <PostOnChange
+          onChange="Region.filterCriteria.LinkedZone=linkedZone"/>
+      </RangeInput>
+      <!-- TODO: change this once indexed properties are supported  shuttle-list for zone selection.
+           used here for counties,provinces,states and cities
+           not visible if applicable filter has not been selected -->
+      <RangeInput
+        editable="true"
+        hideIfReadOnly="true"
+        id="ZoneInput"
+        label="displaykey.Web.Admin.RegionDetailDV.Zones"
+        numRows="10"
+        shuttleList="true"
+        value="Region.ZoneCodes"
+        valueRange="Zone.finder.findZoneCodes(country,Region.filterCriteria.ZoneType,Region.filterCriteria.LinkedZone)"
+        visible="!(Region.filterCriteria.ZoneType==null || Region.filterCriteria.ZoneType==&quot;fsa&quot;                   || (Region.filterCriteria.ZoneType == &quot;city&quot; and Region.filterCriteria.LinkedZone==null))"/>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

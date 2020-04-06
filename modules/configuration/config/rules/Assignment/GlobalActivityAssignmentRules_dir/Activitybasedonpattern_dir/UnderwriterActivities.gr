@@ -1,0 +1,36 @@
+package rules.Assignment.GlobalActivityAssignmentRules_dir.Activitybasedonpattern_dir
+
+@gw.rules.RuleName("Underwriter Activities")
+internal class UnderwriterActivities {
+  static function doCondition(activity : entity.Activity) : boolean {
+    
+/*start00rule*/
+return activity.ActivityPattern == ActivityPattern.finder.getActivityPatternByCode("approve_cancellation") or
+activity.ActivityPattern == ActivityPattern.finder.getActivityPatternByCode("approve_general") or
+activity.ActivityPattern == ActivityPattern.finder.getActivityPatternByCode("approve_submission") or
+activity.ActivityPattern == ActivityPattern.finder.getActivityPatternByCode("approve_policy_change") or
+activity.ActivityPattern == ActivityPattern.finder.getActivityPatternByCode("open_eval_issue")
+
+
+// Etc.
+/*end00rule*/
+
+  }
+
+  static function doAction(activity : entity.Activity, actions : gw.rules.Action) {
+
+/*start00rule*/
+if( activity.Job != null ) {
+  if (activity.assignByJobRole( "Underwriter" ))
+  {
+    actions.exit()
+  }
+} else {
+  if( activity.assignByContainerRole( "Underwriter" ) ) {
+    actions.exit()
+  }
+}
+/*end00rule*/
+
+  }
+}

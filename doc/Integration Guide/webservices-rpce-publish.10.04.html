@@ -1,0 +1,416 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Writing Web Services that Use Entities</title>
+    <link rel="StyleSheet" href="css/webservices-rpce-publish.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-webservices.html#3650609">Web Services</a> : <a class="WebWorks_Breadcrumb_Link" href="webservices-rpce-publish.10.01.html#3650609">Publishing Web Services (RPCE)</a> : Writing Web Services that Use Entities</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="3650609">Writing Web Services that Use Entities</a></h3>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="3647544">RPCE web services are deprecated. Convert existing RPCE code to WS-I web services.</a></div>
+      <div class="B_-_Body"><a name="3553204">This section assumes the reader understands public&nbsp;IDs and their role in the PolicyCenter data model. For details, see </a><a href="javascript:WWHClickedPopup('integration', 'webservices-rpce-publish.10.11.html#3559812', '');" title="Public IDs and RPCE Web Services">“Public IDs and RPCE Web Services”</a>. That topic also covers information regarding special issues with writing SOAP client code using public IDs.</div>
+      <h4 class="H2_-_Heading_2"><a name="3390746">Querying for Entity Data in Your Web Service</a></h4>
+      <div class="B_-_Body"><a name="3396516">Real integration code must perform complex tasks like querying the database for Guidewire entities in the database. For example, you might want to perform tasks like:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3389749">An API to get public IDs for certain entities that match a certain query. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3389806">An API to get a single entity by its public ID</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3389751">The following example has two methods:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3389752">One method finds all </a><span class="cv_-_computer_voice">Address</span> entities matching a certain postal code and returns a list of public ID for the matching data. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3443753">One method gets an </a><span class="cv_-_computer_voice">Address</span> entity by its public ID and returns the entire entity. Address entities are small. For some entities, full entity is very large including all subobjects.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3443754">Always test if your database queries potentially return too much data. If they do, throw exceptions or return partial data and set a flag, whichever is more appropriate for your integration point.</a></div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="3406061">Guidewire strongly recommends error checking, bounds checking, and checking for situations where too many results create memory errors. Follow the example of error checking in the example, which checks for too many results.</a></div>
+      <div class="B_-_Body"><a name="3389754">Add this example class in the </a><span class="cv_-_computer_voice">example</span> package in Guidewire Studio to use it:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="3435614">package example</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435615">uses gw.api.webservice.exception.SOAPException</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435616">uses java.util.ArrayList</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435617">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435618">@WebService</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435620">class ExampleAPI {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435621">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435622">&nbsp;&nbsp;// Get all address public IDs that match a certain query (in this case, by postal code)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3436149">&nbsp;&nbsp;@Throws(SOAPException, "If too many addresses match the given postal code")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435623">&nbsp;&nbsp;public function getAddressPublicIDs(posCode : String) : String[] {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435624">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435625">&nbsp;&nbsp;&nbsp;&nbsp;var q = find( a in Address where a.PostalCode == posCode)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435626">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435627">&nbsp;&nbsp;&nbsp;&nbsp;// You must do error checking for large data sets so you do not</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435628">&nbsp;&nbsp;&nbsp;&nbsp;// try to send too much data across the network or try to serialize</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435629">&nbsp;&nbsp;&nbsp;&nbsp;// too much data on the server.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435630">&nbsp;&nbsp;&nbsp;&nbsp;if (q.getCount() &gt; 1000) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435631">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw new SOAPException("Integration exception: too many addresses to return.")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435632">&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435633">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435634">&nbsp;&nbsp;&nbsp;&nbsp;var newList = new ArrayList&lt;String&gt;();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435636">&nbsp;&nbsp;&nbsp;&nbsp;for( oneAddress in q ) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435638">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var summary = (oneAddress as String)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435639">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;print("Adding to SOAP results.. " + summary)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435641">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;newList.add( oneAddress.PublicID )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435642">&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435643">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435644">&nbsp;&nbsp;&nbsp;&nbsp;return newList</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435645">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3621464">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435646">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435647">&nbsp;&nbsp;// Get an entire Address by its public ID. </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3621469">&nbsp;&nbsp;// The return value has the static type = Address.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435648">&nbsp;&nbsp;public function getAddress(publicID : String) : Address {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435649">&nbsp;&nbsp;&nbsp;&nbsp;return Address(publicID)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3435650">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3621459">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3621461">&nbsp;</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3435609">}</a></PRE>
+      <div class="B_-_Body"><a name="3406045">For a detailed example of testing a web service that commits entity changes, see </a><a href="javascript:WWHClickedPopup('integration', 'webservices-rpce-publish.10.05.html#3395304', '');" title="Testing Your RPCE Web Service With soap.local Namespace">“Testing Your RPCE Web Service With soap.local Namespace”</a>.</div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="3621966">Avoid calling locally-hosted SOAP APIs from within a plugin or the rules engine in production systems. Be careful about any SOAP calls to the same server. If the SOAP API hosted locally modifies entity data and commits the bundle, the current transaction does not always detect and reload local data. Instead, refactor your code to avoid this case. For example, write a Gosu class that performs a similar function as the web service but that does not commit the bundle. This type of refactoring also results in higher server performance. If you have questions about how to convert some particular use locally-hosted SOAP APIs from plugins or rules, contact Customer Support. This is true for all types of local loopback SOAP calls to the same server. This includes </a><span class="cv_-_computer_voice">soap.local.*</span> objects, the SOAP client Java classes from Java plugins, and Studio-registered web services that call the same server as the client. </div>
+      <h4 class="H2_-_Heading_2"><a name="3621968">Committing Entity Data in Your Web Service</a></h4>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="3561416">The following information applies only to RPCE web services, not WS-I web services</a></div>
+      <div class="B_-_Body"><a name="3561417">You may need to use database transactions APIs if you design RPCE web services that take parameters that you must later commit to the database. You may need to use other APIs if your RPCE web service looks up entity data in the database and make database changes. The full set of information is in </a><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.01.html#1456387', '');" title="Bundles and Database Transactions">“Bundles and Database Transactions” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.01.html#1456387', '');" title="Bundles and Database Transactions">Gosu Reference Guide</a></span>. </div>
+      <div class="B_-_Body"><a name="3561422">A </a><span class="e_-_emphasis">bundle</span> is a group of Guidewire entities, grouped together so they save to the database together. You can get the current transaction if there is one by calling <span class="cv_-_computer_voice">gw.transaction.Transaction.getCurrent()</span>.</div>
+      <div class="B_-_Body"><a name="3561423">The most important things to know about changing entity data in your RPCE web service as follows:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3561424">When a web service client calls your RPCE web service, the system sets up a bundle automatically.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3561425">Get the current bundle by calling </a><span class="cv_-_computer_voice">gw.transaction.Transaction.getCurrent()</span>. The current bundle is the bundle setup for your code. You can add entities to this writable bundle. For example, add read-only entities to this bundle.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3561426">If you have a reference to an entity instance, get its bundle as the </a><span class="ps_-_parameter_in_code_snippets">object</span><span class="cv_-_computer_voice">.bundle</span> property. However, generally speaking use <span class="cv_-_computer_voice">gw.transaction.Transaction.getCurrent()</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3561427">Any objects serialized into the RPCE web service as arguments to your web service are already in the current bundle. You do not need to add them to the current transaction.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3561428">No data is automatically commits to the database after your RPCE web service completes. If you want the existing transaction (including serialized data) to commit to the database you must do so manually by calling the </a><span class="cv_-_computer_voice">commit</span> method on the bundle.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3561429">If you query the database, entity instance query results are initially read-only. You must add them to the current writable transaction to modify the entities. Add them by calling the following code:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CF_-_Code_First_Line"><a name="3561430">e = gw.transaction.Transaction.getCurrent().add(e)</a></PRE>
+      <div class="LP_-_List_Para"><a name="3561589">You must save the return result of the </a><span class="cv_-_computer_voice">add</span> method, which is a clone of the object. It is best to reuse the variable if possible to avoid referencing the original entity instance reference. See <a href="javascript:WWHClickedPopup('gosu', 'transactions.22.04.html#1611659', '');" title="Adding Entity Instances to Bundles">“Adding Entity Instances to Bundles” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.04.html#1611659', '');" title="Adding Entity Instances to Bundles">Gosu Reference Guide</a></span>.</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3561431">You can create an entirely new bundle to encapsulate a task in a Gosu block. A block is an in-line Gosu function contained in other Gosu code. See </a><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.11.html#1634152', '');" title="Running Code in an Entirely New Bundle">“Running Code in an Entirely New Bundle” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.11.html#1634152', '');" title="Running Code in an Entirely New Bundle">Gosu Reference Guide</a></span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="3562167">New entity instances by default are in the new bundle because the current bundle is set to the new bundle within your Gosu block. You can use the no-argument constructor, for example:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="3562587">var a = new Address()</a></div>
+      <div class="LP_-_List_Para"><a name="3562580">However, for database query results, you must add found entity instances to the new writable bundle, as mentioned previously. You must save the return result of the </a><span class="cv_-_computer_voice">add</span> method, which is a clone of the object. It is best to reuse the variable if possible to avoid referencing the original entity instance reference. See <a href="javascript:WWHClickedPopup('gosu', 'transactions.22.04.html#1611659', '');" title="Adding Entity Instances to Bundles">“Adding Entity Instances to Bundles” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.04.html#1611659', '');" title="Adding Entity Instances to Bundles">Gosu Reference Guide</a></span>.</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3561439">There may be cases where RPCE web service method parameters include entities that you do not want to commit but you make other data changes that must commit. If so, create an entirely new bundle and explicitly add entities to that group. See </a><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.11.html#1634152', '');" title="Running Code in an Entirely New Bundle">“Running Code in an Entirely New Bundle” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.11.html#1634152', '');" title="Running Code in an Entirely New Bundle">Gosu Reference Guide</a></span>. Simply let the application commit the new bundle created in <span class="cv_-_computer_voice">runWithNewBundle</span>. If you use <span class="cv_-_computer_voice">runWithNewBundle</span>, do not commit the default (current) bundle for the RPCE web service.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3648027">The </a><span class="cv_-_computer_voice">config.xml</span> configuration parameter <span class="cv_-_computer_voice">UseSafeBundleForWebServiceOperations</span> changes the behavior of bundle commits in RPC-Encoded web services published on this server. The default value is <span class="cv_-_computer_voice">true</span>. If set to <span class="cv_-_computer_voice">false</span>, the application ignores bean version conflicts as it commits a bundle. If set to <span class="cv_-_computer_voice">true</span>, the application detects (and does not ignore) bean version conflicts. If you set this parameter to <span class="cv_-_computer_voice">true</span>, it is possible for Gosu to throw a <span class="cv_-_computer_voice">ConcurrentDataChangeException</span> exception. This exception can happen if another thread or cluster node modified this entity as it was loaded from the database. If this error condition occurs, then the SOAP client receives a <span class="cv_-_computer_voice">SOAPRetryableException</span>. Guidewire strongly recommends that web service clients catch all retryable exceptions such as this and retry the SOAP API call.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="3647969">Carefully consider how to set the configuration parameter </a><span class="cv_-_computer_voice">UseSafeBundleForWebServiceOperations.</span></div>
+      <div class="B_-_Body"><a name="3561444">The following simple example RPCE web service takes an entity instance:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="3561445">uses gw.transaction.Transaction</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561446">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561447">@WebService</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561448">class AddressExampleAPI {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3621491">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561449">&nbsp;&nbsp;public function insertAddress(newAddress : Address) : String {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561450">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561451">&nbsp;&nbsp;&nbsp;&nbsp;// commit all objects in the current bundle, which by default includes RPCE operation arguments</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561452">&nbsp;&nbsp;&nbsp;&nbsp;gw.transaction.Transaction.getCurrent().commit() </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line" style="font-style: normal; font-variant: normal; font-weight: bold; text-transform: none; vertical-align: baseline"><a name="3561453">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561454">&nbsp;&nbsp;&nbsp;&nbsp;// note: for SOAP API implementations, bundle includes incoming entities</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561455">&nbsp;&nbsp;&nbsp;&nbsp;// &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;deserialized with the request.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561456">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561457">&nbsp;&nbsp;&nbsp;&nbsp;return newAddress.PublicID</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561458">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3561459">}</a></PRE>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="3561460">Be extremely careful only to commit entity instance changes at appropriate times or serious data integrity errors occur. If an entity instance’s changes commit to the database, changes can no longer roll back if errors happen in related code. Typically, errors must undo all related database changes. For example, Gosu code in rule sets must never commit data explicitly since the application automatically commits the bundle automatically only after all rule sets and validation successfully runs.</a></div>
+      <div class="B_-_Body"><a name="3561461">The following example RPCE web service gets a user and adds roles to it. Finally, it commits the result:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="3561463">/**</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561464">* Adds roles to a User.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561465">* If a role already belongs to the user, it is ignored.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561466">*</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561467">* @param userID The ID of the user</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561468">* @param roleIDs The public IDs of roles to be added.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561469">*/</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561470">&nbsp;&nbsp;@Throws(DataConversionException, "if the userID or roleID does not exist")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561471">&nbsp;&nbsp;@Throws(SOAPException, "")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561472">&nbsp;&nbsp;public function addRolesToUser(userPublicID : String, roleIDs : String[]) : String {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561473">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561474">&nbsp;&nbsp;&nbsp;&nbsp;var user = User( userPublicID )&nbsp;&nbsp;// This syntax finds the use with a specific ID.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561475">&nbsp;&nbsp;&nbsp;&nbsp;if (user == null){</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561476">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw new DataConversionException("No User exists with PublicID: " + userPublicID);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561477">&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561478">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561479">&nbsp;&nbsp;&nbsp;&nbsp;// Add the user to current bundle, the current database transaction.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561480">&nbsp;&nbsp;&nbsp;&nbsp;// This is always strictly required if you got the entity instance from a find() query!</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561481">&nbsp;&nbsp;&nbsp;&nbsp;// We get the return value of add() and it has a DIFFERENT value than before.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561482">&nbsp;&nbsp;&nbsp;&nbsp;// It is a copy in the new bundle!</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561483">&nbsp;&nbsp;&nbsp;&nbsp;user = Transaction.getCurrent().add( user );</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561484">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561485">&nbsp;&nbsp;&nbsp;&nbsp;if (roleIDs == null || roleIDs.length == 0){</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561486">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw new RequiredFieldException("Roles");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561487">&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561488">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561489">&nbsp;&nbsp;&nbsp;&nbsp;// Add in all the roles for the user.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561490">&nbsp;&nbsp;&nbsp;&nbsp;for (var roleId in roleIDs) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561491">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var role = loadRoleByIdOrThrow(roleId);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561492">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561493">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Pass an argument when creating a new entity instance with "new" to use a specific bundle.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561494">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var userRole = new UserRole();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561495">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561496">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;userRole.Role = role</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561497">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;user.addToRoles(userRole);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561498">&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561499">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561500">&nbsp;&nbsp;&nbsp;&nbsp;// Commit our bundle</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561501">&nbsp;&nbsp;&nbsp;&nbsp;Transaction.getCurrent().commit();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3561502">&nbsp;&nbsp;&nbsp;&nbsp;return userPublicID;</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3561503">&nbsp;&nbsp;} </a></PRE>
+      <div class="B_-_Body"><a name="3646659">The following example takes several arguments, gets the current bundle, then adds several entities based on function parameters. Finally, it commits the bundle to the database:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="3646660">uses gw.transaction.Transaction</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646661">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646662">@WebService</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646663">class Example2API {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646664">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646665">&nbsp;&nbsp;public function moveProducerCodeBetweenExistingAgencies(producerCodeID : String, </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646666">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fromAgencyID : String, toAgencyID : String) : boolean {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646667">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646668">    var bundle = Transaction.getCurrent()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646669">    </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646670">&nbsp;&nbsp;&nbsp;&nbsp;// Load entities.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646671">&nbsp;&nbsp;&nbsp;&nbsp;var prodCode : ProducerCode = bundle.loadByPublicId(ProducerCode, producerCodeID) as ProducerCode</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646672">&nbsp;&nbsp;&nbsp;&nbsp;var fromAgency : Organization = bundle.loadByPublicId(Organization, fromAgencyID) as Organization</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646673">&nbsp;&nbsp;&nbsp;&nbsp;var toAgency : Organization = bundle.loadByPublicId(Organization, toAgencyID) as Organization</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646674">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646675">&nbsp;&nbsp;&nbsp;&nbsp;// Add prodcode to new bundle -- duplicating + moving the object to writable group of entities.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646676">&nbsp;&nbsp;&nbsp;&nbsp;// Note it returns a NEW copy of the object. Be sure to use the return value of the add() method!</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646677">&nbsp;&nbsp;&nbsp;&nbsp;prodCode = bundle.add(prodCode)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646678">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646679">&nbsp;&nbsp;&nbsp;&nbsp;// The prodCode variable has a DIFFERENT value than before. It is a copy in the new bundle!</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646680">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646681">&nbsp;&nbsp;&nbsp;&nbsp;// [... MODIFY THE ENTITIES FURTHER IF DESIRED... ]</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646682">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646683">&nbsp;&nbsp;&nbsp;&nbsp;bundle.commit()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646684">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646685">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3646688">}</a></PRE>
+      <div class="B_-_Body"><a name="3406007">For more bundle and transaction API information, see </a><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.01.html#1456387', '');" title="Bundles and Database Transactions">“Bundles and Database Transactions” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.01.html#1456387', '');" title="Bundles and Database Transactions">Gosu Reference Guide</a></span>. This topic does not duplicate that topic’s information.</div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="3406021">For a detailed example of testing a web service that commits entity changes, see </a><a href="javascript:WWHClickedPopup('integration', 'webservices-rpce-publish.10.05.html#3395304', '');" title="Testing Your RPCE Web Service With soap.local Namespace">“Testing Your RPCE Web Service With soap.local Namespace”</a>.</div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="3544100">Avoid calling locally-hosted SOAP APIs from within a plugin or the rules engine in production systems. Be careful about any SOAP calls to the same server. If the SOAP API hosted locally modifies entity data and commits the bundle, the current transaction does not always detect and reload local data. Instead, refactor your code to avoid this case. For example, write a Gosu class that performs a similar function as the web service but that does not commit the bundle. This type of refactoring also results in higher server performance. If you have questions about how to convert some particular use locally-hosted SOAP APIs from plugins or rules, contact Customer Support. This is true for all types of local loopback SOAP calls to the same server. This includes </a><span class="cv_-_computer_voice">soap.local.*</span> objects, the SOAP client Java classes from Java plugins, and Studio-registered web services that call the same server as the client. </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    canEdit="true"
+    id="PCAssigneePickerPopup"
+    returnType="gw.api.assignment.Assignee"
+    title="displaykey.Web.AssigneePicker.Title">
+    <LocationEntryPoint
+      signature="PCAssigneePickerPopup(AssigneePicker : assignment.AssigneePicker)"/>
+    <Variable
+      name="AssigneePicker"
+      type="assignment.AssigneePicker"/>
+    <Screen
+      id="AssigneePickerScreen">
+      <SearchPanel
+        criteriaName="SearchCriteria"
+        resultsName="SearchResult"
+        search="SearchCriteria.performSearch()"
+        searchCriteria="createSearchCriteria()"
+        searchResultsType="gw.api.assignment.AssignmentSearchResult">
+        <PanelRef
+          def="AssignmentSearchDV(AssigneePicker.AllowedAssignmentSearchTypes as AssignmentSearchType[], SearchResult, SearchCriteria)"/>
+        <PanelRef
+          def="PCAssignmentUserLV(SearchResult.Users)"
+          visible="SearchCriteria.SearchType == &quot;User&quot;">
+          <Toolbar/>
+        </PanelRef>
+        <PanelRef
+          def="PCAssignmentGroupLV(SearchResult.Groups)"
+          visible="SearchCriteria.SearchType == &quot;Group&quot;">
+          <Toolbar/>
+        </PanelRef>
+        <PanelRef
+          def="PCAssignmentQueueLV(SearchResult.Queues)"
+          visible="SearchCriteria.SearchType == &quot;Queue&quot;">
+          <Toolbar/>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+    <Code><![CDATA[function createSearchCriteria() : assignment.AssignmentSearchCriteria {
+  var criteria = new assignment.AssignmentSearchCriteria()
+  var user = User.util.CurrentUser
+  if (user != null and user.ExternalUser) {
+    criteria.UserCriteria.Organization = user.Organization
+    criteria.GroupCriteria.Organization = user.Organization
+  }
+  criteria.GroupCriteria.ExcludeRootGroup = true
+  return criteria
+}]]></Code>
+  </Popup>
+</PCF>

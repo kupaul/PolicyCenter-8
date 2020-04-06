@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <!-- The CP Building Coverage requires its own CoverageInputSet because the valuation method impacts the
+    available choices for co-insurance. -->
+  <InputSet
+    id="CoverageInputSet"
+    mode="CPBldgStockCov"
+    visible="isCoverageAvailable()">
+    <Require
+      name="coveragePattern"
+      type="gw.api.productmodel.ClausePattern"/>
+    <Require
+      name="coverable"
+      type="Coverable"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="coverable as CPBuilding"
+      name="building"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="(coverable as CPBuilding).CPBldgStockCov"
+      name="cpBldgStockCov"
+      recalculateOnRefresh="true"/>
+    <HiddenInput
+      id="CovPatternDisplayName"
+      value="coveragePattern.DisplayName"/>
+    <InputGroup
+      allowToggle="coveragePattern.allowToggle(coverable)"
+      childrenVisible="coverable.getCoverageConditionOrExclusion(coveragePattern) != null"
+      id="CovPatternInputGroup"
+      label="coveragePattern.DisplayName"
+      onToggle="building.setCoverageConditionOrExclusionExists(coveragePattern, VALUE)">
+      <InputSetRef
+        def="CovTermDirectInputSet(building.CPBldgStockCov.CPBldgStockCovLimitTerm)"
+        id="CPBldgStockCovLimit"
+        visible="cpBldgStockCov.hasCovTerm(&quot;CPBldgStockCovLimit&quot;)"/>
+      <RangeInput
+        editable="true"
+        id="CPBldgStockCovCauseOfLoss"
+        label="building.CPBldgStockCov.CPBldgStockCovCauseOfLossTerm.DisplayName"
+        required="building.CPBldgStockCov.CPBldgStockCovCauseOfLossTerm.Pattern.Required"
+        value="building.CPBldgStockCov.CPBldgStockCovCauseOfLossTerm.Value"
+        valueRange="building.CPBldgStockCov.CPBldgStockCovCauseOfLossTerm?.Pattern.OrderedAvailableValues"
+        visible="cpBldgStockCov.hasCovTerm(&quot;CPBldgStockCovCauseOfLoss&quot;)">
+        <PostOnChange
+          onChange="building.createOrSyncCoverages()"/>
+      </RangeInput>
+      <BooleanRadioInput
+        editable="true"
+        id="CPBldgStockCovExcludeVandalism"
+        label="building.CPBldgStockCov.CPBldgStockCovExcludeVandalismTerm.Pattern.DisplayName"
+        required="building.CPBldgStockCov.CPBldgStockCovExcludeVandalismTerm.Pattern.Required"
+        value="building.CPBldgStockCov.CPBldgStockCovExcludeVandalismTerm.Value"
+        visible="cpBldgStockCov.hasCovTerm(&quot;CPBldgStockCovExcludeVandalism&quot;)"/>
+      <BooleanRadioInput
+        editable="true"
+        id="CPBldgStockCovExcludeSprinkler"
+        label="building.CPBldgStockCov.CPBldgStockCovExcludeSprinklerTerm.Pattern.DisplayName"
+        required="building.CPBldgStockCov.CPBldgStockCovExcludeSprinklerTerm.Pattern.Required"
+        value="building.CPBldgStockCov.CPBldgStockCovExcludeSprinklerTerm.Value"
+        visible="cpBldgStockCov.hasCovTerm(&quot;CPBldgStockCovExcludeSprinkler&quot;)"/>
+      <BooleanRadioInput
+        editable="true"
+        id="CPBldgStockCovExcludeTheft"
+        label="building.CPBldgStockCov.CPBldgStockCovExcludeTheftTerm.Pattern.DisplayName"
+        required="building.CPBldgStockCov.CPBldgStockCovExcludeTheftTerm.Pattern.Required"
+        value="building.CPBldgStockCov.CPBldgStockCovExcludeTheftTerm.Value"
+        visible="cpBldgStockCov.hasCovTerm(&quot;CPBldgStockCovExcludeTheft&quot;)"/>
+      <RangeInput
+        editable="openForEdit and gw.web.productmodel.ChoiceCovTermUtil.isEditable(building.CPBldgStockCov.CPBldgStockCovDeductibleTerm)"
+        id="CPBldgStockCovDeductible"
+        label="building.CPBldgStockCov.CPBldgStockCovDeductibleTerm.DisplayName"
+        required="building.CPBldgStockCov.CPBldgStockCovDeductibleTerm.Pattern.Required"
+        sortValueRange="false"
+        value="building.CPBldgStockCov.CPBldgStockCovDeductibleTerm.OptionValue"
+        valueRange="gw.web.productmodel.ChoiceCovTermUtil.getModelValueRange(building.CPBldgStockCov.CPBldgStockCovDeductibleTerm, openForEdit)"
+        visible="cpBldgStockCov.hasCovTerm(&quot;CPBldgStockCovDeductible&quot;)"/>
+      <RangeInput
+        editable="openForEdit and gw.web.productmodel.ChoiceCovTermUtil.isEditable(building.CPBldgStockCov.CPBldgStockCovWindDeductibleTerm)"
+        id="CPBldgStockCovWindDeductible"
+        label="building.CPBldgStockCov.CPBldgStockCovWindDeductibleTerm.DisplayName"
+        required="building.CPBldgStockCov.CPBldgStockCovWindDeductibleTerm.Pattern.Required"
+        sortValueRange="false"
+        value="building.CPBldgStockCov.CPBldgStockCovWindDeductibleTerm.OptionValue"
+        valueRange="gw.web.productmodel.ChoiceCovTermUtil.getModelValueRange(building.CPBldgStockCov.CPBldgStockCovWindDeductibleTerm, openForEdit)"
+        visible="cpBldgStockCov.hasCovTerm(&quot;CPBldgStockCovWindDeductible&quot;)"/>
+      <RangeInput
+        editable="true"
+        id="CPBldgStockCovValuationMethod"
+        label="building.CPBldgStockCov.CPBldgStockCovValuationMethodTerm.DisplayName"
+        required="building.CPBldgStockCov.CPBldgStockCovValuationMethodTerm.Pattern.Required"
+        value="building.CPBldgStockCov.CPBldgStockCovValuationMethodTerm.Value"
+        valueRange="building.CPBldgStockCov.CPBldgStockCovValuationMethodTerm?.Pattern.OrderedAvailableValues"
+        visible="cpBldgStockCov.hasCovTerm(&quot;CPBldgStockCovValuationMethod&quot;)"/>
+      <RangeInput
+        editable="openForEdit and gw.web.productmodel.ChoiceCovTermUtil.isEditable(building.CPBldgStockCov.CPBldgStockCovCoinsuranceTerm)"
+        id="CPBldgStockCovCoinsurance"
+        label="building.CPBldgStockCov.CPBldgStockCovCoinsuranceTerm.DisplayName"
+        required="building.CPBldgStockCov.CPBldgStockCovCoinsuranceTerm.Pattern.Required"
+        sortValueRange="false"
+        value="building.CPBldgStockCov.CPBldgStockCovCoinsuranceTerm.OptionValue"
+        valueRange="gw.web.productmodel.ChoiceCovTermUtil.getModelValueRange(building.CPBldgStockCov.CPBldgStockCovCoinsuranceTerm, openForEdit)"
+        visible="cpBldgStockCov.hasCovTerm(&quot;CPBldgStockCovCoinsurance&quot;)"/>
+      <RangeInput
+        editable="true"
+        id="CPBldgStockCovReportingForm"
+        label="building.CPBldgStockCov.CPBldgStockCovReportingFormTerm.DisplayName"
+        required="building.CPBldgStockCov.CPBldgStockCovReportingFormTerm.Pattern.Required"
+        value="building.CPBldgStockCov.CPBldgStockCovReportingFormTerm.Value"
+        valueRange="building.CPBldgStockCov.CPBldgStockCovReportingFormTerm?.Pattern.OrderedAvailableValues"
+        visible="cpBldgStockCov.hasCovTerm(&quot;CPBldgStockCovReportingForm&quot;)"/>
+    </InputGroup>
+    <InputDivider
+      visible="openForEdit or coverable.getCoverageConditionOrExclusion(coveragePattern) != null"/>
+    <Code><![CDATA[function isCoverageAvailable() : boolean {
+  return coverable.isCoverageConditionOrExclusionAvailable( coveragePattern )
+}]]></Code>
+  </InputSet>
+</PCF>

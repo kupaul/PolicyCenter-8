@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<solrserver-config
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="solrserver-config.xsd"
+        version="1">
+
+    <!--
+    Global parameters
+      * appcode - two letter code for the application, e.g. cc, pc, bc, etc.
+      * coreprefix - fragment that identifies the core name.  This is derived from the name of the deployed WAR file
+          and is typically "${appcode}-gwsolr".  It is used to generate the index and search URL's when Solr
+          communication is over HTTP.
+    -->
+
+    <param name="appcode" value="pc"/>
+    <param name="coreprefix" value="pc-gwsolr"/>
+
+    <!--
+    Server descriptors.
+      * Require unique names.
+      * Type must be http or embedded
+      * Only one embedded server type allowed (or needed)
+
+    Embedded Solr server properties
+      * provision = { false, true, auto }
+      * gwsolrzip = path to XX-gwsolr.zip (optional, provision = auto)
+      * deleteonexit = if true, solr index and related files will be deleted when the server shuts down (optional, provision = auto)
+      * solrroot = path to solr index root, e.g. /opt/gwsolr (required if provision = true)
+      * solrhome = path to solr home under solr root, e.g /opt/gwsolr/cc/solr (required if provision = false)
+      * libdir = path to jars required to run Solr (required if provision = false)
+
+    HTTP Solr client properties
+      * host = host name for remote Solr instance
+      * port = port for remote Solr instance
+
+    Cloud Solr client properties
+      * host = host name for ZooKeeper instance
+      * port = port for ZooKeeper instance
+    -->
+    <solrserver name="embedded" type="embedded">
+        <!--
+        <param name="provision" value="auto"/>
+        -->
+        <param name="provision" value="true"/>
+        <param name="solrroot" value="/opt/gwsolr"/>
+
+        <!--
+        <param name="provision" value="false"/>
+        <param name="libdir" value="/opt/gwsolr/pc/pc-gwsolr/WEB-INF/lib"/>
+        <param name="solrhome" value="/opt/gwsolr/pc/solr"/>
+        -->
+    </solrserver>
+
+    <solrserver name="localhttp" type="http">
+        <param name="host" value="localhost"/>
+        <param name="port" value="8983"/>
+    </solrserver>
+
+    <solrserver name="cloud" type="cloud">
+        <param name="host" value="localhost"/>
+        <param name="port" value="2181"/>
+    </solrserver>
+
+    <!--
+    Document to server assignments
+      * Binds a document id to the hosting server descriptor by name.
+      * Active and archived documents will be hosted on separate cores of the same Solr server instance.
+  -->
+    <document name="policy" archive="false" servername="embedded"/>
+
+</solrserver-config>

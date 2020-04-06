@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Product Model Immutable Field Verification</title>
+    <link rel="StyleSheet" href="css/product_model_verification.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Product Model Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-productmodel.html#4704305">PolicyCenter Product Model</a> : <a class="WebWorks_Breadcrumb_Link" href="product_model_verification.13.1.html#4704305">Preventing Illegal Product Model Changes</a> : Product Model Immutable Field Verification</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="4704305">Product Model Immutable Field Verification</a></h3>
+      <div class="B_-_Body"><a name="4704306">After you move your product model definition to the production server, you must not change it randomly. Unintended changes can—and most likely will—corrupt existing policies. For example, consider the effects of removing a coverage pattern while there is a bound policy that uses that coverage pattern. </a></div>
+      <div class="B_-_Body"><a name="4944859">It is not important if you change certain fields on the product model. For example, fields such as </a><span class="cv_-_computer_voice">Name</span>, <span class="cv_-_computer_voice">Description</span>, or <span class="cv_-_computer_voice">Priority</span> can be changed without any bad effects. However, it is extremely important to guard against changes to fields that define the <span class="e_-_emphasis">scaffolding</span> of the product model. Fields that define scaffolding are fields that define, for example, the coverage terms on a coverage pattern. Guidewire refers to these types of field as being <span class="e_-_emphasis">immutable</span>, meaning that<span style="font-family: Arial; font-size: 8.0pt"> </span>after you set them<span style="font-family: Arial; font-size: 8.0pt"> </span>you must never change them. Guidewire also uses the term <span class="e_-_emphasis">locked field</span> interchangeably with the term <span class="e_-_emphasis">immutable field</span>.</div>
+      <div class="B_-_Body"><a name="4704308">To prevent changes these fields, PolicyCenter verifies the set of immutable fields when you start the server. It checks both for missing items—a missing coverage pattern, for example—and for immutable fields that have been changed. If verification fails, PolicyCenter adds a message to the server log and fails to start.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="4704315">Locked Entity Fields</a></h4>
+      <div class="B_-_Body"><a name="4704319">PolicyCenter stores information about immutable fields in the production database. During server startup, it reads this information and compares it with the product model definition files stored, or newly loaded, in its local file system. The production locking table contains one row for every product model entity. For example, it contains a row for each coverage, a row for each policy line, and so forth. A separate table stores the locked field name and the locked value. These name-value pairs represent a </a><span class="cv_-_computer_voice">Name</span> and an <span class="cv_-_computer_voice">EntityPublicID</span> for a field on the referenced entity.</div>
+      <div class="B_-_Body"><a name="4704320">For example:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="4704321">EntityType</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4704322">&nbsp;&nbsp;&nbsp;&nbsp;FieldName 1: FieldValue 1</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4704323">&nbsp;&nbsp;&nbsp;&nbsp;FieldName 2: FieldValue 2</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4704324">&nbsp;&nbsp;&nbsp;&nbsp;...</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="4704325">&nbsp;&nbsp;&nbsp;&nbsp;FieldName n: FieldValue n</a></PRE>
+      <div class="T_-_Table"><a name="4704326">&nbsp;</a></div>
+      <div class="B_-_Body"><a name="4704327">To illustrate with a more concrete example:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="4704328">CoveragePattern</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4704329">&nbsp;&nbsp;&nbsp;&nbsp;PublicID: PADeathCov</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4704330">&nbsp;&nbsp;&nbsp;&nbsp;RefCode: 3402</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4704331">&nbsp;&nbsp;&nbsp;&nbsp;CoverageSubtype: PersonalAutoCov</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4704332">&nbsp;&nbsp;&nbsp;&nbsp;OwningEntityType: PersonalAutoLine</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="4704333">&nbsp;&nbsp;&nbsp;&nbsp;CoverageCategory: PAPLiabGrp</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="4949935">&nbsp;&nbsp;&nbsp;&nbsp;... </a></PRE>
+      <div class="B_-_Body"><a name="4949936">In this coverage, the </a><span class="cv_-_computer_voice">PublicID</span> and <span class="cv_-_computer_voice">RefCode</span> are locked along with the <span class="cv_-_computer_voice">CoverageSubtype</span>, <span class="cv_-_computer_voice">CoverageCategory</span>, and the fact that this is a line-level coverage. </div>
+      <h4 class="H2_-_Heading_2"><a name="4926920">Locked Array Elements</a></h4>
+      <div class="B_-_Body"><a name="4926924">PolicyCenter also stores any required array elements in the production locking table. The table contains a row for each array element. Therefore, if the array has multiple elements, the table has a row for each element. To illustrate, suppose a particular </a><span class="cv_-_computer_voice">CoverageSymbolGroup</span> entity named <span class="cv_-_computer_voice">CovSymbGrp</span> has an array of coverage symbol entities named <span class="cv_-_computer_voice">CovSymbs</span> associated with it. In this example, <span class="cv_-_computer_voice">CovSymbs</span> has a field with the name <span class="cv_-_computer_voice">covsymbgrp</span> that points back to <span class="cv_-_computer_voice">CovSymbGrp</span>. In the production locking table, PolicyCenter stores locking table entries as </div>
+      <div class="CS_-_Code_Single_Line"><a name="4926994">CovSymbs, covsymbgrp : CovSymbGrp, ... </a></div>
+      <div class="B_-_Body"><a name="4926995">This group of locking table entries indicates that there must be an entity of type </a><span class="cv_-_computer_voice">CovSymbs</span> and that the field <span class="cv_-_computer_voice">covsymbgrp</span> must have the value of its parent, <span class="cv_-_computer_voice">CovSymbGrp</span>. If <span class="cv_-_computer_voice">CovSymbs</span> is deleted, PolicyCenter immediately identifies the deletion. </div>
+      <h4 class="H2_-_Heading_2"><a name="4704350">Verifying Locked Fields and Arrays</a></h4>
+      <div class="B_-_Body"><a name="4704351">After PolicyCenter populates the locking table, you can verify whether you have made any illegal edits. During server startup, after loading the product model, PolicyCenter iterates over all the rows in the locking table and tries to find a match for each individual row. </a></div>
+      <div class="B_-_Body"><a name="4704355">There are two possible scenarios.</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="4704359">The entity has a Public ID</a></span> – If the entity has a <span class="cv_-_computer_voice">PublicID</span>, that <span class="cv_-_computer_voice">PublicID</span> always locked. If PolicyCenter does not allow deletions for this entity, PolicyCenter searches the locking table for a product model entity of the same type and with the same <span class="cv_-_computer_voice">PublicID</span>. The possible outcomes are:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="4704360">PolicyCenter cannot find a match in the locking table and assumes that the entity was deleted. PolicyCenter adds a message to the server log and fails to start.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="4704361">PolicyCenter finds a match in the locking table and compares all the locked fields against the product model entity. If this comparison fails, PolicyCenter adds a message to the server log and fails to start. In the error case, PolicyCenter issues specific error messages such as: </a><span class="ui_-_UI_element">You changed field </span><span class="e_-_emphasis" style="color: #000000; font-family: &quot;Arial Narrow&quot;; font-size: 8.5pt; font-weight: bold">A</span><span class="ui_-_UI_element"> on entity </span><span class="e_-_emphasis" style="color: #000000; font-family: &quot;Arial Narrow&quot;; font-size: 8.5pt; font-weight: bold">B</span><span class="ui_-_UI_element"> to value </span><span class="e_-_emphasis" style="color: #000000; font-family: &quot;Arial Narrow&quot;; font-size: 8.5pt; font-weight: bold">C</span><span class="ui_-_UI_element">. Please set it back to </span><span class="e_-_emphasis" style="color: #000000; font-family: &quot;Arial Narrow&quot;; font-size: 8.5pt; font-weight: bold">A</span><span class="p_-_parameter">.</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="4704368">The entity does not have a Public ID</a></span> – The entity has no <span class="cv_-_computer_voice">PublicID</span>. A very small subset of the product model entities—approximately eight—do not have a <span class="cv_-_computer_voice">PublicID</span>. If deletions for this entity are not allowed, PolicyCenter attempts to find a complete match for the product model entity in the locking table. If it does not find a complete match, PolicyCenter adds an <span class="ui_-_UI_element">Entity Deleted</span> or <span class="ui_-_UI_element">Modified</span> error to the server log and fails to start.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="4704375">Adding new Entities</a></h4>
+      <div class="B_-_Body"><a name="4704376">You can add new entities to the product model at any time. However, after you add a new entity to the product model on the production server, PolicyCenter locks the entity and does not allow further changes. During server startup, if PolicyCenter finds an entity for which there are no corresponding rows in the locking table, it assumes that the entity is new. If so, it iterates across the entity definition and inserts rows into the locking table as appropriate. During the subsequent production server startups, PolicyCenter verifies its locally stored product model against the product model it is loading.</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <!-- The reason a specific input set is used for this coverage is that the 
+limits on Uninsured and Underinsured must not be greater than the 
+Liability limits.  Since these covs are on the same page, a postOnChange
+is required on the PALiability Limit cov term. -->
+  <InputSet
+    id="CoverageInputSet"
+    mode="PALiabilityCov">
+    <Require
+      name="coveragePattern"
+      type="gw.api.productmodel.ClausePattern"/>
+    <Require
+      name="coverable"
+      type="Coverable"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="coverable as PersonalAutoLine"
+      name="line"/>
+    <HiddenInput
+      id="CovPatternDisplayName"
+      value="coveragePattern.DisplayName"/>
+    <InputGroup
+      allowToggle="coveragePattern.allowToggle(coverable)"
+      childrenVisible="coverable.getCoverageConditionOrExclusion(coveragePattern) != null"
+      id="CovPatternInputGroup"
+      label="coveragePattern.DisplayName"
+      onToggle="coverable.setCoverageConditionOrExclusionExists(coveragePattern, VALUE)">
+      <RangeInput
+        editable="openForEdit and gw.web.productmodel.ChoiceCovTermUtil.isEditable(line.PALiabilityCov.PALiabilityTerm)"
+        id="LiabilityTermInput"
+        label="line.PALiabilityCov.PALiabilityTerm.DisplayName"
+        required="line.PALiabilityCov.PALiabilityTerm.Pattern.Required"
+        sortValueRange="false"
+        value="line.PALiabilityCov.PALiabilityTerm.PackageValue"
+        valueRange="gw.web.productmodel.ChoiceCovTermUtil.getModelValueRange(line.PALiabilityCov.PALiabilityTerm, openForEdit)">
+        <PostOnChange/>
+      </RangeInput>
+      <RangeInput
+        editable="true"
+        id="TortTermInput"
+        label="line.PALiabilityCov.PAFullLimitedTortTerm.Pattern.DisplayName"
+        required="line.PALiabilityCov.PAFullLimitedTortTerm.Pattern.Required"
+        value="line.PALiabilityCov.PAFullLimitedTortTerm.Value"
+        valueRange="line.PALiabilityCov.PAFullLimitedTortTerm?.Pattern.OrderedAvailableValues"
+        visible="line.PALiabilityCov.hasCovTerm(&quot;PAFullLimitedTort&quot;)"/>
+    </InputGroup>
+    <InputDivider
+      visible="openForEdit or coverable.getCoverageConditionOrExclusion(coveragePattern) != null"/>
+    <Code><![CDATA[uses java.util.Collections
+
+function getTermValues() : List<gw.entity.TypeKey> {
+  var term = line.PALiabilityCov.PAFullLimitedTortTerm
+  if(term == null) {
+    return Collections.emptyList()
+  }
+  return term.getPattern().getOrderedAvailableValues()
+}]]></Code>
+  </InputSet>
+</PCF>

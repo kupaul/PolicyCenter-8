@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><subtype xmlns="http://guidewire.com/datamodel" desc="Cancellation process" displayName="Cancellation" entity="Cancellation" subpackage="job" supertype="Job">
+  <implementsInterface iface="gw.api.job.JobMethods" impl="gw.api.job.CancellationJobMethods"/>
+  <column desc="Date the cancellation should be processed by the external system" name="CancelProcessDate" nullok="true" type="datetime"/>
+  <column desc="Date of the last time that a cancellation notification was sent to an external system in response to this job." name="LastNotifiedCancellationDate" nullok="true" type="datetime"/>
+  <column desc="Date of the first time that a cancellation notification was sent to an external system in response to this job" name="InitialNotificationDate" nullok="true" type="datetime"/>
+  <column desc="Date a cancellation notification acknowledgement was received from an external system" name="NotificationAckDate" nullok="true" type="datetime"/>
+  <column desc="Date a cancellation notification was sent to an external system" name="NotificationDate" nullok="true" type="datetime"/>
+  <column desc="Date a rescind cancellation notification was sent" name="RescindNotificationDate" nullok="true" type="datetime"/>
+  <typekey desc="Cancellation reason codes" name="CancelReasonCode" nullok="true" typelist="ReasonCode">
+    <keyfilters>
+      <keyfilter name="Source"/>
+    </keyfilters>
+  </typekey>
+  <typekey desc="Party that initiated cancellation (carrier or insures)" name="Source" nullok="false" typelist="CancellationSource"/>
+  <!-- date/time constraints -->
+  <datetimeordering firstcolumnname="NotificationDate" operator="LE" secondcolumnname="NotificationAckDate"/>
+  <datetimeordering firstcolumnname="NotificationDate" operator="LE" secondcolumnname="RescindNotificationDate"/>
+  <events/>
+  <dbcheckbuilder className="com.guidewire.pc.domain.job.dbchecks.CancellationDBCheckBuilder"/>
+</subtype>

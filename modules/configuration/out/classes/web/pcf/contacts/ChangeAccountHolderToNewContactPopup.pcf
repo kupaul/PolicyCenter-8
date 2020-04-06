@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    beforeCommit="beforeCommitPopup()"
+    canEdit="true"
+    id="ChangeAccountHolderToNewContactPopup"
+    returnType="AccountContact"
+    startInEditMode="true"
+    title="displaykey.Web.Contact.NewContact(AccountHolder.Type.TypeInfo.DisplayName)">
+    <LocationEntryPoint
+      signature="ChangeAccountHolderToNewContactPopup(acct: Account, contactType: typekey.ContactType)"/>
+    <Variable
+      name="acct"
+      type="Account"/>
+    <Variable
+      name="contactType"
+      type="typekey.ContactType"/>
+    <Variable
+      initialValue="acct.addNewAccountContactOfType(contactType)"
+      name="acctContact"/>
+    <Variable
+      initialValue="new gw.pcf.duplicatecontacts.DuplicateContactsPopupHelper(acctContact.Contact)"
+      name="duplicateContactsPopupHelper"/>
+    <Screen
+      editable="true"
+      id="ContactDetailScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.checkForDuplicatesOrUpdate(\ -&gt; CurrentLocation.pickValueAndCommit(acctContact))"
+          id="ForceDupCheckUpdate"
+          label="displaykey.Button.OK"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+        <EditButtons
+          pickValue="acctContact"
+          updateVisible="not duplicateContactsPopupHelper.ShowButton"/>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.push()"
+          id="CheckForDuplicates"
+          label="displaykey.Web.Contact.CheckForDuplicates"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+      </Toolbar>
+      <PanelRef
+        def="AccountContactCV(acctContact,false)"/>
+    </Screen>
+    <Code><![CDATA[uses gw.api.database.PCBeanFinder
+
+function beforeCommitPopup() {
+  var existingPCContactWithABContactMatch = duplicateContactsPopupHelper.existingPCContactWithABContactMatch
+  if (existingPCContactWithABContactMatch != null) { // existing ab contact that matches the current new contact
+    acct.removeFromAccountContacts(acctContact)
+    existingPCContactWithABContactMatch = acctContact.Contact.Bundle.add(PCBeanFinder.loadBeanByPublicID<Contact>(existingPCContactWithABContactMatch.PublicID, Contact))
+    existingPCContactWithABContactMatch.copyUIFieldsFromContact(acctContact.Contact)
+    acctContact.Contact.OfficialIDs.each(\ o -> o.remove())
+    acctContact.Contact.remove()
+    acctContact.remove()
+    acct.changeAccountHolderTo(existingPCContactWithABContactMatch)
+  }
+  else {  
+    acct.changeAccountHolderTo(acctContact.Contact)
+  }
+}]]></Code>
+  </Popup>
+</PCF>

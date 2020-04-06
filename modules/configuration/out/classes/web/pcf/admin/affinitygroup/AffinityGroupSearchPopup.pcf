@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Popup
+    id="AffinityGroupSearchPopup"
+    returnType="AffinityGroup"
+    title="displaykey.Web.Admin.AffinityGroupSearch">
+    <LocationEntryPoint
+      signature="AffinityGroupSearchPopup(period : PolicyPeriod)"/>
+    <Variable
+      name="period"
+      type="PolicyPeriod"/>
+    <Screen
+      id="AffinityGroupSearchScreen">
+      <SearchPanel
+        cachingEnabled="false"
+        criteriaName="searchCriteria"
+        resultsName="affinityGroups"
+        search="searchCriteria.performSearch()"
+        searchCriteria="gw.admin.affinitygroup.AffinityGroupUIHelper.createAffinityGroupSearchCriteria(period)"
+        searchOnEnter="true"
+        searchResultsType="AffinityGroupQuery">
+        <DetailViewPanel
+          editable="true"
+          id="AffinityGroupSearchDV"
+          visible="true">
+          <Variable
+            initialValue="gw.api.system.PCDependenciesGateway.getProductModel().getAllInstances(gw.api.productmodel.Product) as gw.api.productmodel.Product[]"
+            name="products"/>
+          <Variable
+            initialValue="new gw.admin.affinitygroup.AffinityGroupSearchCriteriaAdapter(searchCriteria)"
+            name="groupSearchAdapter"
+            recalculateOnRefresh="true"/>
+          <InputColumn>
+            <InputSetRef
+              def="GlobalContactNameInputSet(new gw.search.AffinityGroupNameOwner(groupSearchAdapter))"
+              mode="gw.api.name.NameLocaleSettings.PCFMode"/>
+            <TypeKeyInput
+              editable="true"
+              id="GroupType"
+              label="displaykey.Web.GroupSearch.GroupType"
+              value="searchCriteria.AffinityGroupType"/>
+          </InputColumn>
+          <InputFooterSection>
+            <InputSetRef
+              def="SearchAndResetInputSet()"/>
+          </InputFooterSection>
+        </DetailViewPanel>
+        <PanelRef>
+          <TitleBar
+            appendListViewPaging="true"
+            title="displaykey.Web.Search.Results"/>
+          <Toolbar/>
+          <!-- ListView that displays the results of a Group search. The group name is a hyperlink
+    that navigates to the GroupDetailPage. -->
+          <ListViewPanel
+            id="AffinityGroupSearchResultsLV">
+            <RowIterator
+              editable="false"
+              elementName="group"
+              pickValue="group"
+              value="affinityGroups">
+              <Row>
+                <Cell
+                  action="AffinityGroupDetailPage.go(group)"
+                  id="Name"
+                  label="displaykey.Web.Admin.GroupSearchResults.Name"
+                  sortOrder="1"
+                  value="group"/>
+                <TypeKeyCell
+                  id="Type"
+                  label="displaykey.Web.Admin.GroupSearchResults.Type"
+                  value="group.AffinityGroupType"/>
+                <Cell
+                  action="OrganizationDetail.go(group.Organization)"
+                  id="Organization"
+                  label="displaykey.Web.Admin.GroupSearchResults.Organization"
+                  value="group.Organization"/>
+                <DateCell
+                  id="StartDate"
+                  label="displaykey.Web.Admin.AffinityGroupDetail.BasicsDV.StartDate"
+                  value="group.StartDate"/>
+                <DateCell
+                  id="EndDate"
+                  label="displaykey.Web.Admin.AffinityGroupDetail.BasicsDV.EndDate"
+                  value="group.EndDate"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+  </Popup>
+</PCF>

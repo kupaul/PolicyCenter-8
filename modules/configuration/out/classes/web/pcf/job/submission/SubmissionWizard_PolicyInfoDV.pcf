@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="SubmissionWizard_PolicyInfoDV">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="submission"
+      type="Submission"/>
+    <Variable
+      initialValue="new gw.job.AvailableUWCompanies(policyPeriod)"
+      name="availableUWCompanies"/>
+    <!-- First PolicyInfo column -->
+    <InputColumn>
+      <DateInput
+        boldLabel="true"
+        editable="true"
+        id="DateQuoteNeeded"
+        label="displaykey.Web.SubmissionWizard.DateQuoteNeeded"
+        value="submission.DateQuoteNeeded"/>
+      <InputDivider/>
+      <InputSetRef
+        def="AccountInfoInputSet(policyPeriod)"/>
+      <InputSetRef
+        def="SecondaryNamedInsuredInputSet(policyPeriod)"/>
+    </InputColumn>
+    <!-- Second PolicyInfo column -->
+    <InputColumn>
+      <!-- Input set (including effective date) is not editable in issuance jobs -->
+      <InputSetRef
+        def="PolicyInfoInputSet(policyPeriod, true, false, true)"
+        editable="true"
+        widgets="UWCompanyInputSet"/>
+      <InputDivider/>
+      <InputSetRef
+        def="PolicyInfoProducerOfRecordInputSet(policyPeriod, ProducerStatusUse.TC_SUBMISSIONOKAY)"/>
+      <InputDivider/>
+      <InputSet
+        id="UWCompanyInputSet">
+        <Label
+          label="displaykey.Web.Policy.UWCompanies.Name"/>
+        <RangeInput
+          editable="perm.System.multicompquote"
+          id="UWCompany"
+          optionLabel="VALUE.DisplayName"
+          value="policyPeriod.UWCompany"
+          valueRange="availableUWCompanies.Value"/>
+        <Label
+          id="InvalidUWCompanyLabel"
+          label="displaykey.Web.Policy.UWCompanies.InvalidUWCompany"
+          visible="availableUWCompanies.Value.Count &gt; 0 and not availableUWCompanies.Value.hasMatch( \ u -&gt; u == policyPeriod.UWCompany )"/>
+        <ButtonInput
+          action="policyPeriod.autoSelectUWCompany()"
+          available="not ( policyPeriod.ValidQuote or policyPeriod.Locked )"
+          id="AutoSelectUWCompany"
+          value="displaykey.Web.Policy.UWCompanies.AutoSelect"
+          visible="not perm.System.multicompquote"/>
+      </InputSet>
+      <InputDivider/>
+      <InputSetRef
+        def="PreferredCurrencyInputSet(policyPeriod)"/>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

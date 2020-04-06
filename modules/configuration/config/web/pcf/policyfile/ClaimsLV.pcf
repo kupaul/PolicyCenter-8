@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    id="ClaimsLV">
+    <Require
+      name="claims"
+      type="Claim[]"/>
+    <Require
+      name="filterSet"
+      type="gw.losshistory.ClaimPolicyPeriodFilterSet"/>
+    <RowIterator
+      editable="false"
+      elementName="claim"
+      pageSize="10"
+      value="claims">
+      <ToolbarFilter
+        cacheOptions="false"
+        label="displaykey.Web.Claims.PolicyPeriodFilter"
+        name="policyPeriodFilter">
+        <ToolbarFilterOption
+          filter="filterSet.getAllFilter()"
+          label="displaykey.Java.ToolBar.Claim.All"
+          selectOnEnter="true"/>
+        <ToolbarFilterOption
+          filter="filterSet.getNoPolicyInforceFilter()"
+          label="displaykey.Web.Claims.NoPolicyPeriod"/>
+        <ToolbarFilterOptionGroup
+          filters="filterSet.getClaimPolicyPeriodFilters().getFilterOptions()"/>
+      </ToolbarFilter>
+      <Row>
+        <Cell
+          fontColor="claim.PolicyInForce ? &quot;&quot; : &quot;Red&quot;"
+          id="PolicyPeriod"
+          label="displaykey.Web.Claims.PolicyPeriod"
+          value="claim.PolicyInForce ? claim.PolicyPeriod.getPolicyPeriodDateDisplay() : displaykey.Web.Claims.NoPolicyPeriod"/>
+        <Cell
+          id="PolicyStartDate"
+          label="displaykey.Web.Claims.PolicyStartDate"
+          value="claim.PolicyPeriod.PeriodStart"
+          visible="false"/>
+        <Cell
+          id="LossDate"
+          label="displaykey.Web.Claims.LossDate"
+          sortDirection="descending"
+          sortOrder="1"
+          value="claim.LossDate"/>
+        <Cell
+          id="ClaimNumber"
+          label="displaykey.Web.Claims.ClaimNumber"
+          value="claim.ClaimNumber"/>
+        <Cell
+          id="Status"
+          label="displaykey.Web.Claims.Status"
+          value="claim.Status"/>
+        <Cell
+          footerSumValue="claim.TotalIncurred as Number"
+          id="TotalIncurred"
+          label="displaykey.Web.Claims.TotalIncurred"
+          value="claim.TotalIncurred"/>
+      </Row>
+    </RowIterator>
+  </ListViewPanel>
+</PCF>

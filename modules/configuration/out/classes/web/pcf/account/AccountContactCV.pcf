@@ -1,0 +1,148 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <CardViewPanel
+    id="AccountContactCV">
+    <Require
+      name="acctContact"
+      type="AccountContact"/>
+    <Require
+      name="showAddressTools"
+      type="boolean"/>
+    <Variable
+      initialValue="gw.plugin.Plugins.get(gw.plugin.contact.IContactConfigPlugin)"
+      name="contactConfigPlugin"/>
+    <Card
+      id="AccountContactDetailCard"
+      title="displaykey.Web.AccountContacts.AccountDetail">
+      <PanelRow>
+        <PanelColumn>
+          <PanelRef
+            def="AccountContactDV(acctContact.Contact, acctContact.Account)"
+            editable="true">
+            <Toolbar
+              visible="perm.Account.edit( acctContact.Account )"/>
+          </PanelRef>
+        </PanelColumn>
+      </PanelRow>
+    </Card>
+    <Card
+      id="RolesCard"
+      title="displaykey.Web.Admin.UserDetailDV.Roles">
+      <DetailViewPanel
+        id="ContactRolesDV">
+        <InputColumn>
+          <ListViewInput
+            labelAbove="true">
+            <Toolbar
+              visible="perm.Account.edit( acctContact.Account )">
+              <AddButton
+                hideIfReadOnly="true"
+                id="AddRoleButton"
+                iterator="ContactRolesLV"
+                label="displaykey.Web.Account.Contact.AddRole"
+                visible="acctContact.Contact != null">
+                <AddMenuItemIterator
+                  elementName="roleType"
+                  value="acctContact.AvailableAccountContactRoleTypes.subtract({&quot;AccountHolder&quot;}).toTypedArray()">
+                  <IteratorSort
+                    sortBy="roleType"
+                    sortOrder="1"/>
+                  <AddMenuItem
+                    id="RoleType"
+                    iterator="ContactRolesLV"
+                    label="contactConfigPlugin.getAccountContactRoleTypeDisplayName(roleType)"
+                    toCreateAndAdd="acctContact.addNewRole(roleType)"/>
+                </AddMenuItemIterator>
+              </AddButton>
+              <IteratorButtons
+                addVisible="false"
+                iterator="ContactRolesLV"
+                removeLabel="displaykey.Web.Account.Contact.RemoveRole"/>
+            </Toolbar>
+            <ListViewPanel
+              editable="true"
+              id="ContactRolesLV">
+              <!-- Dummy toCreateAndAdd is needed to make Add button visible. It will never be called since it is only used by
+                default Add button and default Add button is not visible. Current action does nothing. -->
+              <RowIterator
+                checkBoxVisible="not (acctContactRole typeis AccountHolder)"
+                editable="true"
+                elementName="acctContactRole"
+                hasCheckBoxes="true"
+                hideCheckBoxesIfReadOnly="true"
+                startChecked="false"
+                toCreateAndAdd="dummyCreateAndAddAccountContactRole()"
+                toRemove="tryToRemoveRole(acctContactRole)"
+                type="AccountContactRole"
+                value="acctContact.Roles">
+                <IteratorSort
+                  sortBy="(typeof acctContactRole).TypeInfo.DisplayName"
+                  sortOrder="1"/>
+                <Row
+                  editable="true">
+                  <Cell
+                    id="ContactRole"
+                    label="displaykey.Web.AccountContactCV.Roles"
+                    value="(typeof acctContactRole).TypeInfo.DisplayName"/>
+                  <ModalCellRef
+                    id="ContactAdditionalInfo"
+                    label="displaykey.Web.AccountContactCV.AdditionalInformation"
+                    def="AccountContactDisplayCell(acctContactRole)"
+                    width="500"
+                    mode="acctContactRole.Subtype"/>
+                </Row>
+              </RowIterator>
+            </ListViewPanel>
+          </ListViewInput>
+        </InputColumn>
+      </DetailViewPanel>
+    </Card>
+    <Card
+      id="AddressesCard"
+      title="displaykey.Web.Contact.Addresses.Title">
+      <PanelRef
+        def="AddressesPanelSet(acctContact.Contact, showAddressTools, acctContact.Account, null)">
+        <Toolbar
+          visible="acctContact.Account.Editable and perm.System.editaccountcontacts"/>
+      </PanelRef>
+    </Card>
+    <Card
+      hideIfEditable="true"
+      id="JobsCard"
+      title="displaykey.Web.AccountContacts.AssociatedJobs">
+      <PanelRef
+        def="AccountFile_Contacts_WorkOrdersLV(acctContact)">
+        <TitleBar
+          title="displaykey.Web.AccountContacts.AssociatedJobs"/>
+        <Toolbar/>
+      </PanelRef>
+    </Card>
+    <Card
+      hideIfEditable="true"
+      id="PoliciesCard"
+      title="displaykey.Web.AccountContacts.AssociatedPolicies">
+      <PanelRef
+        def="AccountFile_Contacts_PoliciesLV(acctContact)">
+        <TitleBar
+          title="displaykey.Web.AccountContacts.AssociatedPolicies"/>
+        <Toolbar/>
+      </PanelRef>
+    </Card>
+    <Code><![CDATA[function tryToRemoveRole(acRole : AccountContactRole) {
+ if (acRole.AccountContact.Roles.Count == 1) {
+    throw new gw.api.util.DisplayableException(displaykey.Web.AccountContactCV.Error.CannotRemoveOnlyRole)
+  }
+  if (not acRole.canRemove()) {
+    throw new gw.api.util.DisplayableException(displaykey.Web.AccountContactCV.Error.CannotRemoveInUseRole(acRole))
+  }
+  
+  acRole.AccountContact.removeFromRoles(acRole)
+}
+
+function dummyCreateAndAddAccountContactRole() : AccountContactRole {
+  return null
+}]]></Code>
+  </CardViewPanel>
+</PCF>

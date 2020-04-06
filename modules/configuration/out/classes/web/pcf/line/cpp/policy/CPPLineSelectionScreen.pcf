@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Screen
+    editable="openForEdit"
+    id="CPPLineSelectionScreen">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, policyPeriod.Job, jobWizardHelper)"/>
+    </Toolbar>
+    <PanelRef
+      def="OOSEPanelSet(policyPeriod, jobWizardHelper)"/>
+    <DetailViewPanel
+      id="CPPLineSelectionDV">
+      <InputColumn>
+        <Label
+          label="displaykey.Web.Policy.IM.CoveragePartSelection"/>
+        <TypeKeyInput
+          editable="true"
+          id="PackageRisk"
+          label="displaykey.Web.CommercialPackage.PackageRiskType"
+          value="policyPeriod.Policy.PackageRisk"/>
+        <InputDivider/>
+        <ListViewInput
+          boldLabel="true"
+          id="SelectedLinesLV"
+          label="displaykey.Web.CommercialPackage.SelectedLines"
+          labelAbove="true">
+          <Toolbar/>
+          <ListViewPanel>
+            <RowIterator
+              editable="true"
+              elementName="policyLinePattern"
+              value="policyPeriod.Policy.Product.LinePatterns.where(\p -&gt; p.isAvailable(policyPeriod))">
+              <Variable
+                initialValue="new gw.lob.cpp.ui.CPPLineSelectionCheckboxWrapper(policyLinePattern, policyPeriod)"
+                name="checkboxWrapper"/>
+              <IteratorSort
+                sortBy="policyLinePattern.Priority"
+                sortOrder="1"/>
+              <Row>
+                <Cell
+                  id="Name"
+                  label="displaykey.Web.CommercialPackage.LineType"
+                  value="policyLinePattern.DisplayName"/>
+                <CheckBoxCell
+                  confirmMessage="displaykey.Web.CommercialPackage.Warning.ConfirmLine"
+                  editable="true"
+                  id="LineSelected"
+                  label="displaykey.Web.CommercialPackage.LineEnabled"
+                  showConfirmMessage="policyPeriod.getLineExists(policyLinePattern) "
+                  value="checkboxWrapper.Value">
+                  <PostOnChange/>
+                </CheckBoxCell>
+                <ModalCellRef
+                  def="CPPPreferredCoverageCurrency(policyPeriod.getLine(policyLinePattern), jobWizardHelper)"
+                  editable="true"
+                  id="PreferredCoverageCurrency"
+                  label="displaykey.Web.CommercialPackage.PreferredCoverageCurrency"
+                  mode="policyPeriod.getLine(policyLinePattern) typeis Coverable"
+                  visible="gw.api.util.CurrencyUtil.isMultiCurrencyMode()"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </ListViewInput>
+      </InputColumn>
+    </DetailViewPanel>
+  </Screen>
+</PCF>

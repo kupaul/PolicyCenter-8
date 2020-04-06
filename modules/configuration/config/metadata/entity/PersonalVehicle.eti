@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" desc="Personal Vehicle" displayName="Personal Vehicle" effDatedBranchType="PolicyPeriod" entity="PersonalVehicle" exportable="true" loadable="false" platform="false" subpackage="lob.pa" table="personalvehicle" type="effdated">
+  <implementsInterface iface="gw.api.contact.AdditionalInterestContainer" impl="gw.lob.pa.contact.PAVehicleAdditionalInterestContainer"/>
+  <implementsInterface iface="gw.api.copier.EffDatedCopyable" impl="gw.lob.pa.PersonalVehicleEffDatedCopier"/>
+  <implementsInterface iface="gw.api.logicalmatch.EffDatedLogicalMatcher" impl="gw.lob.pa.PersonalVehicleMatcher"/>
+  <implementsEntity adapter="gw.lob.pa.PAVehicleModifiableAdapter" name="Modifiable"/>
+  <implementsEntity adapter="gw.lob.pa.PersonalVehicleCoverableAdapter" name="Coverable"/>
+  <column desc="Annual miles for this vehicle" name="AnnualMileage" nullok="true" type="integer"/>
+  <column desc="Basis Amount" name="BasisAmount" nullok="true" type="integer"/>
+  <column desc="Color of the vehicle." name="Color" nullok="true" type="varchar">
+    <columnParam name="size" value="40"/>
+  </column>
+  <column desc="Daily one-way commuting mileage" name="CommutingMiles" nullok="true" type="integer"/>
+  <monetaryamount amountColumnName="CostNew" desc="Original retail cost of car." name="CostNew" nullok="true"/>
+  <column default="false" desc="If this vehicle is leased or rented." name="LeaseOrRent" nullok="true" type="bit"/>
+  <column desc="License plate of the vehicle." name="LicensePlate" nullok="true" type="varchar">
+    <columnParam name="size" value="40"/>
+  </column>
+  <column desc="Make of the vehicle." name="Make" nullok="true" type="varchar">
+    <columnParam name="size" value="40"/>
+  </column>
+  <column desc="Model of the vehicle." name="Model" nullok="true" type="varchar">
+    <columnParam name="size" value="40"/>
+  </column>
+  <column desc="Internal field for storing the reference date of this entity on bound policy periods." name="ReferenceDateInternal" nullok="true" type="datetime"/>
+  <monetaryamount amountColumnName="StatedValue" desc="User enter stated value of vehicle" name="StatedValue" nullok="true"/>
+  <column desc="Vehicle number" name="VehicleNumber" nullok="false" type="integer"/>
+  <column desc="The vehicle number for quick quote" name="QuickQuoteNumber" nullok="true" type="integer"/>
+  <column desc="VIN (vehicle identification number) of the vehicle." name="Vin" nullok="true" type="vin"/>
+  <column desc="Vehicle model year" name="Year" nullok="true" type="year"/>
+  <typekey desc="Body type of the vehicle." name="BodyType" nullok="true" typelist="BodyType">
+    <keyfilters>
+      <keyfilter name="VehicleType"/>
+    </keyfilters>
+  </typekey>
+  <typekey desc="The lease period of a leased or a rented vehicle." name="LengthOfLease" nullok="true" typelist="LengthOfLease"/>
+  <typekey desc="State in which the vehicle is licensed." name="LicenseState" nullok="true" typelist="State"/>
+  <typekey desc="Indicate how PIP should be rated" name="PipCovered" nullok="true" typelist="PipCovered"/>
+  <typekey desc="Primary use of the vehicle" name="PrimaryUse" nullok="true" typelist="VehiclePrimaryUse"/>
+  <typekey desc="Type of the vehicle." name="VehicleType" nullok="true" typelist="VehicleType"/>
+  <foreignkey desc="Location of vehicle." exportable="true" fkentity="PolicyLocation" name="GarageLocation" nullok="false"/>
+  <foreignkey fkentity="PersonalAutoLine" name="PALine" nullok="false"/>
+  <array arrayentity="PAVhcleAddlInterest" cascadeDelete="true" desc="Third parties with an additional interest in the vehicle" name="AdditionalInterests" owner="false"/>
+  <array arrayentity="PersonalAutoCovCost" cascadeDelete="true" name="Costs"/>
+  <array arrayentity="PersonalVehicleCov" cascadeDelete="true" desc="All coverages that apply directly to this vehicle." name="Coverages" setterScriptability="all"/>
+  <array arrayentity="VehicleDriver" cascadeDelete="true" desc="All drivers associated with this vehicle" name="Drivers" owner="true"/>
+  <array arrayentity="PAVehicleModifier" cascadeDelete="true" desc="Rating info for the vehicle" name="PAVehicleModifiers" owner="false"/>
+  <checkconstraint predicate="LicensePlate IS NULL OR LicenseState IS NOT NULL"/>
+</entity>

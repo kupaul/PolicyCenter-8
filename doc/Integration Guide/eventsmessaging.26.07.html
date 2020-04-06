@@ -1,0 +1,518 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Message Ordering and Multi-Threaded Sending</title>
+    <link rel="StyleSheet" href="css/eventsmessaging.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-messaging.html#4253049">Messaging</a> : <a class="WebWorks_Breadcrumb_Link" href="eventsmessaging.26.01.html#4253049">Messaging and Events</a> : Message Ordering and Multi-Threaded Sending</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="4253049">Message Ordering and Multi-Threaded Sending</a></h3>
+      <div class="B_-_Body"><a name="4253056">This section explains in detail how PolicyCenter orders messages and in some cases uses multiple threads. </a></div>
+      <div class="B_-_Body"><a name="4319104">For an overview of safe ordering, see the following topics:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.02.html#4207620', '');" title="Messaging Overview" name="4260195">“Primary Entity and Primary Object”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.02.html#4307737', '');" title="Messaging Overview" name="4260225">“Safe Ordering”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.06.html#4348048', '');" title="Generating New Messages in Event Fired Rules" name="4260240">“Setting a Message Root Object or Primary Object”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3990976">The application waits for an acknowledgement before processing the next safe-ordered message for that primary object for each destination. This allows PolicyCenter to send messages as soon as possible and yet prevent prevents errors that might occur if related&nbsp;messages send out of order.</a></div>
+      <div class="B_-_Body"><a name="4259577">For example, suppose some external system must process an initial new message for a parent object before receiving any messages for subobjects or notes that relate to the parent object. If the external system rejects the new message for the parent object, it is not safe to send further messages to that system. However, it is likely safe to send messages about unrelated objects, or messages about the same object but to a different destination. </a></div>
+      <div class="B_-_Body"><a name="3990951">Even if the transport layer guarantees delivery order, it is unsafe for PolicyCenter to send the second message before confirming that the first safe-ordered message succeeds. Doing otherwise could cause difficult error recovery problems.</a></div>
+      <div class="B_-_Body"><a name="4305149">Safe ordering has large implications for messaging performance. For a destination configured with </a><span class="cv_-_computer_voice">Account</span> as the primary entity, suppose the send queue contains 10 messages associated with different accounts, PolicyCenter can send these 10 safe-ordered messages immediately. However, if the send queue contains 10 safe-ordered messages for the same account, PolicyCenter can only send one. PolicyCenter must wait for the message acknowledgement, and then at that point can send the next (only one) message for that account. Another way of thinking about is that only one message can be in flight for each account/destination pair. </div>
+      <div class="B_-_Body"><a name="4260329">If you license the ContactManager application for use with PolicyCenter, note that ContactManager also supports safe ordering of messages associated with each </a><span class="cv_-_computer_voice">ABContact</span> entity. This means that ContactManager only allows one message for each combination of <span class="cv_-_computer_voice">ABContact</span> and destination pair at any given time. For more ContactManager integration information, see <a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.01.html#1005113', '');" title="ContactManager Integration Reference">“ContactManager Integration Reference” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.01.html#1005113', '');" title="ContactManager Integration Reference">Contact Management Guide</a></span>.</div>
+      <h4 class="H2_-_Heading_2"><a name="4256778">Ordering Non-safe-ordered Messages</a></h4>
+      <div class="B_-_Body"><a name="4317813">Some messages are not associated with a primary object such as </a><span class="cv_-_computer_voice">Account</span> (or <span class="cv_-_computer_voice">Contact</span>, if a destination specifies <span class="cv_-_computer_voice">Contact</span> as the alternative primary object). These cross-account messages are called <span class="e_-_emphasis">non-safe-ordered messages</span>. </div>
+      <div class="B_-_Body"><a name="4260831">These messages are sometimes also called Messages Without Primary.</a></div>
+      <div class="B_-_Body"><a name="4424442">See the beginning of this topic for links to topics that define primary entities and safe ordering.</a></div>
+      <div class="B_-_Body"><a name="4261029">By default, non-safe-ordered messages send as soon as possible, before any queued safe-ordered messages, and send in the order that Event Fired rules generated them. By default PolicyCenter does not wait for acknowledgements for non-safe-ordered messages before sending the next -safe-ordered message. </a></div>
+      <div class="B_-_Body"><a name="4305183">For example, PolicyCenter sends a message about a new </a><span class="cv_-_computer_voice">User</span> immediately. PolicyCenter never waits for acknowledgements for other messages before sending this message.</div>
+      <div class="B_-_Body"><a name="4260854">However, if you enable the Strict Mode feature for a destination in the Messaging editor in Studio, PolicyCenter waits for the acknowledgement for every non-safe-ordered message. There are also destination options for multi-threaded sending of non-safe-ordered messages. For details, see </a><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.07.html#4084669', '');" title="Message Ordering and Multi-Threaded Sending">“How Destination Settings Affects Ordering”</a>.</div>
+      <div class="B_-_Body"><a name="4260844">For PolicyCenter, messages for the following events are by default non-safe-ordered messages: </a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="4256801">Group</a></span> events</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="4260996">User</a></span> events</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="4260997">If Multiple Events Fire, Which Message Sends First?</a></h4>
+      <div class="B_-_Body"><a name="4260998">For each destination, the Event Fired rules run in the order that each destination’s configuration specifies in the </a><span class="ui_-_UI_element">Messaging</span> editor in Studio. In general, messages send in the order of message creation in Event Fired rules. PolicyCenter runs the Event Fired for one event name before the rules run again for the next listed event name. For messages with both the same event name and same destination, the message order is the order that your Event Fired rules create the messages. For more information about destination setup, see <a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.03.html#3006454', '');" title="Message Destination Overview">“Message Destination Overview”</a>.</div>
+      <div class="B_-_Body"><a name="4261176">If you register a messaging plugin, you must register it in two places. First, register it in the plugin registry in the plugin editor. See </a><a href="javascript:WWHClickedPopup('config', 'studio_plugins.11.1.html#3595679', '');" title="Using the Plugins Registry Editor">“Using the Plugins Registry Editor” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('config', 'studio_plugins.11.1.html#3595679', '');" title="Using the Plugins Registry Editor">Configuration Guide</a></span>. Next, register it in the messaging registry in the messaging editor; see <a href="javascript:WWHClickedPopup('config', 'studio_messaging.15.1.html#1178213', '');" title="Using the Messaging Editor">“Using the Messaging Editor” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('config', 'studio_messaging.15.1.html#1178213', '');" title="Using the Messaging Editor">Configuration Guide</a></span>.</div>
+      <div class="B_-_Body"><a name="4260696">In typical deployments, this means that the event name order in the destination setup is very important. Carefully choose the order of the event names in the destination setup. It is important to remember that changes to the ordering of the event names change the order of the events in Event Fired rules. Such changes can produce radical effects in the behavior of Event Fired rules if they assume a certain event order. For example, typical downstream systems want information about a parent object before information about the child objects.</a></div>
+      <div class="B_-_Body"><a name="4261158">The event name order in the destination setup is critical. Carefully choose the order of the event names in the destination setup. Be extremely careful about any changes to ordering event names in the destination setup. Changes in the event name order could change message order, and that can force major changes in your Event Fired rules logic.</a></div>
+      <div class="B_-_Body"><a name="4259641">Because PolicyCenter supports </a><span class="e_-_emphasis">safe-ordering</span> of messages related to a primary object, the actual ordering algorithm is more complex. Refer to <a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.07.html#4253049', '');" title="Message Ordering and Multi-Threaded Sending">“Message Ordering and Multi-Threaded Sending”</a> for details.</div>
+      <h4 class="H2_-_Heading_2"><a name="4261012">Message Ordering and Performance Tuning Details</a></h4>
+      <div class="B_-_Body"><a name="4261016">PolicyCenter pulls messages from the database (the send queue) in batches of messages on the batch server only, and then waits for a polling interval before querying again. </a></div>
+      <div class="B_-_Body"><a name="3964228">You can configure the number of messages that the messaging subsystem retrieves in each round of sending. This is called the chunk size. Configure the chunk size in the messaging destination configuration editor in the </a><span class="ui_-_UI_element">Chunk&nbsp;Size</span> field. By default, this value is set to 100,000, which typically includes all sendable messages currently in the send queue. You can also change the polling interval in messaging destination configuration editor in the <span class="ui_-_UI_element">Polling&nbsp;Interval</span> field.</div>
+      <div class="B_-_Body"><a name="3964230">You must understand the difference between message readers and message sending threads:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="e_-_emphasis"><a name="3964231">Message readers</a></span> are threads that query the database for messages. Message readers use the <span class="e_-_emphasis">message send order</span> (typically this is equivalent to creation order). The message reader never loads more than the maximum number of messages in the chunk size setting at one time.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="e_-_emphasis"><a name="3964232">Message sender</a></span> <span class="e_-_emphasis">threads</span> are threads that actually call the messaging plugins to send the messages. A new feature in this release is support for multiple sender threads per messaging destination for safe-ordered messages. You can configure the number of sender threads for safe-ordered messages in the messaging destination configuration editor in the <span class="ui_-_UI_element">Number Sender&nbsp;Threads</span> field.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3964233">The messaging ordering and sending architecture works as follows by default (see </a><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.07.html#4084669', '');" title="Message Ordering and Multi-Threaded Sending">“How Destination Settings Affects Ordering”</a>):</div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="3964234">Each messaging destination has a worker thread that queries the database for messages for that destination only. In other words, </a><span class="e_-_emphasis">each destination has its own message reader</span>. Each message reader thread (each worker thread) acts independently.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3964239">The destination’s message reader queries the database for one batch of messages, where the maximum size is defined by the chunk size. PolicyCenter does not use the chunk size value in the query itself. Instead, the message reader orders the results by send order and stops iterating across the query results after it retrieves that many messages from the database. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="4296113">PolicyCenter performs two separate queries:</a></div>
+      <div class="LS2A_-_List_Start_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS2A_-_List_Start_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">a.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS2A_-_List_Start_002c_Level_2_Alpha_inner"><a name="4259658">First, PolicyCenter queries for messages associated with a primary object for that destination, also known as </a><span class="e_-_emphasis">safe-ordered messages</span>. The maximum number of messages returned for this query is also the chunk size. The database query itself ensures PolicyCenter that no more than one message per primary object exists in this list. If another message for a primary object is sent but unacknowledged, no messages for that object appears in this list. This enforces the rule that no more than one message can be in-flight for each primary object per destination.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP2_-_List_Para_002c_Level_2"><a name="4261299">The query ensures that no two messages are in flight (sent but not yet acknowledged) for the same destination for the same primary object. So, if there are 100 messages for one primary object, the query only reads and dispatches one of those messages (out of a possible 100) to the destination subthreads.</a></div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">b.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="4261300">Next, PolicyCenter queries for all messages not associated with the primary object for that destination, also known as </a><span class="e_-_emphasis">non-safe-ordered messages</span>. If the chunk size is not set high enough, the returned set is not the full set of non-claim-specific messages. Be aware the chunk size affects each query. It is not cumulative for safe-ordered and non-safe-ordered messages.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="4296118">By default, the chunk size is set to 100,000, which is usually sufficient for customers. Be sure not to lower the chunk size too much. Typically there are dependencies between safe-ordered and non-safe-ordered messages on that destination. If the chunk size is too low, the non-safe-ordered message query might not retrieve all the non-safe-ordered messages that your safe-ordered messages rely upon. The downstream system might need to receive the message that applies to many primary objects before any other messages reference that information.</a></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="4424984">For each destination, the worker thread iterates through all non-safe-ordered messages for that destination, sending to the messaging plugins. Settings in the Messaging editor in Studio for each destination affect how non-safe-ordered messages are sent. The choices are single thread, multi-thread, or strict mode. Those settings affect how many threads send messages, and how the application handles errors. See </a><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.07.html#4084669', '');" title="Message Ordering and Multi-Threaded Sending">“How Destination Settings Affects Ordering”</a>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="4424677">After each worker thread finishes sending non-safe-ordered messages, it creates subthreads to send safe-ordered messages for that destination. Configure the number of threads in the messaging destination configuration editor in the </a><span class="ui_-_UI_element">Number&nbsp;Sender&nbsp;Threads</span> field. Each worker thread distributes the list of safe-ordered messages to send to the subthreads.</div>
+      <div class="LP_-_List_Para"><a name="4256939">Assigning the number of sender subthreads for a destination by default affects only the safe-ordered messages for that destination. For non-safe-ordered messages (also called Messages Without Primary), the rules depend on destination settings. See </a><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.07.html#4084669', '');" title="Message Ordering and Multi-Threaded Sending">“How Destination Settings Affects Ordering”</a>.</div>
+      <div class="LP_-_List_Para"><a name="4259675">If the message is associated with a primary entity, during messaging operations you can optionally lock the primary entity at the database level. This can reduce some problems in edge cases in which other threads (including worker threads) try to modify objects associated with this same object. </a></div>
+      <div class="LP_-_List_Para"><a name="4317848">For example, if using the default </a><span class="cv_-_computer_voice">Account</span> primary entity, the system locks the associated <span class="cv_-_computer_voice">Account</span> during messaging.</div>
+      <div class="LP_-_List_Para"><a name="4256945">PolicyCenter checks the </a><span class="cv_-_computer_voice">config.xml</span> parameter <span class="cv_-_computer_voice">LockPrimaryEntityDuringMessageHandling</span>. If it is set to <span class="cv_-_computer_voice">true</span>, PolicyCenter locks the primary entity during message send, during all parts of message reply handling, and while marking a message as skipped.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3964306">The message reader thread waits until all destination threads send all messages in the queues for each subthread.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3964310">PolicyCenter checks how much time passed since the beginning of this round of sending (since the beginning of </a><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.07.html#3964239', '');" title="Message Ordering and Multi-Threaded Sending">step 2</a>) and sleeps the remainder of the polling interval. Configure the polling interval in the messaging destination configuration editor in the <span class="ui_-_UI_element">Polling&nbsp;Interval</span> field. If the amount of time since the last beginning of the polling interval is <span class="p_-_parameter">TIME_PASSED</span> milliseconds, and the polling interval is <span class="p_-_parameter">POLLING_INTERVAL</span> milliseconds. If the polling interval since the last query has not elapsed, the reader sleeps for (<span class="p_-_parameter">POLLING_INTERVAL</span> <span class="cv_-_computer_voice">-</span> <span class="p_-_parameter">TIME_PASSED</span>) milliseconds. If the time passed is greater than the polling interval, the thread does not sleep before re-querying.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="3964317">The message reader reads the next batch of messages. Begin this procedure again at </a><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.07.html#3964239', '');" title="Message Ordering and Multi-Threaded Sending">step 2</a>.</div>
+      <div class="LP_-_List_Para"><a name="3964318">The polling interval setting critically affects messaging performance. If the value is low, the message reader thread sleeps little time or even suppresses sleeping between rounds of querying the database for more messages.</a></div>
+      <div class="B_-_Body"><a name="4256968">To illustrate how this works, compare the following situations.</a></div>
+      <div class="B_-_Body"><a name="4305205">Suppose there are two messaging destinations, and both destinations use </a><span class="cv_-_computer_voice">Account</span> as the primary entity. Also suppose the send queue contains 10 messages for each destination. For each destination, assume that there is no more than one message for each account. In other words, for each destination, there are 10 total messages related to 10 different accounts:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="4305206">Assuming the number of messages does not exceed the chunk size, each destination gets only one message for the account for that destination from the database. In this case, every message can be sent immediately because each message for that destination is independent because they are for different accounts. If the destination’s </a><span class="ui_-_UI_element">Number Sender Threads</span> setting is greater than 1, PolicyCenter distributes all account-specific messages to multiple subthreads. The length of the destination queue never exceeds the number of messages queried in each round of sending. The message reader waits until all sending is complete before repeating.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="4305210">In contrast, suppose the messages for one destination includes 10 account-specific messages for the same account and 5 non-account-specific messages:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="4305214">Assuming the number of messages does not exceed the chunk size, PolicyCenter reads all 5 non-safe-ordered messages and sends them. However, PolicyCenter only gets one message for the account for that destination from the database. If the destination’s </a><span class="ui_-_UI_element">Number Sender Threads</span> setting is greater than 1, PolicyCenter distributes all account-specific messages in multiple threads per destination. In this case there is only message that is sendable. Compared to the previous example, PolicyCenter handles fewer messages for each polling interval.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3964373">To improve performance, particularly cases like the second example, change the following settings in the Messaging editor for your destinations:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3964374">Lower the </a><span class="ui_-_UI_element">Polling Interval</span>. The value is in milliseconds. Experiment with lower values perhaps as low as 1000 (which means 1 second) or even lower. Test any changes to see the real-world effects on your messaging performance. If your performance issues primarily relate to many messages per primary entity per destination, then the polling interval is the most important messaging performance setting. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="4417574">Increase the value for </a><span class="ui_-_UI_element">Number Sender Threads</span>. This permits more worker threads to operate in parallel on the batch server only for sending safe-ordered messages. Again, test any changes to see the real-world effects on your messaging performance. If your performance issues primarily relate to many messages but few messages per primary entity for each destination, then the sending threads number is the most important messaging performance setting.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="4417704">To get maximum performance from multiple threads, keep your message transport plugin implementation’s </a><span class="cv_-_computer_voice">send</span> method as quick as possible, with little variation in duration. The application does not load the next chunk of messages until the application passes all messages in the chunk to the message transport <span class="cv_-_computer_voice">send</span> method. If your <span class="cv_-_computer_voice">send</span> method sometimes takes a long time, convert your code to asynchronous sending. With asynchronous sending, the <span class="cv_-_computer_voice">send</span> method completes quickly and the reply is handled later. See <a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.03.html#3006454', '');" title="Message Destination Overview">“Message Destination Overview”</a>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="4417575">Thread-Safe Plugins</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3977215">You must write all messaging plugin implementation code </a><span class="e_-_emphasis">as thread-safe code</span>. This means that you must be extremely careful about static variables and any other shared memory structures that multiple threads might access running the same (or related) code. </div>
+      <div class="B_-_Body"><a name="4261699">For more information, see </a><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">“Concurrency” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">Gosu Reference Guide</a></span>.</div>
+      <div class="B_-_Body"><a name="4257020">You must write your messaging plugin code as thread-safe even if the </a><span class="ui_-_UI_element">Number Sender Threads</span> setting is set to 1.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="4084669">How Destination Settings Affects Ordering</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="4422511">For messages without a primary object (sometimes called non-safe-ordered messages), there are settings in the Messaging editor for each messaging destination that configures how to order them.</a></div>
+      <div class="B_-_Body"><a name="4422652">The </a><span class="ui_-_UI_element">Message Without Primary</span> setting has three choices:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ui_-_UI_element"><a name="4425243">Single thread</a></span> – Messages without a primary object send in a single thread, and do not wait for an acknowledgement before proceeding to other messages. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ui_-_UI_element"><a name="4425247">Multi thread</a></span> – Messages without a primary object send in multiple threads, and do not wait for an acknowledgement before proceeding to other messages. The precise order of sending of messages without a primary object is non-deterministic.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ui_-_UI_element"><a name="4423013">Strict Mode</a></span><span class="ri_-_run_in_header"> </span>– If Strict Mode is enabled, messages without a primary object send in a strict order, and wait for an acknowledgement before proceeding to other messages. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="4423274">Carefully choose the value for each messaging destination.</a></div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="4423521">If you use either </a><span class="ui_-_UI_element">Single thread</span> or <span class="ui_-_UI_element">Multi thread</span> options, errors for messages without a primary object do not hold up other messages. This means that errors in such messages may cause errors at the destination if the system is unprepared for this situation. </div>
+      <div class="B_-_Body"><a name="4423788">If Strict Mode is enabled, if errors occur other messages for that destination stop until an administrator resolves the problem. For example, an administrative user can resync that message. Resyncing the messages allows other messages to send for that primary object for that destination after resynchronizing that primary object. For more information about resynchronizing, see </a><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.12.html#4257054', '');" title="Resynchronizing Messages for a Primary Object">“Resynchronizing Messages for a Primary Object”</a>.</div>
+      <div class="B_-_Body"><a name="4423811">With the value to </a><span class="ui_-_UI_element">Single thread</span> or <span class="ui_-_UI_element">Multi thread</span>, which means Strict Mode is disabled:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="4423799">Each destination sends non-safe-ordered messages in one or more threads, depending on whether you choose </a><span class="uit_-_UI_element_table">Single thread</span> or <span class="ui_-_UI_element">Multi thread</span>. Next, the application sends safe-ordered messages. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="4423680">Optionally, sending safe-ordered messages is multi-threaded. For more, see </a><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.07.html#4253049', '');" title="Message Ordering and Multi-Threaded Sending">“Message Ordering and Multi-Threaded Sending”</a>.</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="4196793">Non-safe-ordered messages send in order but never wait for acknowledgement. Non-safe-ordered message errors never block other messages.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="4196811">With Strict Mode on, the behavior is:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="4196825">Non-safe-ordered messages require an acknowledgement before sending future next message (of either type) to that destination. This option reduces throughput of non-safe-ordered messages. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="4196851">Delay sending safe-ordered messages until all non-safe-ordered messages are sent.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="4196859">Errors block all future messages for that destination, independent of the message type.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="4261987">For each messaging destination, carefully consider the data integrity, error handling, and performance needs for your system before deciding on the value of the Message without Primary option.</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

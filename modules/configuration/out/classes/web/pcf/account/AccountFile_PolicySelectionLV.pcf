@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    id="AccountFile_PolicySelectionLV">
+    <ExposeIterator
+      valueType="entity.PolicyPeriod"
+      widget="AccountFile_PolicySelectionLV"/>
+    <Require
+      name="visiblePolicies"
+      type="List&lt;PolicyPeriod&gt;"/>
+    <RowIterator
+      canPick="false"
+      editable="true"
+      elementName="aPeriod"
+      hasCheckBoxes="true"
+      value="visiblePolicies">
+      <Row
+        useArchivedStyle="aPeriod.PolicyTerm.Archived">
+        <Cell
+          action="retrievePolicy(aPeriod)"
+          id="PolicyNumber"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.PolicyNumber"
+          sortOrder="4"
+          value="aPeriod.PolicyNumberDisplayString"/>
+        <Cell
+          enableSort="false"
+          id="Product"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.Product"
+          sortOrder="1"
+          value="aPeriod.Policy.Product"/>
+        <Cell
+          enableSort="false"
+          id="Status"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.Status"
+          value="aPeriod.PeriodDisplayStatus"/>
+        <DateCell
+          id="EffectiveDate"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.EffectiveDate"
+          sortOrder="2"
+          value="aPeriod.PeriodStart"/>
+        <Cell
+          id="ExpirationDate"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.ExpirationDate"
+          sortOrder="3"
+          value="aPeriod.PeriodEnd"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function retrievePolicy(aPeriod : PolicyPeriod){  
+  if (aPeriod.Job.NewTerm and !aPeriod.PolicyNumberAssigned){
+    JobForward.go(aPeriod.Job)  
+  } else {
+    PolicyFileForward.go(aPeriod, aPeriod.EditEffectiveDate)
+  }
+}]]></Code>
+  </ListViewPanel>
+</PCF>

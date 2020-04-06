@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    canVisit="perm.System.viewmysubmissions"
+    id="DesktopSubmissions"
+    title="displaykey.Web.DesktopSubmissions">
+    <LocationEntryPoint
+      signature="DesktopSubmissions()"/>
+    <Variable
+      initialValue="Job.finder.findSubmissionsAndIssuancesByUser(User.util.CurrentUser)"
+      name="submissions"
+      recalculateOnRefresh="true"/>
+    <Screen
+      id="DesktopSubmissionsScreen">
+      <TitleBar
+        appendListViewPaging="true"
+        title="displaykey.Web.DesktopSubmissions"/>
+      <Toolbar>
+        <SearchItem
+          afterFailure="if (searchCriteria typeis PolicySearchCriteria) searchCriteria.resetForSearchItems(&quot;Submission&quot;, null, searchText)"
+          id="SubmissionSearch"
+          label="displaykey.Web.TabBar.Policy.SubmissionNumberSearchMenuItem"
+          onFailure="PolicySearch.go()"
+          onResult="JobForward.go(result as Job)"
+          search="searchSubmission(searchText)"
+          validationError="displaykey.Web.TabBar.Policy.SubmissionNumberSearchMenuItem.Error(searchText)"/>
+      </Toolbar>
+      <PanelRef
+        def="DesktopSubmissionsLV(submissions)"/>
+    </Screen>
+    <Code><![CDATA[function searchSubmission (searchText : String) : Job{
+  var result = Job.finder.findJobByJobNumber(searchText) 
+  if (result == null or not perm.Job.view(result)) 
+    return null
+  return result
+}]]></Code>
+  </Page>
+</PCF>

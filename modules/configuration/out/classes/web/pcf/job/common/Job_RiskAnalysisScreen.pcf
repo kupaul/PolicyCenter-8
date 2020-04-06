@@ -1,0 +1,152 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="not policyPeriod.Locked"
+    id="Job_RiskAnalysisScreen">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <TitleBar/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        editable="openForEdit"
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, policyPeriod.Job, jobWizardHelper)">
+        <ToolbarButtonSet/>
+      </ToolbarButtonSetRef>
+    </Toolbar>
+    <PanelRef
+      def="OOSEPanelSet(policyPeriod, jobWizardHelper)"/>
+    <PanelRef
+      editable="true">
+      <Toolbar>
+        <ToolbarButton
+          action="NewManualUWIssuePopup.push(policyPeriod)"
+          available="!(policyPeriod.Job.Subtype == typekey.Job.TC_AUDIT || policyPeriod.Job.Subtype == typekey.Job.TC_CANCELLATION)"
+          hideIfReadOnly="true"
+          id="AddManualIssue"
+          label="displaykey.Web.Policy.EvaluationIssues.AddManualIssue"
+          visible="perm.System.createmanualuwissue"/>
+        <ToolbarButton
+          action="UWActivityPopup.push(policyPeriod, ActivityPattern.finder.getActivityPatternByCode(&quot;approve_general&quot;), &quot;UWRequest&quot;)"
+          hideIfReadOnly="true"
+          id="RequestApproval"
+          label="displaykey.Web.Policy.EvaluationIssues.RequestApproval"/>
+        <ToolbarButton
+          action="policyPeriod.JobProcess.setPostUWRequestChanges(); policyPeriod.Bundle.commit()"
+          hideIfReadOnly="true"
+          id="LockForReview"
+          label="displaykey.Web.Policy.EvaluationIssues.LockForReview"
+          visible="!policyPeriod.EditLocked and perm.System.editlockoverride"/>
+      </Toolbar>
+      <CardViewPanel
+        id="RiskAnalysisCV">
+        <Card
+          id="EvaluationIssuesCard"
+          title="displaykey.Web.Policy.EvaluationIssues"
+          visible="perm.System.viewriskevalissues">
+          <PanelRef
+            def="RiskEvaluationPanelSet(policyPeriod, true)"/>
+        </Card>
+        <Card
+          id="PriorPolicyCard"
+          title="displaykey.Web.Policy.PriorHistory.PriorPolicies"
+          visible="perm.System.viewriskpriorpolicies">
+          <PanelRef
+            def="PriorHistoryDV(policyPeriod)"/>
+        </Card>
+        <Card
+          id="ClaimsCard"
+          title="displaykey.Web.Policy.Claims"
+          visible="perm.System.viewriskclaims">
+          <SearchPanel
+            cachingEnabled="false"
+            criteriaName="claimSearchCriteria"
+            resultsName="claimSet"
+            search="return performSearch(claimSearchCriteria)"
+            searchCriteria="policyPeriod.getNewClaimSearchCriteria(policyPeriod.Job.Subtype != typekey.Job.TC_SUBMISSION)"
+            searchOnEnter="false"
+            searchResultsType="ClaimSet">
+            <DetailViewPanel>
+              <InputColumn>
+                <PickerInput
+                  conversionExpression="(PickedValue as PolicyPeriodSummary).PolicyNumber"
+                  editable="true"
+                  freeInputEnabled="false"
+                  id="PolicyNumberPicker"
+                  label="displaykey.Web.Policy.RiskAnalysis.ClaimSearch.PolicyNumber"
+                  pickLocation="PolicySearchPopup.push()"
+                  value="claimSearchCriteria.PolicyNumber"
+                  visible="policyPeriod.Job.Subtype == typekey.Job.TC_SUBMISSION"/>
+                <Input
+                  editable="true"
+                  id="DateRangeForClaimSearch"
+                  label="displaykey.Web.Policy.RiskAnalysis.ClaimSearch.Date"
+                  required="false"
+                  value="claimSearchCriteria.DateCriteria"/>
+              </InputColumn>
+              <InputFooterSection>
+                <InputSetRef
+                  def="SearchAndResetInputSet()"/>
+              </InputFooterSection>
+            </DetailViewPanel>
+            <ListDetailPanel
+              selectionName="selectedClaim"
+              selectionType="Claim">
+              <PanelRef
+                def="ClaimsLV(claimSet.Claims, claimSet==null ? new gw.losshistory.ClaimPolicyPeriodFilterSet(null) : claimSet.retrieveClaimFilter())">
+                <Toolbar/>
+              </PanelRef>
+              <PanelRef
+                def="ClaimDetailsCV(selectedClaim,false)"
+                editable="false"
+                visible="selectedClaim != null"/>
+            </ListDetailPanel>
+          </SearchPanel>
+        </Card>
+        <Card
+          id="LossHistoryCard"
+          title="displaykey.Web.Policy.PriorLosses"
+          visible="perm.System.viewriskpriorlosses">
+          <PanelRef
+            def="LossHistoryTypeSelectDV(policyPeriod.Policy)"/>
+          <DetailViewPanel>
+            <InputColumn>
+              <InputSetRef
+                def="LossHistoryInputSet(policyPeriod)"
+                mode="policyPeriod.Policy.LossHistoryType"/>
+            </InputColumn>
+          </DetailViewPanel>
+        </Card>
+        <Card
+          id="MotorVehicleRecord"
+          title="displaykey.Web.PersonalAuto.MotorVehicleRecord.MotorVehicleRecords"
+          visible="policyPeriod.PersonalAutoLineExists">
+          <PanelRef
+            def="MotorVehicleRecordSummary(policyPeriod)"/>
+        </Card>
+      </CardViewPanel>
+    </PanelRef>
+    <Code><![CDATA[function performSearch(claimSearchCriteria : gw.losshistory.ClaimSearchCriteria) : ClaimSet {
+        if (policyPeriod.Job.Subtype == typekey.Job.TC_SUBMISSION) {
+          claimSearchCriteria.Policy = null
+        } else {
+          claimSearchCriteria.Policy = policyPeriod.Policy
+          claimSearchCriteria.PolicyNumber = policyPeriod.PolicyNumber
+        }
+        if ( claimSearchCriteria.PolicyNumber == null || claimSearchCriteria.PolicyNumber.length == 0) {
+          throw new gw.api.util.DisplayableException(displaykey.Web.Policy.RiskAnalysis.ClaimSearch.Error.PolicyNumberRequired)
+        }
+        return claimSearchCriteria.performSearch()
+      }]]></Code>
+  </Screen>
+</PCF>

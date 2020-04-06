@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" entity="RateAdjFactorExt" exportable="true" ignoreForEvents="true" loadable="false" platform="false" readOnly="true" table="sample_RateAdjFactor" type="keyable">
+  <fulldescription>
+    A sample table storing various adjustment factors used in rating calculations.  It supports either factors that
+      are matched exactly on string values, stringOption, stringOption2, or factors that fall within an
+      inclusive numeric range, [minNumber-maxNumber].  Factors can be state-specific or be a default for all
+      states, state=null, with state-specific rates overriding defaults.  Lastly, all factors have an effective
+      period, [effDate-expDate) where a null date means that side of the range is unbounded.
+  </fulldescription>
+  <column desc="This field indicates the name of the factor that should be applied.  Look-ups are always within a named factor.  Using this allows a single table to provide rating factors for many different types of simple (single parameter) look-ups." name="factorName" nullok="false" type="varchar">
+    <columnParam name="size" value="50"/>
+  </column>
+  <column desc="Indicates a rate is applicable to a given state.  Null indicates a default rate which can be overridden by a rate specific to a state." name="factorState" nullok="true" type="varchar">
+    <columnParam name="size" value="10"/>
+  </column>
+  <column desc="This field should store a string value, such as the code for a typecode field, which will be used for looking up a factor." name="stringOption" nullok="true" type="varchar">
+    <columnParam name="size" value="30"/>
+  </column>
+  <column desc="This field should store a secondary string value used for looking up a factor." name="stringOption2" nullok="true" type="varchar">
+    <columnParam name="size" value="30"/>
+  </column>
+  <column desc="The minimum of the inclusive number range for which a given lookup value should fall within." name="minNumber" nullok="true" type="decimal">
+    <columnParam name="scale" value="4"/>
+    <columnParam name="precision" value="21"/>
+  </column>
+  <column desc="The maximum of the inclusive number range for which a given lookup value should fall within." name="maxNumber" nullok="true" type="decimal">
+    <columnParam name="scale" value="4"/>
+    <columnParam name="precision" value="21"/>
+  </column>
+  <column desc="The date on which this factor becomes effective (inclusive).  A null date means this has always been effective." name="effDate" nullok="true" type="datetime"/>
+  <column desc="The date on which this factor expires (exclusive).  A null date means this will always be effective." name="expDate" nullok="true" type="datetime"/>
+  <column desc="The base rate to be used." name="factor" nullok="false" type="decimal">
+    <columnParam name="scale" value="4"/>
+    <columnParam name="precision" value="8"/>
+  </column>
+  <index desc="Performance index including every non-decimal field." name="RAFEExtInd1">
+    <indexcol keyposition="1" name="factorName"/>
+    <indexcol keyposition="2" name="factorState"/>
+    <indexcol keyposition="3" name="stringOption"/>
+    <indexcol keyposition="4" name="stringOption2"/>
+    <indexcol keyposition="5" name="effDate"/>
+    <indexcol keyposition="6" name="expDate"/>
+  </index>
+</entity>

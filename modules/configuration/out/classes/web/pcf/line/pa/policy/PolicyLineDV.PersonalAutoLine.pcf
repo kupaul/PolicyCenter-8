@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="PolicyLineDV"
+    mode="PersonalAutoLine">
+    <Require
+      name="policyLine"
+      type="PolicyLine"/>
+    <Variable
+      initialValue="policyLine as PersonalAutoLine"
+      name="paLine"
+      type="PersonalAutoLine"/>
+    <Require
+      name="jobWizardHelper"
+      type="gw.api.web.job.JobWizardHelper"/>
+    <InputColumn>
+      <!-- State clauses -->
+      <Label
+        label="displaykey.Web.Policy.Coverages.LiabilityCoverages"/>
+      <InputIterator
+        elementName="coverage"
+        value="paLine.PALineCoverages">
+        <IteratorSort
+          sortBy="coverage.Pattern.CoverageCategory.Priority"
+          sortOrder="1"/>
+        <IteratorSort
+          sortBy="coverage.Pattern.CoverageCategory.PublicID"
+          sortOrder="2"/>
+        <IteratorSort
+          sortBy="coverage.Pattern.Priority"
+          sortOrder="3"/>
+        <IteratorSort
+          sortBy="coverage.Pattern.Name"
+          sortOrder="4"/>
+        <InputSetRef
+          def="CoverageInputSet(coverage.Pattern, paLine, false)"
+          mode="coverage.Pattern.Code"/>
+      </InputIterator>
+    </InputColumn>
+    <InputColumn>
+      <InputIterator
+        elementName="vehicle"
+        id="EUs"
+        value="paLine.Vehicles">
+        <Label
+          label="vehicle.DisplayName"/>
+        <InputIterator
+          elementName="coverage"
+          id="CoveragesIterator"
+          value="vehicle.Coverages">
+          <IteratorSort
+            sortBy="coverage.Pattern.CoverageCategory.Priority"
+            sortOrder="1"/>
+          <IteratorSort
+            sortBy="coverage.Pattern.CoverageCategory.PublicID"
+            sortOrder="2"/>
+          <IteratorSort
+            sortBy="coverage.Pattern.Priority"
+            sortOrder="3"/>
+          <IteratorSort
+            sortBy="coverage.Pattern.Name"
+            sortOrder="4"/>
+          <InputSetRef
+            def="CoverageInputSet(coverage.Pattern, vehicle, false)"
+            mode="coverage.Pattern.Code"/>
+        </InputIterator>
+      </InputIterator>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

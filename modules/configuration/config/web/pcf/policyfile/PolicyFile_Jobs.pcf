@@ -1,0 +1,74 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    afterEnter="gw.api.web.PebblesUtil.addWebMessages(CurrentLocation, policyPeriod.PolicyFileMessages)"
+    canVisit="perm.PolicyPeriod.view(policyPeriod) and perm.System.pfileworkorders"
+    id="PolicyFile_Jobs"
+    title="displaykey.Web.PolicyFile.Jobs">
+    <LocationEntryPoint
+      signature="PolicyFile_Jobs(policyPeriod : PolicyPeriod, asOfDate : DateTime)"/>
+    <LocationEntryPoint
+      signature="PolicyFile_Jobs(policyPeriod : PolicyPeriod, asOfDate : DateTime, initialSelectedJob : Job)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="asOfDate"
+      type="DateTime"/>
+    <Variable
+      initialValue="policyPeriod.Job"
+      name="initialSelectedJob"
+      type="Job"/>
+    <Variable
+      initialValue="policyPeriod.Policy.Jobs"
+      name="jobs"
+      recalculateOnRefresh="true"/>
+    <Screen
+      id="Policy_JobsScreen">
+      <TitleBar/>
+      <Toolbar/>
+      <ListDetailPanel
+        id="DetailPanel"
+        lockWhileEditing="true"
+        selectionName="selectedJob"
+        selectionOnEnter="initialSelectedJob"
+        selectionType="Job">
+        <Variable
+          initialValue="new gw.pcf.policysummary.PolicySummaryHelper(policyPeriod, asOfDate)"
+          name="policySummaryHelper"
+          type="gw.pcf.policysummary.PolicySummaryHelper"/>
+        <PanelRef
+          def="JobsLV(jobs, policyPeriod)">
+          <Toolbar>
+            <CheckedValuesToolbarButton
+              allCheckedRowsAction="policySummaryHelper.gotoWorkOrdersDiff(CheckedValues, displaykey.Web.PolicyFile.DiffPolicyWorkOrders)"
+              flags="two job"
+              id="Policy_Jobs_DiffButton"
+              iterator="JobsLV.JobsLV"
+              label="displaykey.Web.PolicyFile.Summary.Diff"
+              shortcut="I"/>
+          </Toolbar>
+        </PanelRef>
+        <CardViewPanel>
+          <Card
+            id="DetailsTitleCard"
+            title="displaykey.Web.Job.DetailsTitle(selectedJob.DisplayType)">
+            <PanelRef
+              def="Policy_JobInfoDV(selectedJob, asOfDate)"
+              mode="if (selectedJob.SelectedVersion.PolicyTerm.Archived) {return &quot;Archived&quot;} else if (typeof selectedJob == Audit) {return &quot;Audit&quot;}else {return &quot;default&quot;}">
+              <Toolbar/>
+            </PanelRef>
+            <PanelRef
+              def="Policy_JobUsersLV(selectedJob)"
+              visible="selectedJob.RoleAssignments.Count &gt; 0">
+              <TitleBar
+                title="displaykey.Web.PolicyFile.JobUsers.Title"/>
+            </PanelRef>
+          </Card>
+        </CardViewPanel>
+      </ListDetailPanel>
+    </Screen>
+  </Page>
+</PCF>

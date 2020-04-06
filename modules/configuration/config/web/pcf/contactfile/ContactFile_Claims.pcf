@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    canVisit="perm.System.contactclaims"
+    id="ContactFile_Claims"
+    title="displaykey.Web.ContactFile.Claims.Title">
+    <LocationEntryPoint
+      signature="ContactFile_Claims(contact : Contact)"/>
+    <Variable
+      name="contact"
+      type="Contact"/>
+    <Screen
+      id="ContactFile_ClaimScreen">
+      <SearchPanel
+        criteriaName="claimSearchCriteria"
+        resultsName="claimSet"
+        search="claimSearchCriteria.performSearch()"
+        searchCriteria="contact.NewClaimSearchCriteria"
+        searchOnEnter="false"
+        searchResultsType="ClaimSet">
+        <DetailViewPanel>
+          <InputColumn>
+            <DateCriterionChoiceInput
+              editable="true"
+              id="DateRangeForClaimSearch"
+              label="displaykey.Web.ContactFile.Claims.ClaimSearch.Date"
+              required="false"
+              value="claimSearchCriteria.DateCriteria"/>
+          </InputColumn>
+          <InputFooterSection>
+            <InputSetRef
+              def="SearchAndResetInputSet()"/>
+          </InputFooterSection>
+        </DetailViewPanel>
+        <ListDetailPanel
+          lockWhileEditing="true"
+          selectionName="selectedClaim"
+          selectionType="Claim">
+          <PanelRef
+            def="ContactClaimsLV(claimSet.Claims, contact.PreferredSettlementCurrency)">
+            <Toolbar/>
+          </PanelRef>
+          <PanelRef
+            def="ClaimDetailsCV(selectedClaim,false)"
+            editable="false"
+            visible="selectedClaim != null"/>
+        </ListDetailPanel>
+      </SearchPanel>
+    </Screen>
+  </Page>
+</PCF>

@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <MenuItemSet
+    id="RateRoutineOperandMenuItemSet"
+    mode="default">
+    <Require
+      name="operand"
+      type="CalcStepDefinitionOperand"/>
+    <Require
+      name="routine"
+      type="CalcRoutineDefinition"/>
+    <Require
+      name="paramInScopeUsageMap"
+      type="java.util.Map&lt;CalcRoutineParamName,List&lt;gw.rating.flow.util.InScopeUsage&gt;&gt;"/>
+    <Require
+      name="costDataUsages"
+      type="List&lt;gw.rating.flow.util.InScopeUsage&gt;"/>
+    <Require
+      name="orderedSteps"
+      type="java.util.List&lt;entity.CalcStepDefinition&gt;"/>
+    <Variable
+      initialValue="gw.pcf.rating.flow.RateRoutinePullRightMenuHelper.filteredParamSet(routine.ParameterSet).sortBy(\param -&gt; param.DisplayName)"
+      name="inScopeParameters"
+      recalculateOnRefresh="true"
+      type="List&lt;CalcRoutineParameter&gt;"/>
+    <Variable
+      initialValue="gw.pcf.rating.flow.RateRoutinePullRightMenuHelper.getTargetDataTypes(operand)"
+      name="storeTargetTypes"
+      recalculateOnRefresh="true"
+      type="java.util.Set&lt;gw.lang.reflect.IType&gt;"/>
+    <Variable
+      initialValue="orderedSteps.firstWhere(\step -&gt; step.StoreLocation.HasContent)"
+      name="firstLocalVarStoreStep"
+      recalculateOnRefresh="true"
+      type="entity.CalcStepDefinition"/>
+    <MenuItemIterator
+      elementName="costDataItem"
+      value="costDataUsages">
+      <MenuItem
+        action="operand.changeToOperandType(TC_INSCOPE); operand.InScopeParam = TC_COSTDATA; operand.InScopeValue = costDataItem.Path; operand.InScopeValueIsModifier = false; operand.InScopeValueType = costDataItem.FeatureType as String"
+        available="gw.pcf.rating.flow.RateRoutineOperandMenuHelper.showPullRight(operand, costDataItem.FeatureType)"
+        id="item"
+        label="costDataItem.Path"
+        retainScrollPosition="true"/>
+    </MenuItemIterator>
+    <MenuItemDivider/>
+    <MenuItem
+      action="RateRoutineFunctionPopup.push(operand, storeTargetTypes, paramInScopeUsageMap)"
+      available="true"
+      checked="operand.OperandType == TC_RATEFUNC"
+      id="RateRoutineFunctionMenuItem"
+      label="displaykey.Web.Rating.Flow.CalcRoutine.FunctionMenuItem"/>
+    <MenuItem
+      available="true"
+      checked="operand.OperandType == TC_INSCOPE and operand.InScopeParam != TC_COSTDATA"
+      hideIfDisabled="false"
+      id="RateRoutineEntityMenuItem"
+      label="displaykey.Web.Rating.Flow.CalcRoutine.EntityFieldMenuItem"
+      subMenuOnDemand="true">
+      <MenuItemIterator
+        elementName="inScopeParameter"
+        id="InscopeEntities"
+        value="inScopeParameters">
+        <MenuItem
+          action="RateRoutineEntityPopup.push(operand, operand.CalcStep, storeTargetTypes, inScopeParameter.Code)"
+          id="InScopeEntityPopupMenuItem"
+          label="displaykey.Web.Rating.Flow.CalcRoutine.EntityFieldPopupMenuItem(inScopeParameter.Code.DisplayName)"
+          visible="gw.pcf.rating.flow.RateRoutinePullRightMenuHelper.showEntityPopupMenu(inScopeParameter, paramInScopeUsageMap, storeTargetTypes, gw.pcf.rating.flow.CompareOrAssign.ASSIGN)"/>
+        <MenuItem
+          action="RateRoutineEntityPopup.push(operand, operand.CalcStep, storeTargetTypes, inScopeParameter.Code)"
+          id="InScopeEntityPullRightMenuItem"
+          label="inScopeParameter.Code.DisplayName"
+          subMenuOnDemand="true"
+          visible="gw.pcf.rating.flow.RateRoutinePullRightMenuHelper.showEntityPullRightMenu(inScopeParameter, paramInScopeUsageMap, storeTargetTypes,  gw.pcf.rating.flow.CompareOrAssign.ASSIGN)">
+          <MenuItemIterator
+            elementName="inScopeUsage"
+            id="inScopeUsageList"
+            value="gw.pcf.rating.flow.RateRoutinePullRightMenuHelper.getSortedInScopeFields(inScopeParameter, paramInScopeUsageMap, storeTargetTypes,  gw.pcf.rating.flow.CompareOrAssign.ASSIGN)">
+            <MenuItem
+              action="gw.pcf.rating.flow.RateRoutinePullRightMenuHelper.setInScopeOperand(operand, inScopeParameter.Code, inScopeUsage)"
+              available="gw.pcf.rating.flow.RateRoutineOperandMenuHelper.showPullRight(operand, inScopeUsage.FeatureType)"
+              id="inScopeUsageMenuItem"
+              label="inScopeUsage.DisplayName"
+              retainScrollPosition="true"/>
+          </MenuItemIterator>
+        </MenuItem>
+      </MenuItemIterator>
+    </MenuItem>
+    <MenuItem
+      action="RateRoutineRateTablePopup.push(operand, routine, paramInScopeUsageMap, storeTargetTypes)"
+      available="true"
+      checked="operand.OperandType == TC_RATETABLE"
+      id="RateRoutineRateTableMenuItem"
+      label="displaykey.Web.Rating.Flow.CalcRoutine.RateTableMenuItem"/>
+    <MenuItem
+      checked="operand.OperandType == TC_LOCALVAR"
+      hideIfDisabled="false"
+      id="RateRoutineVarMenuItem"
+      label="displaykey.Web.Rating.Flow.CalcRoutine.VariableMenuLabel"
+      retainScrollPosition="true"
+      subMenuOnDemand="true">
+      <MenuItemSetRef
+        def="RateRoutineOperandVariableMenuItemSet(operand)"/>
+    </MenuItem>
+    <MenuItemDivider/>
+    <MenuItem
+      action="RateRoutineConditionalPopup.push(operand, routine, paramInScopeUsageMap, costDataUsages, orderedSteps)"
+      available="gw.pcf.rating.flow.RateRoutineOperandMenuHelper.showConditionalPullRight(operand)"
+      checked="operand.OperandType == TC_CONDITIONAL"
+      hideIfDisabled="false"
+      id="RateRoutineConditionalMenuItem"
+      label="displaykey.Web.Rating.Flow.CalcRoutine.ConditionalMenuItem"
+      visible="operand.PrimaryOperand"/>
+    <MenuItem
+      action="operand.changeToOperandType(TC_CONSTANT);operand.maybeClearConstantSubtypeValue(null)"
+      available="gw.pcf.rating.flow.RateRoutineOperandMenuHelper.showConstantPullRight(operand)"
+      checked="operand.IsEditableConstant"
+      hideIfDisabled="false"
+      id="RateRoutineConstantMenuItem"
+      label="displaykey.Web.Rating.Flow.CalcRoutine.ConstantMenuItem"
+      retainScrollPosition="true"/>
+    <MenuItem
+      action="RateRoutineDateConstantPopup.push(operand)"
+      available="gw.pcf.rating.flow.RateRoutineOperandMenuHelper.showDateConstantPullRight(operand)"
+      checked="operand.OperandType == TC_CONSTANT and operand.IsDate"
+      hideIfDisabled="false"
+      id="RateRoutineDateConstantMenuItem"
+      label="displaykey.Web.Rating.Flow.CalcRoutine.DateConstantMenuItem"/>
+    <MenuItem
+      action="gw.pcf.rating.flow.RateRoutineOperandMenuHelper.pushRateRoutineTypekeyConstantPopup(operand, storeTargetTypes)"
+      available="gw.pcf.rating.flow.RateRoutineOperandMenuHelper.showTypelistPullRight(storeTargetTypes)"
+      checked="operand.OperandType == TC_CONSTANT and operand.IsTypeKey"
+      hideIfDisabled="false"
+      id="RateRoutineTypekeyConstantMenuItem"
+      label="displaykey.Web.Rating.Flow.CalcRoutine.TypelistPopupMenuItem"/>
+  </MenuItemSet>
+</PCF>

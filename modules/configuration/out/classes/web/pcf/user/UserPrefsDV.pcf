@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="UserPrefsDV">
+    <Require
+      name="userSettings"
+      type="UserSettings"/>
+    <Require
+      name="userBase"
+      type="UserBase"/>
+    <InputColumn>
+      <Input
+        editable="true"
+        id="SendEmailOnActivityAssign"
+        label="displaykey.Web.UserPreferences.SendEmailOnActivityAssign"
+        value="userSettings.EmailOnActAssign"/>
+      <ConfirmPasswordInput
+        confirmLabel="displaykey.Web.UserPreferences.ConfirmPassword"
+        editable="true"
+        id="Password"
+        label="displaykey.Web.UserPreferences.Password"
+        oldPasswordLabel="displaykey.Web.UserPreferences.OldPassword"
+        requireOldPassword="true"
+        value="userBase.Credential.Password"/>
+      <InputSetRef
+        def="UserPreferencesInputSet(userBase)"/>
+      <RangeInput
+        editable="true"
+        id="StartupPage"
+        label="displaykey.Web.UserPreferences.StartupPage"
+        value="userSettings.StartupPage"
+        valueRange="getPossibleStartupPages(userBase)"/>
+      <Input
+        editable="true"
+        id="MaxRecentAccounts"
+        label="displaykey.Web.UserPreferences.MaxRecentAccounts"
+        value="userSettings.MaxRecentAccounts"/>
+      <Input
+        editable="true"
+        id="MaxRecentPoliciesAndJobs"
+        label="displaykey.Web.UserPreferences.MaxRecentPoliciesAndJobs"
+        value="userSettings.MaxRecentPoliciesAndJobs "/>
+      <Input
+        editable="true"
+        id="MaxRecentContacts"
+        label="displaykey.Web.UserPreferences.MaxRecentContacts"
+        value="userSettings.MaxRecentContacts"/>
+    </InputColumn>
+    <Code><![CDATA[function getPossibleStartupPages(user : UserBase) : java.util.List
+      {
+        var list : java.util.List = new java.util.ArrayList(StartupPage.getTypeKeys(false))
+
+        if(not(perm.Organization.search
+            or perm.System.orgviewagency
+            or perm.System.orgviewbasic
+            or perm.System.orgviewextmgt
+            or perm.System.prodcodeviewbasic
+            or perm.System.prodcodeviewprefuw
+          ))
+        {
+          list.remove( StartupPage.TC_ADMIN )
+        }
+
+        return list
+      }]]></Code>
+  </DetailViewPanel>
+</PCF>

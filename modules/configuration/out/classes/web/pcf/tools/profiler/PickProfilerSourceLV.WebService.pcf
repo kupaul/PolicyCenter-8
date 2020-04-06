@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <!-- WARNING: Internal Guidewire file. DO NOT EDIT. -->
+  <ListViewPanel
+    id="PickProfilerSourceLV"
+    mode="WebService">
+    <ExposeIterator
+      flags="CanDelete,CannotDelete"
+      name="PickProfilerSourceLV"
+      valueType="gw.api.profiler.ProfilerDataSource"
+      widget="PickProfilerSourceLV"/>
+    <RowIterator
+      editable="false"
+      elementName="soapCallHistory"
+      pickValue="soapCallHistory.ProfilerData"
+      toRemove="deleteProfilerData(soapCallHistory)"
+      value="find(soapCallHistory in SoapCallHistory)">
+      <ToolbarFilter
+        label="displaykey.Web.Profiler.SoapProfilerServiceName"
+        name="soapServiceChooser">
+        <ToolbarFilterOptionGroup
+          filters="gw.api.profiler.WebServiceProfilerPageHelper.getServiceNameFilters()"/>
+      </ToolbarFilter>
+      <ToolbarFlag
+        name="CanDelete"/>
+      <ToolbarFlag
+        condition="false"
+        name="CannotDelete"/>
+      <Row>
+        <Cell
+          id="ServerName"
+          label="displaykey.Web.Profiler.SoapProfilerServerId"
+          sortOrder="1"
+          value="soapCallHistory.ServerName"/>
+        <Cell
+          id="ServiceName"
+          label="displaykey.Web.Profiler.SoapProfilerServiceName"
+          sortOrder="2"
+          value="soapCallHistory.ServiceName"/>
+        <Cell
+          id="OperationName"
+          label="displaykey.Web.Profiler.SoapProfilerOperationName"
+          sortOrder="3"
+          value="soapCallHistory.OperationName"/>
+        <DateCell
+          dateFormat="short"
+          id="StartDate"
+          label="displaykey.Web.InternalTools.BatchProcessInfo.Start"
+          sortDirection="descending"
+          sortOrder="3"
+          timeFormat="short"
+          value="soapCallHistory.StartDate"/>
+        <DateCell
+          dateFormat="short"
+          id="CompleteDate"
+          label="displaykey.Web.InternalTools.BatchProcessInfo.ProcessHistoryLV.CompleteDate"
+          timeFormat="short"
+          value="soapCallHistory.CompleteDate"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function deleteProfilerData(soapCallHistory : SoapCallHistory) {
+  gw.transaction.Transaction.runWithNewBundle( \ bundle -> {
+      bundle.remove( soapCallHistory )
+    }
+  )
+}]]></Code>
+  </ListViewPanel>
+</PCF>

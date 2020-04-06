@@ -1,0 +1,1028 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Configuring SQL Server for PolicyCenter</title>
+    <link rel="StyleSheet" href="css/preinstall.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Installation Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="preinstall.4.01.html#2345977">Preparing a PolicyCenter Environment</a> : <a class="WebWorks_Breadcrumb_Link" href="preinstall.4.05.html#2345977">Configuring the Database</a> : Configuring SQL Server for PolicyCenter</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h4 class="H2B_-_Heading_2_Break"><a name="2345977">Configuring SQL Server for PolicyCenter</a></h4>
+      <div class="B_-_Body"><a name="2348610">This topic includes information on how to configure SQL Server for PolicyCenter. See the </a><span class="e_-_emphasis">Guidewire Platform Support Matrix</span> for information about which specific SQL Server versions Guidewire supports for PolicyCenter 8.0.2. The <span class="e_-_emphasis">Guidewire Platform Support Matrix </span>is available from the Guidewire Resource Portal at <span class="cv_-_computer_voice"><a href="https://guidewire.custhelp.com/app/resources/products/platform" target="external_window">https://guidewire.custhelp.com/app/resources/products/platform</a></span>.</div>
+      <div class="B_-_Body"><a name="2355235">Guidewire does not support Windows Integrated Security as an option while connecting to SQL Server.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2345985">Prerequisites to Installing on SQL Server</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2348505">PolicyCenter requires that the collation of the SQL Server database specifies </a><span class="cv_-_computer_voice">CI</span>, or case-insensitive. The case-sensitivity setting affects table and column names, and PolicyCenter requires these names to be case-insensitive. During startup, PolicyCenter checks that the SQL Server database is case-insensitive.</div>
+      <div class="B_-_Body"><a name="2345990">Decide whether to store all character data in single-byte format in </a><span class="cv_-_computer_voice">varchar</span> columns, or Unicode multi-byte format stored in <span class="cv_-_computer_voice">nvarchar</span> columns. If using Unicode, such as for Asian languages, then the <span class="cv_-_computer_voice">&lt;sqlserver-settings&gt;</span> element within the <span class="cv_-_computer_voice">database</span> element in <span class="cv_-_computer_voice">database-config.xml</span> must have the <span class="cv_-_computer_voice">unicodecolumns</span> attribute set to <span class="cv_-_computer_voice">true</span>. Then, when the database tables are created the first time the application server is started, all character columns are created with the <span class="cv_-_computer_voice">nvarchar</span> datatype.</div>
+      <div class="B_-_Body"><a name="2345991">The collation setting specifies sorting and comparison rules, and also the code page to use for single-byte data. Microsoft still supports SQL Server collations (that start with </a><span class="cv_-_computer_voice">SQL_</span>) in addition to Windows collations, but recommends using a Windows collation. Guidewire also recommends that you use a Windows collation. Choose the collation setting carefully. Refer to Collation and International Terminology at <span class="cv_-_computer_voice">http://msdn.microsoft.com/en-us/library/ms143726.aspx</span> for a full discussion. The version of Windows being used for the database and application server is a factor. Some newer collations, such as <span class="cv_-_computer_voice">Japanese_Bushu_Kakusu_100</span>, are only available on Windows 2007 or later and not on Windows 2003.</div>
+      <div class="B_-_Body"><a name="2345993">Creating a SQL Server database with files of sufficient size and parameters is important to future performance and maintenance. A basic discussion can be found online in a Microsoft SQL Server topic “Designing Databases” at </a><span class="cv_-_computer_voice">http://msdn.microsoft.com/en-us/library/ms187099.aspx?ppud=4</span>.</div>
+      <div class="B_-_Body"><a name="2345994">For production systems Guidewire strongly recommends that you pre-allocate disk space rather than using the SQL Server </a><span class="cv_-_computer_voice">autogrowth</span> feature. As a general guideline, estimate how big your database might grow in one year and add 20%. Then, allocate enough total file space for this size. Monitor the size of the database and add space during scheduled periods of lower activity. Set the maximum file size to be less than the size of the disk, so that the disk does not fill up.</div>
+      <div class="B_-_Body"><a name="2345995">For your production database, work with your SAN (Storage Area Network) engineers early in implementation to deliver production-realistic performance.</a></div>
+      <div class="B_-_Body"><a name="2345999">Guidewire recommends that you not share the SQL Server instance on which you are running PolicyCenter with other data or applications. </a></div>
+      <h6 class="HS_-_Head_Sub"><a name="2346003">To install PolicyCenter on SQL Server</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2346007">Configure SQL Server. See </a><a href="javascript:WWHClickedPopup('install', 'preinstall.4.10.html#2346024', '');" title="Configuring SQL Server for PolicyCenter">“Configuring SQL Server in Management Studio”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346014">Create a database for PolicyCenter. See </a><a href="javascript:WWHClickedPopup('install', 'preinstall.4.10.html#2346053', '');" title="Configuring SQL Server for PolicyCenter">“Creating a PolicyCenter Database in SQL Server”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346017">Modify the </a><span class="cv_-_computer_voice">database-config.xml</span> file so that the application correctly points to the database. See <a href="javascript:WWHClickedPopup('install', 'install.6.15.html#1130592', '');" title="Deploying PolicyCenter to the Application Server">“Deploying PolicyCenter to the Application Server”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346022">Restart the application server and test by opening PolicyCenter in a browser window.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2346024">Configuring SQL Server in Management Studio</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h6 class="HS_-_Head_Sub"><a name="2346028">To configure SQL Server to support PolicyCenter</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2346029">Open SQL Server Management Studio. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346033">In the </a><span class="ui_-_UI_element">Object Explorer</span>, right-click the server node you plan to use for PolicyCenter and choose <span class="ui_-_UI_element">Properties</span>. Typically, the node is the same as computer name.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2346034">The </a><span class="ui_-_UI_element">Server Properties</span> dialog opens.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346035">Select the </a><span class="ui_-_UI_element">Security</span> page and check <span class="ui_-_UI_element">SQL Server and Windows Authentication Mode</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="2346039">PolicyCenter does not run if authentication is set to </a><span class="ui_-_UI_element">Windows Authentication Mode</span> only.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346040">Select the </a><span class="ui_-_UI_element">Memory</span> page. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346041">Adjust the </a><span class="ui_-_UI_element">Maximum Server Memory</span> to use at least 200 MB.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346042">With a dedicated host computer running SQL Server, Microsoft recommends that you use the default settings and have SQL Server manage memory. Consult the Microsoft documentation (</a><span class="cv_-_computer_voice"><a href="http://msdn2.microsoft.com/en-us/library/ms178067(d=ide).aspx" target="external_window">http://msdn2.microsoft.com/en-us/library/ms178067(d=ide).aspx</a></span>) for an in-depth discussion of memory options. Setting the maximum server memory to a particular value can cause performance problems.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	7.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346044">Click </a><span class="ui_-_UI_element">OK</span> to close the dialog.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	8.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346045">Right-click the </a><span class="ui_-_UI_element">SQL Server Agent</span> node and select <span class="ui_-_UI_element">Properties</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	9.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346046">Select the </a><span class="ui_-_UI_element">General</span> page. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	10.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346047">Check </a><span class="ui_-_UI_element">Autostart SQL Server if it stops unexpectedly</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	11.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346048">Click </a><span class="ui_-_UI_element">OK</span> to close the dialog.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2346053">Creating a PolicyCenter Database in SQL Server</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2346057">This topic includes procedures to create and configure a SQL Server database for PolicyCenter.</a></div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="2346061">If you plan to create additional database instances to support multiple PolicyCenter environments or other Guidewire products, consider applying the changes in the following procedure to the model database. Use the model database as a template for the additional database instances. Before you edit the model database, create a backup.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="2346065">To create and configure a SQL Server instance for PolicyCenter</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2346066">If you have not already done so, open SQL Server Management Studio. If you are creating a new database, proceed to </a><a href="javascript:WWHClickedPopup('install', 'preinstall.4.10.html#2346078', '');" title="Configuring SQL Server for PolicyCenter">step 2</a>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2346073">If you are modifying the model database, expand </a><span class="ui_-_UI_element">Databases</span> → <span class="ui_-_UI_element">System Databases</span>, right-click <span class="ui_-_UI_element">model</span> and select <span class="ui_-_UI_element">Properties</span>, and skip to <a href="javascript:WWHClickedPopup('install', 'preinstall.4.10.html#2346088', '');" title="Configuring SQL Server for PolicyCenter">step 4</a>.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346078">Right-click the </a><span class="ui_-_UI_element">Databases</span> node and select <span class="ui_-_UI_element">New Database</span>. Or, your company’s database administrator can write a <span class="cv_-_computer_voice">CREATE DATABASE</span> SQL statement to create the database.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2346082">Guidewire recommends that you not share the PolicyCenter database with other applications.</a></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346083">Enter a database name in the </a><span class="ui_-_UI_element">New Database</span> dialog and click <span class="ui_-_UI_element">OK</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346088">Optionally, create one or more filegroups to support the PolicyCenter logical tablespaces from the </a><span class="ui_-_UI_element">Filegroups</span> page. If you choose to use filegroups, create a separate filegroup for each logical tablespace:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="T_-_Table"><a name="2346117">&nbsp;</a></div>
+      <table class="withHeadingIndent" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2346091">Logical Name</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2346093">Usage</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2346095">ADMIN</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2346097">Stores system parameters.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2346099">OP</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2346104">Stores the main PolicyCenter data tables.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2346106">TYPELIST</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2346108">Stores system code tables.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2346110">INDEX</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2346112">Stores system indexes.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2346114">STAGING</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2346116">Stores inbound staging data tables.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2346511">LOB</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2346513">Stores off-row LOB (large object) data. The LOB filegroup is optional. If you do not specify a filegroup for the LOB logical tablespace, then LOB data is stored in the filegroup mapped to the OP logical tablespace.</a></div>
+            <div class="TT_-_Table_Text"><a name="2358938">PolicyCenter uses the LOB filegroup for new tables only. For an existing configuration in which the PolicyCenter schema has been created, if you designate an LOB filegroup, PolicyCenter does not move existing LOB columns to the LOB filegroup. If you add an LOB column to an existing table, PolicyCenter does not put the column in the LOB filegroup. If you define a new table with LOB data, PolicyCenter stores the LOB data in the designated LOB filegroup.</a></div>
+          </td>
+        </tr>
+      </table>
+      <div class="LP_-_List_Para"><a name="2346118">With one exception, you can name the filegroups anything you like: either the same as the logical tablespace names or entirely different. </a><span class="cv_-_computer_voice">INDEX</span> is a reserved name on SQL Server, so you can not map the logical tablespace <span class="cv_-_computer_voice">INDEX</span> to a physical filegroup of the same name.</div>
+      <div class="LP_-_List_Para"><a name="2346122">As you configure the PolicyCenter database connection, you can map the filegroups you created to the PolicyCenter internal logical tablespaces. See </a><a href="javascript:WWHClickedPopup('install', 'install.6.05.html#2319249', '');" title="Mapping Logical Tablespaces to Physical Tablespaces">“Specifying Filegroups for SQL Server”</a>.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346126">Select the </a><span class="ui_-_UI_element">Options</span> page.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346127">Choose your database collation if not using the SQL Server server default. The only requirement is that it is a CI (case-insensitive) collation.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	7.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346128">Validate that </a><span class="cv_-_computer_voice">Auto Create Statistics</span> and <span class="cv_-_computer_voice">Auto Update Statistics</span> are both set to <span class="cv_-_computer_voice">True</span>. During startup, PolicyCenter checks that these properties are set to <span class="cv_-_computer_voice">True</span> and validates that the SQL Server database is case-insensitive.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	8.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346132">Validate that </a><span class="cv_-_computer_voice">Auto Shrink</span> is set to <span class="cv_-_computer_voice">False</span>. If set to <span class="cv_-_computer_voice">True</span>, poor performance can result.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	9.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346133">Click </a><span class="ui_-_UI_element">OK</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	10.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346137">Right-click </a><span class="ui_-_UI_element">Security</span> and select <span class="ui_-_UI_element">New</span> → <span class="ui_-_UI_element">Login</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	11.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346138">On the </a><span class="ui_-_UI_element">Login - New</span> dialog, select <span class="ui_-_UI_element">SQL Server Authentication</span> if not already selected.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	12.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346139">Specify a password and password policy options.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	13.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346140">Click </a><span class="ui_-_UI_element">OK</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	14.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346144">In </a><span class="ui_-_UI_element">Object Explorer</span>, expand the database and open <span class="ui_-_UI_element">Security</span><span class="cv_-_computer_voice"> </span>→<span class="cv_-_computer_voice"> </span><span class="ui_-_UI_element">Users</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	15.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346145">Right-click </a><span class="ui_-_UI_element">Users</span> and select <span class="ui_-_UI_element">New User</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	16.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346149">Enter </a><span class="cv_-_computer_voice">pcUser</span> for the <span class="ui_-_UI_element">User name</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	17.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346150">Enter the </a><span class="ui_-_UI_element">Login name</span> that you created earlier.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	18.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346154">Grant </a><span class="cv_-_computer_voice">pcUser</span> ownership of the PolicyCenter database by selecting <span class="cv_-_computer_voice">db_owner</span> in both <span class="ui_-_UI_element">Schemes owned by this user</span> and <span class="ui_-_UI_element">Database role membership</span> panels.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	19.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346155">Click </a><span class="ui_-_UI_element">OK</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	20.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346159">PolicyCenter supports several different data management pages for performance analysis of the application. To use these pages, the </a><span class="cv_-_computer_voice">pcUser</span> must be granted <span class="cv_-_computer_voice">view server state</span> and <span class="cv_-_computer_voice">view database state</span> on each PolicyCenter data management view. The data management views all start with <span class="cv_-_computer_voice">sys.dm_ prefix</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LS2A_-_List_Start_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS2A_-_List_Start_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">a.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS2A_-_List_Start_002c_Level_2_Alpha_inner"><a name="2346166">Right-click the database and select </a><span class="ui_-_UI_element">Properties</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">b.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346167">Select the </a><span class="ui_-_UI_element">Permissions</span> page.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">c.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346171">Select </a><span class="cv_-_computer_voice">pcUser</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">d.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346172">Select the checkbox to grant </a><span class="cv_-_computer_voice">view database state</span> permission.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">e.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346173">Click </a><span class="ui_-_UI_element">OK</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">f.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346174">Right-click the server and select </a><span class="ui_-_UI_element">Properties</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">g.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346175">Select the </a><span class="ui_-_UI_element">Permissions</span> page.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">h.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346179">Select the login associated with pcUser.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">i.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346180">Select the checkbox to grant </a><span class="cv_-_computer_voice">view server state</span> permission.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">j.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346181">Click </a><span class="ui_-_UI_element">OK</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	21.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346182">Guidewire recommends that you do not use the SQL Server </a><span class="cv_-_computer_voice">autogrowth</span> feature in a production system. Instead, monitor the size of your database and increase the size of the database files as needed during periods of lower activity. SQL Server enables the <span class="cv_-_computer_voice">autogrowth</span> feature by default.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para" style="color: #000000; font-style: normal; font-variant: normal; font-weight: bold; margin-bottom: 2.0pt; margin-top: 2.0pt; text-transform: none; vertical-align: baseline"><span class="ri_-_run_in_header"><a name="2346183">To disable autogrowth</a></span></div>
+      <div class="LS2A_-_List_Start_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS2A_-_List_Start_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">a.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS2A_-_List_Start_002c_Level_2_Alpha_inner"><a name="2346184">Right-click the database and select </a><span class="ui_-_UI_element">Properties</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">b.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346186">Select the </a><span class="ui_-_UI_element">Files</span> page.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">c.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346187">For each database file, click the </a><span class="ui_-_UI_element">...</span> button in the <span class="ui_-_UI_element">Autogrowth</span> column.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">d.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346188">Click the checkbox for </a><span class="ui_-_UI_element">Enable Autogrowth</span> to deselect it.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">e.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346190">Click </a><span class="ui_-_UI_element">OK</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">f.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346197">Repeat </a><a href="javascript:WWHClickedPopup('install', 'preinstall.4.10.html#2346186', '');" title="Configuring SQL Server for PolicyCenter">step b</a> through <a href="javascript:WWHClickedPopup('install', 'preinstall.4.10.html#2346190', '');" title="Configuring SQL Server for PolicyCenter">step e</a> for each database file.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">g.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346198">Click </a><span class="ui_-_UI_element">OK</span> on the <span class="ui_-_UI_element">Database Properties</span> screen.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	22.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346202">PolicyCenter requires that the </a><span class="cv_-_computer_voice">READ_COMMITTED_SNAPSHOT </span>option is on.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para" style="color: #000000; font-style: normal; font-variant: normal; font-weight: bold; margin-bottom: 2.0pt; margin-top: 2.0pt; text-transform: none; vertical-align: baseline"><span class="ri_-_run_in_header"><a name="2346203">To set this parameter</a></span></div>
+      <div class="LS2A_-_List_Start_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS2A_-_List_Start_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">a.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS2A_-_List_Start_002c_Level_2_Alpha_inner"><a name="2346204">Click </a><span class="ui_-_UI_element">New Query</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">b.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346205">In the query pane, enter:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CF_-_Code_First_Line"><a name="2346206">&nbsp;&nbsp;&nbsp;ALTER DATABASE </a><span class="p_-_parameter">dbname</span></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2346207">&nbsp;&nbsp;&nbsp;SET READ_COMMITTED_SNAPSHOT ON</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2346208">&nbsp;&nbsp;&nbsp;WITH ROLLBACK IMMEDIATE</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2346209">&nbsp;&nbsp;&nbsp;GO</a></PRE>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">c.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="2346210">Click </a><span class="ui_-_UI_element">Execute</span>. SQL Server Management Studio informs you that the command completed successfully. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2346214">During startup, PolicyCenter checks that the </a><span class="cv_-_computer_voice">READ_COMMITTED_SNAPSHOT </span>option is on.</div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="2346215">The use of </a><span class="cv_-_computer_voice">READ_COMMITTED_SNAPSHOT</span> greatly increases resource requirements on the <span class="cv_-_computer_voice">tempdb</span> database. Set <span class="cv_-_computer_voice">tempdb</span> to grow in 10% increments, and provide sufficient disk space for <span class="cv_-_computer_voice">tempdb</span> to grow substantially. Performance can be improved if you dedicate separate I/O resources to <span class="cv_-_computer_voice">tempdb</span>.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	23.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2346216">Close SQL Server Management Studio. You do not need to save the </a><span class="cv_-_computer_voice">READ_COMMITTED_SNAPSHOT</span> query.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2346217">Before Continuing...</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2346221">Check that your SQL server environment is correct. Test that you can connect to the database using the </a><span class="cv_-_computer_voice">pcUser</span> credentials. Ensure that SQL Server starts automatically as the server starts. To test if your database is starting automatically, reboot your server and attempt to access the database from a client.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

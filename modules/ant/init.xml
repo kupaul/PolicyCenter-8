@@ -1,0 +1,114 @@
+<project name="Guidewire Ant environment initialization"
+         xmlns:ac="antlib:net.sf.antcontrib"
+         xmlns:gwprivate="antlib:com.guidewire.ant.macro.globals">
+
+    <property file="build.properties"/>
+
+    <condition property="gw.isWindows">
+        <os family="windows"/>
+    </condition>
+
+    <!-- ===========================================
+       Assert presence of crucial properties
+       =========================================== -->
+
+    <fail unless="gw.branch.req.ant.version"/>
+    <fail unless="gw.branch.req.java.version"/>
+
+    <path id="ant.lib.path">
+        <!--
+    <pathelement location="../../lib/gw-modules-osgi.jar"/>
+-->
+        <fileset dir="lib" includes="*.jar"/>
+    </path>
+
+    <!-- ===========================================
+       Tasks
+       =========================================== -->
+
+    <target name="tasks">
+        <taskdef resource="net/sf/antcontrib/antlib.xml" classpathref="ant.lib.path"
+                 uri="antlib:net.sf.antcontrib"/>
+        <taskdef resource="gw/vark/task/antlib.xml" classpathref="ant.lib.path"
+                 uri="antlib:com.guidewire.ant.task"/>
+    </target>
+
+    <!-- ===========================================
+       Assert Ant and JDK versions
+       =========================================== -->
+
+    <target name="asserts" depends="tasks">
+        <macrodef name="assertversion" uri="antlib:com.guidewire.ant.macro.globals">
+            <attribute name="version"/>
+            <attribute name="required"/>
+            <attribute name="message"/>
+            <sequential>
+                <fail message="@{message}">
+                    <condition>
+                        <not>
+                            <equals arg1="@{required}" arg2="@{version}"/>
+                        </not>
+                    </condition>
+                </fail>
+            </sequential>
+        </macrodef>
+
+        <!-- Make sure ant.version matches gw.branch.ant.version (eg. 1.7) in branch.properties -->
+        <ac:if>
+            <not> <!-- temporary workaround to provide bypass of ant version check -->
+                <isset property="skip.ant.version.check"/>
+            </not>
+            <then>
+                <ac:propertyregex property="ant.version.number" input="${ant.version}" regexp="Apache Ant(\(TM\))? version ([^\.]*.[^\.].[^\.])"
+                                  select="\2"/>
+                <gwprivate:assertversion version="${ant.version.number}" required="${gw.branch.req.ant.version}"
+                                         message="You are running using the wrong version of Ant: ${ant.version.number} - please use Ant ${gw.branch.req.ant.version}"/>
+            </then>
+        </ac:if>
+
+        <!-- Make sure java.version matches gw.branch.req.java.version (eg. 1.5) in branch.properties -->
+        <ac:propertyregex property="java.version.number" input="${java.version}" regexp="([0-9]*\.[0-9]*).*" select="\1"/>
+        <gwprivate:assertversion version="${java.version.number}" required="${gw.branch.req.java.version}"
+                                 message="You are running using the wrong JDK: ${java.version} - please use JDK ${gw.branch.req.java.version}"/>
+    </target>
+
+    <!-- ===========================================
+       Global macros
+       =========================================== -->
+
+    <target name="macros" depends="tasks">
+        <macrodef name="run" uri="antlib:com.guidewire.ant.macro">
+            <attribute name="mainclass"/>
+            <attribute name="mainargs" default=""/>
+            <attribute name="failonerror" default="true"/>
+            <attribute name="fork" default="yes"/>
+            <attribute name="spawn" default="false"/>
+            <attribute name="dir" default=""/>
+            <attribute name="maxheap" default="1024"/>
+            <attribute name="minheap" default="32"/>
+            <attribute name="maxpermsize" default="256"/>
+            <attribute name="classpathref"/>
+            <element name="classpaths" optional="true" description="additional classpaths"/>
+            <element name="jvmargs" optional="true" description="additional jvmargs"/>
+            <sequential>
+                <java failonerror="@{failonerror}" classname="@{mainclass}" fork="@{fork}" dir="@{dir}" spawn="@{spawn}">
+                    <classpath>
+                        <path refid="@{classpathref}"/>
+                        <classpaths/>
+                    </classpath>
+                    <syspropertyset>
+                        <propertyref builtin="all"/>
+                    </syspropertyset>
+                    <jvmarg value="-Xmx@{maxheap}m"/>
+                    <jvmarg value="-Xms@{minheap}m"/>
+                    <jvmarg value="-XX:MaxPermSize=@{maxpermsize}m"/>
+                    <jvmarg value="-ea"/>
+                    <jvmarg value="-Djdbc.drivers=${jdbc.drivers}"/>
+                    <jvmargs/>
+                    <arg line="@{mainargs}"/>
+                </java>
+            </sequential>
+        </macrodef>
+    </target>
+
+</project>

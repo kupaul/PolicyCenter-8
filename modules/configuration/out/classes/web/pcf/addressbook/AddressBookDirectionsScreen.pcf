@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Screen
+    id="AddressBookDirectionsScreen">
+    <Require
+      name="directions"
+      type="gw.api.contact.DrivingDirections"/>
+    <Toolbar/>
+    <DetailViewPanel
+      border="true"
+      editable="false"
+      id="AddressBookDirectionsDV">
+      <InputColumn>
+        <Label
+          label="displaykey.Web.AddressBook.Search.Result.Directions"/>
+        <TextInput
+          id="FromLoc"
+          label="displaykey.Web.AddressBook.Directions.From"
+          value="directions.getStart()"/>
+        <TextInput
+          id="ToLoc"
+          label="displaykey.Web.AddressBook.Directions.To"
+          value="directions.getFinish()"/>
+        <TextInput
+          id="TotalTime"
+          label="displaykey.Web.AddressBook.Directions.TotalTime"
+          value="directions.getTotalTimeInMinutes()"/>
+        <TextInput
+          id="TotalDist"
+          label="displaykey.Web.AddressBook.Directions.TotalDistance"
+          value="directions.getTotalDistanceString()"/>
+        <ListViewInput
+          label="displaykey.Web.AddressBook.Directions.Title">
+          <Toolbar/>
+          <ListViewPanel
+            id="DirectionsLV">
+            <RowIterator
+              editable="false"
+              elementName="hop"
+              hasCheckBoxes="false"
+              pageSize="0"
+              value="directions.getElements()">
+              <Row>
+                <Cell
+                  enableSort="false"
+                  id="TextDescription"
+                  label="displaykey.Web.AddressBook.Directions.Segment"
+                  value="hop.getText()"/>
+                <Cell
+                  enableSort="false"
+                  id="Distance"
+                  label="displaykey.Web.AddressBook.Search.Result.Distance"
+                  value="hop.getSegmentDistance()"/>
+                <Cell
+                  enableSort="false"
+                  id="Time"
+                  label="displaykey.Web.AddressBook.Directions.SegmentTime"
+                  value="hop.getSegmentTimeInMinutes()"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </ListViewInput>
+      </InputColumn>
+    </DetailViewPanel>
+    <PanelSet
+      visible="directions.hasMapOverviewUrl()">
+      <TemplatePanel><![CDATA[
+          <iframe id = "mapFrame" src = "${directions.getMapOverviewUrl().getMapImageUrl()}"
+                        width = "100%" height = "512" frameborder = "0">
+	      <p></p> </iframe>
+	  ]]></TemplatePanel>
+
+    </PanelSet>
+    <PanelIterator
+      elementName="mapURL"
+      value="directions.getMapURLs()">
+      <TemplatePanel><![CDATA[
+          <iframe id = "mapFrame" src = "${mapURL.getMapImageUrl()}"
+                        width = "100%" height = "512" frameborder = "0">
+	      <p></p> </iframe>
+	  ]]></TemplatePanel>
+    </PanelIterator>
+  </Screen>
+</PCF>

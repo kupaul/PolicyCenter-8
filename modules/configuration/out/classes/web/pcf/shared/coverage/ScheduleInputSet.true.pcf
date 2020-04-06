@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <InputSet
+    id="ScheduleInputSet"
+    mode="true">
+    <Require
+      name="clause"
+      type="gw.api.domain.Clause"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="clause as gw.api.productmodel.Schedule"
+      name="schedule"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="schedule.ScheduledItemMultiPatterns?.first()"
+      name="scheduledItemPattern"
+      recalculateOnRefresh="true"/>
+    <ListViewInput
+      boldLabel="true"
+      editable="true"
+      id="ScheduleLV"
+      label="displaykey.Web.Policy.Schedule.ScheduledItems"
+      labelAbove="true">
+      <Toolbar>
+        <IteratorButtons
+          iterator="ScheduledItemsIterator"/>
+      </Toolbar>
+      <ListViewPanel>
+        <Variable
+          initialValue="schedule.PropertyInfos"
+          name="propertyInfos"
+          recalculateOnRefresh="true"/>
+        <Variable
+          initialValue="(scheduledItemPattern == null) ? {} : scheduledItemPattern.CovTerms.sortBy(\ ctp -&gt; ctp.Priority)"
+          name="covTermPatterns"
+          recalculateOnRefresh="true"
+          type="List&lt; gw.api.productmodel.CovTermPattern &gt;"/>
+        <Row
+          renderAsSmartHeader="true">
+          <CellIterator
+            elementName="columnInfo"
+            id="ColumnHeaders"
+            value="propertyInfos">
+            <TextCell
+              id="ColumnHeader"
+              required="false"
+              value="(columnInfo.Required &amp;&amp; openForEdit) ? displaykey.Web.Policy.Schedule.ScheduledItems.RequiredColumnLabel(columnInfo.Label) : columnInfo.Label"/>
+          </CellIterator>
+          <CellIterator
+            elementName="covTermPattern"
+            id="CovTermHeaders"
+            value="covTermPatterns">
+            <TextCell
+              id="CovTermHeader"
+              required="false"
+              value="(covTermPattern.Required &amp;&amp; openForEdit) ? displaykey.Web.Policy.Schedule.ScheduledItems.RequiredColumnLabel(covTermPattern.Name) : covTermPattern.Name"/>
+          </CellIterator>
+        </Row>
+        <RowIterator
+          editable="true"
+          elementName="scheduledItem"
+          hasCheckBoxes="true"
+          hideCheckBoxesIfReadOnly="true"
+          id="ScheduledItemsIterator"
+          numEntriesRequired="0"
+          toCreateAndAdd="schedule.createAndAddScheduledItem()"
+          toRemove="schedule.removeScheduledItem(scheduledItem)"
+          value="schedule.ScheduledItems">
+          <!-- <IteratorSort
+            sortBy="scheduledItem.getFieldValue(&quot;ScheduleNumber&quot;)"
+            sortOrder="1"/> -->
+          <IteratorSort
+            sortBy="scheduledItem.getFieldValue(&quot;StringCol1&quot;)"
+            sortOrder="2"/>
+          <Row>
+            <CellIterator
+              elementName="propertyInfo"
+              id="PropertyValues"
+              value="propertyInfos">
+              <ModalCellRef
+                def="ScheduledItemColumnInput(propertyInfo, scheduledItem)"
+                editable="true"
+                mode="propertyInfo.ValueType"
+                required="propertyInfo.Required"/>
+            </CellIterator>
+            <CellIterator
+              elementName="covTerm"
+              id="CovTermValues"
+              value="return covTermPatterns.map(\ ctp -&gt; {return (gw.lang.reflect.ReflectUtil.getProperty(scheduledItem, &quot;ScheduledItemClause&quot;) as gw.api.domain.Clause).getCovTerm(ctp)})">
+              <ModalCellRef
+                def="ScheduledItemCovTermInput(covTerm)"
+                editable="true"
+                mode="covTerm.Pattern.ValueTypeName"
+                required="covTerm.Pattern.Required"/>
+            </CellIterator>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </ListViewInput>
+  </InputSet>
+</PCF>

@@ -1,0 +1,212 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Geocoding Plugin Integration</title>
+    <link rel="StyleSheet" href="css/geocoding.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-plugins.html#2098402">Plugins</a> : <a class="WebWorks_Breadcrumb_Link" href="geocoding.19.1.html#2098402">Geographic Data Integration</a> : Geocoding Plugin Integration</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2098402">Geocoding Plugin Integration</a></h3>
+      <div class="B_-_Body"><a name="2098444">Guidewire PolicyCenter and Guidewire ContactManager use the Guidewire geocoding plugin to provide geocoding services in a uniform way, regardless of the external geocoding service that you use. The application requests geocoding services from the registered </a><span class="cv_-_computer_voice">GeocodePlugin</span> implementation. <span class="cv_-_computer_voice">GeocodePlugin</span> implementations typically do not apply geocode coordinates directly to addresses in the application database. Instead, the application requests geocode coordinates from the plugin, and the application decides how to apply them. </div>
+      <div class="B_-_Body"><a name="2111100">In addition, the </a><span class="cv_-_computer_voice">GeocodePlugin</span> interface supports routing services, such as retrieving driving directions and maps from external geocoding services that support these features. The interface also defines a method for <span class="e_-_emphasis">reverse geocoding</span>, which gets an address from geocode coordinates. The plugin interface defines methods that let callers of the plugin determine whether the registered implementation supports routing services and reverse geocoding. </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2143238">The base configuration of PolicyCenter does not provide any user interface that uses the geocoding plugin for routing services or reverse geocoding</a></div>
+      <h4 class="H2_-_Heading_2"><a name="2117797">How PolicyCenter Uses Geocode Data</a></h4>
+      <div class="B_-_Body"><a name="2143246">The base configuration of PolicyCenter uses geocode data on location addresses to let you search for nearby locations and assemble them into reinsurable location groups. This geocoding feature of PolicyCenter is available only if your license for PolicyCenter includes use of Guidewire Reinsurance Management. </a></div>
+      <div class="B_-_Body"><a name="2143256">For more information, see </a><a href="javascript:WWHClickedPopup('integration', 'reinsurance-integration.29.1.html#2191738', '');" title="Reinsurance Integration">“Reinsurance Integration”</a>. </div>
+      <h4 class="H2_-_Heading_2"><a name="2142070">What the Geocoding Plugin Does</a></h4>
+      <div class="B_-_Body"><a name="1915018">A </a><span class="cv_-_computer_voice">GeocodePlugin</span> implementation generally performs the following tasks:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1915021">Assign latitude and longitude coordinates (required)</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1925453">List possible address matches (optional) </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2072146">Return driving directions (optional)</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2080063">Find an address from coordinates (optional)</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2105433">Find maps for arbitrary addresses (optional)</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="2105438">Synchronous and Asynchronous Calls to the Geocoding Plugin</a></h4>
+      <div class="B_-_Body"><a name="2114132">From the perspective of PolicyCenter calling a </a><span class="cv_-_computer_voice">GeocodePlugin</span> method, the call is always synchronous. The caller waits until the method completes. For user-initiated requests, such as searching for nearby locations, the user interface blocks until the plugin responds. </div>
+      <div class="B_-_Body"><a name="1926968">PolicyCenter and ContactManager also support a distributed system that allows all servers in the cluster to perform geocoding asynchronously from the application. This </a><span class="e_-_emphasis">distributed work queue system</span> is especially useful after an upgrade with new addresses to geocode. You can use the geocoding work queues to geocode addresses in the background. You can use the work queues even if your application instance comprises a single server instead of a cluster of servers. </div>
+      <div class="B_-_Body"><a name="1927122">The default </a><span class="cv_-_computer_voice">config.xml</span> file and scheduling files are pre-configured with default settings for the work queue system. Change those settings only if the defaults are inappropriate. Register and enable the plugin correctly, and the distributed work queue system handles background geocoding automatically. </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2142311">The </a><span class="cv_-_computer_voice">Geocode</span> and <span class="cv_-_computer_voice">ABGeocode</span> work queues use only the <span class="cv_-_computer_voice">geocodeAddressBestMatch</span> method of the <span class="cv_-_computer_voice">GeocodePlugin</span> interface. </div>
+      <h6 class="HS_-_Head_Sub"><a name="2142209">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('admin', 'configndeploy.03.5.html#1973096', '');" title="Using the Geocoding Feature" name="2142255">“Scheduling and Configuring the Geocode Distributed Work Queue” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('admin', 'configndeploy.03.5.html#1973096', '');" title="Using the Geocoding Feature">System Administration Guide</a></span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="2129248">Using a Proxy Server with the Geocoding Plugin</a></h4>
+      <div class="B_-_Body"><a name="2132433">If you want to prevent PolicyCenter and the geocoding plugin from accessing external Internet services directly, you must use a proxy server for outgoing requests. If you use a proxy server for the geocoding plugin, you must configure the built-in Bing Maps implementation to connect with the proxy server, not the Bing Maps geocoding service. </a></div>
+      <div class="B_-_Body"><a name="2137428">The geocoding plugin only initiates communications with geocoding services. It never responds to communications initiated external from the Internet. Therefore, you do not need a </a><span class="e_-_emphasis">reverse proxy server </span>to insulate the geocoding plugin from incoming Internet requests. </div>
+      <h6 class="HS_-_Head_Sub"><a name="2137395">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'proxyservers.46.1.html#2014030', '');" title="Proxy Servers" name="2137399">“Proxy Servers”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2137400">To learn how to configure the Bing Maps geocoding plugin to use a proxy server, see </a><a href="javascript:WWHClickedPopup('integration', 'proxyservers.46.5.html#2232583', '');" title="Proxy Server Integration Types for PolicyCenter">“Bing Maps Geocoding Service Communication”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="2058342">The Built-in Bing Maps Geocoding Plugin</a></h4>
+      <div class="B_-_Body"><a name="2058346">PolicyCenter includes a fully functional and supported implementation of the </a><span class="cv_-_computer_voice">GeocodePlugin</span> to connect to the Microsoft Bing Maps Geocode Service. For details about configuring Bing Maps support, see <a href="javascript:WWHClickedPopup('admin', 'configndeploy.03.5.html#1972885', '');" title="Using the Geocoding Feature">“Configuring Geocoding” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('admin', 'configndeploy.03.5.html#1972885', '');" title="Using the Geocoding Feature">System Administration Guide</a></span>.</div>
+      <h4 class="H2_-_Heading_2"><a name="2115456">Batch Geocoding Only Some Addresses</a></h4>
+      <div class="B_-_Body"><a name="2115584">The </a><span class="cv_-_computer_voice">Address</span> entity has a property called <span class="cv_-_computer_voice">BatchGeocode</span>. The <span class="cv_-_computer_voice">Geocode</span> writer in PolicyCenter and the <span class="cv_-_computer_voice">ABGeocode</span> writer in ContactManager use <span class="cv_-_computer_voice">BatchGeocode</span> to filter which addresses to pass to the plugin for geocoding. If the property is <span class="cv_-_computer_voice">true</span>, they pass the address to the plugin for geocoding. </div>
+      <div class="B_-_Body"><a name="2115623">Implementations of the </a><span class="cv_-_computer_voice">GeocodePlugin</span> ignore the <span class="cv_-_computer_voice">BatchGeocode</span> property. Callers of the plugin are responsible for determining which addresses to geocode. The <span class="cv_-_computer_voice">GeocodePlugin</span> geocodes any address it receives. </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

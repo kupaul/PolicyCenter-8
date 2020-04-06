@@ -1,0 +1,123 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Screen
+    editable="openForEdit"
+    id="PAQuickSubmission_InfoScreen">
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="period"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="period.TermType"
+      name="termType"/>
+    <Variable
+      initialValue="period.PeriodStart"
+      name="effectiveDate"
+      recalculateOnRefresh="true"
+      type="java.util.Date"/>
+    <Variable
+      initialValue="period.PersonalAutoLine.PolicyDriver1 &lt;&gt; null ? period.PersonalAutoLine.PolicyDriver1.AccountContactRole.AccountContact.getRole(&quot;Driver&quot;) as Driver : null"
+      name="accountDriver1"
+      recalculateOnRefresh="true"
+      type="Driver"/>
+    <Variable
+      initialValue="period.PersonalAutoLine.PolicyDriver2 &lt;&gt; null ? period.PersonalAutoLine.PolicyDriver2.AccountContactRole.AccountContact.getRole(&quot;Driver&quot;) as Driver : null"
+      name="accountDriver2"
+      recalculateOnRefresh="true"
+      type="Driver"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="period.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(period, job, jobWizardHelper)"/>
+    </Toolbar>
+    <PanelRef
+      id="PAQiockQuote_PolicyInfo">
+      <TitleBar
+        title="displaykey.Web.PersonalAuto.QuickQuote.PolicyDetails"/>
+      <DetailViewPanel>
+        <InputColumn>
+          <!-- Changing the term type updates the expiration date -->
+          <RangeInput
+            editable="period.CanUpdatePeriodDates"
+            id="TermType"
+            label="displaykey.Web.SubmissionWizard.PolicyInfo.TermType"
+            required="true"
+            value="termType"
+            valueRange="period.getAvailablePolicyTermsForCurrentOffering()">
+            <PostOnChange
+              onChange="period.TermType = termType"/>
+          </RangeInput>
+          <TypeKeyInput
+            editable="openForEdit"
+            id="BaseState"
+            label="displaykey.Web.SubmissionWizard.PolicyInfo.BaseState"
+            required="true"
+            value="period.BaseState"/>
+        </InputColumn>
+        <InputColumn>
+          <!-- Changing the effective date updates the expiration date when the term type is not "short" -->
+          <DateTimeInput
+            editable="period.CanUpdatePeriodDates"
+            id="EffectiveDate"
+            label="displaykey.Web.SubmissionWizard.PolicyInfo.EffectiveDate"
+            onChange="period.setPeriodDates(effectiveDate)"
+            required="true"
+            timeVisible="false"
+            value="effectiveDate"/>
+          <!-- Changing the expiration date updates the term type -->
+          <DateTimeInput
+            editable="termType == &quot;Other&quot; and period.CanUpdatePeriodDates"
+            id="ExpirationDate"
+            label="displaykey.Web.SubmissionWizard.PolicyInfo.ExpirationDate"
+            onChange="termType = period.TermType"
+            required="true"
+            timeVisible="false"
+            value="period.PeriodEnd"/>
+        </InputColumn>
+      </DetailViewPanel>
+    </PanelRef>
+    <PanelRef>
+      <TitleBar
+        title="displaykey.Web.PersonalAuto.QuickQuote.DriversDetails"/>
+      <PanelRow>
+        <PanelColumn>
+          <PanelRef
+            def="PAQuickQuoteDriverPanelSet(period.PersonalAutoLine, period.PersonalAutoLine.PolicyDriver1, accountDriver1, 1, openForEdit)"
+            id="DriverDetails1"/>
+        </PanelColumn>
+        <PanelColumn>
+          <PanelRef
+            def="PAQuickQuoteDriverPanelSet(period.PersonalAutoLine,  period.PersonalAutoLine.PolicyDriver2, accountDriver2, 2, openForEdit)"
+            id="DriverDetails2"/>
+        </PanelColumn>
+      </PanelRow>
+    </PanelRef>
+    <PanelRef>
+      <TitleBar
+        title="displaykey.Web.PersonalAuto.QuickQuote.VehiclesDetails"/>
+      <PanelRow>
+        <PanelColumn>
+          <PanelRef
+            def="PAQuickQuoteVehiclePanelSet(period.PersonalAutoLine, period.PersonalAutoLine.Vehicle1, 1, openForEdit, jobWizardHelper)"
+            id="VehicleDetails1"/>
+        </PanelColumn>
+        <PanelColumn>
+          <PanelRef
+            def="PAQuickQuoteVehiclePanelSet(period.PersonalAutoLine, period.PersonalAutoLine.Vehicle2, 2, openForEdit, jobWizardHelper)"
+            id="VehicleDetails2"/>
+        </PanelColumn>
+      </PanelRow>
+    </PanelRef>
+  </Screen>
+</PCF>

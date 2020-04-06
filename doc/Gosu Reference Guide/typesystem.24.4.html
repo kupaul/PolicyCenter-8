@@ -1,0 +1,529 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Using Reflection</title>
+    <link rel="StyleSheet" href="css/typesystem.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>Gosu Reference Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="typesystem.24.1.html#1455649">Type System</a> : Using Reflection</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1455649">Using Reflection</a></h3>
+      <div class="B_-_Body"><a name="1441262">Once you know what type an object is, you can use </a><span class="e_-_emphasis">reflection</span> to learn about the type or perform actions on it. Reflection means using type introspection to query or modify objects at runtime. For example, instead of simply calling an object method, get a list of methods from its type, or call a method by name specified by a <span class="cv_-_computer_voice">String</span> run time value. You can get metadata, properties and functions of a type at run time.</div>
+      <div class="B_-_Body"><a name="1486539">Although each </a><span class="cv_-_computer_voice">Type</span> object itself has properties and methods on it, the most interesting properties and methods are on the <span class="ps_-_parameter_in_code_snippets">type.</span><span class="cv_-_computer_voice">TypeInfo</span> object. For example, you can get a type’s complete set of properties and methods at run time by getting the <span class="cv_-_computer_voice">TypeInfo</span> object.</div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="1441263">In general, avoid using reflection to get properties or call methods. In almost all cases, you can write Gosu code to avoid reflection. Using reflection dramatically limits how Gosu </a>and Guidewire Studio can alert you to serious problems at compile time. In general, it is better to detect errors at compile time rather than unexpected behavior at run time. Only use reflection if there is no other way to do what you need.</div>
+      <div class="B_-_Body"><a name="1441264">The following example shows two different approaches for getting the </a><span class="cv_-_computer_voice">Name</span> property from a type:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="1441265">print(Integer.Name) &nbsp;&nbsp;&nbsp;&nbsp;// directly from a Type</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1441266">print((typeof 29).Name) // getting the Type of something</a></PRE>
+      <div class="B_-_Body"><a name="1441267">This prints:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="1465597">java.lang.Integer</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1465614">int</a></PRE>
+      <h6 class="HS_-_Head_Sub"><a name="1441268">Get Properties Using Reflection</a></h6>
+      <div class="B_-_Body"><a name="1441269">The </a><span class="ps_-_parameter_in_code_snippets">type</span><span class="cv_-_computer_voice">.TypeInfo</span> object includes a property called properties, that contains a list of type properties.</div>
+      <div class="B_-_Body"><a name="1441270">Each item in that list include metadata properties such as for the name (</a><span class="cv_-_computer_voice">Name</span>) and a short description (<span class="cv_-_computer_voice">ShortDescription</span>).</div>
+      <div class="B_-_Body"><a name="1441271">For example, paste the following code into the Gosu Tester:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455373">var object = "this is a string"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455374">var s = ""</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455375">var props =  (typeof object).TypeInfo.Properties</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455376">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455377">for (m in props) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455378">  s = s + m.Name + "  "</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455379">}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455380">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441279">print(s)</a></PRE>
+      <div class="B_-_Body"><a name="1441280">This code prints something similar to the following:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="1455403">Class  itype  Bytes  Empty  CASE_INSENSITIVE_ORDER  length  size  HasContent </a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1455572">NotBlank  Alpha  AlphaSpace  Alphanumeric  AlphanumericSpace  Numeric  NumericSpace  Whitespace </a></PRE>
+      <div class="B_-_Body"><a name="1441286">You can also call properties using reflection using the square bracket syntax, similar to using arrays. For example, paste the following code into the Gosu Tester:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441287">// get the CURRENT time </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441288">var s = new DateTime()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441289">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441290">// createa  String containing a property name</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441291">var propName = "hour"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441292">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441293">// get a property name using reflection</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441294">print(s[propName])</a></PRE>
+      <div class="B_-_Body"><a name="1441295">If the time is currently 5 PM, this code prints:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="1441296">5</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="1441298">Get Methods Using Reflection</a></h6>
+      <div class="B_-_Body"><a name="1455331">Paste the following code into the Gosu Tester:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455351">var object = "this is a string"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455352">var s = ""</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455353">var methods =  (typeof object).TypeInfo.Methods</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455354">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455355">for (m in methods) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455356">  s = s + m.Name + "  "</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455357">}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455358">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455338">print(s)</a></PRE>
+      <div class="B_-_Body"><a name="1455340">This code prints code that looks like this (truncated for clarity):</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="1455425">wait()  wait( long, int )  wait( long )  hashCode()  getClass()  equals( java.lang.Object ) </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455444">toString()  notify()  notifyAll()  @itype()  compareTo( java.lang.String )  charAt( int ) </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1455456">length()  subSequence( int, int )  indexOf( java.lang.String, int )  indexOf( java.lang.String )</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1455464">indexOf( int )  indexOf( int, int )  codePointAt( int )  codePointBefore( int ) </a></PRE>
+      <div class="B_-_Body"><a name="1441317">You can also get information about individual methods. You can even call methods by name (given a </a><span class="cv_-_computer_voice">String</span> for the method name) and pass a list of parameters as <span class="cv_-_computer_voice">object</span> values. You can call a method using the method’s <span class="cv_-_computer_voice">CallHandler</span> property, which contains a <span class="cv_-_computer_voice">handleCall</span> method.</div>
+      <div class="B_-_Body"><a name="1441318">The following example gets a method by name and then calls it. This example uses the </a><span class="cv_-_computer_voice">String</span> class and its <span class="cv_-_computer_voice">compareTo</span> method, which returns 0, 1, or -1. Paste the following code into the Gosu Tester</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441319">var mm = String.TypeInfo.Methods</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441320">var myMethodName = "compareTo"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441321">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441322">// find a specific method by name using "collections" and "blocks" features...</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441323">var m = mm.findFirst( \ i -&gt; i.Name == myMethodName )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441324">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441325">print("Name is " + m.Name)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441326">print("Number of parameters is " + m.Parameters.length)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441327">print("Name of first parameter is " + m.Parameters[0].DisplayName)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441328">print("Type of first parameter is " + m.Parameters[0].IntrinsicType)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441329">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441330">// set up an object whose method to call. in this case, use a String</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441331">var obj = "a"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441332">var comparisonString = "b"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441333">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441334">// call the method using reflection! ** note: this returns -1 because "a" comes before "b"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441335">print(m.CallHandler.handleCall( obj, { comparisonString } ))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441336">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441337">// in this example, this was equivalent to the code:</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441338">print(obj.compareTo(comparisonString))</a></PRE>
+      <div class="B_-_Body"><a name="1441339">This code prints:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="1441340">Name is compareTo</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441341">Number of parameters is 1</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441342">Name of first parameter is String</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441343">Type of first parameter is java.lang.String</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441344">-1</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1441345">-1</a></PRE>
+      <h6 class="HS_-_Head_Sub"><a name="1441346">Compare Types Using Reflection</a></h6>
+      <div class="B_-_Body"><a name="1441347">You can compare the type of two objects in several ways. </a></div>
+      <div class="B_-_Body"><a name="1441348">You can use the equality (==) operator to test types. However, the equality operator is almost always inappropriate because it returns </a><span class="cv_-_computer_voice">true</span> only for exact type matches. It returns <span class="cv_-_computer_voice">false</span> if one type is a subtype of the other or if the types are in different packages.</div>
+      <div class="B_-_Body"><a name="1441349">Instead, use the </a><span class="ps_-_parameter_in_code_snippets">type</span><span class="cv_-_computer_voice">.isAssignableFrom(</span><span class="ps_-_parameter_in_code_snippets">otherType</span><span class="cv_-_computer_voice">)</span> method to determine whether the types are compatible for assignment. This method considers the possibility of subtypes (such as subclasses) in a way that the equality operator does not. The method determines if the type argument is either the same as, or a superclass of (or superinterface of) the type. </div>
+      <div class="B_-_Body"><a name="1441350">The </a><span class="ps_-_parameter_in_code_snippets">sourceType</span><span class="p_-_parameter">.</span><span class="cv_-_computer_voice">isAssignableFrom(</span><span class="ps_-_parameter_in_code_snippets">destinationType</span><span class="cv_-_computer_voice">)</span> method looks only at the supertypes of the source type. Although Gosu statements can assign a value of one <span class="s_-_strong">unrelated</span> type to another using coercion, the <span class="cv_-_computer_voice">isAssignableFrom</span> method always returns <span class="cv_-_computer_voice">false</span> if coercion of the data would be necessary. For example, Gosu can convert <span class="cv_-_computer_voice">boolean</span> to <span class="cv_-_computer_voice">String</span> or from <span class="cv_-_computer_voice">String</span> to <span class="cv_-_computer_voice">boolean</span> using coercion, but <span class="cv_-_computer_voice">isAssignableFrom</span> method returns <span class="cv_-_computer_voice">false</span> for those cases.</div>
+      <div class="B_-_Body"><a name="1441351">Gosu provides a variant of this functionality with the Gosu </a><span class="cv_-_computer_voice">typeis</span> operator. Whereas <span class="ps_-_parameter_in_code_snippets">type</span><span class="cv_-_computer_voice">.isAssignableFrom(...)</span> operates between a type and another type, the <span class="cv_-_computer_voice">typeis</span> operates between an object and a type. </div>
+      <div class="B_-_Body"><a name="1441352">Paste the following code into the Gosu Tester:</a></div>
+      <div class="B_-_Body"><a name="1441353">For example, paste the following code into the Gosu Tester:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441354">var s : String = "hello"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441355">var b : Boolean = true</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441356">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441357">print("Typeof s: " + (typeof s).Name) </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441358">print("Boolean assignable from String : " + (typeof s).isAssignableFrom((typeof b))) </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441359">print("true typeis String: " + (b typeis String))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441360">print("Object assignable from String: " + (Object).isAssignableFrom( String )) </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441361">print("Compare a string to object using typeis: " + (s typeis Object))         </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441362">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441363">// Using == to compare types is a bad approach if you want to check for valid subtypes...</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441364">print("Compare a string to object using == : " + ((typeof s) == Object)) </a></PRE>
+      <div class="B_-_Body"><a name="1441365">This code prints:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="1441366">Typeof s: java.lang.String</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441367">Boolean assignable from String : false</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441368">true typeis String: false</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441369">Object assignable from String: true</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441370">Compare a string to object using typeis: true</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1441371">Compare a string to object using == : false</a></PRE>
+      <h4 class="H2_-_Heading_2"><a name="1441372">Type Object Properties</a></h4>
+      <div class="B_-_Body"><a name="1441373">The </a><span class="cv_-_computer_voice">Type</span> type is a metatype, which means that it is the type of all types. There are various methods and properties that appear directly on the type <span class="cv_-_computer_voice">Type</span> and all are supported. </div>
+      <div class="B_-_Body"><a name="1467151">Refer to the Gosu API Reference in the Studio Help menu for the full reference for all properties and methods.</a></div>
+      <div class="B_-_Body"><a name="1441374">The </a><span class="cv_-_computer_voice">Type</span> type includes the following important properties:</div>
+      <div class="T_-_Table"><a name="1441438">&nbsp;</a></div>
+      <table class="withHeading" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="1441377">Property</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="1441379">Description</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1441381">Name</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1441383">The human-readable name of this type.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1441385">TypeInfo</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1441390">Properties and methods of this type. See </a><a href="javascript:WWHClickedPopup('gosu', 'typesystem.24.3.html#1441193', '');" title="Basic Type Checking">“Basic Type Checking”</a> for more information and examples that use this <span class="cvt_-_computer_voice_table">TypeInfo</span> object.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1441392">SuperType</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1441394">The supertype of this type, or </a><span class="cvt_-_computer_voice_table">null</span> if there is no supertype.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1441396">IsAbstract</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1441401">If the type is abstract, returns </a><span class="cvt_-_computer_voice_table">true</span>. See <a href="javascript:WWHClickedPopup('gosu', 'classes.12.5.html#2445687', '');" title="Modifiers">“Modifiers”</a>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1441403">IsArray</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1441405">If the type is an array, returns </a><span class="cvt_-_computer_voice_table">true</span>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1441407">IsFinal</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1441412">If the type is final, returns </a><span class="cvt_-_computer_voice_table">true</span>. See <a href="javascript:WWHClickedPopup('gosu', 'classes.12.5.html#2445687', '');" title="Modifiers">“Modifiers”</a>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1441414">IsGeneric</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1441419">If the type is generic, returns </a><span class="cvt_-_computer_voice_table">true</span>. See <a href="javascript:WWHClickedPopup('gosu', 'generics.19.1.html#1455314', '');" title="Gosu Generics">“Gosu Generics”</a>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1441421">IsInterface</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1441426">If the type is an interface, returns </a><span class="cvt_-_computer_voice_table">true</span>. See <a href="javascript:WWHClickedPopup('gosu', 'interfaces.14.1.html#1456637', '');" title="Interfaces">“Interfaces”</a>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1441428">IsParameterized</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1441433">If the type is parameterized, returns </a><span class="cvt_-_computer_voice_table">true</span>. See <a href="javascript:WWHClickedPopup('gosu', 'generics.19.1.html#1455314', '');" title="Gosu Generics">“Gosu Generics”</a>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="1441435">IsPrimitive</a></span></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1441437">If the type is primitive, returns </a><span class="cvt_-_computer_voice_table">true</span>.</div>
+          </td>
+        </tr>
+      </table>
+      <div class="B_-_Body"><a name="1441439">For more information about the </a><span class="cv_-_computer_voice">isAssignableFrom</span> method on the <span class="cv_-_computer_voice">Type</span> object, refer to the previous section.</div>
+      <h6 class="HS_-_Head_Sub"><a name="1441441">Working with Primitive Types</a></h6>
+      <div class="B_-_Body"><a name="1441442">In Gosu, primitive types such as </a><span class="cv_-_computer_voice">int</span> and <span class="cv_-_computer_voice">boolean</span> exist primarily for compatibility with the Java language. Gosu uses these Java primitive types to support extending Java classes and implementing Java interfaces. From a Gosu language perspective, primitives are different only in subtle ways from object-based types such as <span class="cv_-_computer_voice">Integer</span> and <span class="cv_-_computer_voice">Boolean</span>. Primitive types can be automatically coerced (converted) to non-primitive versions or back again by the Gosu language in almost all cases. For example, from <span class="cv_-_computer_voice">int</span> to <span class="cv_-_computer_voice">Integer</span> or from <span class="cv_-_computer_voice">Boolean</span> to <span class="cv_-_computer_voice">boolean</span>. </div>
+      <div class="B_-_Body"><a name="1441443">You typically do </a><span class="s_-_strong">not</span> need to know the differences, and internally they are stored in the same type of memory location so there is no performance benefit to using primitives. Internally, primitives are stored as objects, and there is no speed improvement for using Gosu language primitives instead of their boxed versions, such as <span class="cv_-_computer_voice">int</span> compared to <span class="cv_-_computer_voice">Integer</span>.</div>
+      <div class="B_-_Body"><a name="1441446">The </a><span class="cv_-_computer_voice">boolean</span> type is a primitive, sometimes called an <span class="e_-_emphasis">unboxed&nbsp;type</span>. In contrast, <span class="cv_-_computer_voice">Boolean</span> is a class so <span class="cv_-_computer_voice">Boolean</span> is called a <span class="e_-_emphasis">boxed&nbsp;type</span> version of the <span class="cv_-_computer_voice">boolean</span> primitive. A boxed type is basically a primitive type wrapped in a shell of a class. These are useful so that code can make assumptions about all values having a common ancestor type <span class="cv_-_computer_voice">Object</span>, which is the root class of all class instances. For example, collection APIs require all objects to be of type <span class="cv_-_computer_voice">Object</span>. Thus, collections can contain <span class="cv_-_computer_voice">Integer</span> and <span class="cv_-_computer_voice">Boolean</span>, but not the primitives <span class="cv_-_computer_voice">int</span> or <span class="cv_-_computer_voice">boolean</span>.</div>
+      <div class="B_-_Body"><a name="1441448">However, there are differences while handling uninitialized values, because variables declared of a primitive type cannot hold the </a><span class="cv_-_computer_voice">null</span> value, but regular <span class="cv_-_computer_voice">Object</span> variable values can contain <span class="cv_-_computer_voice">null</span>.</div>
+      <div class="B_-_Body"><a name="1441449">For example, paste the following code into the Gosu Tester:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441450">var unboxed : boolean = null  // boolean is a primitive type</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441451">var boxed : Boolean = null    // Boolean is an Object type, a non-primitive</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441452">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441453">print(unboxed)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441454">print(boxed)</a></PRE>
+      <div class="B_-_Body"><a name="1441455">This code prints:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="1441456">false</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441457">null</a></PRE>
+      <div class="B_-_Body"><a name="1441458">These differences are also notable if you pass primitives to </a><span class="cv_-_computer_voice">isAssignableFrom</span>. This method only looks at the type hierarchy and returns <span class="cv_-_computer_voice">false</span> if comparing primitives.</div>
+      <div class="B_-_Body"><a name="1441459">For example, paste the following code into the Gosu Tester:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="1441460">var unboxed : boolean = true &nbsp;// boolean is a primitive type</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441461">var boxed : Boolean = true&nbsp;&nbsp;&nbsp; // Boolean is an Object type, a non-primitive</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441462">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441463">print((typeof boxed).IsPrimitive)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441464">print((typeof unboxed).IsPrimitive)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441465">print((typeof unboxed).isAssignableFrom( (typeof boxed) ))</a></PRE>
+      <div class="B_-_Body"><a name="1441466">This code prints:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="1441467">false</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441468">true</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441469">false</a></PRE>
+      <div class="B_-_Body"><a name="1441470">In Gosu, the boxed versions of primitives use the Java versions. Because of this, in Gosu you find them defined in the </a><span class="cv_-_computer_voice">java.lang</span> package. For example, <span class="cv_-_computer_voice">java.lang.Integer</span>.</div>
+      <div class="B_-_Body"><a name="1441474">For more information about </a><span class="cv_-_computer_voice">Boolean</span> and <span class="cv_-_computer_voice">boolean</span>, see <a href="javascript:WWHClickedPopup('gosu', 'datatypes.04.05.html#1539959', '');" title="Boolean Values">“Boolean Values”</a>.</div>
+      <h4 class="H2_-_Heading_2"><a name="1441477">Java Type Reflection</a></h4>
+      <div class="B_-_Body"><a name="1465778">Gosu implements a dynamic type system that is designed to be extended beyond its native objects. Do not confuse this with being </a><span class="e_-_emphasis">dynamically typed</span> because Gosu is <span class="e_-_emphasis">statically typed</span>. Gosu’s dynamic type system enables Gosu to work with a variety of different types. </div>
+      <div class="B_-_Body"><a name="1467157">These types include Gosu classes, Java classes, business entity objects, typelists, XML types, SOAP types, and other types. These different types plug into Gosu’s type system in a way similar to how Gosu business entities connect to the type system. </a></div>
+      <div class="B_-_Body"><a name="1465803">In almost all ways, Gosu does not care about the difference between a Java class or a native Gosu object. They are all exposed to the language through the same abstract type system so you can use Java types directly in your code. You can even extend Java classes, meaning that you can write Gosu types that are subtypes of Java types. Similarly, you can implement or even extend Java interfaces from Gosu.</a></div>
+      <div class="B_-_Body"><a name="1465559">The Gosu language transparently exposes and uses Java classes as Gosu objects through the use of Java </a><span class="cv_-_computer_voice">BeanInfo</span> objects. Java <span class="cv_-_computer_voice">BeanInfo</span> objects are analogous to Gosu’s <span class="cv_-_computer_voice">TypeInfo</span> information. They both encapsulate type metadata, including properties and methods on that type. All Java classes have <span class="cv_-_computer_voice">BeanInfo</span> information either explicitly provided with the Java class or can be dynamically constructed at runtime. Gosu examines a Java class’s <span class="cv_-_computer_voice">BeanInfo</span> and determines how to expose this type to Gosu. Because of this, your Gosu code can use the Gosu reflection APIs discussed earlier in this section with Java types. </div>
+      <div class="B_-_Body"><a name="1501167">In rare cases, you might want to do reflection on the backing class (underlying implementation Java class) as opposed to the Gosu type. For example, suppose you need to inspect each field in the original Java class, rather than the Gosu type that references it. You can get the backing class by casting the type to </a><span class="cv_-_computer_voice">IHasJavaClass</span>, for example:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="1500417">// get the Java backing class</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1500653">var javaClass = (theType as IHasJavaClass).BackingClass</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1500694">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1500696">// With that class, you can interate across the native Java fields at run time</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1500650">for( field in javaClass.Fields ) { </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1501010">&nbsp;&nbsp;print(field)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1501020">}</a></PRE>
+      <div class="B_-_Body"><a name="1500873">The </a><span class="cv_-_computer_voice">IHasJavaClass</span> interface is implemented only by types that have a Java backing class.</div>
+      <div class="B_-_Body"><a name="1465565">For a related topic, see </a><a href="javascript:WWHClickedPopup('gosu', 'java-gosu.09.1.html#2133774', '');" title="Calling Java from Gosu">“Calling Java from Gosu”</a>.</div>
+      <h4 class="H2_-_Heading_2"><a name="1465566">Type System Class</a></h4>
+      <div class="B_-_Body"><a name="1441496">You can use the class </a><span class="cv_-_computer_voice">gw.lang.reflect.TypeSystem</span> for additional supported APIs for advanced type system introspection. For example, its <span class="cv_-_computer_voice">getByFullName</span> method can return a <span class="cv_-_computer_voice">Type</span> object from a <span class="cv_-_computer_voice">String</span> containing its fully-qualified name. </div>
+      <div class="B_-_Body"><a name="1441497">For example, the following code gets a type by a </a><span class="cv_-_computer_voice">String</span> version of its fully-qualified name and instantiates it using the type information for the type:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="1441498">var myFullClassName = "com.mycompany.MyType"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1441499">var type = TypeSystem.getByFullName( myFullClassName )</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1441500">var instance = type.TypeInfo.getConstructor( null ).Constructor.newInstance( null )</a></PRE>
+      <div class="B_-_Body"><a name="1467175">Refer to the Gosu API Reference in Studio in the </a><span class="ui_-_UI_element">Help</span> menu for details of additional methods on this class.</div>
+      <h4 class="H2_-_Heading_2"><a name="1487207">Feature Literals</a></h4>
+      <div class="B_-_Body"><a name="1489854">Gosu feature literals provide a way to statically refer to a type’s features such as methods and properties. You can use feature literals to implement some reflection techniques more safely at compile time than in some programming languages. Gosu feature literals are validated at compile time, preventing many common errors with reflection techniques. Refer to the feature of an type or object using the </a><span class="cv_-_computer_voice">#</span> operator after the type or object, followed by the feature name. The syntax is similar to feature syntax in the Javadoc <span class="cv_-_computer_voice">@link</span> syntax.</div>
+      <div class="B_-_Body"><a name="1489544">You can use feature literals in APIs such as:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1489479">Mapping layers, where you are mapping between properties of two types</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1489496">Data-binding layers</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1489505">Type-safe object paths for a query layer</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1487441">Consider the following Gosu class:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="1487240">class Employee {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487241">&nbsp;&nbsp;var _boss : Employee as Boss</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487242">&nbsp;&nbsp;var _name : String as Name</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487243">&nbsp;&nbsp;var _age : int as Age</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487469">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487245">function update( name : String, age : int ) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487246">      _name = name</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487247">      _age = age</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487248">    }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499341">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499354">function greeting() {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499355">    print("hello world")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499356">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499343">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487249">}</a></PRE>
+      <div class="B_-_Body"><a name="1487251">Given this class, you can refer to its features by using the </a><span class="cv_-_computer_voice">#</span> operator:</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487253">// get property feature literal</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487561">var nameProp = Employee#Name</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487254">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487610">// get method feature literal</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487629">var updateFunc = Employee#update(String, int)</a></PRE>
+      <div class="B_-_Body"><a name="1487630">These variables contain feature literal references. Using these feature references, you can access the underlying property or method information. Alternatively, use feature references to directly invoke a method or get/set a property.</a></div>
+      <div class="B_-_Body"><a name="1487259">You can define or use Gosu APIs that use feature literals as arguments or return values.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1487845">Get or Set a Property</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1487713">To get or set a property, call the </a><span class="cv_-_computer_voice">get</span> or <span class="cv_-_computer_voice">set</span> method on the feature literal and pass the object instance of the appropriate type as a method argument.</div>
+      <div class="B_-_Body"><a name="1499871">Using the feature literal code from the previous example:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499685">var anEmp = new Employee() { :Name = "Joe", :Age = 32 }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499686">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499687">// get property using normal syntax</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499688">print( anEmp.Name ) // prints "Joe"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499689">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499690">// GET a property using a feature literal</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499691">var nameProp = Employee#Name</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499692">print(nameProp.get(anEmp))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499693">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499694">// SET a property using a feature literal</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499695">nameProp.set( anEmp, "Ed" )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487261">print( anEmp.Name ) // now prints "Ed"</a></PRE>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1499295">Call a Method</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1499383">Using the feature literal code from the previous example, you can call a method:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499379">var m = Employee#greeting()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499322">var obj = new Employee()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499401">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499415">// call the method and pass the object with the method feature literal on the left of the period</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499412">m.invoke(obj)</a></PRE>
+      <div class="B_-_Body"><a name="1499402">You can also call a method with arguments:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499617">var m = Employee#update(String, int)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499618">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499619">var obj = new Employee()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499620">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499621">// call method with arguments after the object instance reference</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499622">m.invoke(obj, "John", 25)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499623">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499624">// test results...</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1499625">print(obj.Name + " and age " + obj.Age)</a></PRE>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1487269">Bind a Property to an Instance Rather Than a Type</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1487982">You can bind a feature literal to a specific object instance. This technique is the equivalent of requesting the property by name for a particular instance of the object using the compile time type.</a></div>
+      <div class="B_-_Body"><a name="1488147">Using the feature literal code from the previous example, this code sets a property:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487271">var anEmp = new Employee() { :Name = "Joe", :Age = 32 }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487272">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1488316">// get the property feature literal for a specific instance</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1488313">var namePropForAnEmp = anEmp#Name</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487273">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1488310">// set a property value using that feature literal</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487274">namePropForAnEmp.set( "Ed" )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1488453">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487275">print( anEmp.Name ) // prints "Ed"</a></PRE>
+      <div class="B_-_Body"><a name="1487277">You do not need to pass the instance into the </a><span class="cv_-_computer_voice">set</span> method because the code already bound the property reference to the <span class="cv_-_computer_voice">anEmp</span> variable.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1487278">Bind Argument Values in Method References</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1487279">You also can bind argument values in method references:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487281">var anEmp = new Employee() { :Name = "Joe", :Age = 32 }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487282">var updateFuncForAnEmp = anEmp#update( "Ed", 34 )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487283">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487284">print( anEmp.Name ) // prints "Joe", code did not yet invoke the function reference</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487286">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1488678">// call the method with specific arguments bound in the feature literal</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1488663">updateFuncForAnEmp.invoke()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1488731">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487287">print( anEmp.Name ) // prints "Ed" now</a></PRE>
+      <div class="B_-_Body"><a name="1487289">Using this technique, you can refer to a method invocation with a particular set of arguments. Note that the second line does not invoke the </a><span class="cv_-_computer_voice">update</span> function. Instead, it gets a reference that you can use to evaluate the function at a later time.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1487291">Chaining Feature Literals</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1488764">Feature literals support typesafe chaining, so you could write this code:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1487293">var bossesNameRef = anEmp#Boss#Name</a></PRE>
+      <div class="B_-_Body"><a name="1487295">The feature literal refers to the name of the boss of the object in the </a><span class="cv_-_computer_voice">anEmp</span> variable.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1487297">Convert Method References to Gosu Blocks</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1488927">You can convert method references to blocks with the </a><span class="cv_-_computer_voice">toBlock</span> method:</div>
+      <div class="CS_-_Code_Single_Line"><a name="1489016">var aBlock = anEmp#update( "Ed", 34 ).toBlock()</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

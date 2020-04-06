@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<extension xmlns="http://guidewire.com/datamodel" entityName="PolicyPeriod">
+  <!-- Line-specific transaction arrays.  Since the lines could be removed in a multi-line policy, but still need transactions generated
+       in order to refund money for that line, we can't rely on attaching the transactions to the line or on getting the transactions
+       off of the line.-->
+  <array arrayentity="BATransaction" cascadeDelete="true" name="BATransactions"/>
+  <array arrayentity="BOPTransaction" cascadeDelete="true" name="BOPTransactions"/>
+  <array arrayentity="CPTransaction" cascadeDelete="true" name="CPTransactions"/>
+  <array arrayentity="GLTransaction" cascadeDelete="true" name="GLTransactions"/>
+  <array arrayentity="IMTransaction" cascadeDelete="true" name="IMTransactions"/>
+  <array arrayentity="PATransaction" cascadeDelete="true" name="PATransactions"/>
+  <array arrayentity="WCTransaction" cascadeDelete="true" name="WCTransactions"/>
+  <!-- Insert transaction arrays for additional lines here -->
+  <index desc="Performance index to address problems with consistency checks on policy periods." name="PPPerf1" unique="true">
+    <indexcol keyposition="1" name="ID"/>
+    <indexcol keyposition="2" name="PeriodStart"/>
+    <indexcol keyposition="3" name="PeriodEnd"/>
+  </index>
+  <index desc="Performance index to address problems with consistency checks on policy periods linked to policies." name="PPPerf2" unique="true" expectedtobecovering="true">
+    <indexcol keyposition="1" name="PolicyID"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="ID"/>
+  </index>
+</extension>

@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <WizardStepSet
+    id="LineWizardStepSet"
+    mode="BusinessAuto">
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <JobWizardStep
+      beforeSave="gw.lob.ba.BALineValidation.validateCommercialAutoStep( policyPeriod.BusinessAutoLine )"
+      id="baLineStep"
+      onEnter="if (openForEdit) {policyPeriod.BusinessAutoLine.syncJurisdictions(); policyPeriod.BusinessAutoLine.updateModifiers(); gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages(policyPeriod.BusinessAutoLine.AllCoverables, jobWizardHelper)}"
+      save="openForEdit"
+      screen="BALineScreen(policyPeriod, openForEdit,jobWizardHelper)"
+      title="displaykey.Web.LineWizardMenu.CommercialAutoLine"/>
+    <JobWizardStep
+      beforeSave="gw.policy.PolicyLocationValidation.validateLocationsStep(policyPeriod.PolicyLocations)"
+      id="Locations"
+      save="openForEdit"
+      screen="LocationsScreen(policyPeriod, openForEdit, jobWizardHelper, policyPeriod.BusinessAutoLine.SupportsNonSpecificLocations)"
+      title="displaykey.Web.LineWizardMenu.Locations"/>
+    <JobWizardStep
+      beforeSave="gw.lob.ba.BALineValidation.validateVehiclesStep( policyPeriod.BusinessAutoLine )"
+      id="BusinessVehicles"
+      onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages(policyPeriod.BusinessAutoLine.Vehicles, jobWizardHelper)}"
+      save="openForEdit"
+      screen="BAVehiclesScreen(policyPeriod, openForEdit,jobWizardHelper)"
+      title="displaykey.Web.LineWizardMenu.Vehicles"/>
+    <JobWizardStep
+      id="StateInfo"
+      onEnter="if (openForEdit) { policyPeriod.BusinessAutoLine.syncJurisdictions(); gw.web.productmodel.ProductModelSyncIssuesHandler.syncModifiers(policyPeriod.BusinessAutoLine.Jurisdictions,jobWizardHelper); gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages(policyPeriod.BusinessAutoLine.Jurisdictions, jobWizardHelper)}"
+      save="openForEdit"
+      screen="BAStateInfoScreen(policyPeriod, openForEdit,jobWizardHelper)"
+      title="displaykey.Web.LineWizardMenu.StateInfo"/>
+    <JobWizardStep
+      id="BADrivers"
+      save="openForEdit"
+      screen="BADriversScreen(policyPeriod, openForEdit,jobWizardHelper)"
+      title="displaykey.Web.LineWizardMenu.Drivers"
+      visible="!(job typeis Submission) or (job as Submission).FullMode"/>
+    <JobWizardStep
+      id="CoveredAutoSymbols"
+      onEnter="if (policyPeriod.BusinessAutoLine.AutoSymbolsManualEditDate==null and openForEdit){                            policyPeriod.BusinessAutoLine.setCoveredAutoSymbols()}"
+      save="openForEdit"
+      screen="CoveredAutoSymbolsScreen(policyPeriod, openForEdit,jobWizardHelper)"
+      title="displaykey.Web.Policy.BA.AutoSymbols"
+      visible="!(job typeis Submission) or (job as Submission).FullMode"/>
+    <JobWizardStep
+      beforeSave="gw.validation.ValidationUtil.checkCurrentResult()"
+      id="Modifiers"
+      onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncModifiers(policyPeriod.BusinessAutoLine.AllModifiables, jobWizardHelper)}"
+      save="openForEdit"
+      screen="ModifiersScreen(policyPeriod, openForEdit,jobWizardHelper, policyPeriod.BusinessAutoLine.Modifiers)"
+      title="displaykey.Web.SubmissionWizardMenu.Modifiers"
+      visible="policyPeriod.CanViewModifiers"/>
+  </WizardStepSet>
+</PCF>

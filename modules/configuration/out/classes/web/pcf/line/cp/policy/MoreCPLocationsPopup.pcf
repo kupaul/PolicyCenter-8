@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Popup
+    canEdit="openForEdit"
+    countsAsWork="false"
+    id="MoreCPLocationsPopup"
+    returnType="CPLocation[]"
+    startInEditMode="true"
+    title="displaykey.Web.Policy.LocationContainer.LocationSelection">
+    <LocationEntryPoint
+      signature="MoreCPLocationsPopup(policyPeriod : PolicyPeriod, locations : AccountLocation[], openForEdit : boolean)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="locations"
+      type="AccountLocation[]"/>
+    <Variable
+      name="openForEdit"
+      type="boolean"/>
+    <Screen>
+      <Toolbar>
+        <CheckedValuesToolbarButton
+          allCheckedRowsAction="addCPLocations(policyPeriod.CPLine, CheckedValues)"
+          id="AddSelectedLocations"
+          iterator="locationIterator"
+          label="displaykey.Web.Policy.LocationContainer.AddSelectedLocations"/>
+        <EditButtons
+          updateVisible="false"/>
+      </Toolbar>
+      <ListViewPanel
+        id="MoreLocationsLV">
+        <RowIterator
+          checkBoxVisible="true"
+          editable="openForEdit"
+          elementName="location"
+          hasCheckBoxes="true"
+          id="locationIterator"
+          pageSize="30"
+          value="locations">
+          <IteratorSort
+            sortBy="location.LocationNum"
+            sortOrder="1"/>
+          <Row>
+            <Cell
+              id="locName"
+              label="displaykey.Web.Policy.LocationContainer.Location.Description"
+              value="location.DisplayName"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </Screen>
+    <Code><![CDATA[function addCPLocations(cpLine : CPLine, acctLocations : AccountLocation[]) {
+  for (acctLocation in acctLocations) {
+    var cpLocation = cpLine.addToLineSpecificLocations(acctLocation)
+    for (tc in cpLocation.PolicyLocation.TerritoryCodes) {
+      tc.fillWithFirst()
+    }
+  }
+  CurrentLocation.commit()
+}]]></Code>
+  </Popup>
+</PCF>

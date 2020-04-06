@@ -1,0 +1,90 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    afterCancel="UWAuthorityProfiles.go()"
+    afterCommit="UWAuthorityProfiles.go()"
+    canEdit="perm.System.authprofileedit"
+    canVisit="perm.System.authprofileview"
+    id="UWAuthorityProfiles"
+    showUpLink="true"
+    title="displaykey.Web.UWAuthorityProfile.Title">
+    <Variable
+      initialValue="UWAuthorityProfile.finder.findUWAuthorityProfilesOrderedByName()"
+      name="allProfiles"
+      type="UWAuthorityProfileQuery"/>
+    <Variable
+      initialValue="profileUserCount()"
+      name="profileCountMap"
+      type="java.util.Map&lt;Key, java.lang.Integer&gt;"/>
+    <Screen
+      id="ProfilesScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="NewUWAuthorityProfile.go()"
+          id="NewButton"
+          label="displaykey.Web.UWAuthorityProfile.New"
+          shortcut="N"
+          visible="perm.System.authprofilecreate"/>
+        <CheckedValuesToolbarButton
+          checkedRowAction="CloneUWAuthorityProfile.go(CheckedValue)"
+          flags="one profile"
+          id="CloneButton"
+          iterator="ProfilesLV"
+          label="displaykey.Web.UWAuthorityProfile.Clone"
+          shortcut="C"
+          visible="perm.System.authprofilecreate"/>
+        <CheckedValuesToolbarButton
+          checkedRowAction="CheckedValue.delete()"
+          confirmMessage="displaykey.Web.UWAuthorityProfile.Delete.Warning"
+          flags="any profile"
+          id="DeleteButton"
+          iterator="ProfilesLV"
+          label="displaykey.Button.Delete"
+          shortcut="L"
+          visible="perm.System.authprofiledelete"/>
+      </Toolbar>
+      <ListViewPanel
+        id="ProfilesLV">
+        <RowIterator
+          editable="false"
+          elementName="profile"
+          hasCheckBoxes="true"
+          value="allProfiles">
+          <ToolbarFlag
+            name="profile"/>
+          <Row>
+            <Cell
+              action="UWAuthorityProfileDetailPage.push(profile)"
+              actionAvailable="perm.System.authprofileedit"
+              align="left"
+              id="Name"
+              label="displaykey.Web.UWAuthorityProfile.Profile.Name"
+              value="profile.Name"/>
+            <Cell
+              id="Description"
+              label="displaykey.Web.UWAuthorityProfile.Profile.Description"
+              value="profile.Description"/>
+            <Cell
+              id="UserCount"
+              value="displaykey.Web.UWAuthorityProfile.Profile.InUseBy(profileCountMap[profile.ID])"
+              valueVisible="profileCountMap[profile.ID] &gt; 0"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </Screen>
+    <Code><![CDATA[function profileUserCount() : java.util.Map<Key, java.lang.Integer> {
+  var queryResult = gw.api.database.Query.make(UserAuthorityProfile).select(\ profile -> {
+    return new java.util.HashMap<String, Object>() {
+      "UWAuthProfile" -> profile.UWAuthorityProfile.ID,
+      "Count" -> gw.api.database.DBFunction.Count(profile.PublicID)
+    }
+  })
+  return queryResult.toList()
+    .partitionUniquely(\ columns -> columns["UWAuthProfile"] as Key)
+    .mapValues(\ columns -> columns["Count"] as java.lang.Integer)
+    .toAutoMap(\ k -> 0)
+}]]></Code>
+  </Page>
+</PCF>

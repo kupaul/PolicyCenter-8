@@ -1,0 +1,130 @@
+<?xml version="1.0"?>
+<xsd:schema xmlns:xsd="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://guidewire.com/typelists" xmlns="http://guidewire.com/typelists">
+  
+  <!--  -->
+  <xsd:element name="category">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="code" type="xsd:NMTOKEN" use="required"/>
+      <xsd:attribute name="typelist" type="xsd:NMTOKEN"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!--  -->
+  <xsd:element name="categorylist">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="typelist" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!--  -->
+  <xsd:element name="exclude">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="code" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!--  -->
+  <xsd:element name="include">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded"/>
+      <xsd:attribute name="code" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="internaltypelistextension">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="typecode" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="typefilter" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Description of the typelist. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- Name of the typelist; a typekey (see TYPEKEY in datamodel.xsd) refers to this name. -->
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- A typecode is an entry in a type list.  Each type code has its own unique value (its
+       ID) and code.  A typecode may be "categorized" under multiple other typecodes in the
+       typelist.  A typecode is categorized so that it may be filtered using a typefilter
+       or keyfilter (see TYPEKEY in datamodel.xsd) -->
+  <xsd:element name="typecode">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="category" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="categorylist" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Unique, short string name for the typecode.  Think of this as the typecode's "hotkeys"
+           or a set of keystrokes someone would use to refer to this typecode.  Categories and
+           filters identify a typecode by its code. -->
+      <xsd:attribute name="code" type="xsd:NMTOKEN" use="required"/>
+      <!-- Description of the typecode. -->
+      <xsd:attribute name="desc" type="xsd:string" use="required"/>
+      <!-- Name of the typecode. -->
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <!-- Priority of the type code in the list.  Type codes with high priority appear in a
+           list before those with lower priority or no priority defined.  Type Codes with the
+           same priority are ordered alphabetically by their code. -->
+      <xsd:attribute name="priority" type="xsd:integer" default="-1"/>
+      <xsd:attribute name="retired" type="xsd:boolean" default="false"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <!-- A typefilter defines a subset of typecodes filtered from the set of all typecodes
+       in the typelist.  A typefilter filters a typelist in the following order: 1) Category
+       filters are applied  2) Type codes are "included" 3) Type codes are "excluded" -->
+  <xsd:element name="typefilter">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="category" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="exclude" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="include" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Description of the typefilter. -->
+      <xsd:attribute name="desc" type="xsd:string" use="required"/>
+      <!-- Whether or not to include all typecodes before filtering. If true, any CATEGORY or
+           INCLUDE elements are redundant. -->
+      <xsd:attribute name="includeAll" type="xsd:boolean" default="false"/>
+      <!-- Name of the typefilter. -->
+      <xsd:attribute name="name" type="xsd:NMTOKEN" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="typelist">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="typecode" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="typefilter" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Description of the typelist. -->
+      <xsd:attribute name="desc" type="xsd:string" use="required"/>
+      <!-- True if this type list cannot be extended; the default value is false.  A final type
+           list will generate static constants for the values. -->
+      <xsd:attribute name="final" type="xsd:boolean" default="false"/>
+      <!-- Name of the typelist; a typekey (see TYPEKEY in datamodel.xsd) refers to this name. -->
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+      <!-- Whether this is a platform typelist. -->
+      <xsd:attribute name="platform" type="xsd:boolean" default="false"/>
+      <!-- Sub-package to which the class corresponding to this entity belongs. -->
+      <xsd:attribute name="subpackage" type="xsd:NMTOKEN"/>
+      <!-- Optional name to use for the typelist table. If unspecified the name will be used. -->
+      <xsd:attribute name="tableName" type="xsd:string"/>
+    </xsd:complexType>
+  </xsd:element>
+  
+  <xsd:element name="typelistextension">
+    <xsd:complexType>
+      <xsd:choice minOccurs="0" maxOccurs="unbounded">
+        <xsd:element ref="typecode" minOccurs="0" maxOccurs="unbounded"/>
+        <xsd:element ref="typefilter" minOccurs="0" maxOccurs="unbounded"/>
+      </xsd:choice>
+      <!-- Description of the typelist. -->
+      <xsd:attribute name="desc" type="xsd:string"/>
+      <!-- Name of the typelist; a typekey (see TYPEKEY in datamodel.xsd) refers to this name. -->
+      <xsd:attribute name="name" type="xsd:string" use="required"/>
+    </xsd:complexType>
+  </xsd:element>
+</xsd:schema>

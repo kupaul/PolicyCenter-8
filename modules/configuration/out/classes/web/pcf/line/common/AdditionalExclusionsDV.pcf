@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="AdditionalExclusionsDV">
+    <Require
+      name="coverable"
+      type="Coverable"/>
+    <Require
+      name="coverageCategories"
+      type="String[]"/>
+    <Require
+      name="includeExclude"
+      type="boolean"/>
+    <Variable
+      initialValue="coverable == null ? null : filteredExclusions().map(\ excl -&gt; excl.Pattern )"
+      name="addExclusionsToShow"
+      recalculateOnRefresh="true"/>
+    <InputColumn>
+      <InputSet
+        visible="addExclusionsToShow.Count &gt; 0">
+        <InputIterator
+          elementName="pattern"
+          forceRefreshDespiteChangedEntries="true"
+          id="addedExclIterator"
+          value="addExclusionsToShow">
+          <IteratorSort
+            sortBy="pattern.CoverageCategory.Priority"
+            sortOrder="1"/>
+          <IteratorSort
+            sortBy="pattern.Priority"
+            sortOrder="2"/>
+          <InputSetRef
+            def="CoverageInputSet( pattern, coverable, CurrentLocation.InEditMode )"
+            mode="pattern.Code"/>
+        </InputIterator>
+      </InputSet>
+    </InputColumn>
+    <Code><![CDATA[function filteredExclusions() : Exclusion[] {
+  var excllist : Exclusion[]
+  if (coverable == null ) {
+    return null
+  }
+  if (includeExclude) {
+    return coverable.getExclusionsInCategories( coverageCategories ) as Exclusion[]
+  } else {
+    return coverable.getExclusionsNotInCategories( coverageCategories ) as Exclusion[]
+  }
+}]]></Code>
+  </DetailViewPanel>
+</PCF>

@@ -1,0 +1,116 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="BillingAdjustmentsDV"
+    mode="MidtermReporting">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="policyPeriod.DepositAmount == null ? 0bd.ofCurrency(policyPeriod.PreferredSettlementCurrency) : policyPeriod.DepositAmount"
+      name="depositAmtToDisplay"/>
+    <Variable
+      initialValue="policyPeriod.BasedOn.DepositOverridePct"
+      name="depositPctOverrideToDisplay"/>
+    <Variable
+      initialValue="(policyPeriod.PrevDepositAmount == null) ? depositAmtToDisplay : (depositAmtToDisplay - policyPeriod.PrevDepositAmount)"
+      name="depositChange"/>
+    <Variable
+      initialValue="policyPeriod.canOverrideDeposit()"
+      name="canOverrideDeposit"/>
+    <InputColumn>
+      <Label
+        label="displaykey.Web.Policy.Payment.MidtermChange.BillingIssuanceOptions"
+        visible="true"/>
+      <Input
+        id="PremiumReportPlan"
+        label="displaykey.Web.Policy.Payment.PremiumReportPlan"
+        value="policyPeriod.SelectedPaymentPlan.Name"
+        visible="true"/>
+      <Input
+        id="DepositReleased"
+        label="displaykey.Web.Policy.Payment.DepositReleased"
+        value="true"
+        visible="not canOverrideDeposit"/>
+      <InputGroup
+        allowToggle="false"
+        childrenVisible="canOverrideDeposit"
+        id="DepositInputGroup"
+        label="displaykey.Web.Policy.Payment.Deposit"
+        visible="canOverrideDeposit">
+        <Input
+          id="DepositDefault"
+          label="displaykey.Web.Policy.Payment.DepositDefault"
+          value=" policyPeriod.ReportingPattern.ReportingDefaultDepositPct"
+          visible="true"/>
+        <TextInput
+          editable="perm.PolicyPeriod.overridebilling"
+          id="DepositOverride"
+          label="displaykey.Web.Policy.Payment.DepositOverridePct"
+          requestValidationExpression="!(VALUE &lt; 0 || VALUE &gt; 100) ? null : displaykey.Web.Policy.Payment.DepositOverride.OutOfRange"
+          value="depositPctOverrideToDisplay">
+          <PostOnChange
+            onChange="policyPeriod.DepositOverridePct = depositPctOverrideToDisplay; depositAmtToDisplay = policyPeriod.calculateAndSetDepositAmountOnReporting(); policyPeriod.WaiveDepositChange = false"/>
+        </TextInput>
+        <MonetaryAmountInput
+          formatType="currency"
+          id="ProposedDepositAmount"
+          label="displaykey.Web.Policy.Payment.ProposedDepositAmount"
+          value="depositAmtToDisplay">
+          <PostOnChange
+            onChange="depositChange = (policyPeriod.PrevDepositAmount == null) ? depositAmtToDisplay : (depositAmtToDisplay - policyPeriod.PrevDepositAmount)"/>
+        </MonetaryAmountInput>
+        <MonetaryAmountInput
+          formatType="currency"
+          id="CurrentDepositAmount"
+          label="displaykey.Web.Policy.Payment.PreviousDepositAmount"
+          value="policyPeriod.PrevDepositAmount"
+          visible="true">
+          <PostOnChange
+            onChange="depositChange = (policyPeriod.PrevDepositAmount == null) ? depositAmtToDisplay : (depositAmtToDisplay - policyPeriod.PrevDepositAmount)"/>
+        </MonetaryAmountInput>
+        <CheckBoxInput
+          editable="perm.PolicyPeriod.overridebilling"
+          id="WaiveDepositChange"
+          value="policyPeriod.WaiveDepositChange"
+          valueLabel="displaykey.Web.Policy.Payment.MidtermChange.WaiveDepositChange(depositChange)">
+          <PostOnChange
+            onChange="resetDeposit()"/>
+        </CheckBoxInput>
+      </InputGroup>
+      <Input
+        editable="true"
+        id="CollectedByAgent"
+        label="displaykey.Web.Policy.Payment.CollectedByAgent"
+        value="policyPeriod.DepositCollected"/>
+      <InputDivider/>
+      <Label
+        label="displaykey.Web.BillingAuditDV.Audits"
+        visible="policyPeriod.IsAuditable"/>
+      <Input
+        id="FinalAudit"
+        label="displaykey.Web.BillingAuditDV.FinalAudit"
+        value="policyPeriod.FinalAuditOption"
+        visible="policyPeriod.IsAuditable"/>
+    </InputColumn>
+    <Code><![CDATA[function resetDeposit() {
+  if (policyPeriod.WaiveDepositChange) {
+    policyPeriod.waiveDepositChange()
+    depositPctOverrideToDisplay = policyPeriod.BasedOn.DepositOverridePct
+    if (policyPeriod.DepositOverridePct != null)
+      depositAmtToDisplay = policyPeriod.TotalSubjectToReporting * policyPeriod.DepositOverridePct / 100
+    else {
+      depositAmtToDisplay = policyPeriod.TotalSubjectToReporting * policyPeriod.ReportingPattern.ReportingDefaultDepositPct / 100
+    }
+    if (depositAmtToDisplay != null) {
+      depositAmtToDisplay = gw.api.util.MonetaryAmounts.roundToCurrencyScale(depositAmtToDisplay.Amount, depositAmtToDisplay.Currency, HALF_EVEN)
+    }
+  } else {
+    policyPeriod.DepositOverridePct = depositPctOverrideToDisplay
+    policyPeriod.DepositAmount = depositAmtToDisplay
+  }
+}]]></Code>
+  </DetailViewPanel>
+</PCF>

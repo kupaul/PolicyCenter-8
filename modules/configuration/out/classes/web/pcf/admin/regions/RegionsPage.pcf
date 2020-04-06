@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    canVisit="perm.Region.view"
+    id="RegionsPage"
+    parent="RegionsForward()"
+    title="displaykey.Web.Admin.Regions">
+    <Variable
+      initialValue="new gw.admin.RegionsUIHelper()"
+      name="uiHelper"
+      recalculateOnRefresh="true"/>
+    <Screen
+      id="RegionsScreen">
+      <TitleBar
+        appendListViewPaging="true"
+        title="displaykey.Web.Admin.Regions"/>
+      <Verbatim
+        label="displaykey.Web.Regions.CannotEditRegions"
+        visible="gw.api.admin.BaseAdminUtil.getRegionZoneTypesForDefaultCountry().length == 0"/>
+      <SearchPanel
+        cachingEnabled="false"
+        criteriaName="SearchCriteria"
+        resultsName="allRegions"
+        search="SearchCriteria.performSearch()"
+        searchCriteria="new gw.api.admin.RegionSearchCriteria()"
+        searchOnEnter="true"
+        searchResultsType="RegionQuery">
+        <PanelRef
+          def="RegionSearchDV(SearchCriteria)"
+          visible="uiHelper.searchPanelVisible()"/>
+        <PanelRef
+          def="RegionSearchResultsLV(allRegions,true,true)">
+          <TitleBar
+            appendListViewPaging="true"
+            id="SearchResultsTitleBar"
+            title="displaykey.Web.Search.Results"
+            visible="uiHelper.searchPanelVisible()"/>
+          <Toolbar
+            visible="gw.api.admin.BaseAdminUtil.getRegionZoneTypesForDefaultCountry().length != 0">
+            <ToolbarButton
+              action="NewRegion.go()"
+              id="Regions_AddRegionButton"
+              label="displaykey.Web.Admin.AddRegion"
+              shortcut="R"/>
+            <CheckedValuesToolbarButton
+              allCheckedRowsAction="gw.api.admin.BaseAdminUtil.deleteRegions(CheckedValues)"
+              flags="any Region"
+              id="Regions_DeleteButton"
+              iterator="RegionSearchResultsLV.RegionSearchResultsLV"
+              label="displaykey.Button.Delete"
+              shortcut="L"
+              visible="perm.Region.delete"/>
+          </Toolbar>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+  </Page>
+</PCF>

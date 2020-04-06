@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    canEdit="false"
+    canVisit="perm.Account.viewRenewalGroup(account)"
+    id="UnderwritingFiles"
+    title="displaykey.Web.UnderwritingFiles.Title"
+    validateOnBundleCommit="false">
+    <LocationEntryPoint
+      signature="UnderwritingFiles(account : Account)"/>
+    <Variable
+      name="account"
+      type="Account"/>
+    <Variable
+      initialValue="account.JobGroups"
+      name="jobGroups"
+      recalculateOnRefresh="true"/>
+    <Screen
+      id="RenewalManagerScreen">
+      <TitleBar
+        title="displaykey.Web.UnderwritingFiles.Title"/>
+      <Toolbar/>
+      <Verbatim
+        label="displaykey.Web.UnderwritingFiles.NoWorkOrders"
+        visible="jobGroups.Count == 0"/>
+      <ListViewPanel
+        id="RenewalManagerLV"
+        visible="jobGroups.Count &gt; 0">
+        <RowIterator
+          editable="false"
+          elementName="jobGroup"
+          type="JobGroup"
+          value="account.JobGroups">
+          <ToolbarFilter
+            name="jobGroupCompleteFilter">
+            <ToolbarFilterOption
+              filter="new filters.StandardBeanFilter(displaykey.Web.UnderwritingFiles.Filter.All, \ x -&gt; true)"/>
+            <ToolbarFilterOption
+              filter="new filters.StandardBeanFilter(displaykey.Web.UnderwritingFiles.Filter.Open, \ x -&gt; (x as JobGroup).Jobs.hasMatch( \ r -&gt; not r.Complete))"/>
+            <ToolbarFilterOption
+              filter="new filters.StandardBeanFilter(displaykey.Web.UnderwritingFiles.Filter.Complete, \ x -&gt; not (x as JobGroup).Jobs.hasMatch( \ r -&gt; not r.Complete))"/>
+          </ToolbarFilter>
+          <ToolbarFilter
+            name="jobGroupTypeFilter">
+            <ToolbarFilterOption
+              filter="new filters.StandardBeanFilter(displaykey.Web.UnderwritingFiles.Filter.SubmissionAndRenewal, \ x -&gt; true)"/>
+            <ToolbarFilterOption
+              filter="new filters.StandardBeanFilter(displaykey.Web.UnderwritingFiles.Filter.SubmissionOnly, \ x -&gt; (x typeis SubmissionGroup))"/>
+            <ToolbarFilterOption
+              filter="new filters.StandardBeanFilter(displaykey.Web.UnderwritingFiles.Filter.RenewalOnly, \ x -&gt; (x typeis RenewalGroup))"/>
+          </ToolbarFilter>
+          <Row>
+            <Cell
+              action="goToSpecificJobGroupDetail(jobGroup)"
+              id="GroupName"
+              label="displaykey.Web.UnderwritingFiles.GroupName"
+              value="jobGroup.Name"/>
+            <Cell
+              id="FirstRenewalDate"
+              label="displaykey.Web.UnderwritingFiles.FirstEffectiveDate"
+              value="jobGroup.FirstJobDate"/>
+            <Cell
+              id="LastRenewalDate"
+              label="displaykey.Web.UnderwritingFiles.LastEffectiveDate"
+              value="jobGroup.LastJobDate"/>
+            <Cell
+              id="WorkOrderType"
+              label="displaykey.Web.UnderwritingFiles.WorkOrderType"
+              value="jobGroup.Subtype"/>
+            <Cell
+              id="NumJobs"
+              label="displaykey.Web.UnderwritingFiles.NumJobs"
+              value="jobGroup.NumJobs"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </Screen>
+    <Code><![CDATA[function goToSpecificJobGroupDetail(jobGroup : JobGroup) {
+  if(jobGroup typeis RenewalGroup) {
+    RenewalGroupDetail.go(jobGroup)
+  }
+  else if(jobGroup typeis SubmissionGroup) {
+    SubmissionGroupDetail.go(jobGroup)
+  }
+  else {
+    throw displaykey.Web.UnderwritingFiles.UnrecognizedJobGroup(typeof jobGroup)
+  }
+}]]></Code>
+  </Page>
+</PCF>

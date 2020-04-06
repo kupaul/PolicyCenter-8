@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="BillingAdjustmentsDV"
+    mode="MidtermInstallments">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <InputColumn>
+      <Label
+        label="displaykey.Web.Policy.Payment.MidtermChange.BillingIssuanceOptions"
+        visible="true"/>
+      <CheckBoxInput
+        editable="perm.PolicyPeriod.overridebilling"
+        id="OverrideBillingAllocation"
+        label="displaykey.Web.Policy.Payment.MidtermChange.OverrideBillingAllocation"
+        value="policyPeriod.OverrideBillingAllocation">
+        <PostOnChange/>
+      </CheckBoxInput>
+      <Input
+        editable="perm.PolicyPeriod.overridebilling"
+        formatType="percentagePoints"
+        id="BillImmediately"
+        label="displaykey.Web.Policy.Payment.MidtermChange.BillImmediately"
+        value="policyPeriod.BillImmediatelyPercentage"
+        visible="policyPeriod.OverrideBillingAllocation"/>
+      <RangeInput
+        editable="perm.PolicyPeriod.overridebilling and policyPeriod.OverrideBillingAllocation"
+        id="AllocationOfRemainder"
+        label="displaykey.Web.Policy.Payment.MidtermChange.AllocationOfRemainder"
+        required="false"
+        value="policyPeriod.AllocationOfRemainder"
+        valueRange="typekey.BillingRemainderAllocate.getTypeKeys( true )"
+        visible="policyPeriod.OverrideBillingAllocation"/>
+      <MonetaryAmountInput
+        currency="policyPeriod.PreferredSettlementCurrency"
+        editable="true"
+        id="CollectedByAgent"
+        label="displaykey.Web.Policy.Payment.CollectedByAgent"
+        value="policyPeriod.DepositCollected"/>
+      <InputDivider/>
+      <Label
+        label="displaykey.Web.BillingAuditDV.Audits"
+        visible="policyPeriod.IsAuditable"/>
+      <RangeInput
+        available="typeof(policyPeriod.Job) == Issuance"
+        editable="typeof(policyPeriod.Job) == Issuance"
+        id="FinalAudit"
+        label="displaykey.Web.BillingAuditDV.FinalAudit"
+        required="false"
+        value="policyPeriod.FinalAuditOption"
+        valueRange="typekey.FinalAuditOption.getTypeKeys( true )"
+        visible="policyPeriod.IsAuditable"/>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

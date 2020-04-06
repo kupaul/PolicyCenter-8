@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <RowSet
+    id="NoteRowSet">
+    <Require
+      name="note"
+      type="Note"/>
+    <Require
+      name="viewOnly"
+      type="boolean"/>
+    <Require
+      name="noteCopier"
+      type="gw.note.NoteCopier"/>
+    <Row>
+      <CheckBoxCell
+        editable="true"
+        hideIfReadOnly="true"
+        id="shouldCopy"
+        value="noteCopier.ShouldCopy"
+        visible="noteCopier != null"/>
+      <FormatCell
+        id="col1"
+        width="200">
+        <ContentInput
+          align="left"
+          id="Buttons"
+          labelAbove="true"
+          visible="not viewOnly">
+          <Link
+            action="note.delete()"
+            available="perm.Note.delete(note)"
+            id="NotesLV_DeleteLink"
+            label="displaykey.Web.Notes.Delete"
+            styleClass="miniButton"
+            visible="perm.Note.delete(note)"/>
+          <Link
+            desc="spacer link"
+            id="SpacerLink0"
+            label="&quot; &quot;"
+            visible="perm.Note.delete(note) and perm.Note.edit(note)"/>
+          <Link
+            action="EditNotePopup.push(note)"
+            available="perm.Note.edit(note)"
+            id="NotesLV_EditLink"
+            label="displaykey.Web.Notes.Edit"
+            styleClass="miniButton"
+            visible="perm.Note.edit(note)"/>
+        </ContentInput>
+        <TextInput
+          align="left"
+          boldLabel="true"
+          id="Author"
+          label="displaykey.Java.Note.Author"
+          value="note.Author"/>
+        <TextInput
+          align="left"
+          boldLabel="true"
+          id="Topic"
+          label="displaykey.Java.Note.Topic"
+          value="note.Topic"/>
+        <TextInput
+          align="left"
+          boldLabel="true"
+          id="SecurityType"
+          label="displaykey.Java.Note.SecurityLevel"
+          value="note.SecurityType.DisplayName"/>
+        <TextInput
+          align="left"
+          boldLabel="true"
+          id="RelatedTo"
+          label="displaykey.Java.Note.RelatedTo"
+          value="entity.Note.getLevelDisplayString( note.Level )"/>
+        <TextInput
+          id="Confidential"
+          labelAbove="true"
+          value="displaykey.Java.Note.Confidential"
+          visible="note.Confidential"/>
+      </FormatCell>
+      <FormatCell
+        id="col2"
+        wrap="true">
+        <TextInput
+          boldLabel="true"
+          id="AuthoringDate"
+          label="gw.api.util.StringUtil.formatDate(note.AuthoringDate, &quot;medium&quot;)"
+          value="gw.api.util.StringUtil.formatTime(note.AuthoringDate, &quot;short&quot;)"/>
+        <TextInput
+          boldValue="true"
+          id="Subject"
+          label=""
+          labelAbove="true"
+          value="note.Subject"
+          visible="note.Subject != null"/>
+        <NoteBodyInput
+          id="Body"
+          labelAbove="true"
+          value="note.Body"/>
+      </FormatCell>
+    </Row>
+  </RowSet>
+</PCF>

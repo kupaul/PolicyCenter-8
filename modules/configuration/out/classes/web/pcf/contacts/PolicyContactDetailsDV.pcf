@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="PolicyContactDetailsDV">
+    <Require
+      name="policyContactRole"
+      type="PolicyContactRole"/>
+    <Require
+      name="openForEditOverride"
+      type="boolean"/>
+    <Variable
+      initialValue="policyContactRole.AccountContactRole.AccountContact.Contact"
+      name="contact"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="policyContactRole.Branch"
+      name="period"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="contact.PrimaryAddress"
+      name="primaryAddress"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="gw.util.concurrent.LockingLazyVar.make(\ -&gt; period.OpenForEdit)"
+      name="openForEditInit"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="openForEditOverride or openForEditInit.get()"
+      name="openForEdit"
+      recalculateOnRefresh="true"/>
+    <InputColumn>
+      <InputSetRef
+        def="PolicyContactRoleNameInputSet(policyContactRole)"
+        mode="policyContactRole.AccountContactRole.AccountContact.Contact.Subtype.Code"/>
+      <InputDivider/>
+      <InputSetRef
+        def="LinkedAddressInputSet(primaryAddress, policyContactRole.AccountContactRole.AccountContact.Contact, period, period.Policy.Account, openForEdit)"/>
+      <InputSetRef
+        def="AddressInputSet(new gw.pcf.contacts.AddressInputSetAddressOwner(primaryAddress, false, true))"
+        editable="primaryAddress.LinkedAddress == null"/>
+      <TypeKeyInput
+        editable="primaryAddress.LinkedAddress == null"
+        id="AddressType"
+        label="displaykey.Web.ContactDetail.AddressDetail.AddressType"
+        required="true"
+        value="primaryAddress.AddressType"/>
+      <Input
+        editable="primaryAddress.LinkedAddress == null"
+        id="AddressDescription"
+        label="displaykey.Web.ContactDetail.AddressDetail.Description"
+        value="primaryAddress.Description"/>
+      <InputSetRef
+        def="ContactCurrencyInputSet(contact, primaryAddress, contact.New)"
+        editable="contact.New"
+        id="ContactCurrency"/>
+      <InputDivider
+        visible="contact typeis Person"/>
+      <InputSetRef
+        def="LicenseInputSet(policyContactRole, primaryAddress)"
+        mode="policyContactRole.Subtype.Code"
+        visible="contact typeis Person"/>
+      <InputDivider/>
+      <Label
+        label="displaykey.Web.AccountFile.Summary.OfficialIDs"/>
+      <InputSetRef
+        def="OfficialIDInputSet(contact)"
+        mode="contact.Subtype"/>
+      <InputDivider/>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

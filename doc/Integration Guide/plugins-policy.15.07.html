@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Policy Period Plugin</title>
+    <link rel="StyleSheet" href="css/plugins-policy.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-plugins.html#2388234">Plugins</a> : <a class="WebWorks_Breadcrumb_Link" href="plugins-policy.15.01.html#2388234">Account and Policy Plugins</a> : Policy Period Plugin</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2388234">Policy Period Plugin</a></h3>
+      <div class="B_-_Body"><a name="2565143">The policy period plugin (</a><span class="cv_-_computer_voice">IPolicyPeriodPlugin</span>) is responsible for a variety of tasks related to <span class="cv_-_computer_voice">PolicyPeriod</span> entities. PolicyCenter includes a built-in implementation of this plugin. Find the built-in implementation in Studio in the <span class="cv_-_computer_voice">gw.plugin.policyperiod.impl</span> package. You can modify this plugin to customize it. You can also implement your own instance of this plugin to customize PolicyCenter application logic.</div>
+      <div class="B_-_Body"><a name="2529520">To modify the plugin behavior for a particular line of business, put line-specific functionality in the </a><span class="cv_-_computer_voice">PolicyLineMethods</span> implementation class. These classes have names with the LOB prefix with the pattern <span class="p_-_parameter">LOB</span><span class="cv_-_computer_voice">PolicyLineMethods</span>. For example, the policy period plugin implementation (<span class="cv_-_computer_voice">gw.plugin.policyperiod.impl.PolicyPeriodPlugin</span>) has a <span class="cv_-_computer_voice">postApplyChangesFromBranch</span> method. This method calls <span class="cv_-_computer_voice">postApplyChangesFromBranch</span> for each line in the policy period. </div>
+      <PRE class="CF_-_Code_First_Line"><a name="2530435">override function postApplyChangesFromBranch(policyPeriod : PolicyPeriod, sourcePeriod : PolicyPeriod)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2530452">{</a></PRE>
+      <PRE class="CF_-_Code_First_Line"><a name="2530345">&nbsp;&nbsp;for (line in policyPeriod.Lines) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2530346">&nbsp;&nbsp;&nbsp;&nbsp;line.postApplyChangesFromBranch(sourcePeriod)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2530338">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2530462">...</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2530467">}</a></PRE>
+      <div class="B_-_Body"><a name="2554305">To implement functionality for the workers’ compensation line of business, the </a><span class="cv_-_computer_voice">gw.lob.wc.WCPolicyLineMethods</span> class implements the <span class="cv_-_computer_voice">postApplyChangesFromBranch</span> method:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2530387">override function postApplyChangesFromBranch(sourcePeriod : PolicyPeriod) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2530388">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2530383">}</a></PRE>
+      <h4 class="H2_-_Heading_2"><a name="2443600">Setting Written Date for a Transaction</a></h4>
+      <div class="B_-_Body"><a name="2443609">If PolicyCenter needs to set the written&nbsp;date for a transaction, PolicyCenter calls the policy period plugin method </a><span class="cv_-_computer_voice">determineWrittenDate</span>. This method takes a policy period and a transaction object. The policy period is the policy period that owns this transaction. The <span class="cv_-_computer_voice">Transaction.WrittenDate</span> property means the date on which for accounting purposes the premium is considered as written.</div>
+      <div class="B_-_Body"><a name="2443942">The method must return a </a><span class="cv_-_computer_voice">java.util.Date</span> object that represents the written date.</div>
+      <div class="B_-_Body"><a name="2444039">In the built-in implementation of this plugin, the code checks whether the period state date is after the transaction’s posted date. If so, the method returns the period start date. Otherwise, returns the transaction’s posted date.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="2443603">Customizing Behavior After Applying Changes from a Branch</a></h4>
+      <div class="B_-_Body"><a name="2425859">Implement the </a><span class="cv_-_computer_voice">postApplyChangesFromBranch</span> method to customize behavior after PolicyCenter applies changes from a branch. PolicyCenter calls this method in the following circumstances:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2425860">When handling preemptions. PolicyCenter calls this method after applying changes from the preempted branch to the newly created branch.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2425861">In a policy change when a user changes the edit effective date. PolicyCenter calls this method after applying changes from the policy change branch to the new branch with the changed edit effective date.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2425862">PolicyCenter calls this method in jobs that can be preempted. These jobs are primarily policy changes, but can also be audit, cancellation, reinstatement, and renewal jobs. Only policy change jobs can have their edit effective date changed.</a></div>
+      <div class="B_-_Body"><a name="2425863">The </a><span class="cv_-_computer_voice">postApplyChangesFromBranch</span> method takes two <span class="cv_-_computer_voice">PolicyPeriod</span> entity instances as arguments. The first argument, <span class="cv_-_computer_voice">policyPeriod</span>, is the period to apply changes to. The second argument, <span class="cv_-_computer_voice">sourcePeriod</span>, is the <span class="cv_-_computer_voice">PolicyPeriod</span> to generate changes from. </div>
+      <div class="B_-_Body"><a name="2425864">In the case of a preemption, the </a><span class="cv_-_computer_voice">sourcePeriod</span> is the original <span class="cv_-_computer_voice">PolicyPeriod</span> the user was working on in a job. For example, the user starts a policy change which adds a vehicle and two coverages to that vehicle; this is the <span class="cv_-_computer_voice">sourcePeriod</span> argument. This job is preempted by another job. The <span class="cv_-_computer_voice">policyPeriod</span> argument is the <span class="cv_-_computer_voice">PolicyPeriod</span> created for the preempting job. PolicyCenter applies the changes to <span class="cv_-_computer_voice">policyPeriod</span> by adding the vehicle and two coverages to the <span class="cv_-_computer_voice">policyPeriod</span> branch. Then PolicyCenter calls this plugin method.</div>
+      <h4 class="H2_-_Heading_2"><a name="2391258">Specifying Types to Omit If Copying a Contractual Period</a></h4>
+      <div class="B_-_Body"><a name="2379294">Implement the </a><span class="cv_-_computer_voice">returnTypesToNotCopyOnNewPeriod</span> method to tell PolicyCenter which entity types must not be copied from one contractual period to the other during renewal or reinstatement. </div>
+      <div class="B_-_Body"><a name="2388456">For example, you might want to include special custom entities that you use for integration or accounting reasons. You might not, however, want to copy them from one period to another. For example, perhaps you might want to force recalculation of some values to get unique IDs in the new period. </a></div>
+      <div class="B_-_Body"><a name="2379370">The method takes no arguments and must return a set of entity types (</a><span class="cv_-_computer_voice">IEntityType</span>).</div>
+      <div class="B_-_Body"><a name="2379405">For example, you can define the set directly in-line using Gosu shorthand for set creation:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2379382">override function returnTypesToNotCopyOnNewPeriod(): Set&lt;IEntityType&gt; {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2379383">&nbsp;&nbsp;return { RatingPeriodStartDate, Form, FormEdgeTable, FormAssociation }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2379384">}</a></PRE>
+      <h4 class="H2_-_Heading_2"><a name="2379456">Customizing Behavior After Setting Period Window</a></h4>
+      <div class="B_-_Body"><a name="2528675">Implement the </a><span class="cv_-_computer_voice">postSetPeriodWindow</span> method to customize behavior after a user changes the period window of a contractual period. PolicyCenter calls this method if a user changes the effective date or expiration date of a contractual period. The method gets the <span class="cv_-_computer_voice">PolicyPeriod</span> (the new branch), the old start date, and the old end date. You can check the <span class="cv_-_computer_voice">PolicyPeriod.PeriodStart</span> and <span class="cv_-_computer_voice">PolicyPeriod.PeriodEnd</span> dates to get the current values if needed.</div>
+      <div class="B_-_Body"><a name="2528715">The built-in plugin implementation calls the </a><span class="cv_-_computer_voice">postSetPeriodWindow</span> method for each line of business in the policy period. </div>
+      <div class="B_-_Body"><a name="2379523">For example, the </a><span class="cv_-_computer_voice">WCPolicyLineMethod</span> class has a <span class="cv_-_computer_voice">postSetPeriodWindow</span> method. This method updates workers’ compensation jurisdiction rating period start dates (RPSDs) after the period change.</div>
+      <div class="B_-_Body"><a name="2388473">This built-in behavior is probably sufficient for most situations and you do not need to modify it.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="2379540">Customizing Behavior After Creating Draft Branch In New Period</a></h4>
+      <div class="B_-_Body"><a name="2379544">Implement the </a><span class="cv_-_computer_voice">postCreateDraftBranchInNewPeriod</span> method to customize behavior after a user creates a draft branch in a new contractual period. PolicyCenter calls this for renewal jobs and rewrite jobs. The method takes a <span class="cv_-_computer_voice">PolicyPeriod</span> entity and returns nothing.</div>
+      <div class="B_-_Body"><a name="2529022">The built-in plugin implementation calls the </a><span class="cv_-_computer_voice">postCreateDraftBranchInNewPeriod</span> method for each line of business in the policy period. </div>
+      <div class="B_-_Body"><a name="2379725">For example, the </a><span class="cv_-_computer_voice">WCPolicyLineMethod</span> class has a <span class="cv_-_computer_voice">postCreateDraftBranchInNewPeriod</span> method. This method updates workers’ compensation jurisdiction rating period start dates (RPSDs) after creating a draft in the new period.</div>
+      <h4 class="H2_-_Heading_2"><a name="2379640">Customizing Behavior Before Promoting a Branch</a></h4>
+      <div class="B_-_Body"><a name="2529199">Implement the </a><span class="cv_-_computer_voice">prePromote</span> method to customize behavior before a branch is promoted. In other words, after a job completes and its draft branch becomes legally binding, PolicyCenter calls this method before promoting the draft branch. This method takes a <span class="cv_-_computer_voice">PolicyPeriod</span> entity and returns nothing. For more information about branch structure and branch promotion, see <a href="javascript:WWHClickedPopup('app', 'policyrevisions.50.01.html#2556048', '');" title="Policy Revisioning">“Policy Revisioning” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('app', 'policyrevisions.50.01.html#2556048', '');" title="Policy Revisioning">Application Guide</a></span>.</div>
+      <div class="B_-_Body"><a name="2529203">In general, there is nothing PolicyCenter requires you to do at this point but you can customize the logic as necessary. </a></div>
+      <h4 class="H2_-_Heading_2"><a name="2529225">Customizing Behavior After Handling a Preemption</a></h4>
+      <div class="B_-_Body"><a name="2529227">Implement the </a><span class="cv_-_computer_voice">postHandlePreemption</span> method to customize behavior after a preemption is handled. Preemption is name for the situation in which two concurrent jobs for a policy were based on the same branch. After the second one finishes, you must choose whether to apply changes from recently-bound jobs into the active job that is about to be bound. Otherwise, you must withdraw the current job. For more on this topic, see <a href="javascript:WWHClickedPopup('app', 'policyrevisions.50.05.html#2695159', '');" title="Preempted Jobs">“Preempted Jobs” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('app', 'policyrevisions.50.05.html#2695159', '');" title="Preempted Jobs">Application Guide</a></span>.</div>
+      <div class="B_-_Body"><a name="2565357">In the user interface it might appear that any changes applied as part of preemption are merged into the active branch. However, PolicyCenter actually creates an entirely new branch with based-on revision set to the most recently bound </a><span class="cv_-_computer_voice">PolicyPeriod</span> in that contractual period. PolicyCenter applies changes from preempted branches (or multiple branches for multiple preemptions) to handle the preemption. After handling the preemption, PolicyCenter discards the active branch that the user was actively working on and was preempted by earlier bound changes.</div>
+      <div class="B_-_Body"><a name="2565358">This method is called after the new branch is created but before the old draft branch is discarded. The first method parameter is the new branch (a </a><span class="cv_-_computer_voice">PolicyPeriod</span>) created to handle the preemption. This new branch was cloned from the most recently bound branch and then PolicyCenter applies (merges) all changes from the preempted job. This new branch has a based-on revision property that is set correctly so there is no longer a preemption issue. The second argument is the draft branch that the user was actively working, which is the job that was preempted. </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

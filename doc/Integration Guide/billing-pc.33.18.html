@@ -1,0 +1,523 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Implementing the Billing Summary Plugin</title>
+    <link rel="StyleSheet" href="css/billing-pc.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-pc-suite.html#3420524">Billing, Claim, and Contact Integrations</a> : <a class="WebWorks_Breadcrumb_Link" href="billing-pc.33.01.html#3420524">Billing Integration</a> : Implementing the Billing Summary Plugin</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="3420524">Implementing the Billing Summary Plugin</a></h3>
+      <div class="B_-_Body"><a name="3420701">To support the PolicyCenter billing summary screens (one in policy file, one in account file), implement the </a><span class="cv_-_computer_voice">IBillingSummaryPlugin</span><span style="color: #000000; font-size: 13.0pt"> </span>plugin interface. PolicyCenter uses the information that this plugin returns only as part of the billing summary screen. PolicyCenter does not use the information as part of binding, issuing, changing, or renewing a policy. You can remove the billing summary screen from the user interface and PolicyCenter would continue to work normally. </div>
+      <div class="B_-_Body"><a name="3462729">For a comparison of the billing system plugin and the billing summary plugin, see </a><a href="javascript:WWHClickedPopup('integration', 'billing-pc.33.02.html#3423502', '');" title="Billing Integration Overview">“Billing Integration Overview”</a>.</div>
+      <div class="B_-_Body"><a name="3420918">If you use BillingCenter as your billing system, you can skip this topic. Just use the built-in plugin implementation as described in the </a><a href="javascript:WWHClickedPopup('install', 'postinstall.7.12.html#2588383', '');" title="Enabling Integration between BillingCenter and PolicyCenter">“Enabling Integration between BillingCenter and PolicyCenter” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('install', 'postinstall.7.12.html#2588383', '');" title="Enabling Integration between BillingCenter and PolicyCenter">Installation Guide</a></span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3617313">Java Interfaces Used by the Billing Summary Plugin</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3617321">The methods in the billing summary plugin interface return instances of classes that implement one of several Java interfaces. You must define your own concrete implementations of these Java interfaces.</a></div>
+      <div class="B_-_Body"><a name="3617315">The Java interfaces are in the </a><span class="cv_-_computer_voice">gw.plugin.billing</span> package. For the billing summary plugin you must define concrete implementation for the following interfaces: </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3487021">BillingAccountInfo</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3487035">BillingInvoiceInfo</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3486870">BillingPeriodInfo</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3613362">The Java interfaces define methods, primarily property getter methods. In Gosu, these getters are exposed as properties. For example, the </a><span class="cv_-_computer_voice">BillingPeriodInfo</span> Java interface has a <span class="cv_-_computer_voice">getPeriods</span> method. In your Gosu concrete implementation of this interface, you implement a getter for <span class="cv_-_computer_voice">Periods</span> property. Gosu code can access the <span class="cv_-_computer_voice">Periods</span> property directly or by calling the <span class="cv_-_computer_voice">getPeriods</span> method. See <a href="javascript:WWHClickedPopup('gosu', 'java-gosu.09.2.html#2021794', '');" title="Overview of Writing Gosu Code that Calls Java">“Java get/set/is Methods Convert to Gosu Properties” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'java-gosu.09.2.html#2021794', '');" title="Overview of Writing Gosu Code that Calls Java">Gosu Reference Guide</a></span>. You can also add additional getters and setters for other properties that you create. </div>
+      <div class="B_-_Body"><a name="3487154">PolicyCenter includes two implementations of </a><span class="cv_-_computer_voice">IBillingSummaryPlugin</span>:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3487239">BCBillingSummaryPlugin</a></span> – Built-in plugin implementation for PolicyCenter integration with BillingCenter.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="3487171">StandAloneBillingSummaryPlugin</a></span> – Example plugin implementation that mimics integration with a third-party billing system.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3487178">Examine these classes to see ways of implementing the plugin and its interfaces.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3614271">Getting Policies Billed to Accounts</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3614778">To retrieve all open policies billed to an account, implement the </a><span class="cv_-_computer_voice">getPoliciesBilledToAccount</span> method in the billing summary plugin. This method takes an account number <span class="cv_-_computer_voice">String</span> and returns an array of open policy periods that bill to the account. Each array member is an instance of a class that implements the <span class="cv_-_computer_voice">BillingPeriodInfo</span> interface.</div>
+      <div class="CS_-_Code_Single_Line"><a name="3615531">BillingPeriodInfo[] getPoliciesBilledToAccount(String accountNumber);</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3486974">Retrieving Account Billing Summaries</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3615499">To retrieve a billing summary for an account, implement the </a><span class="cv_-_computer_voice">retrieveAccountBillingSummary</span> method. This method takes an account number <span class="cv_-_computer_voice">String</span> and returns an instance of a class that implements the <span class="cv_-_computer_voice">BillingAccountInfo</span> interface. The class instance contains billing information for the account.</div>
+      <div class="CS_-_Code_Single_Line"><a name="3615508">BillingAccountInfo retrieveAccountBillingSummary(String accountNumber);</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3613620">Retrieving Account Invoices</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3613628">To retrieve the account invoices associated with an account, implement the </a><span class="cv_-_computer_voice">retrieveAccountInvoices</span> method. This method takes an account number <span class="cv_-_computer_voice">String</span> and returns an array of instances of a class that implements the <span class="cv_-_computer_voice">BillingInvoiceInfo</span> interface. Each instance contains information about the invoice for the account. </div>
+      <div class="CS_-_Code_Single_Line"><a name="3615449">BillingInvoiceInfo[] retrieveAccountInvoices(String accountNumber);</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3486239">Retrieving Billing Summaries for Policy Periods</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3615048">To retrieve billing summaries for all open policy periods associated with an account, implement the </a><span class="cv_-_computer_voice">retrieveBillingPolicies</span> method. This method takes an account number <span class="cv_-_computer_voice">String</span> and returns an array of instances of a class that implements the <span class="cv_-_computer_voice">BillingPeriodInfo</span> interface. Each array member contains a billing summary for a policy period associated with the account.</div>
+      <div class="CS_-_Code_Single_Line"><a name="3615425">BillingPeriodInfo[] retrieveBillingPolicies(String accountNumber);</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3422725">Retrieving Policy Billing Summary</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3613660">To retrieve a billing summary for a policy period, implement the </a><span class="cv_-_computer_voice">retrievePolicyBillingSummary</span> method. This method takes a policy number <span class="cv_-_computer_voice">String</span> and the term of the policy period and returns an instance of a class that implements the <span class="cv_-_computer_voice">BillingPeriodInfo</span> interface. This instance contains the billing summary for the policy period.</div>
+      <div class="CS_-_Code_Single_Line"><a name="3614993">BillingPeriodInfo retrievePolicyBillingSummary(String policyNumber, int termNumber);</a></div>
+      <h3 class="H1NB_-_Heading_1_No_Break"><a name="3484954">Payment Integration</a></h3>
+      <div class="B_-_Body"><a name="3484987">From the </a><span class="ui_-_UI_element">Payments</span> page of some jobs, a user can collect information about the payment source for immediate or future payments. Typically, PolicyCenter transfers control to an external third-party system to collect payment source information. You configure PolicyCenter to use an external third-party system to collect and store payment source information to avoid storing that information in the PolicyCenter database. </div>
+      <div class="B_-_Body"><a name="3485140">For example, the insured can specify in the external payment processing system to use a specific credit card number for immediate or future billing. The payment system collects the insured’s private financial information for the transaction and returns to PolicyCenter a token that represents the payment instrument. Whenever PolicyCenter sends this token to the billing system, the billing system uses that token to initiate a payment in the same third-party payment system.</a></div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="3514274">External payment systems return only partial information for payment sources. For example, payment systems do not return entire credit card numbers. Instead, payment systems return tokens as identifiers that let PolicyCenter or its billing system initiate a payment without requiring the entire credit card number or other authentication information.</a></div>
+      <div class="B_-_Body"><a name="3514275">For demo purposes, the default configuration calls a demo version of a payment system that PolicyCenter itself implements with PCF pages. You can implement something similar to this system if you want to directly collect the payment source information and use it to initiate the payments. In such an approach, you would not use tokens. You would directly contact the payment processor with the payment source information you already collected and stored.</a></div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="3509098">Check with your legal department about all regulatory requirements relating to credit card information before going to production.</a></div>
+      <div class="B_-_Body"><a name="3483205">The general flow is as follows:</a></div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="3483298">Start a submission, renewal, or rewrite job.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3483325">After quoting but before binding the policy, PolicyCenter displays a payment screen. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3483364">PolicyCenter displays billing methods, payment methods, and associated installment or reporting plans retrieved from the billing system. After you select a payment method, you can preview payments retrieved from the billing system. This part of the wizard is similar for all lines of business.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="3483880">In the Payments page, the part of the page that relates to payments uses the PCF file </a><span class="cv_-_computer_voice">BillingInvoiceStreamInputSet.pcf</span>. This PCF file lists payment-related information and provides an option to add payment information for recurring payments. The default user interface collects recurring payments only, not down payments.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3483881">In </a><span class="cv_-_computer_voice">BillingInvoiceStreamInputSet</span>, there is an <span class="ui_-_UI_element">Add</span> button. Click the <span class="ui_-_UI_element">Add</span> button.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3485184">The </a><span class="ui_-_UI_element">Add</span> button calls a Gosu method called <span class="cv_-_computer_voice">externalPaymentLocation</span>. That method exists within the <span class="ui_-_UI_element">Code</span> tab of the <span class="cv_-_computer_voice">BillingInvoiceStreamInputSet</span> PCF page. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3485185">The </a><span class="cv_-_computer_voice">externalPaymentLocation</span> method calls a PCF exit point to navigate to the payment system user interface.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="3485186">Typically, the payment system would be on a separate physical computer across the Internet.</a></div>
+      <div class="LP_-_List_Para"><a name="3483716">For demo purposes, the default configuration of this function calls a demo version of a payment system that PolicyCenter itself implements. </a></div>
+      <div class="LP_-_List_Para"><a name="3484455">For a production environment, you must change the code for </a><span class="cv_-_computer_voice">externalPaymentLocation</span> method to contact your real payment system. For details, see <a href="javascript:WWHClickedPopup('integration', 'billing-pc.33.18.html#3484408', '');" title="Implementing the Billing Summary Plugin">“Configuring PolicyCenter to use a Real Payment System”</a></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	7.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3484078">One of the last steps in </a><span class="cv_-_computer_voice">externalPaymentLocation</span> is to invoke the PCF exit point called <span class="cv_-_computer_voice">CreatePaymentInstrument</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="3484662">In the default (demo) configuration:</a></div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">a.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="3484663">PolicyCenter calls the </a><span class="cv_-_computer_voice">CreatePaymentInstrument</span> exit point. This is the standard exit point for a real payment system</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">b.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="3484664">PolicyCenter calls the </a><span class="cv_-_computer_voice">NewPaymentInstrument</span> entrypoint to display the demo payment collection page. This entry point is for the demo payment system only, not for use in production.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">c.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="3484240">After you enter a payment, that demo payment page uses the PCF exit point called </a><span class="cv_-_computer_voice">FinishPaymentInstrument</span>. This exit point is for the demo payment system only, not for use in production.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">d.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="3484241">That exit point then calls the PolicyCenter PCF entry point called </a><span class="cv_-_computer_voice">JobWithNewPaymentInstrument</span>. This is the standard entry point that a real payment system would use as a PolicyCenter entrypoint.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="3484264">In a real implementation</a></div>
+      <div class="LS2A_-_List_Start_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS2A_-_List_Start_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">a.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS2A_-_List_Start_002c_Level_2_Alpha_inner"><span class="cv_-_computer_voice"><a name="3484265">CreatePaymentInstrument</a></span> calls the payment system uses the external payment system exit point. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">b.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="3484291">You enter a new payment in the external payment system.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">c.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="3484306">After it completes, the payment system navigates to PolicyCenter using the PolicyCenter PCF entry point </a><span class="cv_-_computer_voice">JobWithNewPaymentInstrument</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	8.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3483170">PolicyCenter notifies the billing system of the new payment.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="3509251">PolicyCenter gets the registered billing system plugin (</a><span class="cv_-_computer_voice">IBillingSystemPlugin</span>) implementation and calls its <span class="cv_-_computer_voice">addPaymentInstrumentTo</span> and <span class="cv_-_computer_voice">getExistingPaymentInstruments</span> methods.</div>
+      <div class="B_-_Body"><a name="3484380">For details of fields and behavior of the Payments page, see </a><a href="javascript:WWHClickedPopup('app', 'pc-bc-integration.67.11.html#1281935', '');" title="Working with the Payment Screen in the Billing System Integration">“Payments” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('app', 'pc-bc-integration.67.11.html#1281935', '');" title="Working with the Payment Screen in the Billing System Integration">Application Guide</a></span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3484408">Configuring PolicyCenter to use a Real Payment System</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3484434">For demo purposes only, in the default configuration this function calls a demo version of a payment system that PolicyCenter itself implements. </a></div>
+      <div class="B_-_Body"><a name="3484435">To integrate with a real payment system, you must make two changes to PolicyCenter.</a></div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="3484583">In your application config.xml file, find the parameter </a><span class="cv_-_computer_voice">PaymentSystemURL</span>. Set that parameter to the URL of your real payment system.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3484539">Change the code for </a><span class="cv_-_computer_voice">externalPaymentLocation</span> method to contact your real payment system.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="3484436">There is a line that looks like the following code. Note the commented out URL </a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3484437">var returnURL = gw.api.system.PCConfigParameters.PaymentSystemURL.Value </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3484438">&nbsp;&nbsp;// gw.plugin.Plugins.get(gw.plugin.webconfig.IPolicyCenterWebConfigPlugin).PolicyCenterURL</a></PRE>
+      <div class="LP_-_List_Para"><a name="3485210">Change the assignment instead to use the commented-out code:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3485211">var returnURL =gw.plugin.Plugins.get(gw.plugin.webconfig.IPolicyCenterWebConfigPlugin).PolicyCenterURL</a></PRE>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3485218">In the demo configuration, only the payment method (type of credit card) is sent to PolicyCenter. Configure the entry point </a><span class="cv_-_computer_voice">JobWithNewPaymentInstrument</span> to have additional attributes that the payment system sends to PolicyCenter. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

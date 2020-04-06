@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../../pcf.xsd">
+  <PanelSet
+    id="IMPartCumulDetailsPanelSet"
+    mode="IMAccountsRecPart">
+    <Require
+      name="imLine"
+      type="InlandMarineLine"/>
+    <Variable
+      initialValue="imLine.VersionList.IMCoverageParts.map( \ i -&gt; i.AllVersions.last() )"
+      name="covPartIterable"/>
+    <Variable
+      initialValue="covPartIterable.where( \ part -&gt; part typeis IMAccountsRecPart ).first() as IMAccountsRecPart"
+      name="accountsRecPart"/>
+    <PanelRef>
+      <TitleBar
+        title="displaykey.Web.Policy.IM.AccountsReceivable"/>
+      <PanelRow>
+        <PanelColumn>
+          <DetailViewPanel>
+            <InputColumn/>
+          </DetailViewPanel>
+          <DetailViewPanel
+            visible="accountsRecPart.VersionList.IMAccountsReceivables.map(\ i -&gt; i.AllVersions.last() ).Count &gt; 0">
+            <InputColumn>
+              <Label
+                label="displaykey.Web.Policy.IM.ARScheduledItems"/>
+            </InputColumn>
+          </DetailViewPanel>
+          <PanelIterator
+            elementName="perARItem"
+            value="accountsRecPart.VersionList.IMAccountsReceivables.map(\ i -&gt; i.AllVersions.last() ).toTypedArray()">
+            <IteratorSort
+              sortBy="perARItem.AccountsRecNumber"
+              sortOrder="1"/>
+            <PanelRef>
+              <Toolbar/>
+              <PanelSet>
+                <DetailViewPanel>
+                  <InputColumn>
+                    <Label
+                      label="perARItem.DisplayName"/>
+                  </InputColumn>
+                </DetailViewPanel>
+                <PanelRef
+                  def="IMCostDV(perARItem.VersionList.Coverages.flatMap(\ cov -&gt; cov.Costs).flatMap(\ c -&gt; c.AllVersions).toList())"
+                  visible="perARItem.VersionList.Coverages.flatMap(\ cov -&gt; cov.Costs).Count &gt; 0"/>
+              </PanelSet>
+            </PanelRef>
+          </PanelIterator>
+        </PanelColumn>
+      </PanelRow>
+    </PanelRef>
+    <PanelRef
+      def="IMCostDV(accountsRecPart.VersionList.IMAccountsRecPartCovs.flatMap(\ c -&gt; c.Costs).flatMap(\ c -&gt; c.AllVersions).toList())"
+      visible="accountsRecPart.VersionList.IMAccountsRecPartCovs.flatMap(\ c -&gt; c.Costs).Count &gt; 0"/>
+  </PanelSet>
+</PCF>

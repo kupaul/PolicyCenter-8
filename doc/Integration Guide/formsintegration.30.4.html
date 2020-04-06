@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Forms Messaging</title>
+    <link rel="StyleSheet" href="css/formsintegration.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-forms.html#2711561">Policy-related Integrations</a> : <a class="WebWorks_Breadcrumb_Link" href="formsintegration.30.1.html#2711561">Forms Integration</a> : Forms Messaging</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2711561">Forms Messaging</a></h3>
+      <div class="B_-_Body"><a name="2711185">The role of your messaging code for forms integration is to examine the list of newly added forms in the </a><span class="cv_-_computer_voice">PolicyPeriod.NewlyAddedForms</span> property and generate messages for the newly added forms. </div>
+      <div class="B_-_Body"><a name="2711186">Your messaging destination that represents your forms printing system must listen for the issuance events such as </a><span class="cv_-_computer_voice">IssueSubmission</span>, <span class="cv_-_computer_voice">IssuePolicyChange</span>, <span class="cv_-_computer_voice">IssueReinstatement</span>, and others for other jobs. See <a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.05.html#3961737', '');" title="List of Messaging Events in PolicyCenter">“List of Messaging Events in PolicyCenter”</a> for a full list.</div>
+      <div class="B_-_Body"><a name="2712035">Your Event Fired rules must capture these events and generate one message for each form, or one message that contains the data for all the newly added forms.</a></div>
+      <div class="B_-_Body"><a name="2712036">Within each form there is a property that contains the cached XML data created by the inference class. See </a><a href="javascript:WWHClickedPopup('integration', 'formsintegration.30.3.html#2710573', '');" title="Forms Inferences Classes">“Creating Inference Data and XML”</a> for details of creating that data. You can get the cached XML data using code like:</div>
+      <div class="CS_-_Code_Single_Line"><a name="2711409">cachedXML = myForm.FormTextData.TextData</a></div>
+      <div class="B_-_Body"><a name="2711410">You might make your message payload simply the XML payload generated from that </a><span class="cv_-_computer_voice">XMLNode</span> such as the code:</div>
+      <div class="CS_-_Code_Single_Line"><a name="2711411">var msg = MessageContext.createMessage(cachedXML)</a></div>
+      <div class="B_-_Body"><a name="2712155">If you support form multiplicity, remember that you might need to access the </a><span class="cv_-_computer_voice">Form.FormAssociations</span> property to access the form associations to access the linked entity to generate the payload. For multiplicity, see <a href="javascript:WWHClickedPopup('integration', 'formsintegration.30.3.html#2714505', '');" title="Forms Inferences Classes">“Handling Multiple Instances of One Form”</a>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2711381">Messaging Plugins</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2711374">Design your messaging transport plugin to send this message to the external forms printing system. Depending on the external system, you could send the XML directly to the system (or to integration code that manages the system).</a></div>
+      <div class="B_-_Body"><a name="2711398">Alternatively, if your message contained XML, you could traverse the XML data and format the data as appropriate for your printing system. If you use this approach, use XML APIs to convert the XML </a><span class="cv_-_computer_voice">String</span> data to <span class="cv_-_computer_voice">XMLnode</span> objects. </div>
+      <h6 class="HS_-_Head_Sub"><a name="2741264">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2741266">For more information on </a><span class="cv_-_computer_voice">XMLnode</span> objects, see <a href="javascript:WWHClickedPopup('gosu', 'xml.21.01.html#1470967', '');" title="Gosu and XML">“Gosu and XML” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'xml.21.01.html#1470967', '');" title="Gosu and XML">Gosu Reference Guide</a></span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2711426">Creating Documents</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2711528">If your forms printing system can integrate with a document management system (DMS), the printing system can generate a visual representation of the form and add it to the DMS. After it does this, the integration code can call back into PolicyCenter to let it know there is a new document associated with the policy. </a></div>
+      <h6 class="HS_-_Head_Sub"><a name="2741288">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'documentsforms.17.01.html#2278128', '');" title="Document Management" name="2741285">“Document Management”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2739961">&nbsp;</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

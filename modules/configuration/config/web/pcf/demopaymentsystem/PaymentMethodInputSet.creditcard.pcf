@@ -1,0 +1,135 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InputSet
+    id="PaymentMethodInputSet"
+    mode="creditcard">
+    <Require
+      name="accountHolderName"
+      type="String"/>
+    <Require
+      name="address"
+      type="Address"/>
+    <Variable
+      name="notes"
+      type="String"/>
+    <Variable
+      name="creditCardExpDate"
+      type="java.util.Date"/>
+    <Variable
+      name="creditCardNumber"
+      type="String"/>
+    <Variable
+      name="cardType"
+      type="CreditCardType"/>
+    <TypeKeyInput
+      editable="true"
+      id="CreditCardType"
+      label="displaykey.Web.Demo.PaymentSystem.PaymentMethod.CardType"
+      required="true"
+      value="cardType"/>
+    <TextInput
+      editable="true"
+      id="CrediCardNumber"
+      label="displaykey.Web.Demo.PaymentSystem.PaymentMethod.CreditCardNumber"
+      required="true"
+      value="creditCardNumber"/>
+    <DateInput
+      editable="true"
+      id="ExpirationDate"
+      label="displaykey.Web.Demo.PaymentSystem.PaymentMethod.ExpiredDate"
+      required="true"
+      value="creditCardExpDate"/>
+    <TextInput
+      editable="true"
+      id="CardHolderName"
+      label="displaykey.Web.Demo.PaymentSystem.PaymentMethod.CardHolderName"
+      required="true"
+      value="accountHolderName"/>
+    <InputSet
+      id="AddressInputSet">
+      <Variable
+        initialValue="new contact.AddressAutocompleteHandler(&quot;city&quot;,&quot;Country,City,State,PostalCode&quot;,true)"
+        name="cityhandler"
+        type="contact.AddressAutocompleteHandler"/>
+      <Variable
+        initialValue="new contact.AddressAutocompleteHandler(&quot;county&quot;,&quot;Country,City,County,State,PostalCode&quot;,true)"
+        name="countyhandler"
+        type="contact.AddressAutocompleteHandler"/>
+      <Variable
+        initialValue="new contact.AddressAutocompleteHandler(&quot;postalcode&quot;,&quot;Country,City,State,PostalCode&quot;,true)"
+        name="pchandler"
+        type="contact.AddressAutocompleteHandler"/>
+      <Label
+        label="displaykey.Web.AddressDetail.BillingAddress"/>
+      <Input
+        editable="true"
+        id="AddressLine1"
+        label="displaykey.Web.AddressDetail.AddressLine1"
+        value="address.AddressLine1"/>
+      <Input
+        editable="true"
+        id="AddressLine2"
+        label="displaykey.Web.AddressDetail.AddressLine2"
+        value="address.AddressLine2"/>
+      <!-- These four fields use auto-fill -->
+      <AddressAutoFillInput
+        action="gw.api.contact.AddressAutocompleteUtil.autofillAddress(address, &quot;City&quot;)"
+        autoComplete="cityhandler"
+        autoCompleteArgIds="Country,City,State,PostalCode"
+        editable="true"
+        id="City"
+        label="displaykey.Web.AddressDetail.City"
+        tooltip="displaykey.AutoFill.OverrideUsingCityState"
+        validationExpression="gw.api.contact.AddressAutocompleteUtil.validate(address, &quot;City&quot;)"
+        value="address.City">
+        <PostOnChange
+          onChange="gw.api.contact.AddressAutocompleteUtil.getAutofillValue(address.Country,&quot;City&quot;,new String[]{&quot;City&quot;,&quot;PostalCode&quot;},new Object[] {address.City,address.PostalCode})"
+          target="DATA_ONLY"/>
+      </AddressAutoFillInput>
+      <TypeKeyInput
+        editable="true"
+        id="State"
+        label="displaykey.Web.AddressDetail.State"
+        required="true"
+        validationExpression="gw.api.contact.AddressAutocompleteUtil.validate(address, &quot;State&quot;)"
+        value="address.State"
+        valueWidth="228">
+        <PostOnChange
+          onChange="gw.api.contact.AddressAutocompleteUtil.getAutofillValue(address.Country,&quot;state&quot;,new String[]{&quot;State&quot;,&quot;PostalCode&quot;},new Object[] {address.State,address.PostalCode})"
+          target="DATA_ONLY"/>
+      </TypeKeyInput>
+      <AddressAutoFillInput
+        action="gw.api.contact.AddressAutocompleteUtil.autofillAddress(address, &quot;PostalCode&quot;)"
+        autoComplete="pchandler"
+        autoCompleteArgIds="Country,City,State,PostalCode"
+        editable="true"
+        id="PostalCode"
+        inputMask="gw.api.contact.AddressAutocompleteUtil.getInputMask(address, &quot;PostalCode&quot;)"
+        label="displaykey.Web.AddressDetail.ZipCode"
+        tooltip="displaykey.AutoFill.OverrideUsingZipCode"
+        validationExpression="gw.api.contact.AddressAutocompleteUtil.validate(address, &quot;PostalCode&quot;)"
+        value="address.PostalCode">
+        <PostOnChange
+          onChange="gw.api.contact.AddressAutocompleteUtil.getAutofillValue(address.Country,&quot;PostalCode&quot;,new String[]{&quot;PostalCode&quot;,&quot;City&quot;,&quot;State&quot;},new Object[] {address.PostalCode,address.City,address.State})"
+          target="DATA_ONLY"/>
+      </AddressAutoFillInput>
+      <TypeKeyInput
+        editable="true"
+        id="Country"
+        label="displaykey.Web.AddressDetail.Country"
+        value="address.Country"
+        valueWidth="228">
+        <PostOnChange
+          onChange="address.State = null"/>
+      </TypeKeyInput>
+    </InputSet>
+    <TextInput
+      editable="true"
+      id="Notes"
+      label="displaykey.Web.Demo.PaymentSystem.PaymentMethod.Notes"
+      required="true"
+      value="notes"/>
+  </InputSet>
+</PCF>

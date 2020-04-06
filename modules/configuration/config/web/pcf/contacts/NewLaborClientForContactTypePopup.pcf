@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    beforeCommit="detail.WCLaborContact.resetContactAndRoles(duplicateContactsPopupHelper.existingPCContactWithABContactMatch)"
+    canEdit="true"
+    countsAsWork="false"
+    id="NewLaborClientForContactTypePopup"
+    returnType="WCLaborContactDetail"
+    startInEditMode="true"
+    title="displaykey.Web.Contact.NewContact(entity.PolicyLaborClient.Type.TypeInfo.DisplayName)">
+    <LocationEntryPoint
+      signature="NewLaborClientForContactTypePopup(line: WorkersCompLine, contactType: typekey.ContactType)"/>
+    <Variable
+      name="line"
+      type="WorkersCompLine"/>
+    <Variable
+      name="contactType"
+      type="typekey.ContactType"/>
+    <Variable
+      initialValue="line.addNewLaborClientDetailForContactType(contactType)"
+      name="detail"/>
+    <Variable
+      initialValue="line.PolicyLaborClients.map(\ p -&gt; p.AccountContactRole.AccountContact.Contact)"
+      name="existingContacts"
+      type="Contact[]"/>
+    <Variable
+      initialValue="new gw.pcf.duplicatecontacts.DuplicateContactsPopupHelper(detail.WCLaborContact.AccountContactRole.AccountContact.Contact, existingContacts)"
+      name="duplicateContactsPopupHelper"/>
+    <Screen
+      editable="true"
+      id="ContactDetailScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.checkForDuplicatesOrUpdate(\ -&gt; CurrentLocation.pickValueAndCommit(detail))"
+          id="ForceDupCheckUpdate"
+          label="displaykey.Button.OK"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+        <EditButtons
+          pickValue="detail"
+          updateVisible="not duplicateContactsPopupHelper.ShowButton"/>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.push()"
+          id="CheckForDuplicates"
+          label="displaykey.Web.Contact.CheckForDuplicates"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+      </Toolbar>
+      <DetailViewPanel
+        id="LaborClientInfoDV">
+        <InputColumn>
+          <TypeKeyInput
+            editable="true"
+            id="Inclusion"
+            label="displaykey.Web.Policy.WC.EmployeeLeasing.Supplier.Include"
+            required="true"
+            value="detail.Inclusion"/>
+          <Input
+            id="State"
+            label="displaykey.Web.Policy.WC.EmployeeLeasing.Supplier.State"
+            value="detail.WCLaborContact.AccountContactRole.AccountContact.Contact.PrimaryAddress.State"/>
+          <DateInput
+            editable="true"
+            id="EffectiveDate"
+            label="displaykey.Web.PolicyLine.LeasedEmployee.ContractEffectiveDate"
+            required="true"
+            value="detail.ContractEffectiveDate"/>
+          <DateInput
+            editable="true"
+            id="ExpirationDate"
+            label="displaykey.Web.PolicyLine.LeasedEmployee.ContractExpirationDate"
+            required="true"
+            value="detail.ContractExpirationDate"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef
+        def="NewPolicyContactRoleDetailsCV(detail.WCLaborContact, false)"/>
+    </Screen>
+  </Popup>
+</PCF>

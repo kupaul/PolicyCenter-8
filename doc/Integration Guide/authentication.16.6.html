@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Database Authentication Plugins</title>
+    <link rel="StyleSheet" href="css/authentication.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-plugins.html#1454432">Plugins</a> : <a class="WebWorks_Breadcrumb_Link" href="authentication.16.1.html#1454432">Authentication Integration</a> : Database Authentication Plugins</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1454432">Database Authentication Plugins</a></h3>
+      <div class="B_-_Body"><a name="1454436">You might want the PolicyCenter server to connect to an Enterprise database, but require a flexible database authentication system. Or, you might be concerned about sending passwords as plaintext passwords openly across the network. Solve either of these problems by implementing a </a><span class="e_-_emphasis">database authentication plugin</span>. </div>
+      <div class="B_-_Body"><a name="1454437">A custom database authentication plugin can retrieve name and password information from an external system, encrypt passwords, read password files from the local file system, or any other desired action. The resulting username and password substitutes into the database configuration file anywhere that </a><span class="cv_-_computer_voice">${username}</span> or <span class="cv_-_computer_voice">${password}</span> are found in the database parameter elements. </div>
+      <div class="B_-_Body"><a name="1454438">It is important to understand that</a><span class="e_-_emphasis"> database authentication plugins</span> are different from <span class="e_-_emphasis">user authentication plugins</span>. Whereas user authentication plugins authenticate users into PolicyCenter (from the user interface or using API), database authentication plugins help the PolicyCenter server connect to its database server.</div>
+      <div class="B_-_Body"><a name="1454445">To implement a database authentication plugin, implement a plugin that implements the class </a><span class="cv_-_computer_voice">DBAuthenticationPlugin</span>, which is defined in the Java package <span class="cv_-_computer_voice">com.guidewire.pl.plugin.dbauth</span>.</div>
+      <div class="B_-_Body"><a name="2036374">This class has only one method you need to implement: </a><span class="cv_-_computer_voice">retrieveUsernameAndPassword</span>, which must return a username and password. Store the username and password combined together as properties within a single instance of the class <span class="cv_-_computer_voice">UsernamePasswordPair</span>. </div>
+      <div class="B_-_Body"><a name="2036517">The one method parameter for </a><span class="cv_-_computer_voice">retrieveUsernameAndPassword</span> is the name of the database (as a <span class="cv_-_computer_voice">String</span>) for which the application requests authentication information. This will match the value of the <span class="cv_-_computer_voice">name</span> attribute on the <span class="cv_-_computer_voice">database</span> or <span class="cv_-_computer_voice">archive</span> elements in your <span class="cv_-_computer_voice">config.xml</span> file. </div>
+      <div class="B_-_Body"><a name="2036651">If you need to pass additional optional properties such as properties that vary by server ID, pass parameters to the plugin in the Studio configuration of your plugin. Get these parameters in your plugin implementation using the standard </a><span class="cv_-_computer_voice">setParameters</span> method of <span class="cv_-_computer_voice">InitializablePlugin</span>. For more information, see <a href="javascript:WWHClickedPopup('integration', 'plugins.14.05.html#2851417', '');" title="Example Gosu Plugin">“Example Gosu Plugin”</a>.</div>
+      <div class="B_-_Body"><a name="2036655">The username and password that this method returns need not be a plaintext username and password, and it typically would </a><span class="s_-_strong">not</span> be plaintext. A plugin like this typically encodes, encrypts, hashes, or otherwise converts the data into a secret format. The only requirement is that your database (or an intermediate proxy server that pretends to be your database) knows how to authenticate against this username and password.</div>
+      <div class="B_-_Body"><a name="1454448">The following example demonstrates this method by pulling this information from a file:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036327">public class FileDBAuthPlugin implements DBAuthenticationPlugin, InitializablePlugin {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036328">  private static final String PASSWORD_FILE_PROPERTY = "passwordfile";</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036329">  private static final String USERNAME_FILE_PROPERTY = "usernamefile";</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036330">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036331">  private String _passwordfile;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036332">  private String _usernamefile;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036333">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036334">  public void setParameters(Map properties) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036335">    _passwordfile = (String) properties.get(PASSWORD_FILE_PROPERTY);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036336">    _usernamefile = (String) properties.get(USERNAME_FILE_PROPERTY);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036337">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036338">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036339">  public UsernamePasswordPair retrieveUsernameAndPassword(String dbName) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036340">    try {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036341">      String password = null;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036342">      if (_passwordfile != null) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036343">        password = readLine(new File(_passwordfile));</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036344">      }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036345">      String username = null;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036346">      if (_usernamefile != null) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036347">        username = readLine(new File(_usernamefile));</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036348">      }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036349">      return new UsernamePasswordPair(username, password);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036350">    } catch (IOException e) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036351">      throw new RuntimeException(e);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036352">    }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036353">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036354">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036355">  private static String readLine(File file) throws IOException {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036356">    BufferedReader reader = new BufferedReader(FileUtil.getFileReader(file));</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036357">    String line = reader.readLine();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036358">    reader.close();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036359">    return line;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036360">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2036361">}</a></PRE>
+      <div class="B_-_Body"><a name="2036568">Guidewire PolicyCenter includes an example database authentication plugin that simply reads a username and password from files specified in the </a><span class="cv_-_computer_voice">usernamefile</span> or <span class="cv_-_computer_voice">passwordfile</span> parameters that you define in Studio. </div>
+      <div class="B_-_Body"><a name="2036586">PolicyCenter replace the </a><span class="cv_-_computer_voice">${username}</span> and <span class="cv_-_computer_voice">${password}</span> values in the <span class="cv_-_computer_voice">jdbcURL</span> parameter with values returned by your plugin implementation. For this example, the values to use are the text of the two files (one for username, one for password). </div>
+      <div class="B_-_Body"><a name="2036603">For the source code, refer to the </a><span class="cv_-_computer_voice">FileDBAuthPlugin</span> sample code in the <span class="cv_-_computer_voice">examples.plugins.dbauthentication</span> package.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2036286">Configuration for Database Authentication Plugins	</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1991215">For PolicyCenter to find and use your custom plugins, you must register them in the plugin editor in Studio. See </a><a href="javascript:WWHClickedPopup('config', 'studio_messaging.15.2.html#3406051', '');" title="Messaging Editor">“Messaging Editor” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('config', 'studio_messaging.15.2.html#3406051', '');" title="Messaging Editor">Configuration Guide</a></span>. Remember that in the editor, the plugin name and the plugin interface name must match, even though Studio permits you to enter a different value for the plugin name. Otherwise, PolicyCenter does not recognize the plugin. The value for both<span style="font-weight: bold"> </span>must be the name of the plugin interface you are trying to use. Add parameters as appropriate to pass information to your plugin.</div>
+      <div class="B_-_Body"><a name="1852845">PolicyCenter also supports looking up database passwords in a password file by setting </a><span class="cv_-_computer_voice">"passwordfile"</span> as a <span class="cv_-_computer_voice">&lt;database&gt;</span> attribute in your main <span class="cv_-_computer_voice">config.xml</span> file.</div>
+      <div class="B_-_Body"><a name="2003068">At run time, the username and password returned by your database authentication plugin replaces the </a><span class="cv_-_computer_voice">${username}</span> and <span class="cv_-_computer_voice">${password}</span> parts of your database initialization <span class="cv_-_computer_voice">String</span> values.</div>
+      <div class="B_-_Body"><a name="1973476">&nbsp;</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

@@ -1,0 +1,172 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ToolbarButtonSet
+    id="JobWizardToolbarButtonSet"
+    mode="Submission">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="CurrentLocation as pcf.api.Wizard"
+      name="wizard"
+      type="pcf.api.Wizard"/>
+    <Variable
+      initialValue="job as Submission"
+      name="submission"
+      type="Submission"/>
+    <Variable
+      initialValue="policyPeriod.SubmissionProcess"
+      name="submissionProcess"/>
+    <Variable
+      initialValue="new gw.lob.common.SideBySideUIHelper(policyPeriod, wizard, jobWizardHelper)"
+      name="sideBySideHelper"
+      type="gw.lob.common.SideBySideUIHelper"/>
+    <Variable
+      initialValue="(not policyPeriod.UWLockedAndNoOverride) and submissionProcess.canMakeNewVersion().Okay "
+      name="canPerformNewVersion"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="sideBySideHelper.canAttemptSideBySide()"
+      name="canPerformSideBySide"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="perm.PolicyPeriod.view(policyPeriod) and policyPeriod.Job.hasMultiplePeriods()and policyPeriod.Job.SideBySide"
+      name="canViewSideBySide"/>
+    <Variable
+      initialValue="policyPeriod.mustInvalidateQuoteBeforeReleasingUWEditLock(User.util.CurrentUser.UWAuthorityProfiles)"
+      name="releaseLockShowConfirmMessage"
+      recalculateOnRefresh="true"
+      type="boolean"/>
+    <Variable
+      initialValue="submissionProcess.canBind().Okay"
+      name="canBind"/>
+    <Variable
+      initialValue="submissionProcess.canIssue().Okay"
+      name="canIssue"/>
+    <ToolbarButton
+      action="UWActivityPopup.push(policyPeriod, ActivityPattern.finder.getActivityPatternByCode(&quot;uw_review_approved&quot;), &quot;UWApproval&quot;)"
+      confirmMessage="displaykey.Job.Operation.ReleaseLockInvalidatesQuoteWarning"
+      id="Unlock"
+      label="displaykey.Job.Operation.ReleaseLock"
+      shortcut="K"
+      showConfirmMessage="releaseLockShowConfirmMessage"
+      visible="submissionProcess.canReleaseLock()"/>
+    <ToolbarButton
+      action="jobWizardHelper.invalidateIterators(); jobWizardHelper.requestQuote(policyPeriod, jobWizardHelper.getQuoteStep(policyPeriod)) "
+      id="QuoteOrReview"
+      label="displaykey.Job.Operation.Quote"
+      shortcut="Q"
+      visible="submissionProcess.canRequestQuote().Okay and (submissionProcess.Job.QuoteType != QuoteType.TC_QUICK or not policyPeriod.Policy.Product.QuickerQuickQuoteAllowed)"/>
+    <ToolbarButton
+      action="submissionProcess.edit(); wizard.saveDraft(); jobWizardHelper.goToVisibleStep(policyPeriod)"
+      confirmMessage="displaykey.Job.Operation.Edit.Confirm"
+      id="EditPolicy"
+      label="displaykey.Job.Operation.EditWorkOrder"
+      shortcut="M"
+      showConfirmMessage="canBind or policyPeriod.Submission.QuickMode"
+      visible="submissionProcess.canEdit().Okay"/>
+    <ToolbarButton
+      action="wizard.saveDraft()"
+      hideIfReadOnly="true"
+      id="Draft"
+      label="displaykey.Button.SaveDraft"
+      shortcut="S"
+      visible="submissionProcess.canSaveDraft().Okay"/>
+    <ToolbarButton
+      action="jobWizardHelper.convertQuickQuoteToFullApp(submissionProcess, policyPeriod)"
+      id="ConvertToFullApp"
+      label="displaykey.Java.Submission.Button.FullApp"
+      shortcut="U"
+      visible="submissionProcess.canConvertToFullApp().Okay"/>
+    <ToolbarButton
+      id="Versions"
+      label="displaykey.Web.MultiQuoteWizardToolbar.Versions"
+      showConfirmMessage="false"
+      visible="canPerformNewVersion or canPerformSideBySide or canViewSideBySide">
+      <MenuItem
+        action="attemptNewVersion()"
+        id="NewVersion"
+        label="sideBySideHelper.getVersionLabel()"
+        shortcut="V"
+        visible="canPerformNewVersion"/>
+      <MenuItem
+        action="sideBySideHelper.attemptSideBySide(2)"
+        id="SideBySide"
+        label="displaykey.Web.Job.SideBySide.Go"
+        shortcut="X"
+        visible="canPerformSideBySide"/>
+      <MenuItem
+        action="jobWizardHelper.goToStep(&quot;SideBySide&quot;)"
+        id="ViewSideBySide"
+        label="displaykey.Web.Job.SideBySide.ViewSideBySide"
+        visible="canViewSideBySide"/>
+    </ToolbarButton>
+    <ToolbarButton
+      id="BindOptions"
+      label="displaykey.Job.Operation.BindOptions"
+      shortcut="B"
+      visible="submissionProcess.canBind().Okay or submissionProcess.canIssue().Okay">
+      <MenuItem
+        action="jobWizardHelper.invalidateIterators(); jobWizardHelper.requestIssueJob(policyPeriod, false, true)"
+        confirmMessage="displaykey.Job.Operation.BindOnly.Confirm"
+        id="BindOnly"
+        label="displaykey.Job.Operation.BindOnly"
+        visible="canBind"/>
+      <MenuItem
+        action="jobWizardHelper.invalidateIterators(); jobWizardHelper.requestIssueJob(policyPeriod, true, true)"
+        confirmMessage="displaykey.Job.Operation.BindAndIssue.Confirm"
+        id="BindAndIssue"
+        label="displaykey.Job.Operation.BindAndIssue"
+        visible="canIssue"/>
+    </ToolbarButton>
+    <ToolbarButton
+      id="CloseOptions"
+      label="displaykey.Job.Operation.CloseOptions"
+      shortcut="C"
+      visible="submissionProcess.canWithdrawJob().Okay or submissionProcess.canDeclineJob().Okay or submissionProcess.canNotTakeJob().Okay">
+      <MenuItem
+        action="jobWizardHelper.withdraw(policyPeriod); JobComplete.go(submission, policyPeriod);"
+        confirmMessage="displaykey.Job.Operation.Withdraw.Confirm"
+        id="WithdrawJob"
+        label="displaykey.Job.Operation.Withdraw"
+        shortcut="W"
+        visible="submissionProcess.canWithdrawJob().Okay"/>
+      <MenuItem
+        action="wizard.saveDraft(); DeclineReasonPopup.push(submission, policyPeriod, wizard)"
+        id="Decline"
+        label="displaykey.Job.Operation.Declining"
+        shortcut="E"
+        visible="submissionProcess.canDeclineJob().Okay"/>
+      <MenuItem
+        action="wizard.saveDraft(); NotTakenReasonPopup.push(submission, policyPeriod, wizard)"
+        id="NotTakenJob"
+        label="displaykey.Job.Operation.NotTaking"
+        shortcut="N"
+        visible="submissionProcess.canNotTakeJob().Okay"/>
+    </ToolbarButton>
+    <Code><![CDATA[function attemptNewVersion() {
+  wizard.saveDraft()
+  if (jobWizardHelper.revalidateModel()) {
+    if (job.SideBySide) {
+      gw.lob.common.SideBySideUtil.addNewSideBySidePeriod(policyPeriod)
+      wizard.saveDraft()
+      jobWizardHelper.goToStep("SideBySide")
+    } else {
+      jobWizardHelper.newPeriod()
+      wizard.saveDraft()
+      if ( !jobWizardHelper.isStepVisitable( jobWizardHelper.CurrentStep ) ) {
+        jobWizardHelper.goToStep( "PolicyInfo" )
+      }
+    }
+  }
+}]]></Code>
+  </ToolbarButtonSet>
+</PCF>

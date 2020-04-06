@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="openForEdit"
+    id="CancellationWizard_EntryScreen">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="cancellation"
+      type="Cancellation"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, cancellation, jobWizardHelper)"/>
+    </Toolbar>
+    <Verbatim
+      label="displaykey.Web.Job.Cancellation.Quoting"
+      visible="cancellation.PolicyPeriod.Status == &quot;Quoting&quot;"/>
+    <Verbatim
+      id="ErrorMessage"
+      label="displaykey.Web.Cancellation.Error.CannotStart(policyPeriod.Policy.canStartCancellation(policyPeriod.EditEffectiveDate))"
+      visible="policyPeriod.EditEffectiveDate != null and policyPeriod.Policy.canStartCancellation(policyPeriod.EditEffectiveDate) != null"
+      warning="true"/>
+    <Verbatim
+      hideIfReadOnly="true"
+      id="ReinsuranceWarning"
+      label="displaykey.Web.Reinsurance.Warning.ChangeEditEffectiveDate"
+      visible="policyPeriod.RIRiskVersionLists.hasMatch(\ v -&gt; v.AllVersions.hasMatch(\ r -&gt; r.ChangedByUser))"
+      warning="true"/>
+    <PanelRef
+      def="WarningsPanelSet(policyPeriod.getWizardWarningMessages())"/>
+    <PanelRef
+      def="CancelPolicyDV(cancellation, jobWizardHelper)"/>
+  </Screen>
+</PCF>

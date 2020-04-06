@@ -1,0 +1,84 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Checking Permissions on QuickJump Navigation Commands</title>
+    <link rel="StyleSheet" href="css/studio_quickjump.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Configuration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-editors.html#2918379">Guidewire Studio Editors</a> : <a class="WebWorks_Breadcrumb_Link" href="studio_quickjump.13.1.html#2918379">Implementing QuickJump Commands</a> : Checking Permissions on QuickJump Navigation Commands</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2918379">Checking Permissions on QuickJump Navigation Commands</a></h3>
+      <div class="B_-_Body"><a name="2918382">Keep the following security issues in mind as you create navigation commands for the </a><span class="ui_-_UI_element">QuickJump</span> box.</div>
+      <h6 class="HS_-_Head_Sub"><a name="2918605">Subclassing StaticNavigationCommand</a></h6>
+      <div class="B_-_Body"><a name="2918609">Commands that implement this subclass check the </a><span class="cv_-_computer_voice">canVisit</span> permission by default to determine whether a user has the necessary permission to see that QuickJump option in the <span class="ui_-_UI_element">QuickJump</span> box. The permission hole in this case arises if permissions were in place for all approaches to the destination but not on the destination itself. </div>
+      <div class="B_-_Body"><a name="3238221">For example, suppose that you create a new QuickJump navigation for N</a><span class="cv_-_computer_voice">ewNotePopup</span>. Then suppose that previously you had placed a permission check on all <span class="ui_-_UI_element">New Note</span> buttons. In that case PolicyCenter would have checked the <span class="cv_-_computer_voice">Note.create</span> permissions. However, enabling QuickJump navigation to <span class="cv_-_computer_voice">NewNotePopup</span> bypasses those previous permissions checks. The best practice is to check permissions on the <span class="cv_-_computer_voice">canVisit</span> tag of the actual destination page, in this case, on <span class="cv_-_computer_voice">NewNotePopup</span>. </div>
+      <h6 class="HS_-_Head_Sub"><a name="2918384">Subclassing ContextualNavigationCommand</a></h6>
+      <div class="B_-_Body"><a name="2918616">As with </a><span class="cv_-_computer_voice">StaticNavigationCommand</span> subclasses, add permission checks to the destination page's <span class="cv_-_computer_voice">canVisit</span> tag. </div>
+      <h6 class="HS_-_Head_Sub"><a name="2918386">Subclassing ParameterizedNavigationCommand</a></h6>
+      <div class="B_-_Body"><a name="2938458">Classes subclassing </a><span class="cv_-_computer_voice">ParameterizedNavigationCommand</span> have the (previously described) method called <span class="cv_-_computer_voice">isPermitted</span>, which is possible for you to override. This method—<span class="cv_-_computer_voice">isPermitted</span>—controls whether the user can see the navigation command in the <span class="ui_-_UI_element">QuickJump</span> box. After a user invokes a command, PolicyCenter performs standard permission checks (for example, checking the <span class="cv_-_computer_voice">canVisit</span> expression on the target page), and presents an error message to unauthorized users. </div>
+      <div class="B_-_Body"><a name="3216277">It is possible for the </a><span class="cv_-_computer_voice">canVisit</span> expression on the destination page to return a different value depending on the actual parameters passed into it. As a consequence, PolicyCenter cannot determine automatically whether to display the command to the user in the <span class="ui_-_UI_element">QuickJump</span> box before the user enters a value for the parameter. If it is possible to manually determine whether to display the command to the user, check for permission using the overridden <span class="cv_-_computer_voice">isPermitted</span> method. (This might be, for example, from the destination's <span class="cv_-_computer_voice">canVisit</span> attribute.)</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

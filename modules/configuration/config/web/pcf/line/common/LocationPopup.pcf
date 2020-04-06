@@ -1,0 +1,92 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Popup
+    afterCommit="gw.api.web.PebblesUtil.invalidateIterators(TopLocation, PolicyLocation);"
+    afterEnter="maybeCreateLocation()"
+    beforeCommit="checkChangeableState(); handleBeforeCommitForProduct()"
+    canEdit="openForEdit"
+    countsAsWork="false"
+    id="LocationPopup"
+    returnType="PolicyLocation"
+    startInEditMode="startInEdit"
+    title="displaykey.Web.Policy.LocationContainer.Location.LocationInformation.Title">
+    <LocationEntryPoint
+      signature="LocationPopup(theAccountLocation : AccountLocation, thePolicyLocation : PolicyLocation, policyPeriod : PolicyPeriod, openForEdit : boolean, startInEdit : boolean, supportsNonSpecificLocation : boolean)"/>
+    <Variable
+      name="theAccountLocation"
+      type="AccountLocation"/>
+    <Variable
+      name="thePolicyLocation"
+      type="PolicyLocation"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      name="startInEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="thePolicyLocation.State"
+      name="startState"/>
+    <Variable
+      initialValue="thePolicyLocation.Country"
+      name="startCountry"/>
+    <Variable
+      name="supportsNonSpecificLocation"
+      type="boolean"/>
+    <Screen
+      id="LocationScreen">
+      <Toolbar>
+        <EditButtons
+          hideIfReadOnly="true"
+          pickValue="thePolicyLocation"/>
+      </Toolbar>
+      <PanelSet
+        id="LocationDetailPanelSet">
+        <PanelRef
+          def="LocationDetailCV(thePolicyLocation, openForEdit, supportsNonSpecificLocation)"/>
+      </PanelSet>
+    </Screen>
+    <Code><![CDATA[function checkChangeableState() {
+  if(startState <> null and not thePolicyLocation.canChangeState()){
+    // the state cannot be changed
+    if(thePolicyLocation.State <> startState or thePolicyLocation.Country <> startCountry){
+      throw new gw.api.util.DisplayableException(displaykey.Web.Policy.Address.Validation.StateNotChangeable)
+    }
+  }
+}
+
+function handleBeforeCommitForProduct() {
+  if (policyPeriod.HasWorkersComp) {
+    maybeCreateWCJurisdiction(thePolicyLocation)
+  }
+  policyPeriod.Lines.each(\ p -> p.validateLocations(thePolicyLocation))
+}
+
+function maybeCreateLocation() {
+  if (startInEdit and openForEdit) {
+    if (thePolicyLocation == null) {
+      if (theAccountLocation != null) {
+        thePolicyLocation = policyPeriod.newLocation(theAccountLocation)
+        for(var tc in thePolicyLocation.TerritoryCodes)
+          tc.fillWithFirst()
+      } else {
+        thePolicyLocation = policyPeriod.newLocation()
+        thePolicyLocation.State = gw.api.util.StateJurisdictionMappingUtil.getStateMappingForJurisdiction(policyPeriod.BaseState)
+      }
+    }
+  }
+}
+
+function maybeCreateWCJurisdiction(location : PolicyLocation) {
+  var loc = gw.api.util.JurisdictionMappingUtil.getJurisdiction(location)
+  if (policyPeriod.WorkersCompLine.getJurisdiction(loc) == null) {
+    policyPeriod.WorkersCompLine.addJurisdiction(loc)
+  }
+}]]></Code>
+  </Popup>
+</PCF>

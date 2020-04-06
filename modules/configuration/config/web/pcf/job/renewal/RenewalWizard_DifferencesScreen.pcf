@@ -1,0 +1,47 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="openForEdit"
+    id="RenewalWizard_DifferencesScreen">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, policyPeriod.Job, jobWizardHelper)"/>
+    </Toolbar>
+    <PanelRef
+      def="WarningsPanelSet(policyPeriod.getWizardWarningMessages())"/>
+    <CardViewPanel>
+      <Variable
+        initialValue="getRootNode()"
+        name="rootNode"
+        type="gw.api.tree.RowTreeRootNode"/>
+      <Variable
+        initialValue="policyPeriod.Policy.Product.DiffTreeConfig"
+        name="diffTreeConfig"/>
+      <Card
+        id="Diffs"
+        title="displaykey.Web.RenewWizard.Differences">
+        <PanelRef
+          def="DifferencesPanelSet(&quot;PolicyReview&quot;, policyPeriod.BasedOn, policyPeriod, rootNode, diffTreeConfig)"/>
+      </Card>
+    </CardViewPanel>
+    <Code><![CDATA[function getRootNode() : gw.api.tree.RowTreeRootNode {
+  if (policyPeriod.BasedOn.PolicyTerm.Archived) {
+    return null
+  }
+  return gw.diff.tree.DiffTree.recalculateRootNodeForPolicyReview(policyPeriod)
+}]]></Code>
+  </Screen>
+</PCF>

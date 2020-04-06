@@ -1,0 +1,514 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Invocation Handlers for Implementing Preexisting WSDL</title>
+    <link rel="StyleSheet" href="css/webservices-wsi-publish.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-webservices.html#3589745">Web Services</a> : <a class="WebWorks_Breadcrumb_Link" href="webservices-wsi-publish.07.01.html#3589745">Publishing Web Services (WS-I)</a> : Invocation Handlers for Implementing Preexisting WSDL</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="3589745">Invocation Handlers for Implementing Preexisting WSDL</a></h3>
+      <div class="B_-_Body"><a name="3589447">The implementation of a Gosu WS-I web service is a Gosu class. Typically, each WS-I operation corresponds directly to one method on the Gosu class that implements the web service. Gosu automatically determines and generates the output WSDL for that operation. For any method arguments and return types, Gosu uses the class definition and the method signatures to determine what to export in the WSDL. </a></div>
+      <div class="B_-_Body"><a name="3589449">However, if necessary you can use argument types and return values defined in a separate WSDL. This might be necessary for example if you are required to implement a preexisting service definition. Perhaps ten different systems implement this service, and only one is defined by Gosu. By using a standardized WSDL, some organization can ensure that all types sent and received conform to a standard WSDL definition for the service.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="3809193">Adding an Invocation Handler for Preexisting WSDL</a></h4>
+      <div class="B_-_Body"><a name="3595629">Only use the </a><span class="cv_-_computer_voice">@WsiInvocationHandler</span> annotation if you need to write a web service that conforms to externally-defined standard WSDL. Generally speaking, using this approach makes your code harder to read code and error prone because mistakes are harder to catch at compile time. For example, it is harder to catch errors in return types using this approach.</div>
+      <div class="B_-_Body"><a name="3595630">To implement preexisting WSDL, you define your web service very differently than for typical web service implementation classes.</a></div>
+      <div class="B_-_Body"><a name="3595345">First, on your web service implementation class add the annotation </a><span class="cv_-_computer_voice">@WsiInvocationHandler</span>. As an argument to this annotation, pass an invocation handler. An invocation handler has the following qualities:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3592186">The invocation handler is an instance of a class that extends the type </a><span class="cv_-_computer_voice">gw.xml.ws.annotation.DefaultWsiInvocationHandler</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3593180">Implement the invocation handler as an inner class inside your web service implementation class.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3592297">The invocation handler class overrides the </a><span class="cv_-_computer_voice">invoke</span> method with the following signature:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3592364">override function invoke(requestElement : XmlElement, context : WsiInvocationContext) : XmlElement</a></PRE>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3592379">The </a><span class="cv_-_computer_voice">invoke</span> method does the actual dispatch work of the web service for all operations on the web service. Gosu does not call any other methods on the web service implementation. Instead, the invocation handler handles all operations that normally would be in various methods on a typical web service implementation class. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3809413">Your </a><span class="cv_-_computer_voice">invoke</span> method can call its super implementation to trigger standard method calls for each operation based on the name of the operation. Use this technique to run custom code before or after standard method invocation, either for logging or special logic.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3593238">In the </a><span class="cv_-_computer_voice">invoke</span> method of your invocation handler, determine which operation to handle by checking the type of the <span class="cv_-_computer_voice">requestElement</span> method parameter. For each operation, perform whatever logic makes sense for your web service. Return an object of the appropriate type. Get the type of the return object from the XSD-based types created from the WSDL.</div>
+      <div class="B_-_Body"><a name="3592967">Finally, for the WSDL for the service to generate successfully, add the preexisting WSDL to your web service using the WS-I parse options annotation </a><span class="cv_-_computer_voice">@WsiParseOptions</span>. Pass the entire WSDL as the schema as described in that topic.</div>
+      <h6 class="HS_-_Head_Sub"><a name="3630521">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('gosu', 'xml.21.04.html#1515855', '');" title="Introduction to the XML Element in Gosu" name="3630534">“Introduction to the XML Element in Gosu” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'xml.21.04.html#1515855', '');" title="Introduction to the XML Element in Gosu">Gosu Reference Guide</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('gosu', 'xml.21.09.html#1539306', '');" title="XSD-based Properties and Types" name="3630691">“XSD-based Properties and Types” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'xml.21.09.html#1539306', '');" title="XSD-based Properties and Types">Gosu Reference Guide</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'webservices-wsi-publish.07.12.html#3748662', '');" title="Validate Requests Using Additional Schemas as Parse Options" name="3630695">“Validate Requests Using Additional Schemas as Parse Options”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="3630696">Example of an Invocation Handler for Preexisting WSDL</a></h4>
+      <div class="B_-_Body"><a name="3589454">In the following example, there is a WSDL file at the resource path in the source code tree at the path:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="3593725">PolicyCenter/configuration/gsrc/ws/weather.wsdl</a></div>
+      <div class="B_-_Body"><a name="3593722">The schema for this file has the Gosu syntax: </a><span class="cv_-_computer_voice">ws.weather.util.SchemaAccess</span>. Its element types are available in the Gosu type system as objects in the package <span class="cv_-_computer_voice">ws.weather.elements</span>.</div>
+      <div class="B_-_Body"><a name="3595009">The method signature of the </a><span class="cv_-_computer_voice">invoke</span> method returns an object of type <span class="cv_-_computer_voice">XmlElement</span>, the base class for all XML elements. Be sure to carefully create the right subtype of <span class="cv_-_computer_voice">XmlElement</span> that appropriately corresponds to the return type for every operation. See <a href="javascript:WWHClickedPopup('gosu', 'xml.21.04.html#1515855', '');" title="Introduction to the XML Element in Gosu">“Introduction to the XML Element in Gosu” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'xml.21.04.html#1515855', '');" title="Introduction to the XML Element in Gosu">Gosu Reference Guide</a></span>.</div>
+      <div class="B_-_Body"><a name="3593868">The following example implements a web service that conforms to a preexisting WSDL and implements one of its operations.</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="3589455">package gw.xml.ws</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589456">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589457">uses gw.xml.ws.annotation.WsiWebService</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589458">uses gw.xml.ws.annotation.WsiInvocationHandler</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589459">uses gw.xml.XmlElement</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589460">uses gw.xml.ws.annotation.WsiPermissions</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3631695">uses gw.xml.ws.annotation.WsiAvailability</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3631696">uses gw.xml.ws.annotation.WsiParseOptions</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3631697">uses gw.xml.XmlParseOptions</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589464">uses java.lang.IllegalArgumentException</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589465">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589466">@WsiWebService("http://guidewire.com/px/ws/gw/xml/ws/WsiImplementExistingWsdlTestService")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589467">@WsiPermissions({})</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589468">@WsiAvailability(NONE)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589469">@WsiInvocationHandler(new WsiImplementExistingWsdlTestService.Handler())</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589470">@WsiParseOptions(new XmlParseOptions() { :AdditionalSchemas = { ws.weather.util.SchemaAccess } })</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3630743">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589471">class WsiImplementExistingWsdlTestService {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589472">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3595684">&nbsp;&nbsp;// The following line declares an INNER CLASS within the outer class.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589473">&nbsp;&nbsp;static class Handler extends DefaultWsiInvocationHandler {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3622473">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3622474">&nbsp;&nbsp;&nbsp;&nbsp;// Here we implement the "weather" wsdl with our own GetCityForecastByZIP implementation.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3622475">&nbsp;&nbsp;&nbsp;&nbsp;override function invoke(requestElement : XmlElement, context : WsiInvocationContext)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3631225">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: XmlElement {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3622615">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3594035">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Check the operation name. If it is GetCityForecastByZIP, handle that operation.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589477">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if (requestElement typeis ws.weather.elements.GetCityForecastByZIP) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589478">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;var returnResult = new ws.weather.elements.GetCityForecastByZIPResponse() {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3594327">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3594329">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The next line uses type inference to instantiate XML object of the correct type</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3594464">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// rather than specifying it explicitly.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3622512">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:GetCityForecastByZIPResult = new() { </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3622513">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:Success = true,</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3622514">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;:City = "Demo city name for ZIP ${requestElement.ZIP}"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3622509">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3622570">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return returnResult</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3622571">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3631161">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3593928">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Check for additional requestElement values to handle additional operations.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3622594">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if ...</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3593930">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589485">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;else {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589486">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw new IllegalArgumentException("Unrecognized element: " + requestElement)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589487">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589488">&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3589490">&nbsp;&nbsp;} </a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3589492">}</a></PRE>
+      <div class="B_-_Body"><a name="3589493">First, the </a><span class="cv_-_computer_voice">invoke</span> method checks if the requested operation is the desired operation. An operation normally corresponding to a method name on the web service, but in this approach one method handles all operations. In this simple example, the <span class="cv_-_computer_voice">invoke</span> method handles only the operation in the WSDL called <span class="cv_-_computer_voice">GetCityForecastByZip</span>. If the requested operation is <span class="cv_-_computer_voice">GetCityForecastByZip</span>, the code creates an instance of the <span class="cv_-_computer_voice">GetCityForecastByZIPResponse</span> XML element. </div>
+      <div class="B_-_Body"><a name="3596641">Next, the example uses Gosu object creation initialization syntax to set properties on the element as appropriate. Finally, the code returns that XML object to the caller as the result from the API call.</a></div>
+      <div class="B_-_Body"><a name="3589494">For additional context of the WSI request, use the </a><span class="cv_-_computer_voice">context</span> parameter to the <span class="cv_-_computer_voice">invoke</span> method. The <span class="cv_-_computer_voice">context</span> parameter has type <span class="cv_-_computer_voice">WsiInvocationContext</span>, which contains properties such as servlet and request headers.</div>
+      <h6 class="HS_-_Head_Sub"><a name="3630421">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'webservices-wsi-publish.07.04.html#3597493', '');" title="Publishing WS-I Web Services" name="3630424">“WS-I Web Service Invocation Context”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="3750848">Invocation Handler Profiling, Run Levels, Permissions, and Transaction IDs</a></h4>
+      <div class="B_-_Body"><a name="3751021">If you write an invocation handler for a WS-I web service, by default you are bypassing some important WS-I features:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3751022">The application does not enabling profiling for method calls.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3751023">The application does not check run levels even at the web service class level.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3751024">The application does not check web service permissions, even at the web service class level.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3751025">The application does not check for duplicate external transaction IDs if present.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3751027">However, you can support all these things in your web service even when using an invocation handler, and in typical cases it is best to do so.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="3751029">To re-enable bypassed WS-I features from an invocation handler</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="3751031">In your web service implementation class, create separate methods for each web service operation. For each method, for the one argument and the one return value, use an </a><span class="cv_-_computer_voice">XmlElement</span> object. For example, the method signature:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><a name="3751303">static function myMethod(req : XmlElement) : XmlElement</a></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3751304">In your invocation handler's </a><span class="cv_-_computer_voice">invoke</span> method, determine which method to call based on the operation name, as documented earlier.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3751036">Get a reference to the method info meta data for the method you want to call, using the </a><span class="cv_-_computer_voice">#</span> symbol to access meta data of a feature (method or property):</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><a name="3751037">   var methodInfo = YourClassName#myMethod(XmlElement).MethodInfo</a></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3751208">Before calling your desired method, get a reference to the </a><span class="cv_-_computer_voice">WsiInvocationContext</span> object that is a method argument to <span class="cv_-_computer_voice">invoke</span>. Call its <span class="cv_-_computer_voice">preExecute</span> method, passing the <span class="cv_-_computer_voice">requestElement</span> and the method info metadata as arguments. If you do not require checking method-specific annotations for run level or permissions, for the method info metadata argument you can pass <span class="cv_-_computer_voice">null</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="3751731">The </a><span class="cv_-_computer_voice">preExecute</span> method does several things:</div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="3751211">Enables profiling for the method you are about to call if profiling is available and configured</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="3751450">Checks the SOAP headers looking for headers that set the locale. If found, sets the specified locale.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="3751452">Checks the SOAP headers for a unique transaction ID. This ID is intended to prevent duplicate requests. if this transaction has already been processed successfully (a bundle was committed with the same ID), </a><span class="cv_-_computer_voice">preExecute</span> throws an exception. See <a href="javascript:WWHClickedPopup('integration', 'webservices-wsi-publish.07.09.html#3752231', '');" title="Checking for Duplicate External Transaction IDs">“Checking for Duplicate External Transaction IDs”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="3751044">If the method info argument is non-null, </a><span class="cv_-_computer_voice">preExecute</span> confirms the run level for this service, checking both the class level <span class="cv_-_computer_voice">@WsiAvailability</span> annotation and any overrides for the method. As with standard WS-I implementation classes, the method level annotation supersedes the class level annotation. If the run level is not at the required level, <span class="cv_-_computer_voice">preExecute</span> throws an exception.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="3751046">If the method info argument is non-null, </a><span class="cv_-_computer_voice">preExecute</span> confirms user permissions for this service, checking both the class level <span class="cv_-_computer_voice">@WsiPermissions</span> annotation and any overrides for the method. As with standard WS-I implementation classes, the method level annotation supersedes the class level annotation. If the permissions are not satisfied for the web service user, <span class="cv_-_computer_voice">preExecute</span> throws an exception.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3751052">Call your desired method from the invocation handler.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3751386">Assuming that you want to check the method-specific annotations for run level or permissions, one potential approach is to set up a map to store the method information. The map key is the operation name. The map value is the method info metadata required by the </a><span class="cv_-_computer_voice">preExecute</span> method.</div>
+      <div class="B_-_Body"><a name="3751272">The following example demonstrates this approach</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="3751056">@WsiInvocationHandler( new WsiImplementExistingWsdlTestService.Handler())</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751057">class WsiImplementExistingWsdlTestService {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751058">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751059">  // The following line declares an INNER class within the outer class.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751060">  static class Handler extends DefaultWsiInvocationHandler {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751061">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751064">var _map = { "myOperationName1" -&gt; WsiImplementExistingWsdlTestService#methodA(XmlElement).MethodInfo,</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751065">        "myOperationName2" -&gt; WsiImplementExistingWsdlTestService#methodB(XmlElement).MethodInfo</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751066">      }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751067">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751068">    override function invoke( requestElement : XmlElement, context : WsiInvocationContext ) </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3752101">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;: XmlElement {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751069">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751070">      // get the operation name from the request element</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751071">      var opName = requestElement.QName</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751072">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751073">      // get the local part (short name) from operation name, and get the method info for it</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751074">      var method = _map.get(opName.LocalPart)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751075">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751076">      // call preExecute to enable some WS-I features otherwise disabled in an invocation handler</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751077">      context.preExecute(requestElement, method)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751078">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751079">      // call your method using the method info and return its result</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751080">      return method.CallHandler.handleCall(null, {requestElement}) as XmlElement</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751081">    }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751082">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751083">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751084">  // After defining your invocation handler inner class, define the methods that do your work</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751085">  // as separate static methods</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751086">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751087">  // example of overriding the default permissions</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751088">  @WsiPermissions( { /* add a list of permissions here */} )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751089">  static function methodA(req : XmlElement) : XmlElement {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751090">    /* do whatever you do, and return the result */ return null</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751091">     }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751092">  static function methodB(req : XmlElement) : XmlElement {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751093">    /* do whatever you do, and return the result */ return null</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3751094">    }</a></PRE>
+      <PRE class="CF_-_Code_First_Line"><a name="3751095">}</a></PRE>
+      <div class="B_-_Body"><a name="3765027">This is the only supported use of a </a><span class="cv_-_computer_voice">WsiInvocationContext</span> object’s <span class="cv_-_computer_voice">preExecute</span> method. Any use other than calling it exactly once from within an invocation handler <span class="cv_-_computer_voice">invoke</span> method is unsupported.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

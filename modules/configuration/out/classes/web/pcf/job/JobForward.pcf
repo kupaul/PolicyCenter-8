@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Forward
+    canVisit="job.Viewable"
+    desc="Complex forward that determines what page to go to for a given job"
+    id="JobForward"
+    onBeforeForward="gw.api.web.util.SessionUtil.addPoliciesToList(job)"
+    parent="PolicyForward()">
+    <LocationEntryPoint
+      signature="JobForward(job : Job)"/>
+    <LocationEntryPoint
+      signature="JobForward(job : Job, policyPeriod : PolicyPeriod)"/>
+    <LocationEntryPoint
+      signature="JobForward(job : Job, policyPeriod : PolicyPeriod, wizardStep : String)"/>
+    <Variable
+      name="job"
+      type="Job"/>
+    <Variable
+      initialValue="job.LatestPeriod"
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="null"
+      name="wizardStep"
+      type="String"/>
+    <ForwardCondition
+      action="ArchivedLocationGroup.go(policyPeriod)"
+      condition="policyPeriod.PolicyTerm.Archived"/>
+    <ForwardCondition
+      action="goToSubmissionWizard()"
+      condition="job typeis Submission"/>
+    <ForwardCondition
+      action="IssuanceWizard.go(job as Issuance, policyPeriod)"
+      condition="job typeis Issuance"/>
+    <ForwardCondition
+      action="PolicyChangeWizard.go(job as PolicyChange, policyPeriod)"
+      condition="job typeis PolicyChange"/>
+    <ForwardCondition
+      action="RenewalWizard.go(job as Renewal, policyPeriod, wizardStep)"
+      condition="job typeis Renewal"/>
+    <ForwardCondition
+      action="AuditWizard.go(job as Audit, policyPeriod)"
+      condition="job typeis Audit"/>
+    <ForwardCondition
+      action="CancellationWizard.go(job as Cancellation, policyPeriod)"
+      condition="job typeis Cancellation"/>
+    <ForwardCondition
+      action="ReinstatementWizard.go(job as Reinstatement, policyPeriod)"
+      condition="job typeis Reinstatement"/>
+    <ForwardCondition
+      action="RewriteWizard.go(job as Rewrite, policyPeriod, wizardStep)"
+      condition="job typeis Rewrite"/>
+    <ForwardCondition
+      action="RewriteNewAccountWizard.go(job as RewriteNewAccount, policyPeriod, wizardStep)"
+      condition="job typeis RewriteNewAccount"/>
+    <Code><![CDATA[// Goes to the Submission Wizard, making sure to advance
+// a submission in the "New" state to "Draft"
+function goToSubmissionWizard() {
+  var sub = job as Submission
+  if (policyPeriod.Status == "New") {
+    policyPeriod.SubmissionProcess.beginEditing()
+    sub.Bundle.commit()
+  }
+  if (sub != null) {
+    var quoteType = sub.QuoteType
+    if (quoteType == typekey.QuoteType.TC_QUICK and policyPeriod.Policy.Product.QuickerQuickQuoteAllowed) {
+      QuickSubmissionWizard.go(sub, policyPeriod)
+    } else {
+      SubmissionWizard.go(sub, policyPeriod, wizardStep)
+    }
+  }
+}]]></Code>
+  </Forward>
+</PCF>

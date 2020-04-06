@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <InputSet
+    id="CreateAccountContactInputSet"
+    mode="person">
+    <Require
+      name="contact"
+      type="Contact"/>
+    <Variable
+      initialValue="contact as Person"
+      name="person"
+      type="Person"/>
+    <Variable
+      initialValue="new gw.api.name.PersonNameDelegate(person)"
+      name="personNameDelegate"
+      recalculateOnRefresh="true"/>
+    <InputSetRef
+      def="GlobalPersonNameInputSet(new gw.api.name.RequiredBasicNameOwner(personNameDelegate))"
+      mode="gw.api.name.NameLocaleSettings.PCFMode"/>
+    <InputSetRef
+      def="GlobalPhoneInputSet(new gw.api.phone.BasicPhoneOwner(new gw.api.phone.ContactPhoneDelegate(person, Contact#HomePhone),displaykey.Web.ContactDetail.Person.HomePhone))"
+      editable="true"
+      id="HomePhone"/>
+    <InputSetRef
+      def="GlobalPhoneInputSet(new gw.api.phone.BasicPhoneOwner(new gw.api.phone.ContactPhoneDelegate(person, Contact#WorkPhone), displaykey.Web.ContactDetail.Person.WorkPhone))"
+      editable="true"
+      id="Phone"/>
+    <InputSetRef
+      def="GlobalPhoneInputSet(new gw.api.phone.BasicPhoneOwner(new gw.api.phone.ContactPhoneDelegate(person, Person#CellPhone), displaykey.Web.ContactDetail.Person.CellPhone))"
+      editable="true"
+      id="CellPhone"/>
+    <InputSetRef
+      def="GlobalPhoneInputSet(new gw.api.phone.BasicPhoneOwner(new gw.api.phone.ContactPhoneDelegate(person, Contact#FaxPhone), displaykey.Web.ContactDetail.Person.FaxPhone))"
+      editable="true"
+      id="FaxPhone"/>
+    <TypeKeyInput
+      editable="true"
+      id="PrimaryPhone"
+      label="displaykey.Web.ContactDetail.Person.PrimaryPhone"
+      required="false"
+      value="person.PrimaryPhone"/>
+    <Input
+      editable="true"
+      id="EmailAddress1"
+      label="displaykey.Web.ContactDetail.Person.EmailAddress1"
+      value="person.EmailAddress1"/>
+    <Input
+      editable="true"
+      id="EmailAddress2"
+      label="displaykey.Web.ContactDetail.Person.EmailAddress2"
+      value="person.EmailAddress2"/>
+  </InputSet>
+</PCF>

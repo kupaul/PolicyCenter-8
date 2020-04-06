@@ -1,0 +1,2410 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Starting the Server to Begin Automatic Database Upgrade</title>
+    <link rel="StyleSheet" href="css/procedure-db-d.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Upgrade Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-upgrade-d.html#1914761">Upgrading from 7.0.x</a> : <a class="WebWorks_Breadcrumb_Link" href="procedure-db-d.12.01.html#1914761">Upgrading the PolicyCenter 7.0.x Database</a> : Starting the Server to Begin Automatic Database Upgrade</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1914761">Starting the Server to Begin Automatic Database Upgrade</a></h3>
+      <div class="B_-_Body"><a name="1914762">The database upgrade is an automatic process that occurs as you start the server with the upgraded configuration. The database upgrade normally completes in a few hours or less.</a></div>
+      <div class="B_-_Body"><a name="1914763">If the database upgrade stops before completing, then restore your database from the backup, correct any issues reported, and repeat the database upgrade.</a></div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="1914764">Before starting the upgrade, update database server software and operating systems as needed to meet the installation requirements of PolicyCenter 8.0.2. See the </a><span class="e_-_emphasis">Guidewire Platform Support Matrix</span> for current system and patch level requirements. The <span class="e_-_emphasis">Guidewire Platform Support Matrix </span>is available from the Guidewire Resource Portal at <span class="cv_-_computer_voice" style="color: #0a947f; font-weight: bold"><a href="https://guidewire.custhelp.com/app/resources/products/platform" target="external_window">https://guidewire.custhelp.com/app/resources/products/platform</a></span>.</div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="1914772">Except for your first database upgrade trials, do not start the server until you have upgraded all rules. Otherwise, default validation rules execute. This could strand objects at a high validation level and make it impossible to edit parts of the object.</a></div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="1914773">The database upgrade runs a series of version checks prior to making any changes. If any of these checks fail, the upgrade aborts and reports an error message. You can fix the issue, create an updated backup of the database and attempt the upgrade again without restoring from a backup. However, if you experience a failure during the version triggers or upgrade steps portion of the upgrade, refresh the database from a backup before attempting the upgrade again.</a></div>
+      <div class="B_-_Body"><a name="1914778">Guidewire requires that you use a separate mirror database for reporting. If you did not do so, then you can experience problems during a database upgrade that are severe enough to prevent the upgrade. </a></div>
+      <div class="B_-_Body"><a name="1914779">In particular, the Premium Accounting extension package SQL scripts create special tables in the reporting database that reporting uses for storing premium accounting accrual data. The reporting scripts use these tables, but the PolicyCenter application does not. If you created these tables in a production database, then any attempt to upgrade that production database will fail.</a></div>
+      <div class="B_-_Body"><a name="1914780">If you encounter this situation, move data from all </a><span class="cv_-_computer_voice">pcrt_</span> prefixed tables to another schema. Then, drop all <span class="cv_-_computer_voice">pcrt_</span> prefixed tables from the database that you want to upgrade before starting the server to launch the upgrade.</div>
+      <h4 class="H2_-_Heading_2"><a name="1914781">Test the Database Upgrade</a></h4>
+      <div class="B_-_Body"><a name="1914782">Prior to attempting the database upgrade on a full-production database clone, test the database upgrade by doing the following:</a></div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="1914783">Connected to the built-in Quickstart database, successfully start the built-in Quickstart application server with a merged configuration data model, including merged extensions, data types, field validators, and so forth.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1914784">Connected to an empty database on an Oracle or SQL Server database server, successfully start the Quickstart application server from the preceding step.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1914785">Connected to a restored backup of a production clone, start either the same Quickstart server from the preceding step or a supported third-party application server with your custom configuration.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1914786">In a development environment the database upgrade process records checkpoints of upgrade triggers that complete successfully. You can restart a failed database upgrade, and it resumes with the upgrade trigger that failed. This restart feature helps you test the upgrade with realistically large data sets. You avoid time spent to restore the database and rerun upgrade triggers that worked successfully.</a></div>
+      <div class="B_-_Body"><a name="1914787">The database upgrade writes SQL executed by the failed trigger to the console. To restart a test database upgrade from a checkpoint reached in an earlier upgrade, manually roll back any database changes that occurred during the upgrade trigger that failed. Resolve the problem that caused the trigger to fail. Then start the server again to restart the upgrade. The upgrade skips successful upgrade triggers and continues by rerunning the trigger that failed. </a></div>
+      <div class="B_-_Body"><a name="1914788">A test run of your upgrade is successful only when it runs from start to finish without a restart. </a></div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="1914789">Never use the restart feature of database upgrade in a production environment. </a></div>
+      <h4 class="H2_-_Heading_2"><a name="1914790">Integrations and Starting the Server</a></h4>
+      <div class="B_-_Body"><a name="1914791">Disable all integrations during the automatic database upgrade. Integration points might require updates due to changes in Guidewire APIs. See the </a><span class="bt_-_book_title">PolicyCenter New and Changed Guide</span> for specifics.</div>
+      <div class="B_-_Body"><a name="1914795">It is not necessary to have completely migrated integrations before attempting to start the server for the first time. If you have integrations that rely on non-Guidewire applications, do not expect these integrations to work the first time you start the server.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1914796">Understanding the Automatic Database Upgrade</a></h4>
+      <div class="B_-_Body"><a name="1914797">As the database upgrade proceeds, it logs messages to the console as well as the log file describing its progress. The database upgrade process requires thousands of steps, divided into three phases. Due to the relational nature of a database, these phases must execute in a specific order for the upgrade to succeed. </a></div>
+      <div class="B_-_Body"><a name="1914798">During the first phase, the upgrader first executes custom </a><span class="cv_-_computer_voice">BeforeUpgradeVersionTrigger</span> version checks and triggers defined in the <span class="cv_-_computer_voice">IDatamodelUpgrade</span> plugin. The upgrader next runs version checks defined by Guidewire. Then, the upgrader uses a set of version triggers defined by Guidewire to determine the actions that are required. The database upgrader requires version triggers in order to perform the following types of tasks:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1914799">changing a datatype (other than just length)</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1914800">migrating data</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1914801">dropping a column</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1914802">dropping a table</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1914803">renaming a column</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1914804">renaming a table</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1914805">Specific version triggers are described in this topic.</a></div>
+      <div class="B_-_Body"><a name="1914806">Many version triggers have version checks associated with them. These checks ensure that the database is ready for the associated version trigger. The database upgrade runs all checks before running any version triggers. If a check detects a problem, it reports the issue, including a sample SQL query to find specific problematic records. If a version check discovers an issue, the database upgrade stops before any version triggers are run. Therefore, it is not necessary to restore the database from a backup if a version check reports an error. Correct the issue and then create a new backup of the database. Then, if you encounter errors after the version check stage, you can restore a version of your database with the issue reported by the version check resolved.</a></div>
+      <div class="B_-_Body"><a name="1914807">In the second phase, the upgrader compares the target data model and the current database to determine how they differ. The upgrader makes changes to the database that do not require a version trigger during this phase.</a></div>
+      <div class="B_-_Body"><a name="1914808">Following this process, the third phase runs a subsequent set of version triggers. These triggers create actions that must be run last due to a dependency on an earlier phase. </a></div>
+      <div class="B_-_Body"><a name="1914809">After the database upgrade concludes, it reports issues that the upgrader encountered and did not complete. </a></div>
+      <div class="B_-_Body"><a name="1914810">You are responsible for correcting these issues. This might involve modifying the data model or altering the table manually. If you do not correct them, the next time you start the server you do </a><span class="e_-_emphasis">not</span> see a message that the database and the data model are out of sync. You must then use the <span class="cv_-_computer_voice">system_tools</span> command to verify the database schema. </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="1914811">Given the complexity of database upgrade, Guidewire does not expose specific upgrade actions/steps to clients either in SQL or Java form. Any manual attempts to recreate or control the upgrade process can result in problems in the PolicyCenter database. Recovery from such attempts is not supported.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1914815">Version Trigger Descriptions</a></h4>
+      <div class="B_-_Body"><a name="1914816">The database upgrade uses version triggers to perform the actions described by sections within this topic. If a version trigger has an associated version check, the check is described with the trigger. Review these descriptions to familiarize yourself with some of the changes and to understand version checks. If a version check reports an issue, review the error message and consult the description of the relevant version trigger for more information.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1914832">Erasing Database-based Archiving</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1914833">The upgrade removes tables and columns used for archiving from the database. The upgrade drops the following tables and columns:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1914837">pc_ArchiveAdminKey</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1914841">pc_ArchiveGraphRecord</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1914845">pc_ArchiveTransitionRec</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1914849">pc_ArchiveTypeKey</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1914857">The database archiving feature was not available for PolicyCenter.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1914858">Removing InetSoft Reporting Support</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1914859">The upgrade removes the following database elements that were involved in supporting InetSoft reporting:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1914863">pc_reportgroup</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1914867">pc_rolerptprivilege</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1914871">pc_rptgrouprpt</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1914875">pc_sreereport</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1914879">The upgrade also drops the </a><span class="cv_-_computer_voice">pc_privilege</span> table, which is rebuilt later in the upgrade. Finally, the database upgrade removes the <span class="cv_-_computer_voice">reporting_admin</span> permission.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1914880">Adding </a><span class="cvh_-_computer_voice_in_heading">NotificationSent</span> to <span class="cvh_-_computer_voice_in_heading">ProcessHistory</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1914881">The upgrade creates a </a><span class="cv_-_computer_voice">NotificationSent</span> bit column on <span class="cv_-_computer_voice">ProcessHistory</span>. The upgrade sets the default value of <span class="cv_-_computer_voice">ProcessHistory.NotificationSent</span> for existing rows to <span class="cv_-_computer_voice">true</span>, so PolicyCenter does not resend notifications.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1914885">Setting Parameter for Data Files Imported</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1914889">The upgrade sets the </a><span class="cv_-_computer_voice">data_files_imported</span> parameter to <span class="cv_-_computer_voice">finished</span> in the <span class="cv_-_computer_voice">pc_Parameter</span> table, if the parameter is not already listed. This prevents rare issues with the upgrade caused by dependency on this parameter.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1914890">Dropping </a><span class="cvh_-_computer_voice_in_heading">Extractable</span> Columns</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1914891">The upgrade removes the following columns from each entity that implements the </a><span class="cv_-_computer_voice">Extractable</span> delegate:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1914892">archiveid</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1914893">archivepartition</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1914894">extractready</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1914895">partition</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1914896">Not every </a><span class="cv_-_computer_voice">Extractable</span> entity includes these columns. The upgrade drops any of these columns that do exist on an <span class="cv_-_computer_voice">Extractable</span> entity.</div>
+      <div class="B_-_Body"><a name="1914897">This step is part of the removal of database-based archiving. </a>The database archiving feature was not available for PolicyCenter.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1914901">Setting </a><span class="cvh_-_computer_voice_in_heading">IndividualStacks</span> column on <span class="cvh_-_computer_voice_in_heading">WorkQueueProfilerConfig</span> to Non-nullable</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1914905">The upgrade sets the </a><span class="cv_-_computer_voice">IndividualStacks</span> column on <span class="cv_-_computer_voice">pc_WorkQueueProfilerConfig</span> to non-nullable.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1914906">Changing </a><span class="cvh_-_computer_voice_in_heading">Contact</span> Foreign Keys on <span class="cvh_-_computer_voice_in_heading">ContactAutoSyncWorkItem</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1914910">This is a Guidewire platform-level upgrade step. Because PolicyCenter does not use the Contact Auto Sync work queue, this step does not affect PolicyCenter.</a></div>
+      <div class="B_-_Body"><a name="1914917">The upgrade first checks that the </a><span class="cv_-_computer_voice">pc_ContactAutoSyncWorkItem</span> table is empty. Then the upgrade drops the <span class="cv_-_computer_voice">minContactID</span> and <span class="cv_-_computer_voice">maxContactID</span> foreign keys to <span class="cv_-_computer_voice">pc_Contact</span> and replaces them with soft entity references <span class="cv_-_computer_voice">minContactRef</span> and <span class="cv_-_computer_voice">maxContactRef</span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1914921">Checking for Null Effective-dated Foreign Keys on </a><span class="cvh_-_computer_voice_in_heading">EffDatedOnly</span> Delegates</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1914922">The upgrade checks that no effective-dated foreign keys on </a><span class="cv_-_computer_voice">effDatedOnly</span> delegates are null. If the upgrade finds any null effective-dated foreign keys on <span class="cv_-_computer_voice">effDatedOnly</span> delegates, it reports an error and stops the upgrade. The error includes an SQL query to identify the rows with issues.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1914923">Adding Subtype to </a><span class="cvh_-_computer_voice_in_heading">WorkflowWorkItem</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1914925">The upgrade adds a </a><span class="cv_-_computer_voice">Subtype</span> column to <span class="cv_-_computer_voice">cc_WorkflowWorkItem</span> with a default value of <span class="cv_-_computer_voice">WorkflowWorkItem</span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1914926">Renaming Primary Key Constraints and Indexes to Indicate Table Name</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1914927">The upgrade renames primary key constraints and indexes to indicate the table name. For example, on Oracle, the upgrade renames the primary key index on </a><span class="cv_-_computer_voice">pc_Activity</span> to <span class="cv_-_computer_voice">PK_Activity</span>. On SQL Server, the upgrade renames the primary key index on <span class="cv_-_computer_voice">pc_Activity</span> to <span class="cv_-_computer_voice">pc_Activity_PK</span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1914937">Updating Columns to Support Very Large Data Sets</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1914938">The upgrade changes the datatype of some columns in tables related to data distribution, data loading, and table statistics to be able to support very large data sets. In particular, on SQL Server the upgrade changes INT columns to BIGINT. For Oracle and SQL Server the upgrade changes DECIMAL columns to BIGINT for cases in which the column holds whole numbers.</a></div>
+      <div class="B_-_Body"><a name="1914939">This affects the following tables:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1914943">pc_ArrayDataDist</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1914947">pc_ArraySizeCntDD</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1914951">pc_AssignableForKeyDataDist</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1914955">pc_AssignableForKeySizeCntDD</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1914959">pc_BeanVersionDataDist</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1914963">pc_BlobColDataDist</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1914967">pc_BooleanColDataDist</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1914971">pc_ClobColDataDist</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1914975">pc_DateAnalysisDataDist</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1914979">pc_DateBinnedDDDateBin</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1914983">pc_DateBinnedDDValue</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1914987">pc_ForKeyDataDist</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1914991">pc_GenericGroupCountDataDist</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1914995">pc_HourAnalysisDataDist</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1914999">pc_LoadInsertSelect</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915003">pc_LoadOperation</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915007">pc_LoadRowCount</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915011">pc_NullableColumnDataDist</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915015">pc_TableDataDist</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915019">pc_TableUpdateStats</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915023">pc_TypecodeCountDataDist</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915027">pc_TypekeyDataDist</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915600">Adding </a><span class="cvh_-_computer_voice_in_heading">CPBlanketAutoNumber</span> to Commercial Property Policy Lines</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915602">For all Commercial Property policy lines, the upgrade creates a new </a><span class="cv_-_computer_voice">AutoNumberSequence</span> instance per policy term and updates <span class="cv_-_computer_voice">CPBlanketAutoNumberSeq</span> to point to the <span class="cv_-_computer_voice">AutoNumberSequence</span>. <span class="cv_-_computer_voice">PolicyLine</span> rows that correspond to the same policy term point to the same sequence.</div>
+      <div class="B_-_Body"><a name="1915603">This step applies to upgrades from versions prior to 7.0.1.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915604">Dropping </a><span class="cvh_-_computer_voice_in_heading">AccountAccount</span> Staging Table</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915612">The upgrade drops the </a><span class="cv_-_computer_voice">pcst_AccountAccount</span> staging table and removes <span class="cv_-_computer_voice">pc_AccountAccount.LoadCommandID</span>. The <span class="cv_-_computer_voice">AccountAccount</span> entity was introduced in PolicyCenter 7.0.0.</div>
+      <div class="B_-_Body"><a name="1915616">This step applies to upgrades from versions prior to 7.0.1.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915617">Dropping </a><span class="cvh_-_computer_voice_in_heading">FormPatternCovTermValue</span> <span class="cvh_-_computer_voice_in_heading">Name</span> and <span class="cvh_-_computer_voice_in_heading">Description</span> Columns</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915622">The upgrade drops the </a><span class="cv_-_computer_voice">Name</span> and <span class="cv_-_computer_voice">Description</span> columns from <span class="cv_-_computer_voice">FormPatternCovTermValue</span>. PolicyCenter derives coverage term value names and descriptions directly from the product model, so names and descriptions do not need to be stored with the form patterns.</div>
+      <div class="B_-_Body"><a name="1915623">This step applies to upgrades from versions prior to 7.0.1.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915624">Dropping </a><span class="cvh_-_computer_voice_in_heading">RIRiskCombination</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915632">The upgrade drops the </a><span class="cv_-_computer_voice">pc_RIRiskCombination</span> table. This table only existed in PolicyCenter 7.0.0 and is not being used in PolicyCenter 7.0.1.</div>
+      <div class="B_-_Body"><a name="1915633">This step applies to upgrades from versions prior to 7.0.1.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915634">Moving </a><span class="cvh_-_computer_voice_in_heading">PolicyAddress</span> from <span class="cvh_-_computer_voice_in_heading">PolicyPeriod</span> to <span class="cvh_-_computer_voice_in_heading">EffectiveDatedFields</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915636">The upgrade moves the </a><span class="cv_-_computer_voice">PolicyAddress</span> value for each <span class="cv_-_computer_voice">PolicyPeriod</span> record to the corresponding <span class="cv_-_computer_voice">EffectiveDatedFields</span> entity.</div>
+      <div class="B_-_Body"><a name="1915637">This step applies to upgrades from versions prior to 7.0.1.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915638">Resynchronizing Product Model Lookups</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915643">The upgrade deletes checksums for product model lookups from the database, causing PolicyCenter to resynchronize product model files when the server starts. This is to resolve an issue with determining the appropriate availability lookup row in certain situations.</a></div>
+      <div class="B_-_Body"><a name="1915644">This step applies to upgrades from versions prior to 7.0.1.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915645">Dropping </a><span class="cvh_-_computer_voice_in_heading">ArchiveID</span> from <span class="cvh_-_computer_voice_in_heading">PolicyPeriod</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915653">The upgrade drops the </a><span class="cv_-_computer_voice">pc_PolicyPeriod.ArchiveID</span> column. This column was not used by PolicyCenter.</div>
+      <div class="B_-_Body"><a name="1915654">This step applies to upgrades from versions prior to 7.0.1.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915655">Dropping </a><span class="cvh_-_computer_voice_in_heading">FormPatternCovTerm</span> <span class="cvh_-_computer_voice_in_heading">Name</span> and <span class="cvh_-_computer_voice_in_heading">Description</span> Columns</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915660">The upgrade drops the </a><span class="cv_-_computer_voice">Name</span> and <span class="cv_-_computer_voice">Description</span> columns from <span class="cv_-_computer_voice">FormPatternCovTerm</span>. PolicyCenter derives coverage term names and descriptions directly from the product model, so names and descriptions do not need to be stored with the form patterns.</div>
+      <div class="B_-_Body"><a name="1915661">This step applies to upgrades from versions prior to 7.0.1.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915662">Moving </a><span class="cvh_-_computer_voice_in_heading">RIRiskNumber</span> and Dropping <span class="cvh_-_computer_voice_in_heading">RIRiskVLContainer</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915664">The upgrade copies the risk number from the </a><span class="cv_-_computer_voice">RIRiskVLContainer</span> to each associated <span class="cv_-_computer_voice">RIRiskVersionList</span> and deletes the <span class="cv_-_computer_voice">pc_RIRiskVLContainer</span> table.</div>
+      <div class="B_-_Body"><a name="1915668">This step applies to upgrades from versions prior to 7.0.1.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915670">Adding Denormalized Primary Address Columns to </a><span class="cvh_-_computer_voice_in_heading">Contact</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915675">The upgrade adds denormalized primary address columns on </a><span class="cv_-_computer_voice">pc_Contact</span> and populates these columns with values from <span class="cv_-_computer_voice">pc_Address</span>. This is done to improve performance of account searches when minimal name and any of the minimal primary address fields are specified. This step adds and populates the following columns on <span class="cv_-_computer_voice">pc_Contact</span>:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1915682">City</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1915683">State</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1915684">PostalCode</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1915685">Country</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1915686">CityDenorm</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cv_-_computer_voice"><a name="1915687">PostalCodeDenorm</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915697">PolicyCenter keeps these columns synchronized with their corresponding values on </a><span class="cv_-_computer_voice">pc_Address</span>. PolicyCenter also includes a database consistency check that checks that the <span class="cv_-_computer_voice">pc_Contact</span> and <span class="cv_-_computer_voice">pc_Address</span> values are synchronized.</div>
+      <div class="B_-_Body"><a name="1915704">This step applies to upgrades from versions prior to 7.0.2.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915706">Dropping </a><span class="cvh_-_computer_voice_in_heading">Extractable</span> and <span class="cvh_-_computer_voice_in_heading">OverlapTable</span> from <span class="cvh_-_computer_voice_in_heading">AutoNumberSequence</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915708">The upgrade drops </a><span class="cv_-_computer_voice">Extractable</span> and <span class="cv_-_computer_voice">OverlapTable</span> delegate columns from <span class="cv_-_computer_voice">AutoNumberSequence</span>. The upgrade drops the <span class="cv_-_computer_voice">admin</span> and <span class="cv_-_computer_voice">archivepartition</span> columns from <span class="cv_-_computer_voice">pc_AutoNumberSequence</span>.</div>
+      <div class="B_-_Body"><a name="1915712">This step applies to upgrades from versions prior to 7.0.3.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915713">Setting </a><span class="cvh_-_computer_voice_in_heading">Referenced</span> Column on <span class="cvh_-_computer_voice_in_heading">AccountContactRole</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915718">The upgrade sets the </a><span class="cv_-_computer_voice">Referenced</span> Boolean column on <span class="cv_-_computer_voice">pc_AccountContactRole</span> to <span class="cv_-_computer_voice">true</span> if there is any locked policy period with a <span class="cv_-_computer_voice">PolicyContactRole</span> referring to the <span class="cv_-_computer_voice">AccountContactRole</span>.</div>
+      <div class="B_-_Body"><a name="1915719">This step applies to upgrades from versions prior to 7.0.3.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915720">Setting </a><span class="cvh_-_computer_voice_in_heading">Referenced</span> Column on <span class="cvh_-_computer_voice_in_heading">AccountLocation</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915725">The upgrade sets the </a><span class="cv_-_computer_voice">Referenced</span> Boolean column on <span class="cv_-_computer_voice">pc_AccountLocation</span> to <span class="cv_-_computer_voice">true</span> if there is any locked policy period with a <span class="cv_-_computer_voice">PolicyLocation</span> referring to the <span class="cv_-_computer_voice">AccountLocation</span>.</div>
+      <div class="B_-_Body"><a name="1915726">This step applies to upgrades from versions prior to 7.0.3.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915727">Setting </a><span class="cvh_-_computer_voice_in_heading">Referenced</span> Column on <span class="cvh_-_computer_voice_in_heading">Address</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915732">The upgrade sets the </a><span class="cv_-_computer_voice">Referenced</span> Boolean column on <span class="cv_-_computer_voice">pc_Address</span> to <span class="cv_-_computer_voice">true</span> if there is any locked policy period with a <span class="cv_-_computer_voice">PolicyAddress</span> referring to the <span class="cv_-_computer_voice">Address</span>.</div>
+      <div class="B_-_Body"><a name="1915733">This step applies to upgrades from versions prior to 7.0.3.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915734">Dropping </a><span class="cvh_-_computer_voice_in_heading">CoverageSymbolGroup</span> from <span class="cvh_-_computer_voice_in_heading">Coverage</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915739">The upgrade drops the </a><span class="cv_-_computer_voice">CoverageSymbolGroup</span> column from <span class="cv_-_computer_voice">pc_Coverage</span>. The upgrade first checks that entities that implement the <span class="cv_-_computer_voice">Coverage</span> delegate have no data in their <span class="cv_-_computer_voice">CoverageSymbolGroup</span> foreign keys.</div>
+      <div class="B_-_Body"><a name="1915740">The </a><span class="cv_-_computer_voice">CoverageSymbolGroup</span> foreign key has been removed from the <span class="cv_-_computer_voice">Coverage</span> entity and replaced with an enhancement property. Before upgrading, <span class="cv_-_computer_voice">CoverageSymbolGroup</span> must be nulled out. This only affects Business Auto coverages.</div>
+      <div class="B_-_Body"><a name="1915741">Additionally, it is possible, though very unlikely, to have configured entity extensions to have a similar issue to the one described above with </a><span class="cv_-_computer_voice">Coverage</span>. If that has occurred, an error will be reported during the upgrade process and the data will need to be fixed before continuing.</div>
+      <div class="B_-_Body"><a name="1915742">This step applies to upgrades from versions prior to 7.0.3.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915743">Dropping </a><span class="cvh_-_computer_voice_in_heading">City</span> and <span class="cvh_-_computer_voice_in_heading">PostalCode</span> from <span class="cvh_-_computer_voice_in_heading">Contact</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915745">The upgrade drops unnecessary </a><span class="cv_-_computer_voice">PrimaryAddress</span> denormalized columns <span class="cv_-_computer_voice">City</span> and <span class="cv_-_computer_voice">PostalCode</span> from <span class="cv_-_computer_voice">pc_Contact</span>.</div>
+      <div class="B_-_Body"><a name="1915749">This step applies to upgrades from versions prior to 7.0.3.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915750">Populating </a><span class="cvh_-_computer_voice_in_heading">PNIContactDenorm</span> on <span class="cvh_-_computer_voice_in_heading">PolicyPeriod</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915755">The upgrade adds a </a><span class="cv_-_computer_voice">PNIContactDenorm</span> column to <span class="cv_-_computer_voice">pc_PolicyPeriod</span>. The upgrade then populates <span class="cv_-_computer_voice">pc_PolicyPeriod.PNIContactDenorm</span> with the primary named insured’s contact on the policy.</div>
+      <div class="B_-_Body"><a name="1915759">This step applies to upgrades from versions prior to 7.0.3.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915760">Replacing Index on </a><span class="cvh_-_computer_voice_in_heading">CalcRoutineDefinition</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915765">The upgrade drops the index on </a><span class="cv_-_computer_voice">Code</span>, <span class="cv_-_computer_voice">Version</span>, and <span class="cv_-_computer_voice">Retired</span> on <span class="cv_-_computer_voice">pc_CalcRoutineDefinition</span>. A new index is defined in <span class="cv_-_computer_voice">CalcRoutineDefinition.etx</span>. The new index adds the <span class="cv_-_computer_voice">Jurisdiction</span> column to <span class="cv_-_computer_voice">Code</span>, <span class="cv_-_computer_voice">Version</span>, and <span class="cv_-_computer_voice">Retired</span>. By adding the <span class="cv_-_computer_voice">Jurisdiction</span> column, multiple <span class="cv_-_computer_voice">CalcRoutineDefinitions</span> with the same <span class="cv_-_computer_voice">Code</span> and <span class="cv_-_computer_voice">Version</span> can exist.</div>
+      <div class="B_-_Body"><a name="1915766">This step applies to upgrades from versions prior to 7.0.4.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915767">Replacing </a><span class="cvh_-_computer_voice_in_heading">RateTableDataType</span> <span class="cvh_-_computer_voice_in_heading">Double</span> Typecode with <span class="cvh_-_computer_voice_in_heading">Decimal</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915772">The upgrade replaces the </a><span class="cv_-_computer_voice">Double</span> typecode on <span class="cv_-_computer_voice">pctl_RateTableDataType</span> with a <span class="cv_-_computer_voice">Decimal</span> typecode.</div>
+      <div class="B_-_Body"><a name="1915773">This step applies to upgrades from versions prior to 7.0.4.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915774">Rename </a><span class="cvh_-_computer_voice_in_heading">RateBook.BookVersion</span> to <span class="cvh_-_computer_voice_in_heading">RateBook.BookEdition</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915783">The upgrade renames </a><span class="cv_-_computer_voice">pc_RateBook.BookVersion</span> to <span class="cv_-_computer_voice">pc_RateBook.BookEdition</span>.</div>
+      <div class="B_-_Body"><a name="1915784">This step applies to upgrades from versions prior to 7.0.4.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915786">Dropping Form-related </a><span class="cvh_-_computer_voice_in_heading">PMLockedEntity</span> and <span class="cvh_-_computer_voice_in_heading">PMLockedFields</span> Entries</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915788">The upgrade drops form-related </a><span class="cv_-_computer_voice">PMLockedEntity</span> and <span class="cv_-_computer_voice">PMLockedField</span> entries, including:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915789">FormPattern</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915790">ProductForm</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915791">ProductPattern</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915792">PolicyLineForms</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915793">ProductFormPattern</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915794">ProductForms</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915795">This step applies to upgrades from versions prior to 7.0.5.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915796">Populating Default Code for All Rate Table Operands</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915801">The upgrade adds an </a><span class="cv_-_computer_voice">ArgumentSourceSetCode</span> column to <span class="cv_-_computer_voice">pc_CalcStepDefOperand</span> and sets the value of <span class="cv_-_computer_voice">ArgumentSourceSetCode</span> to <span class="cv_-_computer_voice">DEFAULT</span> for records where <span class="cv_-_computer_voice">TableCode</span> is not null.</div>
+      <div class="B_-_Body"><a name="1915802">This step applies to upgrades from versions prior to 7.0.5.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915803">Deleting Impact Analysis Test Prep Batch Process</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915807">The upgrade deletes the Impact Analysis Test Prep batch process and the related tables </a><span class="cv_-_computer_voice">pc_ImpactAnalysisPeriod</span> and <span class="cv_-_computer_voice">pc_ImpactAnalysisCase</span>.</div>
+      <div class="B_-_Body"><a name="1915814">This step applies to upgrades from versions prior to 7.0.5.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915815">Dropping </a><span class="cvh_-_computer_voice_in_heading">Description</span> from <span class="cvh_-_computer_voice_in_heading">CalcStepDefinition</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915821">The upgrade drops the </a><span class="cv_-_computer_voice">pc_CalcStepDef.Description</span> column.</div>
+      <div class="B_-_Body"><a name="1915822">This step applies to upgrades from versions prior to 7.0.6.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915823">Converting </a><span class="cvh_-_computer_voice_in_heading">CalcStepDefinition</span> Columns from <span class="cvh_-_computer_voice_in_heading">Text</span> to <span class="cvh_-_computer_voice_in_heading">MediumText</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915829">The upgrade first checks that the </a><span class="cv_-_computer_voice">Notes</span> and <span class="cv_-_computer_voice">SectionComment</span> columns on <span class="cv_-_computer_voice">pc_CalcStepDef</span> can be truncated to fit in a <span class="cv_-_computer_voice">mediumtext</span> type column. If any rows have columns that are too long for <span class="cv_-_computer_voice">mediumtext</span>, the upgrade reports an error and provides an SQL query to find the rows. If all rows can be truncated, the upgrade converts <span class="cv_-_computer_voice">Notes</span> and <span class="cv_-_computer_voice">SectionComment</span> to <span class="cv_-_computer_voice">mediumtext</span>.</div>
+      <div class="B_-_Body"><a name="1915830">This step applies to upgrades from versions prior to 7.0.6.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915831">Populating the Business Vehicle Foreign Key on </a><span class="cvh_-_computer_voice_in_heading">BACost</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915834">For </a><span class="cv_-_computer_voice">BusinessVehicleCovCost</span> subtypes of <span class="cv_-_computer_voice">BACost</span>, the upgrade populates the <span class="cv_-_computer_voice">BusinessVehicle</span> foreign key with the corresponding <span class="cv_-_computer_voice">Vehicle</span> from <span class="cv_-_computer_voice">BusinessVehicleCov</span>.</div>
+      <div class="B_-_Body"><a name="1915835">This step applies to upgrades from versions prior to 7.0.6.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915836">Setting </a><span class="cvh_-_computer_voice_in_heading">RateTableDefinition</span> <span class="cvh_-_computer_voice_in_heading">EntityName</span> Values where Null</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915839">The upgrade sets each null </a><span class="cv_-_computer_voice">EntityName</span> on <span class="cv_-_computer_voice">RateTableDefinition</span> to the value <span class="cv_-_computer_voice">RateFactorRow</span>.</div>
+      <div class="B_-_Body"><a name="1915840">This step applies to upgrades from versions prior to 7.0.6.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915841">Populating </a><span class="cvh_-_computer_voice_in_heading">PolicyTermArchiveState</span> on <span class="cvh_-_computer_voice_in_heading">PolicyTerm</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915844">This upgrade step converts </a><span class="cv_-_computer_voice">PolicyTerm.Archived</span> to <span class="cv_-_computer_voice">PolicyTerm.PolicyTermArchiveState</span>. The upgrade queries the database for all <span class="cv_-_computer_voice">PolicyPeriod</span> records that have foreign keys to a <span class="cv_-_computer_voice">PolicyTerm</span>. </div>
+      <div class="B_-_Body"><a name="1915845">If all </a><span class="cv_-_computer_voice">PolicyPeriod</span> records for a <span class="cv_-_computer_voice">PolicyTerm</span> have a non-null <span class="cv_-_computer_voice">ArchiveState</span>, then the upgrade sets <span class="cv_-_computer_voice">PolicyTermArchiveState</span> to <span class="cv_-_computer_voice">TC_FULLYARCHIVED</span>.</div>
+      <div class="B_-_Body"><a name="1915846">If all </a><span class="cv_-_computer_voice">PolicyPeriod</span> records for a <span class="cv_-_computer_voice">PolicyTerm</span> have a null <span class="cv_-_computer_voice">ArchiveState</span>, then the upgrade leaves <span class="cv_-_computer_voice">PolicyTermArchiveState</span> set to <span class="cv_-_computer_voice">TC_NOTARCHIVED</span>. This is the default value of <span class="cv_-_computer_voice">PolicyTermArchiveState</span>.</div>
+      <div class="B_-_Body"><a name="1915847">If the </a><span class="cv_-_computer_voice">PolicyPeriod</span> records for a <span class="cv_-_computer_voice">PolicyTerm</span> have a mix of null and not null <span class="cv_-_computer_voice">ArchiveState</span> values, then the upgrade sets <span class="cv_-_computer_voice">PolicyTermArchiveState</span> to <span class="cv_-_computer_voice">TC_PARTIALLYARCHIVED</span>.</div>
+      <div class="B_-_Body"><a name="1915848">This step applies to upgrades from versions prior to 7.0.7.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915849">Populating Attachment Inclusion</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915855">The upgrade creates a </a><span class="cv_-_computer_voice">pc_RIAttachmentInclusion</span> table if the table does not yet exist. If the table exists, but does not include a <span class="cv_-_computer_voice">PolicyTerm</span> column, the upgrade creates the <span class="cv_-_computer_voice">PolicyTerm</span> column. The upgrade then segments inclusions by policy term and makes inclusions retireable.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915898">Regenerating </a><span class="cvh_-_computer_voice_in_heading">InstrumentedWorker</span> and Dropping <span class="cvh_-_computer_voice_in_heading">InstrumentedWorkerTask</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915905">The database upgrade drops the </a><span class="cv_-_computer_voice">pc_InstrumentedWorker</span> and <span class="cv_-_computer_voice">pc_InstrumentedWorkerTask</span> tables. The <span class="cv_-_computer_voice">pc_InstrumentedWorker</span> table is regenerated when PolicyCenter starts and includes data model changes that Guidewire made to the table between versions. The <span class="cv_-_computer_voice">pc_InstrumentedWorkerTask</span> table replaces the <span class="cv_-_computer_voice">pc_InstrumentedWorkerTask</span> table used in versions prior to PolicyCenter 8.0.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915921">Checking Uniqueness of Localized Admin Data</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915922">The upgrade checks that the </a><span class="cv_-_computer_voice">Name</span> value of the following entities is unique for that entity type:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915924">BusinessWeek</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915927">Region</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915928">Role</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1915929">UWAuthorityProfile</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915930">Dropping </a><span class="cvh_-_computer_voice_in_heading">ClusterInfo</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915937">The upgrade drops the </a><span class="cv_-_computer_voice">pc_ClusterInfo</span> table. This table is renamed <span class="cv_-_computer_voice">pc_BatchServer</span>. The new table is created following the upgrade when PolicyCenter starts. The <span class="cv_-_computer_voice">pc_BatchServer</span> table always contains only one row that describes the current batch server. This table is used by all cluster nodes to get the address of the current batch server and enforce that only a single batch server exists within the cluster. </div>
+      <div class="B_-_Body"><a name="1915947">PolicyCenter 8.0 adds a </a><span class="cv_-_computer_voice">ClusterMemberData</span> entity that contains information about current cluster members. The information from this table is shown on the <span class="ui_-_UI_element">Cluster Info</span> page. JGroups uses this table for the following:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="s_-_strong"><a name="1915948">JGroups over UDP</a></span> – Reporting and audit purposes. UDP multicast is used for discovery.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="s_-_strong"><a name="1915949">JGroups over TCP</a></span> – Reporting and discovery. JGroups reads the IP addresses of the current members from the <span class="cv_-_computer_voice">pc_ClusterMemberData</span> table.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915953">Updating </a><span class="cvh_-_computer_voice_in_heading">SpatialPoint</span> on Address</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915957">The upgrade updates the </a><span class="cv_-_computer_voice">SpatialPoint</span> column on <span class="cv_-_computer_voice">pc_Address</span> with the data in the <span class="cv_-_computer_voice">Longitude</span> and <span class="cv_-_computer_voice">Latitude</span> columns. The upgrade checks for rows where <span class="cv_-_computer_voice">Longitude</span> or <span class="cv_-_computer_voice">Latitude</span> are non-null and the other is null. If the upgrade detects such rows, it reports an error, stops the upgrade, and provides an SQL query to find these rows.</div>
+      <div class="B_-_Body"><a name="1915958">After the upgrade updates </a><span class="cv_-_computer_voice">SpatialPoint</span>, it drops the <span class="cv_-_computer_voice">HTMID</span> column and the <span class="cv_-_computer_voice">Longitude</span> and <span class="cv_-_computer_voice">Latitude</span> columns.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915959">Dropping Foreign Keys to </a><span class="cvh_-_computer_voice_in_heading">ProcessHistory</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915963">The upgrade drops all </a><span class="cv_-_computer_voice">ProcessHistoryID</span> foreign keys that refer to <span class="cv_-_computer_voice">pc_ProcessHistory</span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915964">Dropping </a><span class="cvh_-_computer_voice_in_heading">WorkQueueName</span> Column from <span class="cvh_-_computer_voice_in_heading">WorkQueueWorkerControl</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915969">The upgrade drops the </a><span class="cv_-_computer_voice">pc_WorkQueueWorkerControl.WorkQueueName</span> column and deletes all current <span class="cv_-_computer_voice">WorkQueueWorkerControl</span> records. Later, the upgrade adds a new <span class="cv_-_computer_voice">LockName</span> column with unique index records.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915970">Renaming </a><span class="cvh_-_computer_voice_in_heading">WorkItem</span> Column <span class="cvh_-_computer_voice_in_heading">NumRetries</span> to <span class="cvh_-_computer_voice_in_heading">Attempts</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915971">The upgrade renames the </a><span class="cv_-_computer_voice">WorkItem</span> column <span class="cv_-_computer_voice">NumRetries</span> to <span class="cv_-_computer_voice">Attempts</span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915972">Adding </a><span class="cvh_-_computer_voice_in_heading">Subtype</span> Column to <span class="cvh_-_computer_voice_in_heading">Activity</span>, <span class="cvh_-_computer_voice_in_heading">Address</span>, and <span class="cvh_-_computer_voice_in_heading">History</span> Tables</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915982">The upgrade adds a </a><span class="cv_-_computer_voice">Subtype</span> column to the <span class="cv_-_computer_voice">pc_Activity</span>, <span class="cv_-_computer_voice">pc_Address</span>, and <span class="cv_-_computer_voice">pc_History</span> tables. This allows Guidewire applications to create subtypes of these entities as needed.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915983">Upgrading Consistency Check Tables</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1915984">The upgrade makes the following changes to tables involved in consistency checks:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1915988">drops the </a><span class="cv_-_computer_voice">NumThreads</span> and <span class="cv_-_computer_voice">Subtype</span> columns from <span class="cv_-_computer_voice">pc_dbConsistCheckRun</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1915992">drops the </a><span class="cv_-_computer_voice">Subtype</span> column from <span class="cv_-_computer_voice">pc_dbConsistCheckQueryExec</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1915996">updates null values of the </a><span class="cv_-_computer_voice">TableName</span> and <span class="cv_-_computer_voice">ThreadName</span> columns of <span class="cv_-_computer_voice">pc_dbConsistCheckQueryExec</span> to the value <span class="cv_-_computer_voice">UNKNOWN</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1915998">Upgrading Database Statistics Tables</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916002">The upgrade makes the following changes to tables involved in gathering database statistics for PolicyCenter:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1916006">deletes all </a><span class="cv_-_computer_voice">pc_ProcessHistory</span> records for the Incremental Database Statistics process.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1916013">drops the </a><span class="cv_-_computer_voice">Subtype</span> column from <span class="cv_-_computer_voice">pc_DatabaseUpdateStats</span>, <span class="cv_-_computer_voice">pc_TableUpdateStats</span>, and <span class="cv_-_computer_voice">pc_TableUpdateStatsStatement</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1916020">sets null values for </a><span class="cv_-_computer_voice">pc_TableUpdateStatsStatement.ObjectName</span> and <span class="cv_-_computer_voice">pc_TableUpdateStatsStatement.UpdateStatsStatement</span> to <span class="cv_-_computer_voice">UNKNOWN</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1916027">drops </a><span class="cv_-_computer_voice">pc_DatabaseUpdateStats.NumThreads</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1916037">drops </a><span class="cv_-_computer_voice">pc_TableUpdateStats.Deletes</span>, <span class="cv_-_computer_voice">pc_TableUpdateStats.Inserts</span> and <span class="cv_-_computer_voice">pc_TableUpdateStats.RowCnt</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916038">Dropping Upgrade-related Tables</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916039">The upgrade drops the following tables:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916043">pc_UpgradeDBParameterPair</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916047">pc_UpgradeDBParameterRow</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916051">pc_UpgradeDBParameterSet</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916052">Dropping </a><span class="cvh_-_computer_voice_in_heading">AddressBookFingerprint</span> from <span class="cvh_-_computer_voice_in_heading">Contact</span> and <span class="cvh_-_computer_voice_in_heading">ContactCategoryScore</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916059">The upgrade drops the </a><span class="cv_-_computer_voice">AddressBookFingerprint</span> column from <span class="cv_-_computer_voice">pc_Contact</span> and <span class="cv_-_computer_voice">pc_ContactCatsScore</span>. The upgrade also drops the <span class="cv_-_computer_voice">AddressBookFingerprint</span> property from the <span class="cv_-_computer_voice">Contact</span> and <span class="cv_-_computer_voice">ContactCategoryScore</span> entities.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916563">Populate Original Effective Date of Policy</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916567">The upgrade creates an </a><span class="cv_-_computer_voice">OriginalEffectiveDate</span> column on <span class="cv_-_computer_voice">pc_Policy</span> and populates the column with the start date of the policy. The upgrade determines the start date of the policy by finding the earliest <span class="cv_-_computer_voice">PeriodStart</span> value in <span class="cv_-_computer_voice">pc_PolicyPeriod</span> for the matching <span class="cv_-_computer_voice">policyID</span> with a <span class="cv_-_computer_voice">PolicyPeriodStatus</span> of <span class="cv_-_computer_voice">Bound</span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916571">Upgrading Contact Table</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916575">This step upgrades the </a><span class="cv_-_computer_voice">pc_Contact</span> table by correctly repopulating the <span class="cv_-_computer_voice">AccountHolderCount</span> field and setting a default currency type for <span class="cv_-_computer_voice">PreferredSettlementCurrency</span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916576">Populating Preferred Coverage and Settlement Currency on </a><span class="cvh_-_computer_voice_in_heading">PolicyPeriod</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916580">The upgrade populates </a><span class="cv_-_computer_voice">PreferredCoverageCurrency</span> and <span class="cv_-_computer_voice">PreferredSettlementCurrency</span> on <span class="cv_-_computer_voice">pc_PolicyPeriod</span> with the default <span class="cv_-_computer_voice">Currency</span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916581">Adding and Populating </a><span class="cvh_-_computer_voice_in_heading">LastNotifiedCancellationDate</span> on Cancellation</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916582">The upgrade sets the </a><span class="cv_-_computer_voice">LastNotifiedCancellationDate</span> on <span class="cv_-_computer_voice">Cancellation</span> to the <span class="cv_-_computer_voice">CancellationDate</span> of the <span class="cv_-_computer_voice">PolicyPeriod</span> referenced by <span class="cv_-_computer_voice">SelectedVersion</span> if the <span class="cv_-_computer_voice">InitialNotificationDate</span> of the <span class="cv_-_computer_voice">Cancellation</span> is not null.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916583">Populating Billing Amounts for Costs and Transactions</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916584">For </a><span class="cv_-_computer_voice">Cost</span> and delegates of <span class="cv_-_computer_voice">Cost</span>, the upgrade adds and populates the following columns:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916585">ActualAmountBilling</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916586">ActualTermAmountBilling</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916587">OverrideAmountBilling</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916588">OverrideTermAmountBilling</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916589">StandardAmountBilling</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916590">StandardTermAmountBilling</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916591">ActualAmountBillingCurrency</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916592">ActualTermAmountBillingCurrency</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916593">OverrideAmountBillingCurrency</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916594">OverrideTermAmountBillingCurrency</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916595">StandardAmountBillingCurrency</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916596">StandardTermAmountBillingCurrency</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916597">ActualAmountCurrency</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916598">ActualTermAmountCurrency</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916599">OverrideAmountCurrency</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916600">OverrideTermAmountCurrency</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916601">StandardAmountCurrency</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916602">StandardTermAmountCurrency</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916603">The upgrade populates the currency columns with the default currency in rows where the corresponding amount column is not null.</a></div>
+      <div class="B_-_Body"><a name="1916604">The upgrade populates the settlement billing columns with the value of the base column. For example, </a><span class="cv_-_computer_voice">ActualAmountBilling</span> is set to the value of <span class="cv_-_computer_voice">ActualAmount</span>.</div>
+      <div class="B_-_Body"><a name="1916605">For </a><span class="cv_-_computer_voice">Transaction</span> and delegates of <span class="cv_-_computer_voice">Transaction</span>, the upgrade adds and populates the following columns:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916606">AmountBilling</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916607">AmountBillingCurrency</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916608">AmountCurrency</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916609">The upgrade populates these columns in the same manner as the </a><span class="cv_-_computer_voice">Cost</span> columns.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916610">Populating Monetary Amount Currencies</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916611">The upgrade creates and populates a currency field for all </a><span class="cv_-_computer_voice">MonetaryAmounts</span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916612">Splitting </a><span class="cvh_-_computer_voice_in_heading">UserRoleAssignment</span> Table</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916616">The upgrade splits </a><span class="cv_-_computer_voice">pc_UserRoleAssign</span> into <span class="cv_-_computer_voice">AccountUserRoleAssign</span>, <span class="cv_-_computer_voice">JobUserRoleAssign</span>, and <span class="cv_-_computer_voice">PolicyUserRoleAssign</span> tables. The upgrade moves records from <span class="cv_-_computer_voice">pc_UserRoleAssign</span> to the corresponding new table depending on whether <span class="cv_-_computer_voice">AccountID</span>, <span class="cv_-_computer_voice">JobID</span>, or <span class="cv_-_computer_voice">PolicyID</span> is not null. For example if a record has a non-null <span class="cv_-_computer_voice">AccountID</span>, the record is moved to the <span class="cv_-_computer_voice">AccountUserRoleAssign</span> table.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916620">Populating Default Currencies on Account</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916621">The upgrade populates the </a><span class="cv_-_computer_voice">PreferredCoverageCurrency</span> and <span class="cv_-_computer_voice">PreferredSettlementCurrency</span> columns on <span class="cv_-_computer_voice">Account</span> to the default currency.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916622">Populating Default Currency Fields on </a><span class="cvh_-_computer_voice_in_heading">RIAgreement</span> and <span class="cvh_-_computer_voice_in_heading">RIProgram</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916623">The upgrade populates the </a><span class="cv_-_computer_voice">Currency</span> fields of <span class="cv_-_computer_voice">RIAgreement</span> and <span class="cv_-_computer_voice">RIProgram</span> with the default currency. The upgrade also populates the <span class="cv_-_computer_voice">ReinsuranceCurrency</span> column on <span class="cv_-_computer_voice">Reinsurable</span> with the default currency.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916624">Populating </a><span class="cvh_-_computer_voice_in_heading">ProducerCodeCurrency</span> with Default Currency for each <span class="cvh_-_computer_voice_in_heading">ProducerCode</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916625">The upgrade creates a </a><span class="cv_-_computer_voice">ProducerCodeCurrency</span> table with <span class="cv_-_computer_voice">ProducerCodeId</span> and <span class="cv_-_computer_voice">Currency</span> columns. The upgrade then populates <span class="cv_-_computer_voice">ProducerCodeId</span> with the corresponding <span class="cv_-_computer_voice">ID</span> from the <span class="cv_-_computer_voice">ProducerCode</span> table and populates <span class="cv_-_computer_voice">Currency</span> with the default currency.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916626">Dropping </a><span class="cvh_-_computer_voice_in_heading">UserGroupStats</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916627">The upgrade drops the </a><span class="cv_-_computer_voice">UserGroupStats</span> table.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916628">Renaming </a><span class="cvh_-_computer_voice_in_heading">UserStats</span> Batch Process to <span class="cvh_-_computer_voice_in_heading">TeamScreens</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916629">The upgrade changes the </a><span class="cv_-_computer_voice">TypeCode</span> of the <span class="cv_-_computer_voice">UserStats</span> record in the <span class="cv_-_computer_voice">pctl_BatchProcessType</span> table to <span class="cv_-_computer_voice">TeamScreens</span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916630">Populating </a><span class="cvh_-_computer_voice_in_heading">DisplayText</span> on <span class="cvh_-_computer_voice_in_heading">RateTableMatchOp</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916631">The upgrade populates the </a><span class="cv_-_computer_voice">DisplayText</span> column on <span class="cv_-_computer_voice">RateTableMatchOp</span> with the value of the <span class="cv_-_computer_voice">Name</span> column.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916632">Populating Default Currency on Delegates</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916633">The upgrade adds a </a><span class="cv_-_computer_voice">Currency</span> column and populates it with the default currency for entities that implement the following delegates:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916634">Coverable</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916635">Coverage</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916636">Exclusion</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="1916637">PolicyCondition</a></span> </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916638">Changing </a><span class="cvh_-_computer_voice_in_heading">PolicyDriver.LicenseState</span> and <span class="cvh_-_computer_voice_in_heading">OfficialID.State</span> to <span class="cvh_-_computer_voice_in_heading">Jurisdiction</span> IDs</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916645">The upgrade modifies </a><span class="cv_-_computer_voice">pc_PolicyDriver.LicenseState</span> and <span class="cv_-_computer_voice">pc_OfficialID.State</span> values from type State to type Jurisdiction. </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916646">Checking for Successful Loading of </a><span class="cvh_-_computer_voice_in_heading">emerald-dbupgrade-config.properties</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1916647">The upgrade attempts to load properties from </a><span class="cv_-_computer_voice">emerald-dbupgrade-config.properties</span>. If the upgrade fails to read the file or load properties, it reports an error and stops the upgrade.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1916648">Changing </a><span class="cvh_-_computer_voice_in_heading">PriorPolicy</span> to <span class="cvh_-_computer_voice_in_heading">Extendable</span></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><span class="cv_-_computer_voice"><a name="1916652">PriorPolicy</a></span> is an extendable class in PolicyCenter 8.0. The upgrade adds a <span class="cv_-_computer_voice">Subtype</span> column to <span class="cv_-_computer_voice">pc_PriorPolicy</span> and sets <span class="cv_-_computer_voice">Subtype</span> for all records to <span class="cv_-_computer_voice">PriorPolicy</span>.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

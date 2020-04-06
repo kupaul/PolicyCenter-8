@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?><internalExtension xmlns="http://guidewire.com/datamodel" entityName="Note">
+  <implementsEntity name="Extractable"/>
+  <implementsEntity name="OverlapTable"/>
+  <column-override name="Subject" supportsLinguisticSearch="true"/>
+  <!--column-override name="Body" supportsLinguisticSearch="true"/-->
+  <!--foreignkey-override name="Author" nullok="false"/-->
+  <!-- The note hierarchy in PC is : Account -> Policy -> Job -> PolicyPeriod
+   !   Actually, Account and Policy are containment keys, while Job and PolicyPeriod
+   !   appear to be association keys although a PolicyPeriod association enforces
+   !   association with a Job as well.
+   !   Don't create backing indices for Account and Policy since they will
+   !   be covered by overriding performance indices (see below)...
+  -->
+  <foreignkey columnName="AccountID" createbackingindex="false" desc="Associated account" exportable="false" fkentity="Account" name="Account" nullok="false"/>
+  <foreignkey columnName="PolicyID" createbackingindex="false" desc="Associated policy." exportable="false" fkentity="Policy" name="Policy" nullok="true"/>
+  <foreignkey columnName="JobID" desc="Associated job." exportable="false" fkentity="Job" name="Job" nullok="true"/>
+  <foreignkey columnName="PolicyPeriodID" desc="Associated Policy Period." exportable="false" fkentity="PolicyPeriod" name="PolicyPeriod" nullok="true"/>
+  <index desc="Perf index for Note ID queries sorted by date" expectedtobecovering="true" name="notePerf1" unique="true">
+    <indexcol keyposition="1" name="PolicyID"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="SecurityType"/>
+    <indexcol keyposition="4" name="AuthoringDate"/>
+    <indexcol keyposition="5" name="CreateTime"/>
+    <indexcol keyposition="6" name="ID"/>
+  </index>
+  <index desc="Account Note Author look-up performance index.  Overrides default foreign key index on Account." expectedtobecovering="false" name="AcctAuthorPerf" unique="false">
+    <indexcol keyposition="1" name="AccountID"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="AuthorID"/>
+    <indexcol keyposition="4" name="SecurityType"/>
+  </index>
+  <index desc="Policy Note Author look-up performance index.  Overrides default foreign key index on Policy." expectedtobecovering="false" name="PolicyAuthorPerf" unique="false">
+    <indexcol keyposition="1" name="PolicyID"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="AuthorID"/>
+    <indexcol keyposition="4" name="SecurityType"/>
+  </index>
+  <dbcheckbuilder className="com.guidewire.pc.domain.note.dbchecks.NoteDBCheckBuilder"/>
+  <description>Notes added by users</description>
+  <events/>
+</internalExtension>

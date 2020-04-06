@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    canEdit="perm.System.zonemanage"
+    canVisit="perm.System.zoneview"
+    id="ZonesPage"
+    title="&quot;Zones&quot;">
+    <Variable
+      initialValue="find (var z in Zone)"
+      name="zones"
+      type="ZoneQuery"/>
+    <Screen
+      editable="true"
+      id="ZonesScreen">
+      <TitleBar
+        appendListViewPaging="true"
+        title="&quot;Zones&quot;"/>
+      <Toolbar/>
+      <ListViewPanel
+        id="ZonesLV">
+        <RowIterator
+          editable="true"
+          elementName="zone"
+          hasCheckBoxes="true"
+          pageSize="30"
+          value="zones">
+          <ToolbarFilter
+            label="&quot;Zone Type&quot;"
+            name="ZoneTypeFilter">
+            <ToolbarFilterOptionGroup
+              filters="new gw.api.filters.TypeKeyFilterSet( Zone.Type.TypeInfo.getProperty( &quot;ZoneType&quot; ) ).getFilterOptions()"/>
+          </ToolbarFilter>
+          <ToolbarFilter
+            label="&quot;Country&quot;"
+            name="CountryFilter">
+            <ToolbarFilterOptionGroup
+              filters="new gw.api.filters.TypeKeyFilterSet( Zone.Type.TypeInfo.getProperty( &quot;Country&quot; ) ).getFilterOptions(getCustomCountryList(), true)"/>
+          </ToolbarFilter>
+          <Row>
+            <Cell
+              id="Name"
+              label="&quot;Name&quot;"
+              sortOrder="1"
+              value="zone.Name"/>
+            <Cell
+              id="Code"
+              label="&quot;Code&quot;"
+              value="zone.Code"/>
+            <Cell
+              id="ZoneType"
+              label="&quot;ZoneType&quot;"
+              value="zone.ZoneType"/>
+            <Cell
+              id="Country"
+              label="&quot;Country&quot;"
+              value="zone.Country"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </Screen>
+    <Code><![CDATA[function getCustomCountryList() : List<Country> {
+  return Zone.finder.findLoadedCountries().toList()
+}]]></Code>
+  </Page>
+</PCF>

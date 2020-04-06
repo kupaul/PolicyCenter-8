@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    canEdit="true"
+    id="CreateNewAuditInformationPopup"
+    startInEditMode="true"
+    title="displaykey.Web.PolicyFile.Audits.AddNewAudit">
+    <LocationEntryPoint
+      signature="CreateNewAuditInformationPopup(policyPeriod : PolicyPeriod)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="policyPeriod.auditTypesAvailableToAdd()"
+      name="availableAuditTypes"
+      type="List&lt;AuditScheduleType&gt;"/>
+    <Variable
+      initialValue="availableAuditTypes.first()"
+      name="selectedType"
+      type="AuditScheduleType"/>
+    <Variable
+      initialValue="policyPeriod.suggestedAuditDateRange(selectedType)"
+      name="suggestedDateRange"
+      type="List&lt;java.util.Date&gt;"/>
+    <Variable
+      initialValue="suggestedDateRange.first()"
+      name="auditStartDate"
+      type="java.util.Date"/>
+    <Variable
+      initialValue="suggestedDateRange.last()"
+      name="auditEndDate"
+      type="java.util.Date"/>
+    <Variable
+      initialValue="auditEndDate"
+      name="processStartDate"/>
+    <Variable
+      initialValue="auditEndDate.addMonths(1)"
+      name="dueDate"/>
+    <Variable
+      initialValue="null"
+      name="selectedMethod"
+      type="AuditMethod"/>
+    <Screen>
+      <Toolbar>
+        <ToolbarButton
+          action="scheduleNewAudit()"
+          id="UpdateButton"
+          label="displaykey.Web.ActivityDetail.Button.Update"/>
+        <EditButtons
+          editVisible="false"
+          updateVisible="false"/>
+      </Toolbar>
+      <DetailViewPanel>
+        <InputColumn>
+          <Input
+            id="AuditTypeReadOnly"
+            label="displaykey.Web.PolicyFile.Audits.AuditType"
+            value="selectedType"
+            visible="availableAuditTypes.Count == 1"/>
+          <RangeInput
+            editable="true"
+            id="AuditTypeList"
+            label="displaykey.Web.PolicyFile.Audits.AuditType"
+            value="selectedType"
+            valueRange="availableAuditTypes"
+            visible="availableAuditTypes.Count &gt; 1"/>
+          <DateInput
+            editable="selectedType == &quot;PremiumReport&quot;"
+            id="AuditStartDate"
+            label="displaykey.Web.PolicyFile.Audits.AuditPeriodStartDate"
+            value="auditStartDate"/>
+          <DateInput
+            editable="selectedType == &quot;PremiumReport&quot;"
+            id="AuditEndDate"
+            label="displaykey.Web.PolicyFile.Audits.AuditPeriodEndDate"
+            value="auditEndDate"/>
+          <DateInput
+            editable="true"
+            id="ProcessStartDate"
+            label="displaykey.Web.PolicyFile.Audits.ProcessStartDate"
+            value="processStartDate"/>
+          <DateInput
+            editable="true"
+            id="DueDate"
+            label="displaykey.Web.PolicyFile.Audits.DueDate"
+            value="dueDate"/>
+          <TypeKeyInput
+            editable="true"
+            id="AuditMethodList"
+            label="displaykey.Web.PolicyFile.Audits.AuditMethod"
+            required="true"
+            value="selectedMethod"/>
+        </InputColumn>
+      </DetailViewPanel>
+    </Screen>
+    <Code><![CDATA[uses java.lang.Exception
+
+function scheduleNewAudit() {
+  try {
+    if (selectedType == "FinalAudit") {
+      policyPeriod.FinalAuditOption = "Yes"
+    }
+    gw.job.audit.AuditScheduler.scheduleNewAudit(policyPeriod,
+                                                 auditStartDate, auditEndDate,
+                                                 processStartDate, dueDate,
+                                                 selectedType, selectedMethod,
+                                                 selectedType == "PremiumReport")
+    CurrentLocation.commit()
+  }
+  catch (e : Exception) {
+    throw new gw.api.util.DisplayableException(e.Message)
+  }
+}]]></Code>
+  </Popup>
+</PCF>

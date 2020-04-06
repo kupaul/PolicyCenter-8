@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    beforeCommit="policyAddlInterest.resetContactAndRoles(duplicateContactsPopupHelper.existingPCContactWithABContactMatch)"
+    canEdit="true"
+    countsAsWork="false"
+    id="NewAdditionalInterestPopup"
+    returnType="AddlInterestDetail"
+    startInEditMode="true"
+    title="displaykey.Web.Contact.NewContact2(entity.PolicyAddlInterest.Type.TypeInfo.DisplayName, interestContainer.OwnerDisplayName)">
+    <!-- brand new contact or new contact from AB search -->
+    <LocationEntryPoint
+      signature="NewAdditionalInterestPopup(interestContainer : gw.api.contact.AdditionalInterestContainer, contactType : ContactType)"/>
+    <LocationEntryPoint
+      signature="NewAdditionalInterestPopup(interestContainer : gw.api.contact.AdditionalInterestContainer, acctContact: AccountContact)"/>
+    <Variable
+      name="interestContainer"
+      type="gw.api.contact.AdditionalInterestContainer"/>
+    <Variable
+      name="contactType"
+      type="ContactType"/>
+    <Variable
+      name="acctContact"
+      type="AccountContact"/>
+    <Variable
+      initialValue="acctContact == null ? interestContainer.createAndAddAdditionalInterestDetail(contactType).PolicyAddlInterest : interestContainer.addAdditionalInterestDetail(acctContact.Contact).PolicyAddlInterest"
+      name="policyAddlInterest"/>
+    <Variable
+      initialValue="policyAddlInterest.AdditionalInterestDetails.first()"
+      name="addlInterestDetail"/>
+    <Variable
+      initialValue="interestContainer.AdditionalInterestCandidates.NewAccountContacts.map(\pd -&gt; pd.Contact)"
+      name="existingContacts"
+      type="Contact[]"/>
+    <Variable
+      initialValue="new gw.pcf.duplicatecontacts.DuplicateContactsPopupHelper(policyAddlInterest.AccountContactRole.AccountContact.Contact, existingContacts)"
+      name="duplicateContactsPopupHelper"/>
+    <Screen
+      editable="true"
+      id="ContactDetailScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.checkForDuplicatesOrUpdate(\ -&gt; CurrentLocation.pickValueAndCommit(addlInterestDetail))"
+          id="ForceDupCheckUpdate"
+          label="displaykey.Button.OK"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+        <EditButtons
+          pickValue="addlInterestDetail"
+          updateVisible="not duplicateContactsPopupHelper.ShowButton"/>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.push()"
+          id="CheckForDuplicates"
+          label="displaykey.Web.Contact.CheckForDuplicates"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+      </Toolbar>
+      <DetailViewPanel
+        id="AdditionalInterestInfoDV">
+        <InputColumn>
+          <TypeKeyInput
+            editable="true"
+            id="Type"
+            label="displaykey.Web.Policy.AdditionalInterest.Type"
+            required="true"
+            value="addlInterestDetail.AdditionalInterestType"/>
+          <BooleanRadioInput
+            editable="true"
+            id="CertRequired"
+            label="displaykey.Web.Policy.AdditionalInterest.CertificateRequired"
+            value="addlInterestDetail.CertRequired"/>
+          <Input
+            editable="true"
+            id="ContractNumber"
+            label="displaykey.Web.Policy.AdditionalInterest.ContractNumber"
+            value="addlInterestDetail.ContractNumber"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef
+        def="NewPolicyContactRoleDetailsCV(policyAddlInterest, false)"/>
+    </Screen>
+  </Popup>
+</PCF>

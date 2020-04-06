@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Popup
+    canEdit="true"
+    id="LoadIntegrityChecksCompoundLVPopup"
+    startInEditMode="true"
+    title="displaykey.Web.LoadIntegrityChecksCompoundLV.LoadIntegrityChecksCompoundLV">
+    <LocationEntryPoint
+      signature="LoadIntegrityChecksCompoundLVPopup (LoadIntegrityChecks : gw.api.tools.LoadIntegrityChecksHelper, AllowNonAdminRef : Boolean, Check : database.WebLoaderSQLIntegrityCheck)"/>
+    <Variable
+      name="LoadIntegrityChecks"
+      type="gw.api.tools.LoadIntegrityChecksHelper"/>
+    <Variable
+      name="AllowNonAdminRef"
+      type="Boolean"/>
+    <Variable
+      name="Check"
+      type="database.WebLoaderSQLIntegrityCheck"/>
+    <Variable
+      name="SQLCheck"
+      type="database.WebSQLIntegrityCheck"/>
+    <Variable
+      initialValue="Check.CompoundIntegrityCheck.SelectBody.length() &gt; 60"
+      name="collapseQuery"
+      type="boolean"/>
+    <Screen
+      id="loadintegritycheckscompoundlvScreen">
+      <Toolbar/>
+      <ListViewPanel
+        editable="true"
+        id="LoadIntegrityChecksCompoundStagingTableLV">
+        <Row
+          renderAsSmartHeader="true">
+          <Cell
+            id="s"
+            value="displaykey.Web.InternalTools.InfoPages.LoadIntegrityChecks.StagingTable"/>
+          <Cell
+            id="a"
+            value="displaykey.Web.InternalTools.InfoPages.LoadIntegrityChecks.AllowReferencesToNonAdminRows"/>
+        </Row>
+        <Row>
+          <Cell
+            id="stagingnamecell"
+            value="Check.StagingTable.Name"/>
+          <Cell
+            id="allowadmin"
+            value="AllowNonAdminRef ? true : false"/>
+        </Row>
+      </ListViewPanel>
+      <ListViewPanel
+        id="LoadIntegrityChecksCompoundLV">
+        <Row
+          renderAsSmartHeader="true">
+          <Cell
+            id="t"
+            value="displaykey.Web.InternalTools.InfoPages.LoadIntegrityChecks.LoadErrorType"/>
+          <Cell
+            id="d"
+            value="displaykey.Web.InternalTools.InfoPages.LoadIntegrityChecks.Description"/>
+          <Cell
+            id="c"
+            value="displaykey.Web.InternalTools.InfoPages.LoadIntegrityChecks.CompoundQuery"/>
+        </Row>
+        <Row>
+          <Cell
+            id="errortype"
+            value="Check.LoadErrorType"/>
+          <Cell
+            id="description"
+            value="Check.Description"
+            width="400"
+            wrap="true"/>
+          <Cell
+            id="query"
+            value="collapseQuery ? Check.CompoundIntegrityCheck.SelectBody.substring(0,60) : Check.CompoundIntegrityCheck.SelectBody"
+            width="600"
+            wrap="true"/>
+          <Cell
+            action="collapseQuery = !collapseQuery"
+            enableSort="false"
+            id="expand"
+            value="collapseQuery ? &quot;+&quot; : &quot;-&quot;"
+            valueVisible="Check.CompoundIntegrityCheck.SelectBody.length() &gt; 60"
+            width="25"/>
+        </Row>
+      </ListViewPanel>
+      <ListViewPanel
+        id="LoadIntegrityChecksSimpleQueriesLV">
+        <RowIterator
+          editable="false"
+          elementName="SQLCheck"
+          value="Check.SimpleIntegrityChecks">
+          <Row>
+            <Cell
+              enableSort="false"
+              id="simplequery"
+              label="displaykey.Web.InternalTools.InfoPages.LoadIntegrityChecks.SimpleQuery"
+              value="SQLCheck.SelectBody"
+              width="1000"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </Screen>
+  </Popup>
+</PCF>

@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Configure Account Numbers for Multicurrency Accounts in BillingCenter</title>
+    <link rel="StyleSheet" href="css/multicurrency-bc-pc.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-pc-suite.html#1141088">Billing, Claim, and Contact Integrations</a> : <a class="WebWorks_Breadcrumb_Link" href="multicurrency-bc-pc.34.1.html#1141088">Multicurrency Integration between BillingCenter and PolicyCenter</a> : Configure Account Numbers for Multicurrency Accounts in BillingCenter</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1141088">Configure Account Numbers for Multicurrency Accounts in BillingCenter</a></h3>
+      <div class="B_-_Body"><a name="1141240">In PolicyCenter, for an account with policies in more than one currency, only a single account number is visible. However, in BillingCenter there is a set of affiliated accounts corresponding to each currency used by the original PolicyCenter account. BillingCenter does not generate special account numbers for affiliated accounts. In the base configuration, BillingCenter gives each account a unique and unrelated number, regardless of whether the account is an affiliated currency account or not.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1146036">Affiliated Account Numbers and Billing Communication</a></h4>
+      <div class="B_-_Body"><a name="1143302">The insured can receive invoices or other correspondence that references the account number for an affiliated currency specific BillingCenter account. You can configure BillingCenter to assign an account number to affiliated accounts that relates in an obvious way to the original account number.</a></div>
+      <div class="B_-_Body"><a name="1143428">For example, a policyholder with policies in multiple currencies calls to inquire about an invoice that references an affiliated account number. It will help the billing clerk if the account number for that affiliated account is clearly related to the original account number.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1143429">Assign Account Numbers to Affiliated Multicurrency Accounts</a></h4>
+      <div class="B_-_Body"><a name="1143437">When BillingCenter creates an affiliated currency account you can replace the automatically generated account number. Create a custom account number that include the principal account number visible in PolicyCenter. Then assign this custom account number to the affiliated account.</a></div>
+      <div class="B_-_Body"><a name="1144079">BillingCenter creates affiliated accounts in the </a><span class="cv_-_computer_voice">createAccountForCurrency</span> method in the Billing web service API. You can configure this method to create a specific and meaningful account number for affiliated accounts. Use the <span class="cv_-_computer_voice">parentAccount</span> parameter in the <span class="cv_-_computer_voice">createAccountForCurrency</span> method to access the principal account number.</div>
+      <div class="B_-_Body"><a name="1144306">For example, to assign a similar account number to BillingCenter affiliated accounts, you can take the principal account number and append the currency of the affiliated account. Make this change in the </a><span class="cv_-_computer_voice">createAccountForCurrency</span> method. After the affiliated account is created, you can insert code similar to the following:</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1146391">account.AccountNumber = parentAccount.AccountNumber + “.” + currency.DisplayName</a></PRE>
+      <div class="B_-_Body"><a name="1082336">&nbsp;</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

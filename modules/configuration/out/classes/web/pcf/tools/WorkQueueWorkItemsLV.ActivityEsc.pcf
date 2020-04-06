@@ -1,0 +1,96 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    id="WorkQueueWorkItemsLV"
+    mode="ActivityEsc">
+    <ExposeIterator
+      flags="CanCheckin"
+      name="WorkQueueWorkItemsLV"
+      valueType="entity.WorkItem"
+      widget="WorkQueueWorkItemsLV"/>
+    <Require
+      name="Helper"
+      type="gw.api.web.tools.WorkQueueInfoPage"/>
+    <Require
+      name="Queue"
+      type="gw.api.web.tools.WorkQueueDisplayInfo"/>
+    <RowIterator
+      checkBoxVisible="item.Status != &quot;available&quot;"
+      editable="false"
+      elementName="item"
+      hasCheckBoxes="true"
+      id="WorkItems"
+      value="Helper.getWorkItems( Queue ) as StandardWorkItemQuery">
+      <Variable
+        initialValue="gw.api.database.Query.make(entity.Activity).compare(&quot;Id&quot;, Equals, item.Target).select().single() // Activity(item.Target)"
+        name="actv"
+        type="Activity"/>
+      <ToolbarFilter
+        name="Filter">
+        <ToolbarFilterOption
+          filter="new gw.api.web.tools.WorkQueueInfoPage.AllProblems()"/>
+        <ToolbarFilterOption
+          filter="new gw.api.web.tools.WorkQueueInfoPage.AllFailures()"
+          selectOnEnter="true"/>
+        <ToolbarFilterOption
+          filter="new gw.api.web.tools.WorkQueueInfoPage.AllErrors()"/>
+        <ToolbarFilterOption
+          filter="new gw.api.web.tools.WorkQueueInfoPage.AllActive()"/>
+      </ToolbarFilter>
+      <ToolbarFlag
+        condition="item.Status == &quot;checkedout&quot; || item.Status == &quot;failed&quot;"
+        name="CanCheckin"/>
+      <Row
+        id="WorkItem">
+        <Cell
+          id="ItemId"
+          label="displaykey.Web.WorkItem.Id"
+          value="item.ID"
+          visible="KeyableBean.Type.isAssignableFrom(Queue.WorkItemType)"/>
+        <DateCell
+          dateFormat="short"
+          id="createdTime"
+          label="displaykey.Web.WorkItem.CreateTime"
+          timeFormat="medium"
+          value="item.CreationTime"/>
+        <DateCell
+          dateFormat="short"
+          id="updateTime"
+          label="displaykey.Web.WorkItem.UpdateTime"
+          timeFormat="medium"
+          value="item.LastUpdateTime"/>
+        <DateCell
+          dateFormat="short"
+          enableSort="false"
+          id="availableAt"
+          label="displaykey.Web.WorkItem.AvailableAt"
+          timeFormat="medium"
+          value="item.AvailableSinceAsDate"/>
+        <Cell
+          id="checkedOutBy"
+          label="displaykey.Web.WorkItem.CheckedOutBy"
+          value="item.CheckedOutBy"/>
+        <Cell
+          id="writerId"
+          label="displaykey.Web.WorkItem.InstanceId"
+          value="item.ProcessHistoryID"/>
+        <Cell
+          id="retries"
+          label="displaykey.Web.WorkItem.Attempts"
+          value="item.Attempts"/>
+        <Cell
+          enableSort="false"
+          id="activityId"
+          label="displaykey.Web.ActivityEscWorkItem.Id"
+          value="actv.ID"/>
+        <Cell
+          enableSort="false"
+          id="activitySubject"
+          label="displaykey.Web.ActivityEscWorkItem.Subject"
+          value="actv.Subject"/>
+      </Row>
+    </RowIterator>
+  </ListViewPanel>
+</PCF>

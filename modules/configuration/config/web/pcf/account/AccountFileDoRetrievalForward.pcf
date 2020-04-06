@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Forward
+    id="AccountFileDoRetrievalForward"
+    parent="AccountForward()">
+    <LocationEntryPoint
+      signature="AccountFileDoRetrievalForward(accountNumber : String)"/>
+    <!-- Parameters -->
+    <Variable
+      name="accountNumber"
+      type="String"/>
+    <!-- Use Local variables, otherwise the account could be retrieved multiple times! -->
+    <Variable
+      initialValue="accountNumber == null ? null : Account.finder.findAccountByAccountNumber(accountNumber)"
+      name="retrievedAccount"
+      type="Account"/>
+    <Variable
+      initialValue="checkForError()"
+      name="error"
+      type="String"/>
+    <ForwardCondition
+      action="pcf.AccountSearch.go(error)"
+      condition="error &lt;&gt; null"/>
+    <ForwardCondition
+      action="AccountFileForward.go(retrievedAccount)"
+      condition="retrievedAccount != null and User.util.CurrentUser.canView( retrievedAccount )"/>
+    <Code><![CDATA[function checkForError() : String{
+  if (accountNumber == null)
+    return displaykey.Web.Errors.MissingUrlParameter("AccountNumber")
+  if (retrievedAccount == null)
+    return displaykey.Web.Errors.InvalidUrlParameter("AccountNumber", accountNumber)
+  if (not User.util.CurrentUser.canView( retrievedAccount ))
+     return displaykey.Java.Error.Permission.View("account")
+  return null
+}]]></Code>
+  </Forward>
+</PCF>

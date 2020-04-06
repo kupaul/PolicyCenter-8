@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../../pcf.xsd">
+  <DetailViewPanel
+    editable="openForEdit"
+    id="IMARPartLevelInformationDV">
+    <Require
+      name="accountsRecPart"
+      type="IMAccountsRecPart"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="accountsRecPart.InlandMarineLine.Pattern.getCoverageCategory(&quot;IMARPartCategory&quot;)"
+      name="accountsRecPartCategory"/>
+    <Variable
+      initialValue="accountsRecPart == null ? null : accountsRecPartCategory.coveragePatternsForEntity(IMAccountsRecPart).whereSelectedOrAvailable(accountsRecPart, openForEdit)"
+      name="accountsRecPartCategoryCoveragePatterns"
+      recalculateOnRefresh="true"/>
+    <InputColumn>
+      <Input
+        editable="true"
+        id="reporting"
+        label="displaykey.Web.Policy.IM.AccountsReceivable.Reporting"
+        value="accountsRecPart.Reporting"/>
+      <TypeKeyInput
+        editable="true"
+        id="businessClass"
+        label="displaykey.Web.Policy.IM.AccountsReceivable.BusinesClass"
+        required="true"
+        value="accountsRecPart.BusinessClass"/>
+      <TypeKeyInput
+        editable="true"
+        id="coinsurance"
+        label="displaykey.Web.Policy.IM.AccountsReceivable.Coinsurance"
+        required="true"
+        value="accountsRecPart.Coinsurance"/>
+    </InputColumn>
+    <InputColumn>
+      <InputIterator
+        elementName="coveragePattern"
+        forceRefreshDespiteChangedEntries="true"
+        id="partLevelCovs"
+        value="accountsRecPartCategoryCoveragePatterns">
+        <IteratorSort
+          sortBy="coveragePattern.Priority"
+          sortOrder="1"/>
+        <InputSetRef
+          def="CoverageInputSet(coveragePattern, accountsRecPart, openForEdit)"
+          mode="coveragePattern.Code"/>
+      </InputIterator>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

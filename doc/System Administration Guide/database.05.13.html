@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Purging Old Workflows and Workflow Logs</title>
+    <link rel="StyleSheet" href="css/database.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter System Administration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="database.05.01.html#1282023">Configuring and Maintaining the PolicyCenter Database</a> : Purging Old Workflows and Workflow Logs</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1282023">Purging Old Workflows and Workflow Logs</a></h3>
+      <div class="B_-_Body"><a name="1271992">Each time PolicyCenter creates an activity, the activity is added to the </a><span class="cv_-_computer_voice">pc_Workflow</span>, <span class="cv_-_computer_voice">pc_WorkflowLog</span> and <span class="cv_-_computer_voice">pc_WorkflowWorkItem</span> tables. Once a user completes the activity, PolicyCenter sets the workflow status to completed. The <span class="cv_-_computer_voice">pc_Workflow</span>, <span class="cv_-_computer_voice">pc_WorkflowLog</span> and <span class="cv_-_computer_voice">pc_WorkflowWorkItem</span> table entry for the activity are never used again. These tables grow in size over time and can adversely affect performance as well as waste disk space. Excessive records in these tables also negatively impacts the performance of the database upgrade.</div>
+      <div class="B_-_Body"><a name="1264915">Remove workflows, workflow log entries, and workflow items for completed activities to improve database upgrade and operational performance and to recover disk space. </a></div>
+      <div class="B_-_Body"><a name="1264919">PolicyCenter includes work queues to purge completed workflows and their logs that are older than a configurable number of days. Guidewire recommends that you purge completed workflows and their logs periodically. This reduces performance issues caused by having a large number of unused workflow log records.</a></div>
+      <div class="B_-_Body"><a name="1264920">To set the number of days after which the </a><span class="cv_-_computer_voice">purgeworkflows</span> process purges completed workflows and their logs, set the following parameter in <span class="cv_-_computer_voice">config.xml</span>:</div>
+      <div class="CS_-_Code_Single_Line"><a name="1264921">&lt;param name=“WorkflowPurgeDaysOld” value=“</a><span class="pc_-_parameter_in_code">value</span>” /&gt;</div>
+      <div class="B_-_Body"><a name="1264922">Set the value to an integer. By default, </a><span class="cv_-_computer_voice">WorkflowPurgeDaysOld</span> is set to <span class="cv_-_computer_voice">60</span>. This is the number of days since the last update to the workflow, which is the completed date.</div>
+      <div class="B_-_Body"><a name="1264926">You can launch the Purge Workflows batch process from the </a><span class="cv_-_computer_voice">PolicyCenter/admin/bin</span> directory with the following command:</div>
+      <div class="CS_-_Code_Single_Line"><a name="1264927">maintenance_tools -password </a><span class="pc_-_parameter_in_code">password</span> -startprocess PurgeWorkflows</div>
+      <div class="B_-_Body"><a name="1264928">You can also purge only the logs associated with completed workflows older than a certain number of days. Run the </a><span class="cv_-_computer_voice">purgeworkflowlogs</span> process instead. This process leaves the workflow records and removes only the workflow log records. The <span class="cv_-_computer_voice">purgeworkflowlogs</span> process is configured using the <span class="cv_-_computer_voice">WorkflowLogPurgeDaysOld </span>parameter rather than <span class="cv_-_computer_voice">WorkflowPurgeDaysOld</span>.</div>
+      <div class="B_-_Body"><a name="1264932">You can launch the Purge Workflow Logs batch process from the </a><span class="cv_-_computer_voice">PolicyCenter/admin/bin</span> directory with the following command:</div>
+      <div class="CS_-_Code_Single_Line"><a name="1264933">maintenance_tools -password </a><span class="pc_-_parameter_in_code">password</span> -startprocess PurgeWorkflowLogs</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

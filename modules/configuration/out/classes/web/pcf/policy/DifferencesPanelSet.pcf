@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <PanelSet
+    id="DifferencesPanelSet">
+    <Require
+      name="reason"
+      type="DiffReason"/>
+    <Require
+      name="basedOnPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="currentPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="rootNode"
+      type="gw.api.tree.RowTreeRootNode"/>
+    <Require
+      name="diffTreeConfig"
+      type="String"/>
+    <Verbatim
+      id="noDifferenceLabel"
+      label="displaykey.Web.DifferencesPanelSet.NoDifference"
+      visible="rootNode != null and rootNode.NumChildren == 0"/>
+    <DetailViewPanel
+      id="archivedPeriodMsgDV"
+      visible="rootNode == null">
+      <InputColumn>
+        <Label
+          id="noBasedOnPeriodMsg"
+          label="displaykey.Web.DifferencesPanelSet.CannotCalculate (basedOnPeriod.PeriodStart.format(&quot;short&quot;), basedOnPeriod.PeriodEnd.format(&quot;short&quot;))"/>
+        <ContentInput
+          boldValue="true"
+          labelAbove="true">
+          <Link
+            action="PolicyFileForward.go(basedOnPeriod.PolicyNumber, basedOnPeriod.PeriodStart)"
+            id="goToRestorePage"
+            label="displaykey.Web.DifferencesPanelSet.GoToRestoreOptions"/>
+        </ContentInput>
+      </InputColumn>
+    </DetailViewPanel>
+    <PanelRef
+      def="DiffTreePanelSet(getPeriodName(reason, basedOnPeriod, true), getPeriodName(reason, currentPeriod, false), rootNode)"
+      visible="rootNode != null and diffTreeConfig != null"/>
+    <Code><![CDATA[function getPeriodName(diffReason : DiffReason, period : PolicyPeriod, isBasedOn : boolean) : String {
+  if ((reason =="PolicyReview" and !isBasedOn) or reason == "CompareJobs" ) {
+    return displaykey.Web.Differences.LOB.Common.DiffTreeCurrentValueHeader(period.Job.DisplayType, period.Job.JobNumber)
+  } else if (reason == "PolicyReview" and isBasedOn) {
+    return displaykey.Web.Differences.LOB.Common.DiffTreeBasedOnValueHeader
+  }
+  return period.BranchName
+}]]></Code>
+  </PanelSet>
+</PCF>

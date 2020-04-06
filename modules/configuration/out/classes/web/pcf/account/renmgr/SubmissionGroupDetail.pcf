@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    canEdit="false"
+    canVisit="perm.Account.viewSubmissionGroup(submissionGroup.Account)"
+    id="SubmissionGroupDetail"
+    parent="UnderwritingFiles(submissionGroup.Account)"
+    showUpLink="true"
+    title="displaykey.Web.SubmissionGroup.Title(submissionGroup.Name)">
+    <LocationEntryPoint
+      signature="SubmissionGroupDetail(submissionGroup : SubmissionGroup)"/>
+    <Variable
+      name="submissionGroup"
+      type="SubmissionGroup"/>
+    <Screen
+      id="SubmissionGroupDetailScreen">
+      <DetailViewPanel>
+        <InputColumn>
+          <Label
+            label="displaykey.Web.SubmissionGroup.Info"/>
+          <Input
+            id="Name"
+            label="displaykey.Web.SubmissionGroup"
+            value="submissionGroup.Name"/>
+          <Input
+            id="NumJobs"
+            label="displaykey.Web.SubmissionGroup.NumSubmissions"
+            value="submissionGroup.Submissions.length"/>
+          <MonetaryAmountInput
+            formatType="currency"
+            id="TotalCost"
+            label="displaykey.Web.SubmissionGroup.TotalCost"
+            value="submissionGroup.AmountSum"/>
+          <Input
+            formatType="general"
+            id="FirstEffDate"
+            label="displaykey.Web.SubmissionGroup.FirstEffDate"
+            value="submissionGroup.Jobs.minBy( \ j -&gt; j.LatestPeriod.EditEffectiveDate ).LatestPeriod.EditEffectiveDate"/>
+          <Input
+            id="LastExpDate"
+            label="displaykey.Web.SubmissionGroup.LastExpDate"
+            value="submissionGroup.Jobs.maxBy( \ j -&gt; j.LatestPeriod.PeriodEnd ).LatestPeriod.PeriodEnd"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <CardViewPanel>
+        <Card
+          id="SubmissionsCard"
+          title="displaykey.Web.SubmissionGroup.Submissions">
+          <PanelRef
+            def="SubmissionGroupJobsLV(submissionGroup)">
+            <Toolbar/>
+          </PanelRef>
+        </Card>
+        <Card
+          id="RiskAnalysisCard"
+          title="displaykey.Web.RenewalGroup.RiskAnalysis">
+          <PanelRef
+            def="JobGroupRiskAnalysisLV( submissionGroup )">
+            <Toolbar/>
+          </PanelRef>
+        </Card>
+        <Card
+          id="ActivitiesCard"
+          title="displaykey.Web.RenewalGroup.Activities">
+          <PanelRef
+            def="DesktopActivitiesLV( Activity.finder.findActivitiesByJobGroup( submissionGroup ) as ActivityQuery )">
+            <Toolbar/>
+          </PanelRef>
+        </Card>
+      </CardViewPanel>
+    </Screen>
+  </Page>
+</PCF>

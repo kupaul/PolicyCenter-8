@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" abstract="true" desc="Workflow process object relating to one or more versions of a policy" entity="Job" exportable="true" extendable="true" final="false" loadable="false" platform="false" subpackage="job" table="job" type="retireable">
+  <implementsInterface iface="gw.api.job.JobMethods" impl="gw.api.job.JobMethodsDefaultImpl"/>
+  <implementsInterface iface="gw.api.history.CustomHistory" impl="gw.api.history.JobCustomHistoryImpl"/>
+  <implementsEntity name="Extractable"/>
+  <implementsEntity adapter="com.guidewire.pc.domain.purge.JobInfoAdapter" name="RootInfo"/>
+  <column createhistogram="true" desc="Date and time when this job was closed." exportable="false" name="CloseDate" nullok="true" type="datetime"/>
+  <column desc="Extended description of this job which may include the reason this job was started." name="Description" nullok="true" type="mediumtext"/>
+  <column desc="The unique identifier for this job." name="JobNumber" nullok="false" setterScriptability="all" soapnullok="true" type="varchar">
+    <columnParam name="size" value="60"/>
+  </column>
+  <column desc="The date to next evaluate this Job for purging. If null, purging should be checked at the next opportunity" name="NextPurgeCheckDate" nullok="true" type="dateonly"/>
+  <typekey default="Unknown" desc="Purge status of the job." getterScriptability="all" name="PurgeStatus" nullok="false" setterScriptability="hidden" typelist="PurgeStatus"/>
+    <!-- denormalized fields -->
+  <column desc="The display name of the primary names insured (denormalization)." name="PrimaryInsuredName" nullok="true" setterScriptability="all" supportsLinguisticSearch="true" type="shorttext"/>
+  <column default="false" desc="True if Side By Side Quoting has been set up for this job." name="SideBySide" nullok="false" type="bit"/>
+  <foreignkey columnName="PolicyID" desc="The Policy this Job applies to." fkentity="Policy" name="Policy" nullok="false" setterScriptability="hidden"/>
+  <foreignkey desc="The group to which this job belongs." fkentity="JobGroup" name="JobGroup" nullok="true" setterScriptability="doesNotExist"/>
+  <edgeForeignKey desc="The selected branch attached to this job. For a single-quote job this will be the only branch, while for a multi-quote job this will be one of the branches that is selected (either explicitly by a user or implicitly by the job behavior)." edgeTableName="jobpolicyperiod" fkentity="PolicyPeriod" name="SelectedVersion" nullok="true"/>
+  <array arrayentity="JobUserRoleAssignment" cascadeDelete="true" desc="Role Assignments for this job." exportable="false" name="RoleAssignments" setterScriptability="all"/>
+  <array arrayentity="PolicyPeriod" arrayfield="Job" desc="Set of PolicyPeriods associated with this job." name="Periods" setterScriptability="all"/>
+  <array arrayentity="Note" cascadeDelete="true" desc="Notes associated with this Job." name="Notes"/>
+  <dbcheckbuilder className="com.guidewire.pc.domain.job.dbchecks.JobDBCheckBuilder"/>
+  <events>
+   <event
+    name="JobPurged"
+    description="Event fired when a job has been purged."/>
+   </events>
+  <index desc="Ensures the uniqueness of job numbers.  Also used for looking up jobs by number." name="jobu1" unique="true">
+    <indexcol keyposition="1" name="JobNumber"/>
+    <indexcol keyposition="2" name="Retired"/>
+  </index>
+  <index desc="Job ID look-up performance index.  This supports look-up from UserRoleAssignment results with restrictions on CloseDate and Subtype." expectedtobecovering="true" name="JobIDCloseDate" unique="true">
+    <indexcol keyposition="1" name="ID"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="CloseDate"/>
+    <indexcol keyposition="4" name="Subtype"/>
+    <indexcol keyposition="5" name="CreateTime"/>
+  </index>
+  <index desc="Perf index to find jobs by createtime and subtype." expectedtobecovering="true" name="jobperf3" unique="true">
+    <indexcol keyposition="4" name="ID"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="Subtype"/>
+    <indexcol keyposition="1" name="CreateTime"/>
+  </index>
+</entity>

@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ListViewPanel
+    id="PolicyHoldRuleLV">
+    <ExposeIterator
+      valueType="entity.PolicyHoldRule"
+      widget="PolicyHoldRuleLV"/>
+    <Require
+      name="policyHold"
+      type="PolicyHold"/>
+    <Variable
+      initialValue="gw.api.productmodel.PolicyLinePatternLookup.All.toTypedArray()"
+      name="linePatterns"/>
+    <RowIterator
+      canPick="false"
+      checkBoxVisible="perm.System.polholdcreate and perm.System.polholdelete"
+      editable="true"
+      elementName="holdRule"
+      hideCheckBoxesIfReadOnly="true"
+      toCreateAndAdd="policyHold.createAndAddRule()"
+      toRemove="policyHold.removeFromRules(holdRule)"
+      value="policyHold.Rules">
+      <Row>
+        <TypeKeyCell
+          editable="true"
+          id="PolicyLine"
+          label="displaykey.Web.Admin.PolicyHold.PolicyLine"
+          value="holdRule.PolicyLineType">
+          <PostOnChange
+            onChange="holdRule.CovPattern = null"/>
+        </TypeKeyCell>
+        <TypeKeyCell
+          editable="true"
+          id="Job"
+          label="displaykey.Web.Admin.PolicyHold.Job"
+          value="holdRule.JobType"/>
+        <TypeKeyCell
+          editable="true"
+          filter="filterJobDateTypeByPolicyHoldType(VALUE)"
+          id="JobDateType"
+          label="displaykey.Web.Admin.PolicyHold.JobDateType"
+          value="holdRule.JobDateType"/>
+        <PickerCell
+          available="holdRule.PolicyLineType != null"
+          editable="true"
+          freeInputEnabled="false"
+          id="Coverage"
+          label="displaykey.Web.Admin.PolicyHold.Coverage"
+          pickLocation="CovPatternSearchPopup.push(holdRule.PolicyLineType, holdRule.getMatchingLinePattern(linePatterns))"
+          value="holdRule.CovPattern"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function filterJobDateTypeByPolicyHoldType(VALUE : typekey.JobDateType) : boolean {
+  if (policyHold.HoldType != null) {
+    return VALUE.hasCategory(policyHold.HoldType)
+  } else {
+    return false
+  }
+}]]></Code>
+  </ListViewPanel>
+</PCF>

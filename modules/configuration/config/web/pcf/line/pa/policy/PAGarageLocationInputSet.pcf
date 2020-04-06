@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <InputSet
+    id="PAGarageLocationInputSet">
+    <Require
+      name="vehicle"
+      type="PersonalVehicle"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="Boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="gw.api.web.job.JobWizardHelper"/>
+    <RangeInput
+      editable="true"
+      id="PAGarageLocationInput"
+      label="displaykey.Web.PolicyLine.Vehicle.WhereGaraged"
+      numCols="50"
+      optionLabel="policyPeriod.getPolicyLocationOptionDisplayName(VALUE)"
+      required="true"
+      value="vehicle.AccountLocation"
+      valueRange="policyPeriod.Policy.Account.AccountLocations"
+      valueWidth="180"
+      visible="openForEdit">
+      <PickerMenuItem
+        action="LocationPopup.push(null, null, policyPeriod, openForEdit, true, policyPeriod.PersonalAutoLine.SupportsNonSpecificLocations)"
+        id="NewGarageLocation"
+        label="displaykey.Web.Policy.LocationContainer.Location.New"
+        onPick="vehicle.GarageLocation = PickedValue; gw.lob.pa.PAWizardStepHelper.onGarageLocationChange({policyPeriod.PersonalAutoLine, vehicle}, policyPeriod, jobWizardHelper) "/>
+      <PickerMenuItem
+        action="LocationPopup.push(null, vehicle.GarageLocation, policyPeriod, openForEdit, true, policyPeriod.PersonalAutoLine.SupportsNonSpecificLocations)"
+        id="EditGarageLocation"
+        label="displaykey.Web.Policy.LocationContainer.Location.EditLocation"
+        onPick="vehicle.GarageLocation = PickedValue; gw.lob.pa.PAWizardStepHelper.onGarageLocationChange(findModifiablesToSyncOnEdit(), policyPeriod, jobWizardHelper)"
+        visible="vehicle.GarageLocation != null"/>
+      <PostOnChange
+        onChange="gw.lob.pa.PAWizardStepHelper.onGarageLocationChange({vehicle}, policyPeriod, jobWizardHelper)"/>
+    </RangeInput>
+    <TextInput
+      id="PAGarageLocationReadonly"
+      label="displaykey.Web.PolicyLine.Vehicle.WhereGaraged"
+      numCols="50"
+      value="vehicle.GarageLocation.LocationNum + &quot;: &quot; + vehicle.GarageLocation.CompactName"
+      visible="not openForEdit"/>
+    <Code><![CDATA[function findModifiablesToSyncOnEdit() : Modifiable[] {
+  var modifiables = new java.util.ArrayList<Modifiable>()
+  modifiables.add(policyPeriod.PersonalAutoLine)
+  modifiables.addAll(policyPeriod.PersonalAutoLine.Vehicles.where(\v -> v.GarageLocation == vehicle.GarageLocation).toList())
+  return modifiables.toTypedArray()
+}]]></Code>
+  </InputSet>
+</PCF>

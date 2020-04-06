@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    canVisit="perm.Account.view(account) and perm.System.accountclaims"
+    id="AccountFile_Claims"
+    title="displaykey.Web.AccountFile.Claims.Title">
+    <LocationEntryPoint
+      signature="AccountFile_Claims(account : Account)"/>
+    <Variable
+      name="account"
+      type="Account"/>
+    <Screen
+      id="AccountFile_ClaimScreen">
+      <SearchPanel
+        criteriaName="claimSearchCriteria"
+        resultsName="claimSet"
+        search="claimSearchCriteria.performSearch()"
+        searchCriteria="account.getNewClaimSearchCriteria()"
+        searchOnEnter="false"
+        searchResultsType="ClaimSet">
+        <DetailViewPanel>
+          <InputColumn>
+            <DateCriterionChoiceInput
+              editable="true"
+              id="DateRangeForClaimSearch"
+              label="displaykey.Web.AccountFile.Claims.ClaimSearch.Date"
+              required="false"
+              value="claimSearchCriteria.DateCriteria"/>
+          </InputColumn>
+          <InputFooterSection>
+            <InputSetRef
+              def="SearchAndResetInputSet()"/>
+          </InputFooterSection>
+        </DetailViewPanel>
+        <ListDetailPanel
+          lockWhileEditing="true"
+          selectionName="selectedClaim"
+          selectionType="Claim">
+          <PanelRef
+            def="AccountClaimsLV(claimSet.Claims,                                  claimSet==null ? new gw.losshistory.ClaimPolicyPeriodFilterSet(null) : claimSet.retrieveClaimFilter(),                                  account)">
+            <Toolbar/>
+          </PanelRef>
+          <PanelRef
+            def="ClaimDetailsCV(selectedClaim,true)"
+            editable="false"
+            visible="selectedClaim != null"/>
+        </ListDetailPanel>
+      </SearchPanel>
+    </Screen>
+  </Page>
+</PCF>

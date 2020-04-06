@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Screen
+    id="ImpactTestingChoosePoliciesScreen">
+    <Require
+      name="testCase"
+      type="ImpactTestingTestCase"/>
+    <Variable
+      name="jurisdictionToAdd"
+      recalculateOnRefresh="true"
+      type="Jurisdiction"/>
+    <Variable
+      initialValue="{}"
+      name="jurisdictions"
+      type="Jurisdiction[]"/>
+    <Variable
+      name="producerCodeToAdd"
+      recalculateOnRefresh="true"
+      type="ProducerCode"/>
+    <Variable
+      initialValue="{}"
+      name="producerCodes"
+      type="ProducerCode[]"/>
+    <Variable
+      name="postalCodes"
+      type="String"/>
+    <Variable
+      name="productToAdd"
+      recalculateOnRefresh="true"
+      type="gw.api.productmodel.Product"/>
+    <Variable
+      initialValue="{}"
+      name="products"
+      type="gw.api.productmodel.Product[]"/>
+    <Variable
+      name="policyPeriodsResult"
+      type="PolicyPeriodQuery"/>
+    <Variable
+      initialValue="{new gw.api.database.EmptyQuery&lt;PolicyPeriod&gt;(PolicyPeriod).select()}"
+      name="resultContainer"
+      type="java.util.List&lt;gw.api.database.IQueryBeanResult&lt;PolicyPeriod&gt;&gt;"/>
+    <Variable
+      initialValue="new gw.rating.impact.ImpactTestingSearchCriteria(resultContainer)"
+      name="searchCriteria"/>
+    <Toolbar>
+      <ToolbarButton
+        action="postClickNextWithSearchResults()"
+        available="!resultContainer.first().Empty and gw.rating.impact.ImpactBatchUtil.jobBeingProcessed() == null and !searchCriteria.ChangedSinceLastQuery"
+        confirmMessage="return testCase.Periods.HasElements ? displaykey.Web.Rating.ImpactTesting.Search.WarningToOverrideTestCase : &quot;&quot;"
+        id="ContinueSearchResultsButton"
+        label="displaykey.Web.Rating.ImpactTesting.Search.NextWithSearchResults"
+        tooltip="searchCriteria.ChangedSinceLastQuery ? displaykey.Web.Rating.ImpactTesting.Search.CriteriaOutOfDate : null"/>
+      <ToolbarButton
+        action="(CurrentLocation as pcf.api.Wizard).next()"
+        available="return testCase.Periods != null and testCase.Periods.HasElements"
+        id="ContinueTestCaseButton"
+        label="displaykey.Web.Rating.ImpactTesting.Search.NextWithPreviousTestCase"/>
+    </Toolbar>
+    <AlertBar
+      allowDismiss="false"
+      id="ExportJobRunningMessage"
+      label="displaykey.Web.Rating.ImpactTesting.Search.ExportJobRunning"
+      showConfirmMessage="false"
+      visible="!resultContainer.first().Empty and gw.rating.impact.ImpactBatchUtil.jobBeingProcessed() == BatchProcessType.TC_IMPACTTESTINGEXPORT"/>
+    <SearchPanel
+      cachingEnabled="false"
+      criteriaName="criteria"
+      resultsName="policyPeriodsResult"
+      search="criteria.search()"
+      searchCriteria="resetSearchCriteria()"
+      searchResultsType="PolicyPeriodQuery">
+      <PanelRef
+        def="ImpactTestingSearchPoliciesDV(criteria, productToAdd, jurisdictionToAdd, producerCodeToAdd)"/>
+      <PanelRef
+        def="ImpactTestingSearchPoliciesPanelSet(policyPeriodsResult)"/>
+    </SearchPanel>
+    <Code><![CDATA[uses gw.pcf.rating.impact.ImpactTestingSearchUIHelper
+uses gw.rating.impact.ImpactTestingSearchCriteriaImportExport
+
+function postClickNextWithSearchResults() {
+  ImpactTestingSearchUIHelper.populateTestCasePeriods(testCase, resultContainer[0])
+  testCase.SearchCriteria = new ImpactTestingSearchCriteriaImportExport(searchCriteria).toXML()
+  var prepareHelper = new gw.pcf.rating.impact.ImpactTestingPrepareUIHelper(testCase)
+  prepareHelper.unselectRateBooks(testCase.Ratebooks)
+  (CurrentLocation as pcf.api.Wizard).next()
+}
+
+function resetSearchCriteria() : gw.rating.impact.ImpactTestingSearchCriteria {
+  searchCriteria = new gw.rating.impact.ImpactTestingSearchCriteria(resultContainer)
+  return searchCriteria
+}]]></Code>
+  </Screen>
+</PCF>

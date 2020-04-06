@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <ListViewPanel
+    id="ScheduleCoverageSummaryLV">
+    <Require
+      name="schedules"
+      type="List&lt;gw.api.productmodel.Schedule&gt;"/>
+    <Row
+      renderAsSmartHeader="true">
+      <Cell
+        align="left"
+        id="Description"
+        value="displaykey.Web.PolicyLine.Coverages.Description"/>
+      <Cell
+        align="right"
+        id="Value"
+        value="displaykey.Web.PolicyLine.Coverage.CovTermValue(&quot;&quot;)"/>
+    </Row>
+    <RowIterator
+      editable="false"
+      elementName="schedule"
+      pageSize="0"
+      value="schedules">
+      <IteratorSort
+        sortBy="(schedule as gw.api.domain.Clause).Pattern.CoverageCategory.Priority"
+        sortOrder="1"/>
+      <IteratorSort
+        sortBy="(schedule as gw.api.domain.Clause).Pattern.CoverageCategory.PublicID"
+        sortOrder="2"/>
+      <IteratorSort
+        sortBy="(schedule as gw.api.domain.Clause).Pattern.Priority"
+        sortOrder="3"/>
+      <IteratorSort
+        sortBy="(schedule as gw.api.domain.Clause).Pattern.PublicID"
+        sortOrder="4"/>
+      <Row>
+        <Cell
+          align="left"
+          bold="true"
+          enableSort="false"
+          id="Description"
+          value="schedule.ScheduleName"/>
+        <Cell
+          align="right"
+          enableSort="false"
+          id="Empty"
+          value="empty()"/>
+      </Row>
+      <RowIterator
+        editable="false"
+        elementName="scheduledItem"
+        pageSize="0"
+        value="schedule.ScheduledItems">
+        <IteratorSort
+          sortBy="schedule.getScheduledItemDescription(scheduledItem)"
+          sortOrder="1"/>
+        <Row>
+          <Cell
+            align="left"
+            bold="true"
+            enableSort="false"
+            id="Description"
+            value="padItem(schedule.getScheduledItemDescription(scheduledItem))"/>
+          <Cell
+            align="right"
+            enableSort="false"
+            id="Empty"
+            value="empty()"/>
+        </Row>
+        <RowIterator
+          editable="false"
+          elementName="covTerm"
+          pageSize="0"
+          value="scheduledItem.Clause.CovTerms">
+          <IteratorSort
+            sortBy="covTerm.Pattern.Priority"
+            sortOrder="1"/>
+          <IteratorSort
+            sortBy="covTerm.Pattern.PublicID"
+            sortOrder="2"/>
+          <Row>
+            <Cell
+              align="left"
+              enableSort="false"
+              icon=""
+              id="Description"
+              value="pad(covTerm.DisplayName)"/>
+            <Cell
+              align="right"
+              id="term"
+              value="covTerm.DisplayValue"/>
+          </Row>
+        </RowIterator>
+      </RowIterator>
+    </RowIterator>
+    <Code><![CDATA[function padItem(s: String): String {
+  return "       " + s
+}
+
+function pad(s: String): String {
+  return "            " + s
+}
+
+function empty(): String {
+  return ""
+}]]></Code>
+  </ListViewPanel>
+</PCF>

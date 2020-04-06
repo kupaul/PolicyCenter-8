@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Popup
+    canEdit="false"
+    countsAsWork="false"
+    id="TaxLocationSearchPopup"
+    returnType="TaxLocation"
+    title="displaykey.Web.TaxLocationSearch.PageTitle">
+    <LocationEntryPoint
+      signature="TaxLocationSearchPopup(policyPeriod : PolicyPeriod, state : Jurisdiction)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="state"
+      type="Jurisdiction"/>
+    <Screen
+      editable="true"
+      id="TaxLocationSearchScreen">
+      <SearchPanel
+        clearInvisibleInputs="true"
+        criteriaName="searchCriteria"
+        resultsName="searchResults"
+        search="searchCriteria.performSearch()"
+        searchCriteria="new gw.lob.common.TaxLocationSearchCriteria() { :State = state, :EffectiveOnDate = policyPeriod.PeriodStart }"
+        searchResultsType="TaxLocationQuery">
+        <PanelRef
+          def="TaxLocationSearchDV(searchCriteria)"
+          editable="true"/>
+        <PanelRef
+          def="TaxLocationSearchResultsLV(searchResults?.toTypedArray())">
+          <TitleBar
+            appendListViewPaging="true"
+            title="displaykey.Web.Search.Results"/>
+          <Toolbar/>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+  </Popup>
+</PCF>

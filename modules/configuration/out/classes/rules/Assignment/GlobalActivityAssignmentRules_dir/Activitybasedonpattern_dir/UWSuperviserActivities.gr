@@ -1,0 +1,40 @@
+package rules.Assignment.GlobalActivityAssignmentRules_dir.Activitybasedonpattern_dir
+
+@gw.rules.RuleName("UW Superviser Activities")
+internal class UWSuperviserActivities {
+  static function doCondition(activity : entity.Activity) : boolean {
+    
+/*start00rule*/
+return activity.ActivityPattern == ActivityPattern.finder.getActivityPatternByCode("employee_review") 
+/*end00rule*/
+
+  }
+
+  static function doAction(activity : entity.Activity, actions : gw.rules.Action) {
+
+/*start00rule*/
+if( activity.Job != null ) {
+  // First, check whether there is an underwriter assigned to the Job and create one, if not.
+  if (activity.Job.getUserRoleAssignmentByRole( "Underwriter" )==null) { // No UW assigned
+    activity.Job.autoAssignRole( "Underwriter" )
+  }
+
+  // Second, assign this activity to the Supervisor of the underwriter's group
+  var theGroup = activity.Job.getUserRoleAssignmentByRole( "Underwriter" ).AssignedGroup
+  if (activity.assign( theGroup, theGroup.Supervisor )) {
+    actions.exit()
+  }
+} else {
+  if( activity.Account.getUserRoleAssignmentByRole( "Underwriter" ) == null ) {
+    activity.Account.autoAssignRole( "Underwriter" )
+  }
+  
+  var theGroup = activity.Account.getUserRoleAssignmentByRole( "Underwriter" ).AssignedGroup
+  if( activity.assign( theGroup, theGroup.Supervisor ) ) {
+    actions.exit()
+  }
+}
+/*end00rule*/
+
+  }
+}

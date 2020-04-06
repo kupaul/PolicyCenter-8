@@ -1,0 +1,42 @@
+function  WWHBookData_AddTOCEntries(P)
+{
+var A=P.fN("About PolicyCenter Documentation","1");
+var B=A.fN("Conventions in This Document","1#2121726");
+B=A.fN("Support","1#2121769");
+A=P.fN("Introduction to Product Designer","2");
+B=A.fN("Introduction to the Product Model","3");
+var C=B.fN("Lines of Business in the Base Application","3#2400793");
+B=A.fN("Product Designer Overview","4");
+A=P.fN("Installing Product Designer","5");
+B=A.fN("Running a Single-user Instance of Product Designer","6");
+C=B.fN("Startup Options","6#2433616");
+B=A.fN("Installing a Multi-user Instance of Product Designer","7");
+A=P.fN("Using Product Designer","8");
+B=A.fN("Starting Product Designer","9");
+C=B.fN("Starting Product Designer in a Single-user Configuration","9#1263701");
+C=B.fN("Starting Product Designer in a Multiuser Configuration","9#1263697");
+B=A.fN("Navigating in Product Designer","10");
+C=B.fN("Basic Navigation","10#1205038");
+C=B.fN("User Menu","11");
+C=B.fN("Options Menu","12");
+B=A.fN("User Settings","13");
+C=B.fN("User Settings Page","13#1281327");
+B=A.fN("Working with Change Lists","14");
+C=B.fN("Validating Your Changes","14#1229965");
+C=B.fN("Committing Your Changes","14#1274068");
+B=A.fN("Managing Your Change Lists","15");
+C=B.fN("My Change Lists Page","15#1281207");
+C=B.fN("Change List Home Page","16");
+A=P.fN("Product Designer Administration","17");
+B=A.fN("Managing Workspaces","18");
+C=B.fN("Workspaces Page","18#1249477");
+B=A.fN("Editing a Workspace","19");
+C=B.fN("Workspace Home Page","19#1251084");
+B=A.fN("Managing Users","20");
+C=B.fN("Users Page","20#1213395");
+B=A.fN("Editing a User","21");
+C=B.fN("User Home Page","21#1249568");
+B=A.fN("Managing Change Lists","22");
+C=B.fN("Change Lists Page","22#1249591");
+B=A.fN("Product Designer Localization","23");
+}

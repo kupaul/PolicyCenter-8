@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    id="AccountFile_Summary_PolicyTermsLV">
+    <Require
+      name="account"
+      type="Account"/>
+    <Variable
+      initialValue="account.IssuedPolicies"
+      name="issuedPolicies"
+      recalculateOnRefresh="true"
+      type="PolicyPeriodSummaryQuery"/>
+    <RowIterator
+      editable="false"
+      elementName="policyPeriodSummary"
+      value="issuedPolicies">
+      <ToolbarFilter
+        hideIfEditable="true"
+        hideIfReadOnly="true"
+        name="filters">
+        <ToolbarFilterOption
+          filter="new web.policy.ViewablePolicyPeriodQueryFilter()"
+          selectOnEnter="true"/>
+      </ToolbarFilter>
+      <Row
+        useArchivedStyle="policyPeriodSummary.TermArchived">
+        <Cell
+          action="retrievePolicy(policyPeriodSummary)"
+          id="PolicyNumber"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.PolicyNumber"
+          sortBy="policyPeriodSummary.PolicyNumber"
+          value="policyPeriodSummary.PolicyNumberDisplayString"/>
+        <Cell
+          enableSort="false"
+          id="Product"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.Product"
+          sortOrder="1"
+          value="policyPeriodSummary.Product"/>
+        <Cell
+          enableSort="false"
+          id="Status"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.Status"
+          value="policyPeriodSummary.PeriodDisplayStatus"/>
+        <Cell
+          id="EffectiveDate"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.EffectiveDate"
+          value="policyPeriodSummary.PeriodStart"/>
+        <Cell
+          id="ExpirationDate"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.ExpirationDate"
+          value="policyPeriodSummary.PeriodEnd"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function retrievePolicy(policyPeriodSummary : PolicyPeriodSummary){
+  var period = policyPeriodSummary.fetchPolicyPeriod()
+  PolicyFileForward.go(period, policyPeriodSummary.EditEffectiveDate)
+}]]></Code>
+  </ListViewPanel>
+</PCF>

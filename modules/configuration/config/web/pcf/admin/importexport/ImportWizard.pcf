@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Wizard
+    afterCancel="pcImportDataInfo.cancel(); ImportResults.go(pcImportDataInfo)"
+    afterFinish="pcImportDataInfo.commitChanges(); ImportResults.go(pcImportDataInfo)"
+    canVisit="perm.User.importadmindata"
+    id="ImportWizard"
+    inheritMenuLinks="true"
+    isDraftOnEnter="true">
+    <LocationEntryPoint
+      signature="ImportWizard()"/>
+    <Variable
+      initialValue="new gw.api.admin.PCImportDataInfo(new gw.api.admin.PCImportDataValidationImpl())"
+      name="pcImportDataInfo"
+      type="gw.api.admin.PCImportDataInfo"/>
+    <WizardStep
+      allowFinish="(pcImportDataInfo.File != null and pcImportDataInfo.NumConflicts == 0) or pcImportDataInfo.ResolutionStrategy != MANUAL"
+      allowNext="pcImportDataInfo.File != null and pcImportDataInfo.NumConflicts &gt; 0 and pcImportDataInfo.ResolutionStrategy == MANUAL"
+      id="Upload"
+      refreshStepsOnExit="true"
+      screen="ImportWizard_UploadScreen(pcImportDataInfo)"
+      showNextIfLastStep="true"
+      title="displaykey.Web.Admin.ImportWizard.UploadStep"/>
+    <WizardStepIterator
+      elementName="importDataConflict"
+      value="pcImportDataInfo.Conflicts">
+      <WizardStep
+        id="ResolveConflicts"
+        screen="ImportWizard_ConflictScreen(pcImportDataInfo, importDataConflict)"
+        title="displaykey.Web.Admin.ImportWizard.ConflictStep"/>
+    </WizardStepIterator>
+  </Wizard>
+</PCF>

@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Popup
+    afterCommit="valueDelegate.clearDependentValues()"
+    afterEnter="gw.pcf.rating.flow.RateRoutinePopupHelper.afterEnterEntityPopup(valueDelegate, selectedEntity, inScopeUsages, helper)"
+    canEdit="true"
+    id="RateRoutineEntityPopup"
+    startInEditMode="true"
+    title="displaykey.Web.Rating.Flow.CalcRoutine.EditEntityOperand">
+    <LocationEntryPoint
+      signature="RateRoutineEntityPopup(valueDelegate : CalcStepValueDelegate, calcStep : CalcStepDefinition )"/>
+    <LocationEntryPoint
+      signature="RateRoutineEntityPopup(valueDelegate : CalcStepValueDelegate, calcStep : CalcStepDefinition, restrictToTargetDataTypes: java.util.Set&lt;gw.lang.reflect.IType&gt;, selectedEntity : CalcRoutineParamName)"/>
+    <Variable
+      name="valueDelegate"
+      recalculateOnRefresh="true"
+      type="CalcStepValueDelegate"/>
+    <Variable
+      name="calcStep"
+      recalculateOnRefresh="true"
+      type="CalcStepDefinition"/>
+    <Variable
+      initialValue="gw.rating.flow.util.TypeMaps.primitiveRateFlowTypes()"
+      name="restrictToTargetDataTypes"
+      type="java.util.Set&lt;gw.lang.reflect.IType&gt;"/>
+    <Variable
+      initialValue="valueDelegate.InScopeParam"
+      name="selectedEntity"
+      type="CalcRoutineParamName"/>
+    <Variable
+      initialValue="new gw.pcf.rating.flow.RateRoutineEntityPopupHelper(CurrentLocation, valueDelegate, calcStep, restrictToTargetDataTypes)"
+      name="helper"
+      type="gw.pcf.rating.flow.RateRoutineEntityPopupHelper"/>
+    <Variable
+      initialValue="false"
+      name="isModifier"/>
+    <Variable
+      initialValue="helper.fetchInScopeUsages(isModifier, selectedEntity).sortBy(\ i -&gt; i.UserFriendlyPath)"
+      name="inScopeUsages"
+      recalculateOnRefresh="true"
+      type="List&lt;gw.rating.flow.util.InScopeUsage&gt;"/>
+    <Screen
+      editable="true">
+      <Toolbar>
+        <ToolbarButton
+          action="helper.commitEntitySelection()"
+          id="RateRoutineEntityEditUpdate"
+          label="displaykey.Web.ActivityDetail.Button.Update"/>
+        <ToolbarButton
+          action="CurrentLocation.cancel()"
+          id="RateRoutineEntityEditCancel"
+          label="displaykey.Web.ActivityDetail.Button.Cancel"/>
+      </Toolbar>
+      <DetailViewPanel>
+        <InputColumn>
+          <TextInput
+            id="Usage"
+            label="displaykey.Web.Rating.Flow.CalcRoutine.Usage"
+            value="gw.pcf.rating.flow.RateRoutineUsageHelper.getValueDelegateUsage(valueDelegate)"/>
+          <TypeKeyInput
+            editable="true"
+            filter="helper.filterInScopeParamDropDownRange(VALUE)"
+            id="inScopeParamName"
+            label="displaykey.Web.Rating.Flow.CalcRoutine.Entity"
+            required="true"
+            value="selectedEntity">
+            <PostOnChange
+              onChange="inScopeUsages = helper.changeSelectEntityTo(selectedEntity);"/>
+          </TypeKeyInput>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef
+        def="RateRoutineEntityLV(valueDelegate, inScopeUsages, helper)">
+        <Toolbar
+          id="DataTypeFilterToolbar">
+          <ToolbarFilter
+            cacheOptions="false"
+            iterator="InScopeUsagesIterator"
+            label="displaykey.Web.Rating.Flow.CalcRoutine.DataTypesFilter"
+            name="DataTypesFilter">
+            <ToolbarFilterOption
+              filter="gw.api.util.CoreFilters.ALL"
+              label="displaykey.Web.Rating.Flow.CalcRoutine.All"
+              selectOnEnter="true"/>
+            <ToolbarFilterOptionGroup
+              filters="helper.filtersForDataTypes(inScopeUsages, restrictToTargetDataTypes)"
+              visible="!isModifier"/>
+            <ToolbarFilterOptionGroup
+              filters="helper.filtersForModifierDataTypes(inScopeUsages, restrictToTargetDataTypes)"
+              visible="isModifier"/>
+          </ToolbarFilter>
+          <ToolbarRangeInput
+            id="IsModifierRangeInput"
+            label="&quot;    &quot; + displaykey.Web.Rating.Flow.CalcRoutine.ModifierFilter"
+            optionLabel="VALUE ? displaykey.Web.Rating.Flow.CalcRoutine.Modifiers : displaykey.Web.Rating.Flow.CalcRoutine.All"
+            value="isModifier"
+            valueRange="{true, false}">
+            <PostOnChange/>
+          </ToolbarRangeInput>
+        </Toolbar>
+      </PanelRef>
+    </Screen>
+  </Popup>
+</PCF>

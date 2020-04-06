@@ -1,0 +1,35 @@
+package rules.Audit.ReportingTrendAnalysis_dir
+
+@gw.rules.RuleName("Ratio Out Of Range")
+internal class RatioOutOfRange {
+  static function doCondition(policyPeriod : entity.PolicyPeriod) : boolean {
+    
+/*start00rule*/
+var synopsis = policyPeriod.reportingTrendSynopsis(true)
+return ((synopsis.PremiumRatio <= 90 or synopsis.PremiumRatio >= 110)
+        and (synopsis.DaysReported >= 60))
+/*end00rule*/
+
+  }
+
+  static function doAction(policyPeriod : entity.PolicyPeriod, actions : gw.rules.Action) {
+
+/*start00rule*/
+uses gw.assignment.AssignmentUtil
+
+var activity = ActivityPattern.finder.getActivityPatternByCode("ratio_out_of_range").createJobActivity(policyPeriod.Bundle, policyPeriod.Audit, displaykey.Audit.RatioOutOfRange, displaykey.Audit.RatioOutOfRange, null, null, null, null, null)
+
+// Attempt to assign to the policy underwriter, and fall back to the default user if that fails
+var success = false
+var underwriter = policyPeriod.Policy.getUserRoleAssignmentByRole("Underwriter")
+if (underwriter != null) {
+  success = activity.assign(underwriter.AssignedGroup, underwriter.AssignedUser)
+}
+
+if (!success) {
+   activity.assign(AssignmentUtil.DefaultUser.DefaultAssignmentGroup, AssignmentUtil.DefaultUser) 
+}
+/*end00rule*/
+
+  }
+}

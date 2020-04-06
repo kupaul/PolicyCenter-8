@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <DetailViewPanel
+    editable="false"
+    id="Quote_SummaryDV">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="policyPeriod.TransactionCostRPT"
+      name="transactionSum"
+      recalculateOnRefresh="true"/>
+    <InputColumn>
+      <InputSet>
+        <Input
+          boldLabel="true"
+          id="PolicyNumber"
+          label="displaykey.Web.Quote.PolicyNumber"
+          value="policyPeriod.PolicyNumberDisplayString"
+          visible="not policyPeriod.Job?.createsNewPolicy()"/>
+        <Input
+          boldLabel="true"
+          id="JobNumber"
+          label="JobNumberLabel"
+          value="policyPeriod.Job.JobNumber"
+          visible="JobNumberLabel.length &gt; 0"/>
+        <Input
+          boldLabel="true"
+          id="PolicyPeriod"
+          label="displaykey.Web.Job.Policy.Period.PolicyPeriod"
+          value="util.StringUtil.formatDate(policyPeriod.PeriodStart,&quot;short&quot;) + &quot; - &quot; + util.StringUtil.formatDate(policyPeriod.PeriodEnd,&quot;short&quot;)"/>
+        <Input
+          boldLabel="true"
+          id="Insured"
+          label="displaykey.Web.Quote.Insured"
+          value="policyPeriod.PrimaryNamedInsured.DisplayName"/>
+        <InputSetRef
+          def="PolicyAddressDisplayInputSet(policyPeriod, true)"
+          id="PolicyAddress"/>
+      </InputSet>
+      <Input
+        boldLabel="true"
+        id="UWCompany"
+        label="displaykey.Web.Quote.UWCompany"
+        value="policyPeriod.UWCompany"
+        visible="perm.Role.view"/>
+    </InputColumn>
+    <InputColumn>
+      <InputSet>
+        <Input
+          boldLabel="true"
+          id="transaction"
+          label="displaykey.Web.Quote.PeriodEffectiveDate"
+          value="policyPeriod.EditEffectiveDate"
+          visible="not policyPeriod.Job?.createsNewPolicy()"/>
+        <Input
+          boldLabel="true"
+          id="TransactionDescription"
+          label="displaykey.Web.Quote.TransactionDescription"
+          value="policyPeriod.Job.Description"
+          visible="policyPeriod.Job.Description.length &gt; 0"/>
+        <MonetaryAmountInput
+          align="right"
+          boldLabel="true"
+          formatType="currency"
+          id="TotalPremium"
+          label="displaykey.Web.Quote.TotalPremLabel.Total"
+          value="policyPeriod.TotalPremiumRPT"/>
+        <MonetaryAmountInput
+          align="right"
+          boldLabel="true"
+          formatType="currency"
+          id="Taxes"
+          label="displaykey.Web.Quote.PremiumSummary.Taxes"
+          value="policyPeriod.AllCosts.TaxSurcharges.AmountSum(policyPeriod.PreferredSettlementCurrency)"/>
+        <MonetaryAmountInput
+          align="right"
+          boldLabel="true"
+          formatType="currency"
+          id="TotalCost"
+          label="displaykey.Web.Quote.TotalCostLabel.Total"
+          value="policyPeriod.TotalCostRPT"/>
+      </InputSet>
+      <MonetaryAmountInput
+        align="right"
+        boldLabel="true"
+        formatType="currency"
+        id="ChangeInCost"
+        label="displaykey.Web.Quote.TotalCostLabel.Change"
+        value="transactionSum"
+        visible="ShowCostChange"/>
+      <TextInput
+        id="HeldSubjectToFinalAudit"
+        label="displaykey.Web.Quote.PremiumSummary.HeldSubjectToAudit"
+        labelStyleClass="warning"
+        value="&quot;&quot;"
+        visible="policyPeriod.JobProcess.BillingSubjectToFinalAudit"/>
+    </InputColumn>
+    <Code><![CDATA[
+property get JobNumberLabel() : String
+{
+  if ( policyPeriod.Job typeis Submission ) return displaykey.Web.SubmissionWizard.Quote.SubmissionNo
+  if ( policyPeriod.Job typeis Renewal )    return displaykey.Web.RenewalWizard.Quote.RenewalNo
+  return null
+}
+
+property get ShowCostChange() : boolean
+{
+  return (policyPeriod.Job typeis Issuance)
+      or (policyPeriod.Job typeis PolicyChange)
+      or (policyPeriod.Job typeis Cancellation)
+      or (policyPeriod.Job typeis Reinstatement)
+}
+      
+    ]]></Code>
+  </DetailViewPanel>
+</PCF>

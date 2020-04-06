@@ -1,0 +1,468 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Modifying Free-text Search for Additional Fields</title>
+    <link rel="StyleSheet" href="css/search.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Configuration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-ui.html#2915262">User Interface Configuration</a> : <a class="WebWorks_Breadcrumb_Link" href="search.32.01.html#2915262">Configuring Search Functionality</a> : <a class="WebWorks_Breadcrumb_Link" href="search.32.07.html#2915262">Free-text Search Configuration</a> : Modifying Free-text Search for Additional Fields</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h4 class="H2B_-_Heading_2_Break"><a name="2915262">Modifying Free-text Search for Additional Fields</a></h4>
+      <div class="B_-_Body"><a name="2915263">You can modify the configuration of free-text search in many ways. For example, you can add or remove fields for search criteria, modify how fields are stored in the Guidewire Solr Extension, and configure how fields are matched to search criteria. For complete information on how to modify the Guidewire Solr extension, consult the online documentation for Apache&nbsp;Solr 4</a></div>
+      <div class="B_-_Body"><a name="2915264">This section shows by example the configuration files you typically modify to change how the Guidewire Solr Extension loads, indexes, and searches data. The example is a simple configuration change to add a field to free-text search. </a></div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="2915265">Be aware that adding multi-valued fields can affect free-text search performance. In particular, adding fields with too many values significantly degrades full-text search performance.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2915266">Configuration Files for Full-text Loading, Indexing, and Searching</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2915267">Typically, you modify the following files to configure the way the Guidewire Solr extension loads, indexes, and searches information in the Guidewire Solr Extension. The following table lists the configuration files, grouped by the component they configure. </a></div>
+      <div class="T_-_Table"><a name="2919654">&nbsp;</a></div>
+      <table class="withHeading" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2915270">Configuration file</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom" colspan="2">
+            <div class="TH_-_Table_Heading"><a name="2915272">Description </a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="background-color: #F2F7FC; border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom" colspan="3">
+            <div class="TH_-_Table_Heading"><a name="2915309">PolicyCenter</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" rowspan="2">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2915315">policy-search-config.xml</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" colspan="2">
+            <div class="TT_-_Table_Text"><a name="2915320">Defines the mapping between PolicyCenter fields and Guidewire Solr Extension, and configures how Guidewire Solr Extension indexes and searches its index documents.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" colspan="2">
+            <div class="TT_-_Table_Text"><span class="cvt_-_computer_voice_table"><a name="2915326">PolicyCenter/modules/configuration/config/search/policy-search-config.xml</a></span> </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" rowspan="2">
+            <div class="TT_-_Table_Text"><span class="cvt_-_computer_voice_table"><a name="2915330">PCSolrSearchPlugin.gs</a></span> </div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" colspan="2">
+            <div class="TT_-_Table_Text"><a name="2915332">The implementation class for the free-text plugin </a><span class="cvt_-_computer_voice_table">ISolrSearchPlugin</span>. This plugin sends search criteria to the Guidewire Solr Extension and receives the search results.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" colspan="2">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2915338">PolicyCenter/modules/pc/gsrc/gw/solr/PCSolrSearchPlugin.gs</a></span></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="background-color: #F2F7FC; border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom" colspan="2">
+            <div class="TH_-_Table_Heading"><a name="2915342">Guidewire Solr Extension</a></div>
+          </td>
+          <td style="background-color: #F2F7FC; border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2915346">For more information …</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" rowspan="2">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2915374">schema.xml</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2915376">Defines the document schema structure for the Guidewire Solr Extension.</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><span class="cvt_-_computer_voice_table"><a href="http://wiki.apache.org/solr/SchemaXml" target="external_window" name="2915379">http://wiki.apache.org/solr/SchemaXml</a></span> </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" colspan="2">
+            <div class="TT_-_Table_Text"><span class="cvt_-_computer_voice_table"><a name="2915383">/opt/gwsolr/pc/solr/policy_active/conf</a></span>/<span class="cvt_-_computer_voice_table">schema.xml</span> </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" rowspan="2">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2915387">data-config.xml</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2915389">Read only at startup, defines where to locate and how to interpret data from the batch load command.</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a href="http://wiki.apache.org/solr/DataImportHandler#Configuration_in_data-config.xml-1" target="external_window" name="2915392">http://wiki.apache.org/solr/DataImportHandler#Configuration_in_data-config.xml-1</a></span></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" colspan="2">
+            <div class="TT_-_Table_Text"><span class="cvt_-_computer_voice_table"><a name="2915396">/opt/gwsolr/pc/solr/policy_active/conf</a></span>/<span class="cvt_-_computer_voice_table">data-config.xml</span> </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="background-color: #F2F7FC; border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom" colspan="3">
+            <div class="TH_-_Table_Heading"><a name="2915400">Free-text batch load command</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" rowspan="2">
+            <div class="TT_-_Table_Text"><span class="cvt_-_computer_voice_table"><a name="2915430">batchload.sh</a></span> </div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" colspan="2">
+            <div class="TT_-_Table_Text"><a name="2915432">The batch load command itself.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" colspan="2">
+            <div class="TT_-_Table_Text"><span class="cvt_-_computer_voice_table"><a name="2915438">/opt/gwsolr/pc/solr/policy_active/conf</a></span>/<span class="cvt_-_computer_voice_table">batchload.sh</span></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" rowspan="2">
+            <div class="TT_-_Table_Text"><span class="cvt_-_computer_voice_table"><a name="2915442">batchload-config-</a></span><span class="pst_-_parameter_in_code_snippets_table">database<br />Brand</span><span class="cvt_-_computer_voice_table">.xml</span><span style="font-family: &quot;Times New Roman&quot;; font-size: 10.0pt"> </span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" colspan="2">
+            <div class="TT_-_Table_Text"><a name="2915444">Contains database connection information and brand-specific native SQL for selecting data from the PolicyCenter relational database.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" colspan="2">
+            <div class="TT_-_Table_Text"><span class="cvt_-_computer_voice_table"><a name="2915450">/opt/gwsolr/pc/solr/policy_active/conf</a></span>/<span class="cvt_-_computer_voice_table">batchload-config.xml</span></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" rowspan="2">
+            <div class="TT_-_Table_Text"><span class="cvt_-_computer_voice_table"><a name="2915454">postprocess.sh</a></span><span style="font-family: &quot;Times New Roman&quot;; font-size: 10.0pt"> </span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" colspan="2">
+            <div class="TT_-_Table_Text"><a name="2915456">Collates and compiles index documents for the Guidewire Solr Extension using data selected from the relational database.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top" colspan="2">
+            <div class="TT_-_Table_Text"><span class="cvt_-_computer_voice_table"><a name="2915462">/opt/gwsolr/pc/solr/policy_active/conf</a></span>/<span class="cvt_-_computer_voice_table">postprocess.sh</span></div>
+          </td>
+        </tr>
+      </table>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2915466">Sequence of Steps for Adding a Field to Free-text Search</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2915467">Follow these high-level steps to configure free-text search with an additional field.</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('config', 'search.32.14.html#2915482', '');" title="Modifying Free-text Search for Additional Fields" name="2915471">“Define a New Free-text Field in the Guidewire Solr Extension”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('config', 'search.32.14.html#2915497', '');" title="Modifying Free-text Search for Additional Fields" name="2915475">“Define a New Free-text Field in PolicyCenter”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('config', 'search.32.14.html#2915556', '');" title="Modifying Free-text Search for Additional Fields" name="2915479">“Define a New Free-text Field in the Batch Load Command”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2915480">The examples that follow of add a policy postal code as a free-text field. </a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2915482">Define a New Free-text Field in the Guidewire Solr Extension</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2915483">Open the following file to define a new free-text field in the Guidewire Solr Extension: </a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2919659">/opt/gwsolr/pc/solr/policy_active/conf/schema.xml</a></div>
+      <div class="B_-_Body"><a name="2915486">The Guidewire Solr Extension defines the format of this file.</a></div>
+      <div class="B_-_Body"><a name="2915487">The schema configuration file contains </a><span class="cv_-_computer_voice">&lt;field&gt;</span> elements, one for each full-text field of the index documents in the Guidewire Solr Extension. </div>
+      <div class="B_-_Body"><a name="2915488">The following example defines a full-text field that stores postal codes. </a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2915489">&lt;field name=</a><span class="s_-_strong">"postalCode</span>" type="gw_unanalyzed" <span class="s_-_strong">indexed="true"</span> </PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2915490">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a><span class="s_-_strong">stored="true"</span> required="false"</PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2915491">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;multiValued="false"/&gt;</a></PRE>
+      <div class="B_-_Body"><a name="2915492">The definition directs the Guidewire Solr Extension to index the values of postal code fields, so search criteria can include postal codes. The definition directs the Guidewire Solr Extension to store the values of postal code fields, so items returned in search results include them. </a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2915497">Define a New Free-text Field in PolicyCenter</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2915501">Open the following file to define a new free-text field in PolicyCenter.</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2919664">PolicyCenter/modules/configuration/config/search/</a><span class="s_-_strong">policy-search-config.xml</span></div>
+      <div class="B_-_Body"><a name="2919675">In Studio, access the file from </a><span class="ui_-_UI_element">configuration → Other Resources</span> → <span class="cv_-_computer_voice">policy-search-config.xml</span>. PolicyCenter defines the format of this file.</div>
+      <div class="B_-_Body"><a name="2915518">Free-text search configuration files have these main elements: </a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2915519">&lt;Indexer&gt;</a></span> – Contains <span class="cv_-_computer_voice">&lt;IndexField&gt;</span> elements to define field names and their locations within object graphs of the root object and in the index documents sent to the Guidewire Solr Extension. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2915520">&lt;Query&gt;</a></span> – Contains the following types of elements:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2915521">&lt;FilterTerm&gt;</a></span> elements configure whether to return specific fields in results if the field matches search criteria.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2915522">&lt;QueryTerm&gt;</a></span> elements define how specific fields are matched and how a match contributes to the overall score. A query term is one of two types: <span class="e_-_emphasis">term</span> and <span class="e_-_emphasis">subquery</span>. A term type searches a single index. A subquery type searches multiple indices simultaneously and scores the most appropriate match.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2915523">&lt;QueryResult&gt;</a></span> – Contains <span class="cv_-_computer_voice">&lt;ResultProperty&gt;</span> elements to configure whether and how specific fields are returned in query results from the Guidewire Solr Extension.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2919680">To add a free-text field to </a><span class="cv_-_computer_voice">policy-search-config.xml</span>, first add an <span class="cv_-_computer_voice">&lt;IndexField&gt;</span> element to the <span class="cv_-_computer_voice">&lt;Indexer&gt;</span> element. The following example defines a free-text field for postal codes. </div>
+      <PRE class="CF_-_Code_First_Line"><a name="2919681">&lt;IndexField field="</a><span class="s_-_strong">postalCode</span>"&gt;</PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919682">&nbsp;&nbsp;&lt;DataProperty path="root.PolicyAddress.PostalCode"/&gt;</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2919683">&lt;/IndexField&gt;</a></PRE>
+      <div class="B_-_Body"><a name="2919684">The definition specifies that values of </a><span class="cv_-_computer_voice">postalCode</span> fields in the index documents sent to the full-text engine come from addresses on policy periods, the root object.</div>
+      <div class="B_-_Body"><a name="2915540">Next, add </a><span class="cv_-_computer_voice">&lt;FilterTerm&gt;</span> elements for the new free-text field to the <span class="cv_-_computer_voice">&lt;Query&gt;</span> element. The following example specifies how the Guidewire Solr Extension matches <span class="cv_-_computer_voice">PostalCodeCriteria</span> values in search criteria with <span class="cv_-_computer_voice">postalCode</span> values in the Guidewire Solr Extension.</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2915545">&lt;FilterTerm&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2915546">&nbsp;&nbsp;&lt;DataProperty path="root.PostalCodeCriteria"/&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2915547">&nbsp;&nbsp;&lt;QueryField field="</a><span class="s_-_strong">postalCode</span>"/&gt;</PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2915548">&lt;/FilterTerm&gt;</a></PRE>
+      <div class="B_-_Body"><a name="2915549">The definition directs the Guidewire Solr Extension to accept postal codes in search criteria and where to find them in the XML structure of the search criteria. </a></div>
+      <div class="B_-_Body"><a name="2915550">Finally, add a </a><span class="cv_-_computer_voice">&lt;ResultProperty&gt;</span> element to the <span class="cv_-_computer_voice">&lt;QueryResult&gt;</span> element. The following example defines how the Guidewire Solr Extension returns <span class="cv_-_computer_voice">postalCode</span> values in query results. </div>
+      <PRE class="CF_-_Code_First_Line"><a name="2915551">&lt;ResultProperty name="PostalCode"&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2915552">&nbsp;&nbsp;&lt;ResultField name="</a><span class="s_-_strong">postalCode</span>"/&gt;</PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2915553">&lt;/ResultProperty&gt;</a></PRE>
+      <div class="B_-_Body"><a name="2915554">The definition assigns the </a><span class="cv_-_computer_voice">postalCode</span> value in the result to the <span class="cv_-_computer_voice">PostalCode</span> on the result object.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2915556">Define a New Free-text Field in the Batch Load Command</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2915560">In order to load data from an existing PolicyCenter database, the new free-text field has must listed in the </a><span class="cv_-_computer_voice">batchload-config.xml</span> files and the <span class="cv_-_computer_voice">data-config.xml</span> file. You decide whether to include or exclude the field from the digest that prevents duplicate index entries.</div>
+      <h6 class="HS_-_Head_Sub"><a name="2915561">Generating the SQL Query</a></h6>
+      <div class="B_-_Body"><a name="2915562">Add the new free-text field in the SELECT portion of the query that corresponds to the data. The SQL for postal codes looks like this:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2919690">SELECT DISTINCT</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919691">&nbsp;&nbsp;...</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919692">&nbsp;&nbsp;paddr.postalcodeinternal AS </a><span class="s_-_strong">postalCode</span></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919693">&nbsp;&nbsp;...</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919694">&nbsp;&nbsp;FROM pc_policyperiod AS pp</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919695">&nbsp;&nbsp;&nbsp;&nbsp;...</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919696">&nbsp;&nbsp;&nbsp;&nbsp;INNER JOIN pc_policyaddress paddr</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919697">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ON paddr.branchid = pp.id</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919698">&nbsp;&nbsp;&nbsp;&nbsp;...</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919699">&nbsp;&nbsp;WHERE </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919700">&nbsp;&nbsp;&nbsp;&nbsp;...</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919701">&nbsp;&nbsp;&nbsp;&nbsp;AND (paddr.EffectiveDate  IS NULL OR paddr.EffectiveDate  </a><span class="s_-_strong">&amp;lt;</span>= pp2.EditEffectiveDate )</PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919702">&nbsp;&nbsp;&nbsp;&nbsp;AND (paddr.ExpirationDate IS NULL OR paddr.ExpirationDate </a><span class="s_-_strong">&amp;gt;</span>  pp2.EditEffectiveDate )</PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2919703">&nbsp;&nbsp;&nbsp;&nbsp;...</a></PRE>
+      <div class="B_-_Body"><a name="2919704">This is duplicated in </a><span class="cv_-_computer_voice">batchload-config-oracle.xml</span>, <span class="cv_-_computer_voice">batchload-config-sqlserver.xml</span>, and <span class="cv_-_computer_voice">batchload-config-h2.xml</span>. There is one file per database brand because requires the query to be written a little differently.</div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2915593">Because the SQL is included in an XML file, you must escape the less than (</a><span class="cv_-_computer_voice">&amp;lt;</span>) and greater than (<span class="cv_-_computer_voice">&amp;gt;</span>) symbols. </div>
+      <div class="B_-_Body"><a name="2915594">The query is processed into an XML document that will be loaded into SQL. Batch loading of XML into Solr is described in </a><span class="cv_-_computer_voice"><a href="http://wiki.apache.org/solr/DataImportHandler#Configuration_in_data-config.xml-1" target="external_window">http://wiki.apache.org/solr/DataImportHandler#Configuration_in_data-config.xml-1.</a></span></div>
+      <div class="B_-_Body"><a name="2915596">The field names come out all in uppercase, and the structure of the XML document is</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2919722">&lt;CONTAINER_ELEM&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919723">&nbsp;&nbsp;&lt;POLICY&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919724">&nbsp;&nbsp;&nbsp;&nbsp;&lt;!-- data for one policy --&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919725">&nbsp;&nbsp;&lt;/POLICY&gt;</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2919726">&lt;/CONTAINER_ELEM&gt;</a></PRE>
+      <div class="B_-_Body"><a name="2915607">The entry needed in </a><span class="cv_-_computer_voice">data-config.xml</span> in order to include the <span class="cv_-_computer_voice">postalCode</span> in the index is:</div>
+      <div class="CS_-_Code_Single_Line"><a name="2919731">&lt;field column="</a><span class="s_-_strong">postalCode</span>" xpath="/CONTAINER_ELEM/POLICY/POSTALCODE"/&gt;</div>
+      <div class="B_-_Body"><a name="2915610">Within the row for one claim contact, the fields will be in the same order as they were returned by the SELECT statement.</a></div>
+      <div class="B_-_Body"><a name="2915611">You can have fields in the SQL result that do not become part of the XML of the index documents. The Guidewire Solr Extension ignores them when it loads them. The batch load command uses these kinds of fields to sort and manipulate the data returned from the database to XML to produce the final XML index documents to load. But, these fields are not part of the index document schema. </a></div>
+      <h6 class="HS_-_Head_Sub"><a name="2919736">Computing the Hash to Eliminate Duplicates</a></h6>
+      <div class="B_-_Body"><a name="2919737">To avoid a chain of policy changes or renewals generating identical, duplicate index entries, we make a SHA-1 hash of most of the index data. It is included in the URN (Unique Record Name) of the index entry. Entries on the same policy and with the same SHA hash are collapsed into a single entry.</a></div>
+      <div class="B_-_Body"><a name="2919738">First decide whether the field is part of the hash. If so, we must modify the file </a><span class="cv_-_computer_voice">PCSolrSearchPlugin.gs</span> to include that data in the digest when generating a new index entry. The free-text batch load command includes fields by default.</div>
+      <div class="B_-_Body"><a name="2919739">One line of Gosu is required:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2919740">sb.append("postalCode", period.PolicyAddress.PostalCode)</a></div>
+      <div class="B_-_Body"><a name="2919741">If on the other hand, this field is </a><span class="e_-_emphasis">not</span> part of the hash, then we need to tell the batch load command to ignore it for digest purposes. An example of such a field is <span class="cv_-_computer_voice">sliceDate</span>. Near the bottom of the <span class="cv_-_computer_voice">batchload-config xml</span> files is the configuration for the digester. You can see that <span class="cv_-_computer_voice">sliceDate</span> is listed among the columns that are ignored:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2919742">&lt;transformer</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919743">&nbsp;&nbsp;name="digestTransformer"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919744">&nbsp;&nbsp;class="com.guidewire.solr.batchload.xform.PCDigestTransformer"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919745">&nbsp;&nbsp;ignoreElems="urn, periodID, policyPublicID, sliceDate, periodStart, periodEnd, policyStart,</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919746">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;policyEnd, periodIdWithSliceDate, jobType"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919747">&nbsp;&nbsp;algorithm="SHA"</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2919748">/&gt;</a></PRE>
+      <div class="B_-_Body"><a name="2919749">For default columns, include this in </a><span class="cv_-_computer_voice">PCSolrSearchPlugin.gs</span> as well:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2919750">static function initXformer() : com.guidewire.solr.batchload.xform.DigestTransformer {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919751">&nbsp;&nbsp;try {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919752">&nbsp;&nbsp;&nbsp;&nbsp;var xml =</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919753">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"&lt;transformer name=\"digestTransformer\"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919754">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;class=\"com.guidewire.solr.batchload.xform.PCDigestTransformer\""</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919755">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ " algorithm=\"SHA\""</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919756">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ " ignoreElems=\"urn, periodID, policyPublicID, sliceDate, periodStart, periodEnd, ""</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919757">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ " policyStart, policyEnd, periodIdWithSliceDate, jobType\"/&gt;";</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919758">&nbsp;&nbsp;var xf = new com.guidewire.solr.batchload.xform.PCDigestTransformer(false)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2919759">&nbsp;&nbsp;var doc = com.guidewire.solr.batchload.Utils.parseXml(xml)</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2919760">&nbsp;&nbsp;xf.configure(doc.getDocumentElement())</a></PRE>
+      <div class="B_-_Body"><a name="2919761">There is a final stage to the de-duplication. The </a><span class="cv_-_computer_voice">postprocess</span> script sorts the data by a combination of urn, slice date, and term number. It then removes rows with duplicate urn values. Slice date and term number are used in the initial sort to retain the latest version of the duplicate data, which is the same way that PolicyCenter indexes the data.</div>
+      <div class="B_-_Body"><a name="2332287">&nbsp;</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

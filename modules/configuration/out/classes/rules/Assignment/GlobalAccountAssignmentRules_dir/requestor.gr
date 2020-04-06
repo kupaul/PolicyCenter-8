@@ -1,0 +1,26 @@
+package rules.Assignment.GlobalAccountAssignmentRules_dir
+
+@gw.rules.RuleName("requestor")
+internal class requestor {
+  static function doCondition(account : entity.Account) : boolean {
+    
+/*start00rule*/
+return account.CurrentRoleAssignment.Role == "requestor"
+/*end00rule*/
+
+  }
+
+  static function doAction(account : entity.Account, actions : gw.rules.Action) {
+
+/*start00rule*/
+var creator = account.CurrentRoleAssignment.CreateUser
+if (creator == null) {
+  gw.api.util.Logger.logWarning( "For requestor on " + account + " 'Global Account Assignment Rules'.  Creator is undefined.")
+  creator = User.util.CurrentUser
+}
+account.CurrentRoleAssignment.assign( creator.DefaultAssignmentGroup, creator)
+actions.exit()
+/*end00rule*/
+
+  }
+}

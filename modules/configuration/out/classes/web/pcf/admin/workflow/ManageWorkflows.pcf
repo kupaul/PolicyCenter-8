@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    alwaysInEditMode="true"
+    autosaveable="false"
+    canEdit="true"
+    canVisit="perm.System.workflowmanage"
+    countsAsWork="false"
+    id="ManageWorkflows"
+    parent="WorkflowSearch()"
+    showUpLink="true"
+    startInEditMode="true"
+    title="displaykey.Web.Admin.Workflow.Manage.Title">
+    <LocationEntryPoint
+      signature="ManageWorkflows(workflows : Workflow[])"/>
+    <LocationEntryPoint
+      signature="ManageWorkflows(workflowQuery : WorkflowQuery, criteria : WorkflowSearchCriteriaBase)"/>
+    <Variable
+      name="workflows"
+      type="Workflow[]"/>
+    <Variable
+      name="workflowQuery"
+      type="WorkflowQuery"/>
+    <Variable
+      name="criteria"
+      type="WorkflowSearchCriteriaBase"/>
+    <Variable
+      initialValue="0"
+      name="MaxWaitSecs"
+      type="int"/>
+    <Variable
+      initialValue="new web.admin.workflow.ManageWorkflows(null, workflows, workflowQuery, criteria)"
+      name="helper"/>
+    <Screen
+      id="ManageWorkflowsScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="helper.refresh()"
+          id="refresh"
+          label="displaykey.Button.Refresh"
+          visible=""/>
+        <ToolbarButton
+          action="helper.execute(CurrentLocation)"
+          available="helper.ActionType != null"
+          id="execute"
+          label="displaykey.Web.Admin.Workflow.Manage.Execute"
+          shortcut="U"/>
+        <ToolbarButton
+          action="CurrentLocation.cancel(); WorkflowSearch.go()"
+          id="cancel"
+          label="displaykey.Web.Admin.Workflow.Manage.Cancel"
+          shortcut="C"/>
+        <ToolbarButton
+          action="CurrentLocation.cancel(); WorkflowDetail.go(helper.Workflow)"
+          id="detail"
+          label="displaykey.Web.Admin.WorkflowDetail"
+          shortcut="E"
+          visible="helper.Workflow != null"/>
+      </Toolbar>
+      <Verbatim
+        id="EditCount"
+        label="displaykey.Web.Admin.Workflow.Manage.EditCount(helper.Count)"/>
+      <Verbatim
+        id="message"
+        label="helper.Message"
+        warning="true"/>
+      <DetailViewPanel
+        editable="not helper.Waiting">
+        <InputColumn>
+          <InputSet
+            visible="helper.CurrentStep != null">
+            <Input
+              id="Type"
+              label="displaykey.Web.Admin.Workflows.Type"
+              value="helper.WorkflowType"/>
+            <Input
+              id="CurrentStep"
+              label="displaykey.Web.Admin.WorkflowDetail.CurrentStep"
+              value="helper.CurrentStep"/>
+          </InputSet>
+          <Choice
+            id="WaitChoice"
+            option="ManageWorkflowActionType.TC_WAIT.Code"
+            value="helper.ActionType">
+            <Input
+              editable="true"
+              id="MaxWait"
+              label="displaykey.Web.Admin.Workflow.Manage.Wait"
+              value="MaxWaitSecs"
+              visible="helper.Workflow != null and helper.ActiveWorkItem != null"/>
+            <ProgressInput
+              actionOnComplete="helper.Waiting = false"
+              id="WaitActiveWorkItem"
+              labelAbove="true"
+              percentage="helper.performWaitAndReturnPercent(MaxWaitSecs * 1000, 0, 0)"
+              visible="helper.Waiting"/>
+          </Choice>
+          <Choice
+            id="InvokeTriggerChoice"
+            option="ManageWorkflowActionType.TC_INVOKETRIGGER.Code"
+            value="helper.ActionType">
+            <RangeInput
+              editable="true"
+              id="InvokeTrigger"
+              label="ManageWorkflowActionType.TC_INVOKETRIGGER"
+              value="helper.TriggerKey"
+              valueRange="helper.Triggers"
+              visible="helper.Triggers.length != 0"/>
+          </Choice>
+          <Choice
+            id="SuspendChoice"
+            option="ManageWorkflowActionType.TC_SUSPEND.Code"
+            value="helper.ActionType">
+            <TextInput
+              id="Suspend"
+              label="ManageWorkflowActionType.TC_SUSPEND"
+              value="null"
+              visible="helper.SuspendAvailable"/>
+          </Choice>
+          <Choice
+            id="ResumeChoice"
+            option="ManageWorkflowActionType.TC_RESUME.Code"
+            value="helper.ActionType">
+            <TextInput
+              id="Resume"
+              label="ManageWorkflowActionType.TC_RESUME"
+              value="null"
+              visible="helper.ResumeAvailable"/>
+          </Choice>
+          <Choice
+            id="TimeoutChoice"
+            option="ManageWorkflowActionType.TC_SETTIMEOUT.Code"
+            value="helper.ActionType">
+            <RangeInput
+              editable="true"
+              id="ForceBranch"
+              label="displaykey.Web.Admin.Workflow.Manage.TimeoutBranch"
+              optionLabel="VALUE.localizeDisplayName()"
+              value="helper.ForceBranch"
+              valueRange="helper.TimeoutBranches"
+              visible="helper.TimeoutBranches.length != 0"/>
+          </Choice>
+        </InputColumn>
+      </DetailViewPanel>
+    </Screen>
+  </Page>
+</PCF>

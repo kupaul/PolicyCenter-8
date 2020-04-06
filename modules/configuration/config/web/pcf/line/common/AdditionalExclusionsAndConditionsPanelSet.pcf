@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <PanelSet
+    id="AdditionalExclusionsAndConditionsPanelSet">
+    <Require
+      name="coverable"
+      type="Coverable"/>
+    <Require
+      name="coverageCategories"
+      type="String[]"/>
+    <Require
+      name="includeExclude"
+      type="boolean"/>
+    <PanelRef>
+      <Toolbar
+        id="AdditionalExclusionsConditionsToolbar">
+        <PickerToolbarButton
+          action="CoveragePatternSearchPopup.push(coverable, CoveragePatternSearchType.TC_EXCLCOND, coverageCategories, includeExclude)"
+          hideIfReadOnly="true"
+          id="AddExclusionsOrCondition"
+          label="displaykey.Web.Policy.Coverages.AddExclusionsOrCondition"
+          onPick="createExclusionsAndConditions( PickedValue )"/>
+      </Toolbar>
+      <PanelSet>
+        <PanelRef
+          def="AdditionalExclusionsDV(coverable, coverageCategories, includeExclude)"
+          id="ExclusionsPanel">
+          <TitleBar
+            title="displaykey.Web.Policy.Coverages.Exclusions"/>
+        </PanelRef>
+        <PanelRef
+          def="AdditionalConditionsDV(coverable, coverageCategories, includeExclude)"
+          id="ConditionsPanel">
+          <TitleBar
+            title="displaykey.Web.Policy.Coverages.PolicyConditions"/>
+        </PanelRef>
+      </PanelSet>
+    </PanelRef>
+    <Code><![CDATA[
+                function createExclusionsAndConditions(patterns: gw.api.productmodel.ClausePattern[]) {
+                    for (pattern in patterns) {
+                        if (pattern typeis gw.api.productmodel.ExclusionPattern) {
+                            coverable.createExclusion(pattern)
+                        } else if (pattern typeis gw.api.productmodel.ConditionPattern){
+                            coverable.createCondition(pattern)
+                        }
+                    }
+                }
+        ]]></Code>
+  </PanelSet>
+</PCF>

@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    id="NewAccountScreen">
+    <Require
+      name="forNewSubmission"
+      type="boolean"/>
+    <Verbatim
+      label="displaykey.Web.NewSubmissionAccount.SearchMessage"/>
+    <SearchPanel
+      cachingEnabled="false"
+      criteriaName="searchCriteria"
+      maxSearchResults="100"
+      resultsName="accountSummaries"
+      search="searchCriteria.performSearch()"
+      searchCriteria="new gw.account.AccountSearchCriteria(){ :RestrictiveMinimumSearchCriteriaForPersonName = true, :FirstNameExact = true, :LastNameExact = true, :CompanyNameExact = true }"
+      searchOnEnter="false"
+      searchOnRefresh="false"
+      searchResultsType="AccountSummaryQuery">
+      <PanelRef
+        def="NewAccountSearchDV(searchCriteria)"/>
+      <PanelRef
+        visible="searchCriteria.HasMinimumSearchCriteria">
+        <Toolbar>
+          <ToolbarButton
+            available="perm.Account.create( null )"
+            default="true"
+            id="NewAccountButton"
+            label="displaykey.Web.NewSubmissionAccount.NewAccount"
+            shortcut="A">
+            <MenuItem
+              action="CreateAccount.go(&quot;Company&quot;, new gw.account.AccountPopulator(searchCriteria), forNewSubmission)"
+              id="NewAccount_Company"
+              label="displaykey.Web.NewSubmissionAccount.Company"/>
+            <MenuItem
+              action="CreateAccount.go(&quot;Person&quot;, new gw.account.AccountPopulator(searchCriteria), forNewSubmission)"
+              id="NewAccount_Person"
+              label="displaykey.Web.NewSubmissionAccount.Person"/>
+            <PickerMenuItem
+              action="CreateAccountFromContactSearchPopup.push(searchCriteria)"
+              id="NewAccount_FromAB"
+              label="displaykey.Web.NewSubmissionAccount.FromContactSearch"
+              onPick="CreateAccountForContact.go(commitContactIfNew(PickedValue), forNewSubmission)"/>
+          </ToolbarButton>
+        </Toolbar>
+        <PanelSet>
+          <PanelRef
+            def="NewAccountSearchResultsLV(accountSummaries, null)"
+            visible="accountSummaries != null and accountSummaries.Count &gt; 0">
+            <TitleBar
+              appendListViewPaging="true"
+              title="displaykey.Web.Search.Results"/>
+            <Toolbar/>
+            <Verbatim
+              label="displaykey.Web.NewSubmissionAccount.SearchResultsMessage"/>
+          </PanelRef>
+        </PanelSet>
+      </PanelRef>
+    </SearchPanel>
+    <Code><![CDATA[function commitContactIfNew(contact : Contact) : Contact {
+  if (contact.New) {
+    contact.Bundle.commit()
+  }
+  return contact
+}]]></Code>
+  </Screen>
+</PCF>

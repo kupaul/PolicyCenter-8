@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Popup
+    countsAsWork="false"
+    id="WCClassCodeSearchPopup"
+    returnType="WCClassCode"
+    title="displaykey.Web.ClassCodeSearch">
+    <LocationEntryPoint
+      signature="WCClassCodeSearchPopup(locationWM : PolicyLocation, wcLine : WorkersCompLine, previousWCClassCode : WCClassCode)"/>
+    <LocationEntryPoint
+      signature="WCClassCodeSearchPopup(domain : WCClassCodeFederalDomains, locationWM : PolicyLocation, wcLine : WorkersCompLine, previousWCClassCode : WCClassCode)"/>
+    <Variable
+      name="locationWM"
+      type="PolicyLocation"/>
+    <Variable
+      name="domain"
+      type="WCClassCodeFederalDomains"/>
+    <Variable
+      name="wcLine"
+      type="WorkersCompLine"/>
+    <Variable
+      name="previousWCClassCode"
+      type="WCClassCode"/>
+    <Screen
+      id="WCClassCodeSearchScreen">
+      <DetailViewPanel>
+        <InputColumn>
+          <Input
+            boldValue="true"
+            id="LocationLabel"
+            value="displaykey.Web.Policy.WC.ClassCode.Location( locationWM.DisplayName )"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <SearchPanel
+        cachingEnabled="false"
+        criteriaName="searchCriteria"
+        resultsName="wcClassCodes"
+        search="searchCriteria.performSearch()"
+        searchCriteria="createCriteria()"
+        searchOnEnter="true"
+        searchResultsType="WCClassCodeQuery">
+        <PanelRef>
+          <DetailViewPanel
+            id="WCClassCodeSearchDV">
+            <InputColumn>
+              <Input
+                editable="true"
+                id="Code"
+                label="displaykey.Web.ClassCodeSearch.Code"
+                required="false"
+                value="searchCriteria.Code"/>
+              <Input
+                editable="true"
+                id="Classification"
+                label="displaykey.Web.ClassCodeSearch.Classification"
+                required="false"
+                value="searchCriteria.Classification"/>
+            </InputColumn>
+            <InputFooterSection>
+              <InputSetRef
+                def="SearchAndResetInputSet()"/>
+            </InputFooterSection>
+          </DetailViewPanel>
+        </PanelRef>
+        <PanelRef>
+          <TitleBar
+            appendListViewPaging="true"
+            title="displaykey.Web.Search.Results"/>
+          <Toolbar/>
+          <ListViewPanel
+            id="ClassCodeSearchResultsLV">
+            <RowIterator
+              editable="false"
+              elementName="wcClassCode"
+              pickValue="wcClassCode"
+              value="wcClassCodes">
+              <Row>
+                <TextCell
+                  id="Code"
+                  label="displaykey.Web.ClassCodeSearch.Code"
+                  numCols="8"
+                  value="wcClassCode.Code"/>
+                <Cell
+                  align="left"
+                  id="Classification"
+                  label="displaykey.Web.ClassCodeSearch.Classification"
+                  value="wcClassCode.Classification"/>
+                <Cell
+                  id="ClassIndicator"
+                  label="displaykey.Web.Policy.WC.ClassCode.ClassIndicator"
+                  value="wcClassCode.ClassIndicator"/>
+                <Cell
+                  id="Domain"
+                  label="displaykey.Web.Policy.WC.ClassCode.Domain"
+                  value="wcClassCode.WCDomain"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+    <Code><![CDATA[uses java.lang.String
+uses gw.api.util.JurisdictionMappingUtil
+uses gw.lob.wc.WCClassCodeSearchCriteria
+
+function createCriteria() : WCClassCodeSearchCriteria {
+  var criteria = new WCClassCodeSearchCriteria()
+  criteria.EffectiveAsOfDate = wcLine.getReferenceDateForCurrentJob(JurisdictionMappingUtil.getJurisdiction(locationWM))
+  if (previousWCClassCode != null) {
+    criteria.PreviousSelectedClassCode = previousWCClassCode.Code
+  }
+  if (domain != null) {
+    criteria.Domain = domain as String
+  } else {
+    criteria.Domain = JurisdictionMappingUtil.getJurisdiction(locationWM) as String
+  }
+  return criteria
+}]]></Code>
+  </Popup>
+</PCF>

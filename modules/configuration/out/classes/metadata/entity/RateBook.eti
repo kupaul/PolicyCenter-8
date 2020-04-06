@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  desc="Describes which versions of which rate tables comprise a rate book"
+  displayName="RateBook"
+  entity="RateBook"
+  loadable="false"
+  subpackage="rating"
+  table="ratebook"
+  type="retireable">
+  <column
+    desc="The rate book code"
+    name="BookCode"
+    nullok="false"
+    type="patterncode"/>
+  <column
+    desc="The name of the rate book. This, combined with the 'BookEdition', identifies the rate book to the user."
+    name="BookName"
+    nullok="false"
+    type="shorttext">
+    <localization
+      nullok="false"
+      tableName="rtbk_name_l10n"/>
+  </column>
+  <column
+    desc="The edition of the rate book. This, combined with the 'BookName', identifies the rate book to the user."
+    name="BookEdition"
+    nullok="false"
+    type="patterncode"/>
+  <foreignkey
+    desc="The Underwriting company that insures policies that are rated using this book."
+    fkentity="UWCompany"
+    name="UWCompany"
+    nullok="true"/>
+  <typekey
+    desc="The Jurisdiction this books applies to; countrywide is null"
+    name="BookJurisdiction"
+    nullok="true"
+    typelist="Jurisdiction"/>
+  <column
+    desc="The offering this books applies to"
+    name="BookOffering"
+    nullok="true"
+    type="patterncode"/>
+  <column
+    desc="The earliest policy effective date that can be rated using this rate book"
+    name="EffectiveDate"
+    nullok="false"
+    type="datetime"/>
+  <column
+    desc="The earliest policy renewal effective date that can be rated using this rate book"
+    name="RenewalEffectiveDate"
+    nullok="true"
+    type="datetime"/>
+  <column
+    desc="The latest policy effective date that can be rated using this rate book"
+    name="ExpirationDate"
+    nullok="true"
+    type="datetime"/>
+  <column
+    desc="The (calendar) date of the last Status change"
+    name="LastStatusChangeDate"
+    nullok="false"
+    type="datetime"/>
+  <column
+    desc="Optional detailed description of the rate book."
+    name="BookDesc"
+    nullok="true"
+    type="shorttext">
+    <localization
+      nullok="true"
+      tableName="rtbk_desc_l10n"/>
+  </column>
+  <column
+    desc="Code of the Policy Line that the rate table belongs to"
+    name="PolicyLine"
+    nullok="false"
+    type="patterncode"/>
+  <typekey
+    default="Draft"
+    desc="The status determines things such as whether the rate book may be changed or be brought back into an editable state, whether it has been approved for production, and whether it has been put into production."
+    name="Status"
+    nullok="false"
+    typelist="RateBookStatus"/>
+  <array
+    arrayentity="RateTable"
+    cascadeDelete="true"
+    desc="Which logical rate tables are in this rate book"
+    name="RateTables"
+    owner="true"/>
+  <array
+    arrayentity="RateBookCalcRoutine"
+    cascadeDelete="true"
+    desc="Which rate routines are used in this rate book"
+    name="RateBookCalcRoutines"
+    owner="true"/>
+  <!-- Maintain this array so we get cascadeDelete behavior -->
+  <array
+    arrayentity="ImpactTestingRateBook"
+    cascadeDelete="true"
+    desc="Array of test cases to which this ratebook belongs."
+    getterScriptability="hidden"
+    name="Ratebooks"
+    setterScriptability="hidden"/>
+  <index
+    desc="Index ensuring the uniqueness of a ratebook."
+    name="RBU1"
+    unique="true">
+    <indexcol
+      keyposition="1"
+      name="BookCode"/>
+    <indexcol
+      keyposition="2"
+      name="BookEdition"/>
+    <indexcol
+      keyposition="3"
+      name="PolicyLine"/>
+    <indexcol
+      keyposition="4"
+      name="Retired"/>
+  </index>
+  <column
+    name="LastTableRowEdit"
+    nullok="true"
+    type="datetime"/>
+</entity>

@@ -1,0 +1,185 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  desc="Identifies producer and underwriting assignment preferences."
+  entity="ProducerCode"
+  exportable="true"
+  loadable="false"
+  subpackage="product"
+  table="producercode"
+  type="retireable">
+  <implementsEntity
+    name="Validatable"/>
+  <column
+    desc="The producer code."
+    name="Code"
+    nullok="false"
+    supportsLinguisticSearch="true"
+    type="shorttext"/>
+  <column
+    desc="The producer code description."
+    name="Description"
+    nullok="true"
+    supportsLinguisticSearch="true"
+    type="shorttext">
+    <localization
+      nullok="true"
+      tableName="prcod_desc_l10n"/>
+  </column>
+  <column
+    desc="Indicates when the carrier's relationship with the producer began."
+    name="AppointmentDate"
+    nullok="true"
+    type="datetime"/>
+  <column
+    desc="Indicates when the producer relationship was or will be terminated."
+    name="TerminationDate"
+    nullok="true"
+    type="datetime"/>
+  <typekey
+    createhistogram="true"
+    default="Active"
+    desc="The status of this producer code."
+    name="ProducerStatus"
+    nullok="false"
+    typelist="ProducerStatus"/>
+  <foreignkey
+    columnName="AddressID"
+    desc="The contact for this producer code."
+    fkentity="Address"
+    includeIdInIndex="true"
+    name="Address"
+    nullok="true"/>
+  <foreignkey
+    columnName="BranchID"
+    desc="The internal (carrier) branch that handles the business for this producer code."
+    exportasid="true"
+    fkentity="Group"
+    includeIdInIndex="true"
+    name="Branch"
+    nullok="true"/>
+  <foreignkey
+    columnName="PreferredUnderwriterID"
+    desc="The preferred underwriter for a producer code"
+    exportasid="true"
+    fkentity="User"
+    includeIdInIndex="true"
+    name="PreferredUnderwriter"
+    nullok="true"/>
+  <foreignkey
+    columnName="OrganizationID"
+    desc="The Organization this producer code belongs to."
+    exportasid="true"
+    fkentity="Organization"
+    name="Organization"
+    nullok="false"
+    triggersValidation="true"/>
+  <edgeForeignKey
+    desc="The producer code's parent producer code."
+    edgeTableName="producercodecode"
+    exportasid="true"
+    fkentity="ProducerCode"
+    name="Parent"
+    nullok="true"/>
+  <array
+    arrayentity="GroupProducerCode"
+    desc="Available producer codes to an external producer group."
+    name="GroupProducerCodes"/>
+  <array
+    arrayentity="UserProducerCode"
+    desc="Available producer codes and associated roles to a user."
+    name="UserProducerCodes"/>
+  <array
+    arrayentity="ProducerCodeRole"
+    desc="Available roles to a producer code."
+    name="ProducerCodeRoles"
+    owner="true"
+    triggersValidation="true"/>
+  <array
+    arrayentity="CommissionPlan"
+    desc="Currencies allowed to be used by the producer code as billing currency."
+    name="CommissionPlans"
+    owner="true"
+    triggersValidation="true"/>
+  <array
+    arrayentity="AffinityGroupProducerCode"
+    desc="Available groups to a producer code."
+    name="AffinityGroupProducerCodes"
+    owner="true"
+    triggersValidation="true"/>
+  <!-- Consistency check for cycles in ProducerCode tree -->
+  <customconsistencycheck
+    className="com.guidewire.pc.domain.product.dbchecks.ProducerCodeTreeDBCheck"
+    desc="Check that the producer code tree is not circular and contains no retired producer codes."
+    staticMethodName="checkProducerCodeTree"/>
+  <!-- ProducerCode-related consistency checks and loader validations. -->
+  <dbcheckbuilder
+    className="com.guidewire.pc.domain.product.dbchecks.ProducerCodeDBCheckBuilder"/>
+  <events/>
+  <!-- Indexes -->
+  <index
+    desc="Ensures that producer codes are unique within an organization.  Also used to lookup producer codes by code."
+    name="producercodeu1"
+    unique="true">
+    <indexcol
+      keyposition="1"
+      name="Code"/>
+    <indexcol
+      keyposition="2"
+      name="OrganizationID"/>
+    <indexcol
+      keyposition="3"
+      name="Retired"/>
+  </index>
+  <index
+    desc="Perf index for finding active producer codes in an organization"
+    expectedtobecovering="true"
+    name="StatusPerf"
+    unique="true">
+    <indexcol
+      keyposition="1"
+      name="OrganizationID"/>
+    <indexcol
+      keyposition="2"
+      name="Retired"/>
+    <indexcol
+      keyposition="3"
+      name="ProducerStatus"/>
+    <indexcol
+      keyposition="4"
+      name="ID"/>
+    <indexcol
+      keyposition="5"
+      name="Code"/>
+  </index>
+  <index
+    desc="ProducerCode Code partial-match look-up index on de-normalization mirror column."
+    expectedtobecovering="true"
+    name="CodePartialMatch"
+    unique="true">
+    <indexcol
+      keyposition="1"
+      name="CodeDenorm"/>
+    <indexcol
+      keyposition="2"
+      name="Retired"/>
+    <indexcol
+      keyposition="3"
+      name="ID"/>
+  </index>
+  <index
+    desc="ProducerCode Description partial-match look-up index on de-normalization mirror column."
+    expectedtobecovering="true"
+    name="DescrPartialMatch"
+    unique="true">
+    <indexcol
+      keyposition="1"
+      name="DescriptionDenorm"/>
+    <indexcol
+      keyposition="2"
+      name="Retired"/>
+    <indexcol
+      keyposition="3"
+      name="ID"/>
+  </index>
+</entity>

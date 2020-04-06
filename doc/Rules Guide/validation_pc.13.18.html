@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Example: Invoking Validation in a Job Wizard Step</title>
+    <link rel="StyleSheet" href="css/validation_pc.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Rules Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-rules_advanced.html#4561771">Advanced Topics</a> : <a class="WebWorks_Breadcrumb_Link" href="validation_pc.13.01.html#4561771">Performing Class-Based Validation</a> : <a class="WebWorks_Breadcrumb_Link" href="validation_pc.13.17.html#4561771">Invoking Class-Based Validation</a> : Example: Invoking Validation in a Job Wizard Step</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h4 class="H2B_-_Heading_2_Break"><a name="4561771">Example: Invoking Validation in a Job Wizard Step</a></h4>
+      <div class="B_-_Body"><a name="5137110">The following example walks through the process of invoking a static validation method from a Job wizard step. Specifically, it illustrates how to link the various Gosu validation classes and methods to the </a><span class="ui_-_UI_element">Vehicles</span> step in the Personal Auto (PA) <span class="ui_-_UI_element">Submission</span> wizard. </div>
+      <div class="B_-_Body"><a name="5137112">The following graphic shows the </a><span class="ui_-_UI_element">Vehicles</span> step in the PolicyCenter Submission wizard. The page failed a validation check that occurred as the user clicked <span class="ui_-_UI_element">Next</span>. (This is because there is no value set for the <span class="ui_-_UI_element">Length of Lease/Rental (months)</span> field.)</div>
+      <div class="F_-_Figure"><a name="4563453"><img class="Default" src="images/Vehicles_errors.png" style="display: inline; float: none; left: 0.0; top: 0.0" alt="" /></a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="5137105">Tracing the Validation Path</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="5137106">Starting with </a><span class="cv_-_computer_voice">SubmissionWizard</span> is a logical first step as the <span class="ui_-_UI_element">Vehicles</span> page is part the PolicyCenter Submission wizard. Examining <span class="cv_-_computer_voice">SubmissionWizard</span> PCF file (within Studio) shows that it contains a referenced PCF file named <span class="cv_-_computer_voice">LineWizardStepSet.PersonalAuto</span>, which governs the PA <span class="ui_-_UI_element">Vehicles</span> page in PolicyCenter. </div>
+      <div class="F_-_Figure"><a name="5137102"><img class="Default" src="images/SubmissionWizard.png" style="display: inline; float: none; left: 0.0; top: 0.0" alt="" /></a></div>
+      <div class="B_-_Body"><a name="5137094">It is the value of the </a><span class="cv_-_computer_voice">beforeSave</span> property within <span class="cv_-_computer_voice">LineWizardStepSet.PersonalAuto</span> that invokes validation on the <span class="ui_-_UI_element">Vehicles Details</span> card of the <span class="ui_-_UI_element">Vehicles</span> page. (You must open the <span class="cv_-_computer_voice">LineWizardStepSet.PersonalAuto</span> PCF in its own <span class="ui_-_UI_element">View</span> tab before you can access its properties.)</div>
+      <div class="F_-_Figure"><a name="4563206"><img class="Default" src="images/LineWizardStepSet_PA.png" style="display: inline; float: none; left: 0.0; top: 0.0" alt="" /></a></div>
+      <div class="B_-_Body"><a name="4563245">The </a><span class="cv_-_computer_voice">beforeSave</span> value consists of the following expressions:</div>
+      <div class="CS_-_Code_Single_Line"><a name="5185330">gw.lob.pa.PALineStepsValidator.validateDriversStep(policyPeriod.PersonalAutoLine)</a></div>
+      <div class="B_-_Body"><a name="5185331">The </a><span class="cv_-_computer_voice">validateDriversStep</span> method starts the validation chain for the Personal Auto <span class="ui_-_UI_element">Vehicles</span> screen. You can use similar techniques for class-based validation chaining in other screens.</div>
+      <div class="FFP_-_Figure_Full_Page"><a name="5134785">&nbsp;</a></div>
+      <div class="B_-_Body"><a name="5048173">&nbsp;</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

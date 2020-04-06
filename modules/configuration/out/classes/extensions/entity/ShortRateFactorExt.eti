@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" entity="ShortRateFactorExt" exportable="true" ignoreForEvents="true" loadable="false" platform="false" readOnly="true" table="sample_ShortRateFactor" type="keyable">
+  <fulldescription>
+    A sample table storing short rate cancellation proration factors.  The table and code using it assumes an
+      annual term of 365 or 366 days.  Non-annual terms must be normalized in order to use this table.  Factors can
+      be state-specific or be a default for all states, state=null, with state-specific rates overriding defaults.
+      Lastly, all factors have an effective period, [effDate-expDate) where a null date means that side of the range
+      is unbounded.
+  </fulldescription>
+  <column desc="Indicates a rate is applicable to a given state.  Null indicates a default rate which can be overridden by a rate specific to a state." name="rateState" nullok="true" type="varchar">
+    <columnParam name="size" value="10"/>
+  </column>
+  <column desc="The date on which this factor becomes effective (inclusive).  A null date means this has always been effective." name="effDate" nullok="true" type="datetime"/>
+  <column desc="The date on which this factor expires (exclusive).  A null date means this will always be effective." name="expDate" nullok="true" type="datetime"/>
+  <column desc="The number of non-canceled days that the policy was in effect." name="daysInPeriod" nullok="false" type="integer"/>
+  <column desc="The proration factor (vs. the full term) that should be used.  For example, if (non-canceled length / term length) = 50%, the short rate % might be 60%.  Stored as a decimal, so 50% should be 0.5000." name="shortRatePercent" nullok="false" type="decimal">
+    <columnParam name="scale" value="4"/>
+    <columnParam name="precision" value="8"/>
+  </column>
+  <column desc="The amount that an already prorated value should be multiplied by to get to the short rate proration %.  For example, if premiums were already prorated by 50%, then a factor of 1.2 would get the amount up to the intended 60% (amount * 0.5 * 1.2 = amount * 0.6)." name="shortRateFactor" nullok="false" type="decimal">
+    <columnParam name="scale" value="4"/>
+    <columnParam name="precision" value="8"/>
+  </column>
+</entity>

@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    autosaveable="false"
+    canEdit="true"
+    canVisit="perm.User.EditLog or perm.User.DevAllAccess"
+    countsAsWork="false"
+    id="SetLogLevel"
+    parent="ServerTools()"
+    startInEditMode="true"
+    title="displaykey.Web.InternalTools.SetLogLevel">
+    <LocationEntryPoint
+      signature="SetLogLevel()"/>
+    <Variable
+      initialValue="&quot;&quot;"
+      name="Result"
+      type="String"/>
+    <Variable
+      initialValue="new gw.api.tools.SetLogLevelData()"
+      name="CategoryData"/>
+    <Screen
+      id="SetLogLevelScreen">
+      <ListViewPanel
+        visible="CategoryData.LoggerSources.length &gt; 1">
+        <Row
+          visible="CategoryData.LoggerSources.length &gt; 1">
+          <RangeCell
+            align="right"
+            editable="true"
+            id="LoggerSources"
+            label="displaykey.Web.InternalTools.SetLogLevel.LoggerSources"
+            noneSelectedLabel="&quot;-- Select source --&quot;"
+            required="true"
+            value="CategoryData.PickedLoggerSource"
+            valueRange="CategoryData.LoggerSources">
+            <PostOnChange
+              onChange=""/>
+          </RangeCell>
+        </Row>
+      </ListViewPanel>
+      <DetailViewPanel>
+        <InputColumn>
+          <TextInput
+            align="center"
+            boldValue="true"
+            id="LoggerSingleSource"
+            labelAbove="true"
+            value="CategoryData.LoggerSources[0]"
+            visible="CategoryData.LoggerSources.length == 1"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <AlertBar
+        id="NoSourcesAlertBar"
+        label="&quot;No Logger Sources are defined - the panel is disabled&quot;"
+        visible="CategoryData.LoggerSources.length == 0"/>
+      <PanelRow
+        visible="CategoryData.PickedLoggerSource != null">
+        <PanelColumn>
+          <DetailViewPanel>
+            <InputColumn>
+              <RangeInput
+                align="right"
+                editable="true"
+                id="Categories"
+                label="displaykey.Web.InternalTools.SetLogLevel.Loggers"
+                value="CategoryData.PickedCategory"
+                valueRange="CategoryData.Loggers">
+                <PostOnChange
+                  onChange="CategoryData.PickedCategoryLevel = CategoryData.getLoggerLevel(CategoryData.PickedCategory)"/>
+              </RangeInput>
+              <RangeInput
+                align="left"
+                boldValue="true"
+                editable="true"
+                id="CategoriesLevels"
+                label="displaykey.Web.InternalTools.SetLogLevel.Levels"
+                value="CategoryData.PickedCategoryLevel"
+                valueRange="CategoryData.DefinedLevels"
+                visible="CategoryData.PickedCategory != null">
+                <PostOnChange/>
+              </RangeInput>
+              <ButtonInput
+                action="CategoryData.updateCategoryLogLevel()"
+                align="center"
+                boldLabel="true"
+                boldValue="true"
+                id="CategorySetLevel"
+                value="displaykey.Web.InternalTools.SetLogLevel.SetLevel"
+                visible="(CategoryData.PickedCategory != null) &amp;&amp; CategoryData.PickedCategoryLevel.Set &amp;&amp; (CategoryData.getLoggerLevel(CategoryData.PickedCategory).toString() != (CategoryData.PickedCategoryLevel as java.lang.String))"/>
+              <TextInput
+                align="center"
+                boldValue="true"
+                id="CategoryOldLevel"
+                value="displaykey.Web.InternalTools.SetLogLevel.CurrentLevel"
+                visible="(CategoryData.PickedCategory != null) &amp;&amp; CategoryData.PickedCategoryLevel.Set &amp;&amp; (CategoryData.getLoggerLevel(CategoryData.PickedCategory).toString() == (CategoryData.PickedCategoryLevel as java.lang.String))"/>
+            </InputColumn>
+          </DetailViewPanel>
+        </PanelColumn>
+      </PanelRow>
+    </Screen>
+  </Page>
+</PCF>

@@ -1,0 +1,44 @@
+#!/bin/bash
+#######################################################################
+## Repackage productdesigner.war with the new language configuration ##
+#######################################################################
+PD_WAR=../../war/productdesigner.war
+TMP=pd_unpack
+OUTPUT_DIR=./output
+
+mkdir ./$TMP
+
+cd $TMP
+echo Unpacking all files from productdesigner.war
+jar xf $PD_WAR
+
+cd ..
+
+L10N_WAR=productdesigner.war
+LANG_DIR=config
+
+echo Deleting the old language configuration from the unpacked war
+rm -R $TMP/$LANG_DIR
+
+echo copying the new language configuration
+cp -r $LANG_DIR $TMP/$LANG_DIR
+
+cd $TMP
+
+echo rebuilding the localized war
+jar cf $L10N_WAR .
+
+cd ..
+
+rm -rf $OUTPUT_DIR
+mkdir $OUTPUT_DIR
+mv $TMP/$L10N_WAR $OUTPUT_DIR/$L10N_WAR
+rm -R $TMP
+
+
+echo ------------------------------------------------------------
+echo repack is done.
+echo Created a localized productdesigner.war file at: "\"$OUTPUT_DIR\""
+echo To launch via the launcher script, you must first copy file "\"$OUTPUT_DIR/$L10N_WAR\"" into "\"../war/productdesigner.war\""
+
+

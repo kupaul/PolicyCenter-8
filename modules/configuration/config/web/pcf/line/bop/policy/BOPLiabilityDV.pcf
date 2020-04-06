@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="BOPLiabilityDV">
+    <Require
+      name="policyLine"
+      type="PolicyLine"/>
+    <Variable
+      initialValue="policyLine as BOPLine"
+      name="bopLine"/>
+    <Variable
+      initialValue="bopLine.Pattern.getCoverageCategory(&quot;BOPLiabilityCat&quot;)"
+      name="bopLiabilityCat"/>
+    <Variable
+      initialValue="bopLine.Pattern.getCoverageCategory(&quot;BOPProgramCat&quot;)"
+      name="bopProgramCat"/>
+    <Variable
+      initialValue="bopLiabilityCat.coveragePatternsForEntity(BusinessOwnersLine).whereSelectedOrAvailable(bopLine, CurrentLocation.InEditMode)"
+      name="bopLiabilityCatCoveragePatterns"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="bopProgramCat.coveragePatternsForEntity(BusinessOwnersLine).whereSelectedOrAvailable(bopLine, CurrentLocation.InEditMode)"
+      name="bopProgramCatCoveragePatterns"
+      recalculateOnRefresh="true"/>
+    <InputColumn>
+      <InputIterator
+        elementName="coveragePattern"
+        forceRefreshDespiteChangedEntries="true"
+        id="BOPLiabilityCatIterator"
+        value="bopLiabilityCatCoveragePatterns">
+        <IteratorSort
+          sortBy="coveragePattern.Priority"
+          sortOrder="1"/>
+        <InputSetRef
+          def="CoverageInputSet(coveragePattern, bopLine, true)"
+          mode="coveragePattern.Code"/>
+      </InputIterator>
+      <InputIterator
+        elementName="coveragePattern"
+        forceRefreshDespiteChangedEntries="true"
+        id="BOPRequiredProgramCovs"
+        value="bopProgramCatCoveragePatterns">
+        <IteratorSort
+          sortBy="coveragePattern.Priority"
+          sortOrder="1"/>
+        <InputSetRef
+          def="CoverageInputSet(coveragePattern, bopLine, true)"
+          mode="coveragePattern.Code"/>
+      </InputIterator>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

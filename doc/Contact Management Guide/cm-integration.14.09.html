@@ -1,0 +1,1671 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>IFindDuplicatesPlugin Plugin Interface</title>
+    <link rel="StyleSheet" href="css/cm-integration.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>Guidewire Contact Management Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="cm-integration.14.01.html#2509916">ContactManager Integration Reference</a> : IFindDuplicatesPlugin Plugin Interface</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><span class="cvh_-_computer_voice_in_heading"><a name="2509916">IFindDuplicatesPlugin</a></span> Plugin Interface</h3>
+      <div class="B_-_Body"><a name="2509942">The </a><span class="cv_-_computer_voice">FindDuplicatesPlugin</span> plugin implementation implements the <span class="cv_-_computer_voice">IFindDuplicatesPlugin</span> plugin interface in Gosu and is available in ContactManager Studio. To view or edit the plugin implementation, start ContactManager Studio. Then, in the <span class="ui_-_UI_element">Project </span>window, navigate to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> and then to <span class="cv_-_computer_voice">gw.plugin.contact.findduplicates.FindDuplicatesPlugin</span>.</div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2714724">The </a><span class="cv_-_computer_voice">FindDuplicatesPlugin</span> plugin implementation and its helper classes use <span class="e_-_emphasis">Gosu generics</span>. For more information, see <a href="javascript:WWHClickedPopup('gosu', 'generics.19.1.html#1455314', '');" title="Gosu Generics">“Gosu Generics” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'generics.19.1.html#1455314', '');" title="Gosu Generics">Gosu Reference Guide</a></span>.</div>
+      <div class="B_-_Body"><a name="2509961">The plugin attempts to find exact and potential matches for the subtype of </a><span class="cv_-_computer_voice">ABContact</span> that is passed to it. If no Duplicate Finder exists for the subtype, the plugin traverses the <span class="cv_-_computer_voice">ABContact</span> tree to find the closest parent type it can use in the search.</div>
+      <div class="B_-_Body"><a name="2509962">The plugin uses a set of Duplicate Finder classes, which define potential and exact match logic for a set of </a><span class="cv_-_computer_voice">ABContact</span> subtypes. The plugin sets up the duplicate finder classes in two <span class="cv_-_computer_voice">Map</span> definitions:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2509963">static final var WIDE_MAP : Map&lt;typekey.ABContact, Type&lt;DuplicateFinderBase&gt;&gt; = { </a></PRE>
+      <div class="CS_-_Code_Single_Line"><a name="2509964">&nbsp;&nbsp;typekey.ABContact.TC_ABCOMPANY       -&gt; CompanyDuplicateFinder&lt;ABCompany&gt;,</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2509965">&nbsp;&nbsp;typekey.ABContact.TC_ABPERSON        -&gt; PersonDuplicateFinder&lt;ABPerson&gt;,</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2509966">&nbsp;&nbsp;typekey.ABContact.TC_ABPLACE         -&gt; PlaceDuplicateFinder</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2509967">}</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2509968">static final var DEFAULT_MAP : Map&lt;typekey.ABContact, Type&lt;DuplicateFinderBase&gt;&gt; = {</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2509969">&nbsp;&nbsp;typekey.ABContact.TC_ABCOMPANYVENDOR -&gt; CompanyDuplicateFinder&lt;ABCompanyVendor&gt;,</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2509970">&nbsp;&nbsp;typekey.ABContact.TC_ABCOMPANY       -&gt; CompanyDuplicateFinder&lt;ABCompany&gt;,</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2509971">&nbsp;&nbsp;typekey.ABContact.TC_ABPERSONVENDOR  -&gt; PersonVendorDuplicateFinder,</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2509972">&nbsp;&nbsp;typekey.ABContact.TC_ABUSERCONTACT   -&gt; UserDuplicateFinder,</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2509973">&nbsp;&nbsp;typekey.ABContact.TC_ABPERSON        -&gt; PersonDuplicateFinder&lt;ABPerson&gt;,</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2509974">&nbsp;&nbsp;typekey.ABContact.TC_ABPLACE         -&gt; PlaceDuplicateFinder</a></div>
+      <PRE class="CL_-_Code_Last_Line"><a name="2509975">}</a></PRE>
+      <div class="B_-_Body"><a name="2509976">These two </a><span class="cv_-_computer_voice">Map</span> definitions are likely to be the only area of the plugin itself that you need to edit. For example, if you add a Duplicate Finder class for the <span class="cv_-_computer_voice">ABAttorney</span> subtype, you could add a typekey definition for that class to the <span class="cv_-_computer_voice">DEFAULT_MAP</span> definition. </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2509977">You do not have to add a map definition for any subtype, even a subtype extension that you create. Because the plugin traverses the </a><span class="cv_-_computer_voice">ABContact</span> tree to find the nearest parent type, any subtype of <span class="cv_-_computer_voice">ABContact</span> already has matching logic defined for it. Add a Duplicate Finder class only if you need special matching logic for a subtype.</div>
+      <div class="B_-_Body"><a name="2509978">The </a><span class="cv_-_computer_voice">WIDE_MAP</span> definition is used by the ContactManager batch process Duplicate Contact Finder in the configuration parameter <span class="cv_-_computer_voice">DuplicateContactsWideSearch</span>. For more information, see:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'admin.13.8.html#2217334', '');" title="Managing Contact Data" name="2509982">Changing Match Results and Search Scope Settings</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'admin.13.8.html#2201429', '');" title="Managing Contact Data" name="2509986">Detecting and Merging Duplicate Contacts</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2511406">This topic includes:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2509988', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2511422">Duplicate Finder Classes</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510294', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2511435">Query Builder Classes</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="2509988">Duplicate Finder Classes</a></h4>
+      <div class="B_-_Body"><span class="cv_-_computer_voice"><a name="2509989">FindDuplicatesPlugin</a></span> uses a set of duplicate finder classes, each of which defines:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2509990">The minimum set of fields required to attempt a match.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2509991">The fields required for exact matches for the </a><span class="cv_-_computer_voice">ABContact</span> subtype. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2509992">The fields required for potential matches for the </a><span class="cv_-_computer_voice">ABContact</span> subtype. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2509993">Each class checks for the existence of a minimum set of fields for performing a match with this subtype. If there is enough data for a match, the class can perform a search for potential matches and check the potential matches to see if any are an exact match. </a></div>
+      <div class="B_-_Body"><a name="2509994">If there is not enough data for a match, the </a><span class="cv_-_computer_voice">validateMandatoryFields</span><span style="font-family: &quot;Lucida Sans Typewriter&quot;; font-size: 7.0pt"> </span>method throws a <span class="cv_-_computer_voice">TooLooseContactDuplicateMatchCriteriaException</span>. These exceptions use display keys, which you can access in ContactManager Studio. In the <span class="ui_-_UI_element">Project </span>window, navigate to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">Localization</span> → <span class="ui_-_UI_element">en_US</span>, and then double click <span class="cv_-_computer_voice">display.properties</span> to open this file in the editor. In the editor, press <span class="cv_-_computer_voice">CTRL+F</span> and search for <span class="it_-_input_text">TooLooseContactDuplicateMatchCriteriaException</span>. </div>
+      <div class="B_-_Body"><a name="2792121">To view or edit the Duplicate Finder classes, start ContactManager Studio. Then, in the </a><span class="ui_-_UI_element">Project </span>window, navigate to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> and then to <span class="cv_-_computer_voice">gw.plugin.contact.findduplicates</span>. Under this node, you see all the Duplicate Finder classes.</div>
+      <div class="B_-_Body"><a name="2792170">In these classes, you can change the logic required for matching a subtype. For example, you want to add a new field to the potential match logic in one of the Duplicate Finder classes. You must first add appropriate matching code for the field to the query builder class that supports that duplicate finder class. You then add the query finder method call to the Duplicate Finder class. For an example of a class that adds field matching logic, see </a><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510144', '');" title="IFindDuplicatesPlugin Plugin Interface">“PersonDuplicateFinder”</a>.</div>
+      <div class="B_-_Body"><a name="2792177">The query builder classes are located one node down in the </a><span class="ui_-_UI_element">Project </span>window. Navigate to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> and then to <span class="cv_-_computer_voice">gw.plugin.contact.findduplicates.querybuilder</span>. For more information on these classes, see <a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510294', '');" title="IFindDuplicatesPlugin Plugin Interface">“Query Builder Classes”</a>.</div>
+      <div class="B_-_Body"><a name="2510046">You also might want to define new matching for an </a><span class="cv_-_computer_voice">ABContact</span> subtype that does not have a Duplicate Finder class. In this case, you would create a new Duplicate Finder class and a query builder class for the subtype.</div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2510047">You do not have to add a Duplicate Finder class for any subtype, even a subtype extension that you create. Because the plugin traverses the </a><span class="cv_-_computer_voice">ABContact</span> tree to find the nearest parent type, any subtype of <span class="cv_-_computer_voice">ABContact</span> already has matching logic defined for it. Add a Duplicate Finder class only if you need special matching logic for a subtype.</div>
+      <div class="B_-_Body"><a name="2510048">The Duplicate Finder class descriptions that follow describe the functionality available in the base product. The </a><span class="cv_-_computer_voice">CompanyDuplicateFinder</span> description includes code for required fields, potential match, and exact match. The code in the other duplicate finders is similar.</div>
+      <div class="B_-_Body"><a name="2510049">This topic includes:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510071', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510053">CompanyDuplicateFinder Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510144', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510057">PersonDuplicateFinder</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510185', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510061">PersonVendorDuplicateFinder Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510223', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510065">PlaceDuplicateFinder Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510258', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510069">UserDuplicateFinder Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><span class="cvh_-_computer_voice_in_heading"><a name="2510071">CompanyDuplicateFinder</a></span> Class</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2510072">This Gosu class defines matching for the </a><span class="cv_-_computer_voice">ABCompany</span> subtype. If the subtype is <span class="cv_-_computer_voice">ABCompanyVendor</span>, <span class="cv_-_computer_voice">ABAutoRepairShop</span>, <span class="cv_-_computer_voice">ABAutoTowingAgcy</span>, <span class="cv_-_computer_voice">ABLawFirm</span>, or <span class="cv_-_computer_voice">ABMedicalCareOrg</span>, matching is performed for <span class="cv_-_computer_voice">ABCompany</span>. The class uses the query builder <span class="cv_-_computer_voice">CompanyQueryBuilder</span>, described at <a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510401', '');" title="IFindDuplicatesPlugin Plugin Interface">“CompanyQueryBuilder Class”</a>.</div>
+      <div class="B_-_Body"><a name="2510091">To open this class in Studio, navigate in the </a><span class="ui_-_UI_element">Project </span>window to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> and then to <span class="cv_-_computer_voice">gw.plugin.contact.findduplicates.CompanyDuplicateFinder</span>.</div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2510095">The match criteria descriptions that follow includes the code for required fields, potential match, and exact match. The code in the other duplicate finders is similar.</a></div>
+      <div class="B_-_Body"><span class="cv_-_computer_voice"><a name="2510096">CompanyDuplicateFinder</a></span><span style="font-family: &quot;Trebuchet MS&quot;; font-size: 9.1pt; font-weight: bold"> </span>defines the following match criteria.</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: bold; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: bold; text-transform: none"><span class="ri_-_run_in_header"><a name="2510097">Fields to match:</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510098">Name</a></span> – Match this field as <span class="e_-_emphasis">starts with</span> or <span class="e_-_emphasis">equals</span>, depending on context.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510099">PrimaryAddress</a></span> (<span class="cv_-_computer_voice">AddressLine1</span>, <span class="cv_-_computer_voice">City</span>, <span class="cv_-_computer_voice">State</span>, <span class="cv_-_computer_voice">PostalCode</span>) – Match these <span class="cv_-_computer_voice">PrimaryAddress</span> fields as <span class="e_-_emphasis">equals</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510100">TaxID</a></span> – Match this field as <span class="e_-_emphasis">equals</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510101">WorkPhone</a></span> or <span class="cv_-_computer_voice">FaxPhone</span> – Match any single phone field as <span class="e_-_emphasis">equals</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2510102">Required fields:</a></span> <span class="cv_-_computer_voice">Name</span> and at least one of <span class="cv_-_computer_voice">PrimaryAddress</span>, <span class="cv_-_computer_voice">TaxID</span>, or any phone field: <span class="cv_-_computer_voice">WorkPhone</span> or <span class="cv_-_computer_voice">FaxPhone</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2510103">The following code defines the required fields for an </a><span class="cv_-_computer_voice">ABCompany</span>:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2510104">override function validateMandatoryFields() {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510105">&nbsp;&nbsp;if (_searchContact.Name == null or</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510106">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(hasNoPrimaryAddress() and</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510107">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;hasNoPhoneNumber() and</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510108">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_searchContact.TaxID == null))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510109">&nbsp;&nbsp;&nbsp;&nbsp;throwException(_searchContact)</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2510110">}</a></PRE>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2510111">Potential match types</a></span>:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="e_-_emphasis"><a name="2510112">Starts with</a></span> <span class="cv_-_computer_voice">Name</span> and <span class="e_-_emphasis">equals</span> either <span class="cv_-_computer_voice">PrimaryAddress</span> or a phone field.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="e_-_emphasis"><a name="2510113">Equals </a></span><span class="cv_-_computer_voice">TaxID</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2510114">The following code defines the potential match fields for an </a><span class="cv_-_computer_voice">ABCompany</span>:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2510115">override function makeQueries() : List&lt;Query&lt;C&gt;&gt; {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510116">&nbsp;&nbsp;var queries = new ArrayList&lt;Query&lt;C&gt;&gt;()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510117">&nbsp;&nbsp;//Query: TaxID</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510118">&nbsp;&nbsp;new CompanyQueryBuilder&lt;C&gt;(_searchContact)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510119">&nbsp;&nbsp;&nbsp;&nbsp;.hasEqualTaxId()//AND</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510120">&nbsp;&nbsp;&nbsp;&nbsp;.buildAndAdd(queries)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510121">&nbsp;&nbsp;//Query: Name and PhoneNumber</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510122">&nbsp;&nbsp;if (not hasNoPhoneNumber()) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510123">&nbsp;&nbsp;&nbsp;&nbsp;new CompanyQueryBuilder&lt;C&gt;(_searchContact)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510124">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.startsWithName()//AND</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510125">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.hasEqualPhoneNumbers()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510126">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.buildAndAdd(queries)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510127">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510128">&nbsp;&nbsp;//Query: Name and Address</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510129">&nbsp;&nbsp;if (not hasNoPrimaryAddress()) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510130">&nbsp;&nbsp;&nbsp;&nbsp;new CompanyQueryBuilder&lt;C&gt;(_searchContact)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510131">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.startsWithName()//AND</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510132">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.hasEqualAddress()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510133">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;.buildAndAdd(queries)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510134">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510135">&nbsp;&nbsp;return queries</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2510136">}</a></PRE>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2510137">Exact Match </a></span>– <span class="e_-_emphasis">Equals </span>both<span class="e_-_emphasis"> </span><span class="cv_-_computer_voice">TaxID</span> and <span class="cv_-_computer_voice">Name</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2510138">The following code defines the exact match fields for an </a><span class="cv_-_computer_voice">ABCompany</span>:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2510139">override function isExactMatch(searchContact : C, resultABContact : C) : boolean {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510140">&nbsp;&nbsp;return equalsAndNotNull&lt;String&gt;(searchContact.TaxID, resultABContact.TaxID) &amp;&amp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510141">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;equalsAndNotNull&lt;String&gt;(searchContact.Name, resultABContact.Name)</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2510142">}</a></PRE>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2510144">PersonDuplicateFinder</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2510145">This Gosu class defines matching for the </a><span class="cv_-_computer_voice">ABPerson</span> subtype. If the subtype is <span class="cv_-_computer_voice">ABAdjudicator</span>, matching is performed for <span class="cv_-_computer_voice">ABPerson</span>. </div>
+      <div class="B_-_Body"><a name="2510161">To open this class in Studio, navigate in the </a><span class="ui_-_UI_element">Project </span>window to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> → <span class="ui_-_UI_element">gw</span> and then to <span class="cv_-_computer_voice">gw.plugin.contact.findduplicates.PersonDuplicateFinder</span>.</div>
+      <div class="B_-_Body"><a name="2510168">The class uses the query builder </a><span class="cv_-_computer_voice">PersonQueryBuilder</span>, described at <a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510576', '');" title="IFindDuplicatesPlugin Plugin Interface">“PersonQueryBuilder Class”</a>. That query builder extends <span class="cv_-_computer_voice">PersonQueryBuilderBase</span>, which adds logic for matching the first name, last name, date of birth, and phone numbers of the contacts. You can use that class and this one as an example of how to add matching logic for a field to a query builder and a Duplicate Finder.</div>
+      <div class="B_-_Body"><span class="cv_-_computer_voice"><a name="2510169">PersonDuplicateFinder</a></span><span style="font-family: &quot;Trebuchet MS&quot;; font-size: 9.1pt; font-weight: bold"> </span>defines the following match criteria:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: bold; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: bold; text-transform: none"><span class="ri_-_run_in_header"><a name="2510170">Fields to match:</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510171">FirstName</a></span> – Match this field as <span class="e_-_emphasis">starts with</span> or <span class="e_-_emphasis">equals</span>, depending on context.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510172">LastName</a></span> – Match this field as <span class="e_-_emphasis">equals</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510173">PrimaryAddress</a></span> (<span class="cv_-_computer_voice">AddressLine1</span>, <span class="cv_-_computer_voice">City</span>, <span class="cv_-_computer_voice">State</span>, <span class="cv_-_computer_voice">PostalCode</span>) – Match these <span class="cv_-_computer_voice">PrimaryAddress</span> fields as <span class="e_-_emphasis">equals</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510174">LicenseNumber</a></span> and <span class="cv_-_computer_voice">LicenseState</span> – Match both Driver’s License fields as <span class="e_-_emphasis">equals</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510175">DateOfBirth</a></span> – Match this field as <span class="e_-_emphasis">equals</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510176">TaxID</a></span> – Match this field as <span class="e_-_emphasis">equals</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510177">HomePhone</a></span>, <span class="cv_-_computer_voice">WorkPhone</span>, <span class="cv_-_computer_voice">FaxPhone</span>, or <span class="cv_-_computer_voice">CellPhone </span>– Match any single phone field as <span class="e_-_emphasis">equals</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2510178">Required fields:</a></span> <span class="cv_-_computer_voice">FirstName</span> and <span class="cv_-_computer_voice">LastName</span> and at least one of <span class="cv_-_computer_voice">PrimaryAddress</span>, <span class="cv_-_computer_voice">DateOfBirth</span>, <span class="cv_-_computer_voice">TaxID</span>, any phone field, or <span class="cv_-_computer_voice">LicenseNumber</span> and <span class="cv_-_computer_voice">LicenseState</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2510179">Match types</a></span>:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="ri_-_run_in_header"><a name="2510180">Potential</a></span> – <span class="e_-_emphasis">Starts with</span> <span class="cv_-_computer_voice">FirstName</span> and <span class="e_-_emphasis">equals</span> <span class="cv_-_computer_voice">LastName</span> and <span class="e_-_emphasis">equals</span> one of <span class="cv_-_computer_voice">PrimaryAddress</span>, <span class="cv_-_computer_voice">DateOfBirth</span>, any phone field, or <span class="cv_-_computer_voice">LicenseNumber</span> and <span class="cv_-_computer_voice">LicenseState</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="ri_-_run_in_header"><a name="2510181">Potential</a></span> – <span class="e_-_emphasis">Equals</span> <span class="cv_-_computer_voice">LastName</span> and <span class="cv_-_computer_voice">TaxID</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="ri_-_run_in_header"><a name="2510182">Exact</a></span> – <span class="e_-_emphasis">Equals </span><span class="cv_-_computer_voice">FirstName</span> and <span class="cv_-_computer_voice">LastName</span> and <span class="cv_-_computer_voice">DateOfBirth</span> and <span class="e_-_emphasis">equals </span>one of <span class="cv_-_computer_voice">PrimaryAddress</span> or any phone field.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="ri_-_run_in_header"><a name="2510183">Exact</a></span> – <span class="e_-_emphasis">Equals </span><span class="cv_-_computer_voice">FirstName</span> and <span class="cv_-_computer_voice">LastName</span> and<span class="e_-_emphasis"> </span><span class="cv_-_computer_voice">TaxID</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><span class="cvh_-_computer_voice_in_heading"><a name="2510185">PersonVendorDuplicateFinder</a></span> Class</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2510186">This Gosu class defines matching for the </a><span class="cv_-_computer_voice">ABPersonVendor</span> subtype. If the subtype is <span class="cv_-_computer_voice">ABAttorney</span> or <span class="cv_-_computer_voice">ABDoctor</span>, matching is performed for <span class="cv_-_computer_voice">ABPersonVendor</span>. </div>
+      <div class="B_-_Body"><a name="2510202">To open this class in Studio, navigate in the </a><span class="ui_-_UI_element">Project </span>window to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> → <span class="ui_-_UI_element">gw</span> and then to <span class="cv_-_computer_voice">gw.plugin.contact.findduplicates.PersonVendorDuplicateFinder</span>.</div>
+      <div class="B_-_Body"><a name="2510209">The class uses the query builder </a><span class="cv_-_computer_voice">PersonQueryBuilder</span>, described at <a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510576', '');" title="IFindDuplicatesPlugin Plugin Interface">“PersonQueryBuilder Class”</a>. </div>
+      <div class="B_-_Body"><span class="cv_-_computer_voice"><a name="2510210">PersonDuplicateFinder</a></span><span style="font-family: &quot;Trebuchet MS&quot;; font-size: 9.1pt; font-weight: bold"> </span>defines the following match criteria:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: bold; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: bold; text-transform: none"><span class="ri_-_run_in_header"><a name="2510211">Fields to match:</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510212">FirstName</a></span> – Match this field as <span class="e_-_emphasis">starts with</span> or <span class="e_-_emphasis">equals</span>, depending on context.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510213">LastName</a></span> – Match this field as <span class="e_-_emphasis">equals</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510214">PrimaryAddress</a></span> (<span class="cv_-_computer_voice">AddressLine1</span>, <span class="cv_-_computer_voice">City</span>, <span class="cv_-_computer_voice">State</span>, <span class="cv_-_computer_voice">PostalCode</span>) – Match these <span class="cv_-_computer_voice">PrimaryAddress</span> fields as <span class="e_-_emphasis">equals</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510215">TaxID</a></span> – Match this field as <span class="e_-_emphasis">equals</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510216">HomePhone</a></span>, <span class="cv_-_computer_voice">WorkPhone</span>, <span class="cv_-_computer_voice">FaxPhone</span>, or <span class="cv_-_computer_voice">CellPhone </span>– Match any single phone field as <span class="e_-_emphasis">equals</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2510217">Required fields:</a></span> <span class="cv_-_computer_voice">FirstName</span> and <span class="cv_-_computer_voice">LastName</span> and at least one of <span class="cv_-_computer_voice">PrimaryAddress</span>, <span class="cv_-_computer_voice">TaxID</span>, or any phone field.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2510218">Match types</a></span>:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="ri_-_run_in_header"><a name="2510219">Potential</a></span> – <span class="e_-_emphasis">Starts with</span> <span class="cv_-_computer_voice">FirstName</span> and <span class="e_-_emphasis">equals</span> <span class="cv_-_computer_voice">LastName</span> and <span class="e_-_emphasis">equals</span> one of <span class="cv_-_computer_voice">PrimaryAddress</span> or any phone field.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="ri_-_run_in_header"><a name="2510220">Potential</a></span> – <span class="e_-_emphasis">Equals</span> <span class="cv_-_computer_voice">TaxID</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="ri_-_run_in_header"><a name="2510221">Exact</a></span> – <span class="e_-_emphasis">Equals </span><span class="cv_-_computer_voice">FirstName</span> and <span class="cv_-_computer_voice">LastName</span> and<span class="e_-_emphasis"> </span><span class="cv_-_computer_voice">TaxID</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><span class="cvh_-_computer_voice_in_heading"><a name="2510223">PlaceDuplicateFinder</a></span> Class</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2510224">This Gosu class defines matching for the </a><span class="cv_-_computer_voice">ABPlace</span> subtype. If the subtype is <span class="cv_-_computer_voice">ABLegalVenue</span>, matching is performed for <span class="cv_-_computer_voice">ABPlace</span>. </div>
+      <div class="B_-_Body"><a name="2510240">To open this class in Studio, navigate in the </a><span class="ui_-_UI_element">Project </span>window to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> and then to <span class="cv_-_computer_voice">gw.plugin.contact.findduplicates.PlaceDuplicateFinder</span>.</div>
+      <div class="B_-_Body"><a name="2510247">The class uses the query builder </a><span class="cv_-_computer_voice">PlaceQueryBuilder</span>, described at <a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510451', '');" title="IFindDuplicatesPlugin Plugin Interface">“PlaceQueryBuilder Class”</a>.</div>
+      <div class="B_-_Body"><span class="cv_-_computer_voice"><a name="2510248">PlaceDuplicateFinder</a></span><span style="font-family: &quot;Trebuchet MS&quot;; font-size: 9.1pt; font-weight: bold"> </span>defines the following match criteria:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: bold; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: bold; text-transform: none"><span class="ri_-_run_in_header"><a name="2510249">Fields to match:</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510250">Name</a></span> – Match this field as <span class="e_-_emphasis">starts with</span> or <span class="e_-_emphasis">equals</span>, depending on context.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510251">PrimaryAddress</a></span> (<span class="cv_-_computer_voice">AddressLine1</span>, <span class="cv_-_computer_voice">City</span>, <span class="cv_-_computer_voice">State</span>, <span class="cv_-_computer_voice">PostalCode</span>) – Match these <span class="cv_-_computer_voice">PrimaryAddress</span> fields as <span class="e_-_emphasis">equals</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2510252">Required fields:</a></span> <span class="cv_-_computer_voice">Name</span> and <span class="cv_-_computer_voice">PrimaryAddress</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2510253">Match types</a></span>:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="ri_-_run_in_header"><a name="2510254">Potential</a></span> – <span class="e_-_emphasis">Starts with</span> <span class="cv_-_computer_voice">Name</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="ri_-_run_in_header"><a name="2510255">Potential</a></span> – <span class="e_-_emphasis">Equals</span> <span class="cv_-_computer_voice">PrimaryAddress</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="ri_-_run_in_header"><a name="2510256">Exact</a></span> – <span class="e_-_emphasis">Equals </span><span class="cv_-_computer_voice">Name</span> and <span class="cv_-_computer_voice">AddressLine1</span> and <span class="cv_-_computer_voice">City and State</span> and <span class="cv_-_computer_voice">PostalCode</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><span class="cvh_-_computer_voice_in_heading"><a name="2510258">UserDuplicateFinder</a></span> Class</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2510259">This class defines matching for the </a><span class="cv_-_computer_voice">ABUserContact</span> subtype. </div>
+      <div class="B_-_Body"><a name="2510275">To open this class in Studio, navigate in the </a><span class="ui_-_UI_element">Project </span>window to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> and then to <span class="cv_-_computer_voice">gw.plugin.contact.findduplicates.UserDuplicateFinder</span>.</div>
+      <div class="B_-_Body"><a name="2510281">The class uses the query builder </a><span class="cv_-_computer_voice">UserContactQueryBuilder</span>, described at <a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510630', '');" title="IFindDuplicatesPlugin Plugin Interface">“UserContactQueryBuilder Class”</a>. </div>
+      <div class="B_-_Body"><span class="cv_-_computer_voice"><a name="2510283">UserContactDuplicateFinder</a></span><span style="font-family: &quot;Trebuchet MS&quot;; font-size: 9.1pt; font-weight: bold"> </span>defines the following match criteria:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt; margin-bottom: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: bold; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: bold; text-transform: none"><span class="ri_-_run_in_header"><a name="2510284">Fields to match:</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510285">FirstName</a></span> – Match this field as <span class="e_-_emphasis">starts with</span> or <span class="e_-_emphasis">equals</span>, depending on context.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510286">LastName</a></span> – Match this field as <span class="e_-_emphasis">equals</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="cv_-_computer_voice"><a name="2510287">EmployeeNumber</a></span> – Match this field as <span class="e_-_emphasis">equals</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2510288">Required fields:</a></span> <span class="cv_-_computer_voice">FirstName</span> and <span class="cv_-_computer_voice">LastName</span> and at least one of <span class="cv_-_computer_voice">PrimaryAddress</span>, <span class="cv_-_computer_voice">TaxID</span>, or any phone field.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2510289">Match types</a></span>:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="ri_-_run_in_header"><a name="2510290">Potential</a></span> – <span class="e_-_emphasis">Starts with</span> <span class="cv_-_computer_voice">FirstName</span> and <span class="e_-_emphasis">equals</span> <span class="cv_-_computer_voice">LastName</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="ri_-_run_in_header"><a name="2510291">Potential</a></span> – <span class="e_-_emphasis">Equals</span> <span class="cv_-_computer_voice">EmployeeNumber</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><span class="ri_-_run_in_header"><a name="2510292">Exact</a></span> – <span class="e_-_emphasis">Equals </span><span class="cv_-_computer_voice">EmployeeNumber</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="2510294">Query Builder Classes</a></h4>
+      <div class="B_-_Body"><a name="2510295">The query builder Gosu classes build queries that the Duplicate Finder classes use to search the database for specific subtypes of </a><span class="cv_-_computer_voice">ABContact</span>. They define queries that:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2510299">Compare fields to see if they are equal. See </a><span class="cv_-_computer_voice">hasEqualTaxID</span> under <a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510342', '');" title="IFindDuplicatesPlugin Plugin Interface">“ContactQueryBuilder Class”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2510302">Compare fields to see if they start with the same characters. See </a><span class="cv_-_computer_voice">startsWithName</span> under <a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510342', '');" title="IFindDuplicatesPlugin Plugin Interface">“ContactQueryBuilder Class”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2510306">Compare a set of fields to see if they are all equal. See </a><span class="cv_-_computer_voice">hasEqualAddress</span> under <a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510342', '');" title="IFindDuplicatesPlugin Plugin Interface">“ContactQueryBuilder Class”</a>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2510310">Compare a set of fields to see if one of them is equal. See </a><span class="cv_-_computer_voice">hasEqualPhoneNumbers</span> under <a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510342', '');" title="IFindDuplicatesPlugin Plugin Interface">“ContactQueryBuilder Class”</a>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2510315">For information on the Duplicate Finder classes, see </a><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2509988', '');" title="IFindDuplicatesPlugin Plugin Interface">“Duplicate Finder Classes”</a>.</div>
+      <div class="B_-_Body"><a name="2510316">This topic includes:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510342', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510320">ContactQueryBuilder Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510401', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510324">CompanyQueryBuilder Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510451', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510328">PlaceQueryBuilder Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510502', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510332">PersonQueryBuilderBase Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510576', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510336">PersonQueryBuilder Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510630', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510340">UserContactQueryBuilder Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><span class="cvh_-_computer_voice_in_heading"><a name="2510342">ContactQueryBuilder</a></span> Class</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2510343">This Gosu class provides a basic set of </a><span class="cv_-_computer_voice">ABContact</span> queries for the query builder classes. The classes that extend this one produce a set of queries for specific <span class="cv_-_computer_voice">ABContact</span> subtypes, which in turn are used by the Duplicate Finder classes for those subtypes.</div>
+      <div class="B_-_Body"><a name="2510359">To open this class in Studio, navigate in the </a><span class="ui_-_UI_element">Project </span>window to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> and then to <span class="cv_-_computer_voice">gw.plugin.contact.findduplicates.querybuilder.ContactQueryBuilder</span>.</div>
+      <div class="B_-_Body"><a name="2510366">The class builds the following queries:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2510367">hasEqualTaxId</a></span> – Adds an expression to the query. The expression determines if the <span class="cv_-_computer_voice">TaxID</span> field of the <span class="cv_-_computer_voice">ABContact</span> being checked for duplicates is equal to the <span class="cv_-_computer_voice">TaxID</span> field of an <span class="cv_-_computer_voice">ABContact</span> in the database. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510368">function hasEqualTaxId() : U {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510369">&nbsp;&nbsp;addExpression(new EqualFieldExpression&lt;T&gt;("TaxID", _contact.TaxID))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510370">&nbsp;&nbsp;return this as U</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510371">}</a></PRE>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2510372">hasEqualPhoneNumbers</a></span> – Adds an expression to the query. Determines if the <span class="cv_-_computer_voice">HomePhone</span>, <span class="cv_-_computer_voice">WorkPhone</span>, or <span class="cv_-_computer_voice">FaxPhone</span> field of the <span class="cv_-_computer_voice">ABContact</span> being checked for duplicates is equal to the equivalent field of an <span class="cv_-_computer_voice">ABContact</span> in the database. If one of the fields matches, the contacts have equal phone numbers.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CF_-_Code_First_Line"><a name="2510373">function hasEqualPhoneNumbers() : U {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510374">&nbsp;&nbsp;var numbers = PhoneNumbers</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510375">&nbsp;&nbsp;var phoneOperators : List&lt;FieldExpression&lt;T&gt;&gt; = {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510376">&nbsp;&nbsp;&nbsp;&nbsp;new InFieldExpression&lt;T&gt;("HomePhone", numbers),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510377">&nbsp;&nbsp;&nbsp;&nbsp;new InFieldExpression&lt;T&gt;("WorkPhone", numbers),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510378">&nbsp;&nbsp;&nbsp;&nbsp;new InFieldExpression&lt;T&gt;("FaxPhone", numbers)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510379">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510380">&nbsp;&nbsp;addExpression(new OrCompositeFieldExpression&lt;T&gt;(</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510381">&nbsp;&nbsp;&nbsp;&nbsp;phoneOperators.toTypedArray() ))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510382">&nbsp;&nbsp;return this as U</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2510383">}</a></PRE>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2510384">hasEqualAddress</a></span> – Adds an expression to the query. Compares fields of the <span class="cv_-_computer_voice">PrimaryAddress</span> of the <span class="cv_-_computer_voice">ABContact</span> being checked for duplicates to the equivalent fields of the <span class="cv_-_computer_voice">PrimaryAddress</span> of an <span class="cv_-_computer_voice">ABContact</span> in the database. If the <span class="cv_-_computer_voice">AddressLine1</span> , <span class="cv_-_computer_voice">State</span>, <span class="cv_-_computer_voice">City</span>, and <span class="cv_-_computer_voice">PostalCode</span> fields are equal for both contacts, the addresses are considered equal.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CF_-_Code_First_Line"><a name="2510385">function hasEqualAddress() : U {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510386">&nbsp;&nbsp;addExpression(new AndCompositeFieldExpression&lt;T&gt;({</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510387">&nbsp;&nbsp;&nbsp;&nbsp;new EqualFieldExpression&lt;T&gt;("AddressLine1", "PrimaryAddress", </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510388">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_contact.PrimaryAddress.AddressLine1,false),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510389">&nbsp;&nbsp;&nbsp;&nbsp;new EqualFieldExpression&lt;T&gt;("State", "PrimaryAddress", </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2792377">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_contact.PrimaryAddress.State,false),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510390">&nbsp;&nbsp;&nbsp;&nbsp;new EqualFieldExpression&lt;T&gt;("City", "PrimaryAddress", </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2792427">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_contact.PrimaryAddress.City.flase),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510391">&nbsp;&nbsp;&nbsp;&nbsp;new EqualFieldExpression&lt;T&gt;("PostalCode", "PrimaryAddress", </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2792462">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;_contact.PrimaryAddress.PostalCode,false)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510392">&nbsp;&nbsp;&nbsp;&nbsp;}))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510393">&nbsp;&nbsp;return this as U</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2510394">}</a></PRE>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2510395">startsWithName</a></span> – Adds an expression to the query. Uses the entire string in the <span class="cv_-_computer_voice">Name</span> field of the <span class="cv_-_computer_voice">ABContact</span> being checked for duplicates. Compares this string to a substring at the start of the <span class="cv_-_computer_voice">Name</span> field of an <span class="cv_-_computer_voice">ABContact</span> in the database. If the string and the substring are equal, the contacts are a <span style="font-style: italic">starts with</span> match. For example, “Asim” would be a <span style="font-style: italic">starts with</span> match with “Asimov”.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CF_-_Code_First_Line"><a name="2510396">function startsWithName() : U {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510397">&nbsp;&nbsp;addExpression(new StartsWithFieldExpression&lt;T&gt;("Name", _contact.Name))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510398">&nbsp;&nbsp;return this as U</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2510399">}</a></PRE>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><span class="cvh_-_computer_voice_in_heading"><a name="2510401">CompanyQueryBuilder</a></span> Class</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2510402">This Gosu class builds queries for an </a><span class="cv_-_computer_voice">ABCompany</span> entity. It extends <span class="cv_-_computer_voice">ContactQueryBuilder</span>, making the query logic defined in that class available to the class <span class="cv_-_computer_voice">CompanyDuplicateFinder</span>. For descriptions of those two classes, see:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510342', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510406">ContactQueryBuilder Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510071', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510410">CompanyDuplicateFinder Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2510426">To open this class in Studio, navigate in the </a><span class="ui_-_UI_element">Project </span>window to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> and then to <span class="cv_-_computer_voice">gw.plugin.contact.findduplicates.querybuilder.CompanyQueryBuilder</span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><span class="cvh_-_computer_voice_in_heading"><a name="2510451">PlaceQueryBuilder</a></span> Class</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2510452">This Gosu class builds queries for an </a><span class="cv_-_computer_voice">ABPlace</span> entity. It extends <span class="cv_-_computer_voice">ContactQueryBuilder</span>, making the query logic defined in that class available to the class <span class="cv_-_computer_voice">PlaceDuplicateFinder</span>. For descriptions of those two classes, see:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510342', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510456">ContactQueryBuilder Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510223', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510460">PlaceDuplicateFinder Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2510476">To open this class in Studio, navigate in the </a><span class="ui_-_UI_element">Project </span>window to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> → <span class="ui_-_UI_element">gw</span> and then to <span class="cv_-_computer_voice">gw.plugin.contact.findduplicates.querybuilder.PlaceQueryBuilder</span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><span class="cvh_-_computer_voice_in_heading"><a name="2510502">PersonQueryBuilderBase</a></span> Class</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2510503">This Gosu class builds queries for querying an </a><span class="cv_-_computer_voice">ABPerson</span> entity. It extends <span class="cv_-_computer_voice">ContactQueryBuilder</span> and adds new query logic used by <span class="cv_-_computer_voice">PersonQueryBuilder</span> and <span class="cv_-_computer_voice">UserContactQueryBuilder</span>. You can compare <span class="cv_-_computer_voice">PersonQueryBuilderBase</span> to <a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510342', '');" title="IFindDuplicatesPlugin Plugin Interface">“ContactQueryBuilder Class”</a> to see how to add new query logic for a field, such as <span class="cv_-_computer_voice">LastName</span> or <span class="cv_-_computer_voice">LicenseNumber</span>.</div>
+      <div class="B_-_Body"><a name="2510531">To open this class in Studio, navigate in the </a><span class="ui_-_UI_element">Project </span>window to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> and then to <span class="cv_-_computer_voice">gw.plugin.contact.findduplicates.querybuilder.PersonQueryBuilderBase</span>.</div>
+      <div class="B_-_Body"><a name="2510538">The class builds the following queries in addition to, or in place of, those in </a><span class="cv_-_computer_voice">ContactQueryBuilder</span>:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2510539">startsWithFirstName</a></span> – Adds an expression to the query. Uses the entire string in the <span class="cv_-_computer_voice">FirstName</span> field of the <span class="cv_-_computer_voice">ABPerson</span> being checked for duplicates. Compares this string to a substring at the start of the <span class="cv_-_computer_voice">FirstName</span> field of an <span class="cv_-_computer_voice">ABPerson</span> in the database. If the string and the substring are equal, the contacts are a <span class="e_-_emphasis">starts with</span> match. For example, “Asim” would be a <span style="font-style: italic">starts with</span> match with “Asimov”.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CF_-_Code_First_Line"><a name="2510540">function startsWithFirstName() : U {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510541">&nbsp;&nbsp;addExpression(new StartsWithFieldExpression&lt;T&gt;("FirstName", Contact.FirstName))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510542">&nbsp;&nbsp;return this as U</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2510543">}</a></PRE>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2510544">hasEqualLastName</a></span> – Adds an expression to the query. The expression determines if the <span class="cv_-_computer_voice">LastName</span> field of the <span class="cv_-_computer_voice">ABPerson</span> being checked for duplicates is equal to the <span class="cv_-_computer_voice">LastName</span> field of an <span class="cv_-_computer_voice">ABPerson</span> in the database. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510545">function hasEqualLastName() : U {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510546">&nbsp;&nbsp;addExpression(new EqualFieldExpression&lt;T&gt;(</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2792594">&nbsp;&nbsp;&nbsp;&nbsp;"LastNameDenorm", Contact.LastName, false))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510547">&nbsp;&nbsp;return this as U</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510548">}</a></PRE>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2510549">hasEqualBirthDate</a></span> – Adds an expression to the query. The expression determines if the <span class="cv_-_computer_voice">DateOfBirth</span> field of the <span class="cv_-_computer_voice">ABPerson</span> being checked for duplicates is equal to the <span class="cv_-_computer_voice">DateOfBirth</span> field of an <span class="cv_-_computer_voice">ABPerson</span> in the database. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510550">function hasEqualBirthDate() : U {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510551">&nbsp;&nbsp;addExpression(new EqualFieldExpression&lt;T&gt;("DateOfBirth", Contact.DateOfBirth))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510552">&nbsp;&nbsp;return this as U</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510553">}</a></PRE>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2510554">hasEqualLicenseNumber</a></span> – Adds an expression to the query. The expression determines if the <span class="cv_-_computer_voice">LicenseNumber</span> and <span class="cv_-_computer_voice">LicenseState</span> fields of the <span class="cv_-_computer_voice">ABPerson</span> being checked for duplicates are equal to the same fields of an <span class="cv_-_computer_voice">ABPerson</span> in the database. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510555">function hasEqualLicenseNumber() : U {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510556">&nbsp;&nbsp;addExpression(new AndCompositeFieldExpression&lt;T&gt;({</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510557">&nbsp;&nbsp;&nbsp;&nbsp;new EqualFieldExpression&lt;T&gt;("LicenseNumber", Contact.LicenseNumber),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510558">&nbsp;&nbsp;&nbsp;&nbsp;new EqualFieldExpression&lt;T&gt;("LicenseState", Contact.LicenseState)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510559">&nbsp;&nbsp;}))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510560">&nbsp;&nbsp;return this as U</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510561">}</a></PRE>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2510562">hasEqualPhoneNumbers</a></span> – Adds an expression to the query. The method overrides <span class="cv_-_computer_voice">ContactQueryBuilder.hasEqualPhoneNumbers</span> and adds the <span class="cv_-_computer_voice">CellPhone</span> field as one of the phone number fields to check. The method determines if the <span class="cv_-_computer_voice">HomePhone</span>, <span class="cv_-_computer_voice">WorkPhone</span>, <span class="cv_-_computer_voice">FaxPhone</span>, or <span class="cv_-_computer_voice">CellPhone</span> field of the <span class="cv_-_computer_voice">ABPerson</span> being checked for duplicates is equal to the equivalent field of an <span class="cv_-_computer_voice">ABPerson</span> in the database. If one of the fields matches, the contacts have equal phone numbers.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CF_-_Code_First_Line"><a name="2510563">override function hasEqualPhoneNumbers() : U {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510564">&nbsp;&nbsp;var numbers = PhoneNumbers</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510565">&nbsp;&nbsp;var phoneOperators : List&lt;FieldExpression&lt;T&gt;&gt; = {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510566">&nbsp;&nbsp;&nbsp;&nbsp;new InFieldExpression&lt;T&gt;("HomePhone", numbers),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510567">&nbsp;&nbsp;&nbsp;&nbsp;new InFieldExpression&lt;T&gt;("WorkPhone", numbers),</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510568">&nbsp;&nbsp;&nbsp;&nbsp;new InFieldExpression&lt;T&gt;("FaxPhone", numbers)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510569">&nbsp;&nbsp;&nbsp;&nbsp;new InFieldExpression&lt;T&gt;("CellPhone", numbers)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510570">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510571">&nbsp;&nbsp;addExpression(new OrCompositeFieldExpression&lt;T&gt;(</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510572">&nbsp;&nbsp;&nbsp;&nbsp;phoneOperators.toTypedArray() ))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2510573">&nbsp;&nbsp;return this as U</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2510574">}</a></PRE>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><span class="cvh_-_computer_voice_in_heading"><a name="2510576">PersonQueryBuilder</a></span> Class</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2510577">This Gosu class builds queries for an </a><span class="cv_-_computer_voice">ABPerson</span> entity. It extends <span class="cv_-_computer_voice">PersonQueryBuilderBase</span>, making the query logic defined in that class available to the classes <span class="cv_-_computer_voice">PersonDuplicateFinder</span> and <span class="cv_-_computer_voice">PersonVendorDuplicateFinder</span>. </div>
+      <div class="B_-_Body"><a name="2510578">For descriptions of those classes, see:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510502', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510582">PersonQueryBuilderBase Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510144', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510586">PersonDuplicateFinder</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510185', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510590">PersonVendorDuplicateFinder Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2785386">To open this class in Studio, navigate in the </a><span class="ui_-_UI_element">Project </span>window to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> and then to <span class="cv_-_computer_voice">gw.plugin.contact.findduplicates.querybuilder.PersonQueryBuilder</span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><span class="cvh_-_computer_voice_in_heading"><a name="2510630">UserContactQueryBuilder</a></span> Class</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2510631">This Gosu class builds queries for an </a><span class="cv_-_computer_voice">ABUserContact</span> entity. It extends <span class="cv_-_computer_voice">PersonQueryBuilderBase</span>, making the query logic defined in that class available to the class <span class="cv_-_computer_voice">UserDuplicateFinder</span>. In addition, it adds a method, <span class="cv_-_computer_voice">hasEqualEmployeeNumber</span> for comparing equality of the <span class="cv_-_computer_voice">EmployeeNumber</span> fields of the two contacts.</div>
+      <div class="B_-_Body"><a name="2510632">For descriptions of those classes, see:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510502', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510636">PersonQueryBuilderBase Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('contact', 'cm-integration.14.09.html#2510258', '');" title="IFindDuplicatesPlugin Plugin Interface" name="2510640">UserDuplicateFinder Class</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2510656">To open this class in Studio, navigate in the </a><span class="ui_-_UI_element">Project </span>window to <span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">gsrc</span> and then to <span class="cv_-_computer_voice">gw.plugin.contact.findduplicates.querybuilder.UserContactQueryBuilder</span>.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

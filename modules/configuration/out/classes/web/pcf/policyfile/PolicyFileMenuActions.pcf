@@ -1,0 +1,161 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <MenuActions
+    flatten="true"
+    id="PolicyFileMenuActions">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="asOfDate"
+      type="DateTime"/>
+    <Variable
+      initialValue="policyPeriod.Policy.Jobs.firstWhere(\ j -&gt; j typeis Submission) as Submission"
+      name="submission"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="policyPeriod.Policy.findLastCoveredPeriod()"
+      name="latestCoveredPeriod"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="latestCoveredPeriod?.getSlice(latestCoveredPeriod.getCoverageEndDate().addSeconds(-1))"
+      name="latestPeriod"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="gw.plugin.Plugins.get(gw.plugin.policy.IPolicyPlugin).canStartReinstatement(policyPeriod) == null"
+      name="canStartReinstatement"/>
+    <MenuItem
+      id="WizardMenuActions_Goto"
+      label="displaykey.Web.JobWizard.GoTo"
+      shortcut="G"
+      visible="true">
+      <MenuItem
+        action="AccountFileForward.go(policyPeriod.Policy.Account)"
+        id="WizardMenuActions_ToAccountFile"
+        label="displaykey.Web.JobWizard.ToAccountFile"
+        visible="policyPeriod.Policy.Account != null and !policyPeriod.Policy.Account.New"/>
+      <!-- Can only view PolicyFile from bound periods or from open jobs after the first submission -->
+      <MenuItem
+        action="var periodToView = policyPeriod.Promoted ? policyPeriod : policyPeriod.BasedOn; PolicyFileForward.go(periodToView, periodToView.EditEffectiveDate)"
+        id="WizardMenuActions_ToPolicyFile"
+        label="displaykey.Web.JobWizard.ToPolicyFile"
+        shortcut="F"
+        visible="(policyPeriod.Promoted) or (policyPeriod.Job typeis Issuance) or (not policyPeriod.Job?.createsNewPolicy())"/>
+    </MenuItem>
+    <MenuItemDivider/>
+    <MenuItem
+      id="PolicyFileMenuActions_Create"
+      label="displaykey.Web.PolicyFile.Create">
+      <MenuItem
+        action="NewNoteWorksheet.goInWorkspace(policyPeriod, asOfDate)"
+        id="PolicyFileMenuActions_NewNote"
+        label="displaykey.Web.PolicyFile.NewNote"
+        shortcut="N"
+        visible="perm.Note.create"/>
+      <MenuItem
+        id="PolicyFileMenuActions_NewDocument"
+        label="displaykey.Web.PolicyFile.NewDocument"
+        shortcut="O"
+        visible="perm.Document.create">
+        <MenuItemSetRef
+          def="NewPolicyDocumentMenuItemSet(policyPeriod)"/>
+      </MenuItem>
+      <MenuItem
+        id="PolicyFileMenuActions_NewActivity"
+        label="displaykey.Web.PolicyFile.NewActivity"
+        shortcut="A"
+        visible="perm.System.actcreate">
+        <MenuItemSetRef
+          def="NewActivityMenuItemSet(null, policyPeriod.Policy, policyPeriod)"/>
+      </MenuItem>
+      <MenuItem
+        action="EmailWorksheet.goInWorkspace(policyPeriod, policyPeriod.Policy, null)"
+        id="PolicyFileMenuActions_NewEmail"
+        label="displaykey.Web.PolicyFile.NewEmail"
+        shortcut="N"/>
+      <MenuItem
+        action="PreRenewalDirectionPage.go(policyPeriod, policyPeriod.Policy, asOfDate)"
+        id="PolicyFileMenuActions_PreRenewalDirection"
+        label="displaykey.Web.PolicyFile.PreRenewalDirection"
+        shortcut="P"
+        visible="policyPeriod.Policy.OpenRenewalJob == null or policyPeriod.PolicyTerm.PreRenewalDirection != null"/>
+      <MenuItem
+        action="gw.web.policyfile.PolicyFileMenuActionsUIHelper.copySubmission(submission)"
+        id="PolicyFileMenuActions_CopySubmission"
+        label="displaykey.Web.PolicyFile.CopySubmission"
+        shortcut="C"
+        visible="gw.web.policyfile.PolicyFileMenuActionsUIHelper.canCopySubmission(submission)"/>
+      <MenuItem
+        action="SpinPolicy.go(latestPeriod, asOfDate)"
+        id="PolicyFileMenuActions_SpinPolicy"
+        label="displaykey.Web.PolicyFile.SpinPolicy.MenuAction"
+        visible="perm.PolicyPeriod.splitpolicy(policyPeriod) and gw.job.CopyDataVisibilityByProduct.isCopyDataVisibleForProduct(policyPeriod.Policy.ProductCode) and latestPeriod != null"/>
+      <MenuItem
+        action="SplitPolicy.go(latestPeriod, asOfDate)"
+        id="PolicyFileMenuActions_SplitPolicy"
+        label="displaykey.Web.PolicyFile.SplitPolicy.MenuAction"
+        visible="perm.PolicyPeriod.splitpolicy(policyPeriod) and gw.job.CopyDataVisibilityByProduct.isCopyDataVisibleForProduct(policyPeriod.Policy.ProductCode) and latestPeriod != null"/>
+    </MenuItem>
+    <MenuItemDivider/>
+    <MenuItem
+      id="PolicyFileMenuActions_NewWorkOrder"
+      label="displaykey.Web.PolicyFile.NewWorkOrder">
+      <MenuItem
+        action="gw.web.policyfile.PolicyFileMenuActionsUIHelper.startIssuance(policyPeriod, CurrentLocation)"
+        id="PolicyFileMenuActions_IssueSubmission"
+        label="displaykey.Web.PolicyFile.IssuePolicy"
+        visible="perm.PolicyPeriod.issue(policyPeriod) and policyPeriod.Policy.canStartIssuance() == null"/>
+      <MenuItem
+        action="StartPolicyChange.go(policyPeriod)"
+        id="PolicyFileMenuActions_ChangePolicy"
+        label="displaykey.Web.PolicyFile.ChangePolicy"
+        shortcut="G"
+        visible="perm.PolicyPeriod.change(policyPeriod) and policyPeriod.Policy.Issued"/>
+      <MenuItem
+        action="StartCancellation.go(policyPeriod)"
+        id="PolicyFileMenuActions_CancelPolicy"
+        label="displaykey.Web.PolicyFile.CancelPolicy"
+        shortcut="A"
+        visible="perm.PolicyPeriod.cancel(policyPeriod) and policyPeriod.CancellationDate != policyPeriod.PeriodStart"/>
+      <MenuItem
+        id="PolicyFileMenuActions_RescindCancellation"
+        label="displaykey.Web.PolicyFile.RescindCancellation"
+        visible="perm.System.cancelrescind">
+        <MenuItemIterator
+          elementName="cancellationJob"
+          value="gw.web.policyfile.PolicyFileMenuActionsUIHelper.getRescindableCancellations(policyPeriod)">
+          <MenuItem
+            action="JobForward.go(cancellationJob, cancellationJob.PolicyPeriod)"
+            id="item"
+            label="gw.web.policyfile.PolicyFileMenuActionsUIHelper.getCancellationLabel(cancellationJob)"/>
+        </MenuItemIterator>
+      </MenuItem>
+      <MenuItem
+        action="gw.web.policyfile.PolicyFileMenuActionsUIHelper.startReinstatement(policyPeriod, CurrentLocation)"
+        confirmMessage="(policyPeriod.hasFinalAuditFinished()) ? displaykey.Web.Job.FinalAuditCompletedReinstatement : &quot;&quot;"
+        id="PolicyFileMenuActions_ReinstatePolicy"
+        label="displaykey.Web.PolicyFile.ReinstatePolicy"
+        visible="perm.PolicyPeriod.reinstate(policyPeriod) and canStartReinstatement"/>
+      <MenuItemSetRef
+        def="StartRewriteMenuItemSet(policyPeriod)"/>
+      <MenuItem
+        action="gw.web.policyfile.PolicyFileMenuActionsUIHelper.startRenewal(policyPeriod, CurrentLocation)"
+        confirmMessage="displaykey.Web.PolicyFile.RenewPolicy.Confirm"
+        id="PolicyFileMenuActions_RenewPolicy"
+        label="displaykey.Web.PolicyFile.RenewPolicy"
+        visible="perm.PolicyPeriod.renew(policyPeriod) and policyPeriod.Policy.canStartRenewal() == null"/>
+    </MenuItem>
+    <MenuItemDivider/>
+    <MenuItem
+      id="PolicyFileMenuActions_Archiving"
+      label="displaykey.Web.JobWizard.Archive.Title"
+      visible="perm.System.archivedisable or perm.System.archiveenable">
+      <MenuItem
+        action="ArchiveSuspendResumePopup.push(policyPeriod.PolicyTerm.Policy)"
+        id="PolicyFileMenuActions_SuspendResumeArchiving"
+        label="displaykey.Web.JobWizard.Archive.EnableDisable"/>
+    </MenuItem>
+  </MenuActions>
+</PCF>

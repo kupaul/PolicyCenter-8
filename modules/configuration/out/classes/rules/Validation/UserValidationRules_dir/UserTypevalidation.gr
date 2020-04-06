@@ -1,0 +1,39 @@
+package rules.Validation.UserValidationRules_dir
+
+@gw.rules.RuleName("User Type validation")
+internal class UserTypevalidation {
+  static function doCondition(user : entity.User) : boolean {
+    
+/*start00rule*/
+return true
+/*end00rule*/
+
+  }
+
+  static function doAction(user : entity.User, actions : gw.rules.Action) {
+
+/*start00rule*/
+var roles = new java.util.HashSet<String>()
+switch (user.UserType) {
+  case "underwriter":
+    roles.add("underwriter")
+    roles.add("underwriting supervisor")
+    break
+  case "assistant":
+  case "producer":
+    roles.add("producer clerical")
+    roles.add("producer")
+    break
+}
+if (roles.size() > 0) {
+  for (userRole in user.Roles) {
+    if (roles.contains(userRole.Role.Name.toLowerCase())) {
+      actions.exitToNext()
+    }
+  }
+  user.reject( null, null, "loadsave", displaykey.Validation.User.NonMatchingRole(user, user.UserType) )
+}
+/*end00rule*/
+
+  }
+}

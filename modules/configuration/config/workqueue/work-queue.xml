@@ -1,0 +1,159 @@
+<?xml version="1.0"?>
+
+<work-queues xmlns="http://guidewire.com/work-queue">
+
+  <!--
+  ==============================================================================
+    Distributed Work Queue Parameters
+
+
+    NOTES:
+     Work queues provide a way to distribute load for processing-intensive
+     tasks across multiple servers or instances within a server.
+
+     For each workqueue, you may declare as many worker instances as you
+     wish, specifying for each one what server and environment (e.g. dev, test, prod)
+     it should run on.  If no worker is specified for a queue a single instance
+     will be started on the batch server. If a worker element has no
+     env and server attributes specified the configuration applies to
+     the batch server only (i.e. the specified number of workers will be
+     started on the batch server only).
+
+     Worker definitions include a number of parameters designed to tune
+     latency and load characteristics.  When a new workitem is added to the
+     queue, a notification is broadcast to all servers in the cluster, and
+     workers wake up to compete for the workitem.
+
+     By setting maxpollinterval (default 60,000 milliseconds) you can define
+     how often workers wake up automatically, even if no notification is
+     received.  This default may not be appropriate for large numbers of
+     workers and may need to be increased to prevent excessive numbers of
+     queries for workitems.
+
+     The batchsize attribute to a worker controls how many workitems it will
+     attempt to check out when searching for more workitems.  Larger batchsizes
+     are more efficient, but may not result in good load distribution.
+     Default is 10.
+
+     The workqueue defines a progressinterval attribute, which is used
+     to recover from error situations.  Any workitems checked out
+     longer than this interval will be assumed to have been failed or
+     dropped by a crashing server, and will be reassigned to a new
+     worker instance.  It is important that this interval be much
+     larger than the normal time required to process a workitem.
+
+     The retryLimit attribute on the workqueue element specifies how
+     many times a failing work item must be retried before being marked as failed
+     (default value is specified in the WorkItemRetryLimit config parameter).
+     The retryInterval specifies how many miliseconds to wait before
+     retrying a work item (default is 0).
+
+  ==============================================================================
+  -->
+
+  <!-- Archive old PolicyTerms -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.archive.ArchivePolicyTermWorkQueue" progressinterval="600000">
+    <worker instances="10"/>
+  </work-queue>
+  <!-- Restore PolicyTerms from the Archive -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.archive.RestorePolicyTermWorkQueue" progressinterval="600000">
+    <worker instances="10"/>
+  </work-queue>
+  <!-- Start renewals for expiring policies -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.job.PolicyRenewalStartWorkQueue" progressinterval="600000">
+    <worker instances="10"/>
+  </work-queue>
+  <!-- Policy Exception monitoring of open PolicyPeriods -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.policy.exception.OpenPolicyExceptionWorkQueue" progressinterval="600000">
+    <worker instances="1"/>
+  </work-queue>
+  <!-- Policy Exception monitoring of most recent bound PolicyPeriods -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.policy.exception.BoundPolicyExceptionWorkQueue" progressinterval="600000">
+    <worker instances="1"/>
+  </work-queue>
+  <!-- Policy Exception monitoring of closed PolicyPeriods -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.policy.exception.ClosedPolicyExceptionWorkQueue" progressinterval="600000">
+    <worker instances="1"/>
+  </work-queue>
+  <!-- User Exception monitoring -->
+  <work-queue workQueueClass="com.guidewire.pl.domain.escalation.UserExceptionWorkQueue" progressinterval="600000">
+    <worker instances="1"/>
+  </work-queue>
+  <!-- Group Exception monitoring -->
+  <work-queue workQueueClass="com.guidewire.pl.domain.escalation.GroupExceptionWorkQueue" progressinterval="600000">
+    <worker instances="1"/>
+  </work-queue>
+  <!-- Activity Escalation -->
+  <work-queue workQueueClass="com.guidewire.pl.domain.escalation.ActivityEscalationWorkQueue" progressinterval="600000">
+    <worker instances="1"/>
+  </work-queue>
+  <!-- Generate Audits from AuditScheduleItems -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.job.AuditTaskMonitorWorkQueue" progressinterval="600000">
+    <worker instances="1"/>
+  </work-queue>
+  <!-- Escalate any overdue premium reports -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.job.OverduePremiumReportWorkQueue" progressinterval="600000">
+    <worker instances="1"/>
+  </work-queue>
+  <!-- Workflows -->
+  <work-queue workQueueClass="com.guidewire.pl.system.workflow.engine.monitor.WorkflowDistributedWorkQueue" progressinterval="600000">
+    <worker instances="1"/>
+  </work-queue>
+  <!-- Expires specified jobs -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.job.JobExpirationWorkQueue" progressinterval="600000">
+    <worker instances="10"/>
+  </work-queue>
+  <!-- Geocode user contacts and account locations -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.geodata.geocode.PCGeocodeWorkQueue" progressinterval="600000">
+    <worker instances="1"/>
+  </work-queue>
+  <!-- Retires specified Activities -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.activity.RetireActivityWorkQueue" progressinterval="600000">
+    <worker instances="1"/>
+  </work-queue>
+  <work-queue workQueueClass="com.guidewire.pc.domain.reinsurance.RICedingWorkQueue" progressinterval="30000"> <!-- for testing, run often! -->
+    <worker instances="1"/>
+  </work-queue>
+  <work-queue workQueueClass="com.guidewire.pc.domain.policyhold.PolicyHoldJobEvalWorkQueue" progressinterval="600000">
+    <worker instances="1"/>
+  </work-queue>
+  <work-queue workQueueClass="com.guidewire.pc.domain.rating.impact.ImpactTestingTestPrepWorkQueue" progressinterval="30000">
+    <worker instances="10"/>
+  </work-queue>
+  <work-queue workQueueClass="com.guidewire.pc.domain.rating.impact.ImpactTestingTestRunWorkQueue" progressinterval="30000">
+    <worker instances="10"/>
+  </work-queue>
+  <!-- Exports ImpactTestingPolicyPeriods to Excel -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.rating.impact.ImpactTestingExportWorkQueue" progressinterval="30000">
+    <worker instances="1"/>
+  </work-queue>
+  <!-- Purges PolicyPeriods which are alternate versions -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.purge.PurgeWorkQueue" progressinterval="30000">
+    <worker instances="1"/>
+  </work-queue>
+  <!-- Purges preempted PolicyPeriods which are not associated with a Job -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.purge.PurgeOrphanedPolicyPeriodWorkQueue" progressinterval="30000">
+    <worker instances="1"/>
+  </work-queue>
+  <!-- Reset purge status and purge/prune dates on Job -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.purge.ResetPurgeStatusAndCheckDatesWorkQueue" progressinterval="600000">
+    <worker instances="1"/>
+  </work-queue>
+  <!-- Extracts Worksheet data from worksheet containers  -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.purge.WorksheetExtractWorkQueue" progressinterval="30000">
+    <worker instances="1"/>
+  </work-queue>
+  <!-- Purges Worksheets that have been extracted -->
+  <work-queue workQueueClass="com.guidewire.pc.domain.purge.WorksheetPurgeWorkQueue" progressinterval="30000">
+     <worker instances="1"/>
+  </work-queue>
+  <work-queue workQueueClass="com.guidewire.pl.system.database.checker.DBConsistencyCheckWorkQueue" progressinterval="86400000">
+     <worker instances="1" batchsize="1"/>
+  </work-queue>
+  <work-queue workQueueClass="com.guidewire.pl.system.database.dbstatistics.DBStatisticsWorkItemWorkQueue" progressinterval="86400000">
+     <worker instances="1" batchsize="1"/>
+  </work-queue>
+  <work-queue workQueueClass="com.guidewire.pl.domain.phone.CompactPhoneNormalizerWorkQueue" progressinterval="600000">
+     <worker instances="16" batchsize="100"/>
+  </work-queue>
+</work-queues>

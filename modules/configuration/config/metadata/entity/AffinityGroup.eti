@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  admin="true"
+  desc="Groups and Associations eligible for dividends or special rating."
+  entity="AffinityGroup"
+  exportable="true"
+  loadable="false"
+  table="affinitygroup"
+  type="retireable">
+  <implementsEntity
+      name="GlobalPersonName"/>
+  <column
+    desc="The name of affinity group."
+    name="Name"
+    nullok="false"
+    supportsLinguisticSearch="true"
+    type="shorttext"/>
+  <typekey
+    desc="Type of group"
+    name="AffinityGroupType"
+    nullok="false"
+    typelist="AffinityGroupType"/>
+  <foreignkey
+    columnName="OrganizationID"
+    desc="The Organization that this group belongs to."
+    fkentity="Organization"
+    name="Organization"
+    nullok="true"/>
+  <column
+    desc="First name of primary contact."
+    name="PrimaryContactFirstName"
+    nullok="true"
+    supportsLinguisticSearch="true"
+    type="firstname"/>
+  <column
+    desc="Last name of primary contact."
+    name="PrimaryContactLastName"
+    nullok="true"
+    supportsLinguisticSearch="true"
+    type="lastname"/>
+  <column
+    desc="Phone number of primary contact."
+    name="PrimaryContactPhone"
+    nullok="true"
+    type="phone">
+    <columnParam
+      name="phonecountrycodeProperty"
+      value="PrimaryContactPhoneCountryCode"/>
+    <columnParam
+      name="extensionProperty"
+      value="PrimaryContactPhoneExtension"/>
+  </column>
+  <typekey
+    desc="The country associated with this phone number."
+    name="PrimaryContactPhoneCountryCode"
+    nullok="true"
+    typelist="PhoneCountryCode"/>
+  <column
+    desc="Phone extension"
+    name="PrimaryContactPhoneExtension"
+    nullok="true"
+    type="varchar">
+    <columnParam
+      name="size"
+      value="60"/>
+  </column>
+  <column
+    desc="Affinity group start date"
+    name="StartDate"
+    nullok="true"
+    type="datetime"/>
+  <column
+    desc="Affinity group end date"
+    name="EndDate"
+    nullok="true"
+    type="datetime"/>
+  <column
+    desc="Description of the affinity group"
+    name="Description"
+    nullok="true"
+    type="shorttext"/>
+  <array
+    arrayentity="AffinityGroupJurisdiction"
+    desc="Jurisdictions that this affinity group is available to."
+    exportable="false"
+    name="Jurisdictions"
+    owner="true"/>
+  <array
+    arrayentity="AffinityGroupProducerCode"
+    desc="Producer Codes that this affinity group is available to."
+    exportable="false"
+    name="AffinityGroupProducerCodes"
+    owner="true"/>
+  <array
+    arrayentity="AffinityGroupProduct"
+    desc="Products associated with this Affinity Group."
+    exportable="false"
+    name="Products"
+    owner="true"/>
+  <index
+    desc="Affinity group names must be unique within an organization"
+    name="affinitygrp1"
+    unique="true">
+    <indexcol
+      keyposition="1"
+      name="Name"/>
+    <indexcol
+      keyposition="2"
+      name="OrganizationID"/>
+    <indexcol
+      keyposition="3"
+      name="StartDate"/>
+  </index>
+</entity>

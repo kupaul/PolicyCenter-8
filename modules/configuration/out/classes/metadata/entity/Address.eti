@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  desc="Address of a person or business."
+  entity="Address"
+  exportable="true"
+  extendable="true"
+  final="false"
+  platform="true"
+  subpackage="contact"
+  table="address"
+  type="retireable">
+  <implementsEntity
+    name="AddressAutofillable"/>
+  <implementsEntity
+    name="AddressBookLinkable"/>
+  <fulldescription><![CDATA[<p>Represents a street or mailing address. Addresses are normally associated with
+      a <code>Contact</code>, either as a <code>Contact.PrimaryAddress</code> or via the <code>ContactAddress</code> table.
+      Addresses can have geographic location information stored for proximity searches.</p>
+      {@link com.guidewire.pl.domain.contact.Contact}
+      {@link com.guidewire.pl.domain.contact.ContactAddress}
+    ]]></fulldescription>
+  <column
+    desc="The system uses this value when it is integrated with ContactManager and the related contact             is linked.  In this case, the ID represents the ID of this &lt;/code&gt;Address&lt;/code&gt; object's associated             &lt;code&gt;ABAddress&lt;/code&gt; in ContactManager. This value is Null if the object is not linked."
+    name="AddressBookUID"
+    nullok="true"
+    type="varchar">
+    <columnParam
+      name="size"
+      value="30"/>
+  </column>
+  <column
+    desc="Additional description of mailing address."
+    name="Description"
+    nullok="true"
+    type="shorttext"/>
+  <column
+    desc="Latest date that this address is valid."
+    name="ValidUntil"
+    nullok="true"
+    type="datetime"/>
+  <typekey
+    desc="Type of this address record."
+    name="AddressType"
+    nullok="true"
+    typelist="AddressType"/>
+  <column
+    desc="Latitude and longitude of this address, represented as an instance of SpatialPoint."
+    exportable="true"
+    loadable="false"
+    name="SpatialPoint"
+    nullok="true"
+    type="spatialpoint"/>
+  <typekey
+    default="None"
+    desc="Enum giving the status of the latitude and longitude data."
+    exportable="true"
+    loadable="false"
+    name="GeocodeStatus"
+    nullok="true"
+    typelist="GeocodeStatus"/>
+  <column
+    default="false"
+    desc="Boolean field to mark an address to be geocoded (if needed) by the batch geocoding work queue."
+    exportable="true"
+    loadable="true"
+    name="BatchGeocode"
+    nullok="false"
+    type="bit"/>
+  <index
+    desc="Index covering address for search on postal code."
+    name="addressu3"
+    trackUsage="true"
+    unique="true">
+    <indexcol
+      keyposition="1"
+      name="ID"/>
+    <indexcol
+      keyposition="2"
+      name="PostalCodeDenorm"/>
+    <indexcol
+      keyposition="3"
+      name="retired"/>
+  </index>
+</entity>

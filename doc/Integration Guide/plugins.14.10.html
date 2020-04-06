@@ -1,0 +1,358 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Plugin Thread Safety</title>
+    <link rel="StyleSheet" href="css/plugins.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-plugins.html#2558848">Plugins</a> : <a class="WebWorks_Breadcrumb_Link" href="plugins.14.01.html#2558848">Plugin Overview</a> : Plugin Thread Safety</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2558848">Plugin Thread Safety</a></h3>
+      <div class="B_-_Body"><a name="2558851">If you register a Java plugin or a Gosu plugin, exactly one instance of that plugin exists in the Java virtual machine on that server, generally speaking. For example, if you register a document production plugin, exactly one instance of that plugin instantiates on each server. </a></div>
+      <div class="B_-_Body"><a name="2424503">The rules are different for messaging plugins in PolicyCenter server clusters. Messaging plugins instantiate only on the batch server. The other non-batch servers have zero instances of message request, message transport, and message reply plugins. For more information, see </a><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.02.html#3036501', '');" title="Messaging Overview">“Messaging Flow Details”</a>. Messaging plugins must be especially careful about thread safety because messaging supports a large number of simultaneous threads, configured in Studio.</div>
+      <div class="B_-_Body"><a name="2424487">However, one server instance of the Java plugin or Gosu plugin must service multiple user sessions. Because multiple user sessions use multiple process threads, follow the these rules to avoid thread problems:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2502739">Your plugin must support multiple simultaneous calls to the same plugin method from different threads. You must ensure multiple calls to the plugin never access the same shared data. Alternatively, protect access to shared resources so that two threads do not access it simultaneously.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2424569">Your plugin must support multiple simultaneous calls to the plugin in general. For example, PolicyCenter might call two different plugin methods at the same time. You must ensure multiple method calls to the plugin never access the same shared data. Alternatively, protect access to shared resources so that two threads do not access it simultaneously.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2424636">Your plugin implementation must support multiple user sessions. Generally speaking, do not assume shared data or temporary storage is unique to one user request (one HTTP request of a single user).</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2424886">Collectively, these requirements describe thread safety. You must ensure your implementation is thread safe.</a></div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="2558886">For important information about concurrency, see </a><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">“Concurrency” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">Gosu Reference Guide</a></span>.</div>
+      <div class="B_-_Body"><a name="2502819">The most important way to avoid thread safety problems in plugin implementations is to avoid variables stored once per class, referred to as </a><span class="e_-_emphasis">static variables</span>. Static variables are a feature of both the Java language and the Gosu language. Static variables let a class store a value once per class, initialized only once. In contrast, object <span class="e_-_emphasis">instance variables</span> exist once per instance of the class. </div>
+      <div class="B_-_Body"><a name="2502820">Static variables can be extremely dangerous in a multi-threaded environment. Using static variables in a plugin can cause serious problems in a production deployment without taking great care to avoid problems. Be aware that such problems, if they occur, are extremely difficult to diagnose and debug. Timing in an multi-user multi-threaded environment is difficult, if not impossible, to control in a testing environment.</a></div>
+      <div class="B_-_Body"><a name="2427183">Because plugins could be called from multiple threads, there is sometimes no obvious place to store temporary data that stores state information. Where possible and appropriate, replace static variables with other mechanisms, such as setting properties on the relevant data passed as parameters. For example, in some cases perhaps use a data model extension property on a </a><span class="cv_-_computer_voice">Policy</span> or other relevant entity (including custom entities) to store state-specific data for the plugin. Be aware that storing data in an entity shares the data across servers in a PolicyCenter cluster (see <a href="javascript:WWHClickedPopup('integration', 'plugins.14.10.html#2629924', '');" title="Plugin Thread Safety">“Design Plugin Implementations to Support Server Clusters”</a>). Additionally, even standard instance variables (not just static variables) can be dangerous because there is only one instance of the plugin.</div>
+      <div class="B_-_Body"><a name="2425795">If you are experienced with multi-threaded programming and you are certain that static variables are necessary, you must ensure that you </a><span class="e_-_emphasis">synchronize</span> access to static variables. Synchronization refers to a feature of Java (but not natively in Gosu) that locks access between threads to shared resources such as static variables. </div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="2426218">Avoid static variables in plugins if at all possible. PolicyCenter may call plugins from multiple process threads and in some cases this could be dangerous and unreliable. Additionally, this type of problem is extremely difficult to diagnose and debug.</a></div>
+      <div class="B_-_Body"><a name="2629985">For important information about concurrency, see </a><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">“Concurrency” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">Gosu Reference Guide</a></span>.</div>
+      <div class="B_-_Body"><a name="2426003">For more information about concurrency and related APIs in Java, see:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2426004">http://java.sun.com/docs/books/tutorial/essential/concurrency/index.html</a></div>
+      <div class="B_-_Body"><a name="2426009">The following sections list some common approaches for thread safety with static variable in Java:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'plugins.14.10.html#2502858', '');" title="Plugin Thread Safety" name="2427223">“Using Java Concurrent Data Types, Even from Gosu”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'plugins.14.10.html#2425399', '');" title="Plugin Thread Safety" name="2427230">“Using Synchronized Methods (Java Only)”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'plugins.14.10.html#2425463', '');" title="Plugin Thread Safety" name="2427237">“Using Java Synchronized Blocks of Code (Java only)”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2427269">For thread safety issues in Gosu, see </a><a href="javascript:WWHClickedPopup('integration', 'plugins.14.10.html#2507070', '');" title="Plugin Thread Safety">“Gosu Static Variables and Gosu Thread Safety”</a>.</div>
+      <div class="B_-_Body"><a name="2427276">Additionally, note some similar issues related to multi-server (cluster) plugin design in </a><a href="javascript:WWHClickedPopup('integration', 'plugins.14.10.html#2629924', '');" title="Plugin Thread Safety">“Design Plugin Implementations to Support Server Clusters”</a>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2507070">Gosu Static Variables and Gosu Thread Safety</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2507071">The challenges of static variables and thread safety applies to Gosu classes, not just Java. This affects Gosu in plugin code and also for Gosu classes triggered from rules sets. The most important thing to know is that static variables present special challenges to ensure your code is thread safe.</a></div>
+      <div class="B_-_Body"><a name="2507072">The typical way to create a Gosu class with static variable is with code like:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2507073">class MyClass {</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2507074">&nbsp;&nbsp;static var _property1 : String;</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2507075">}</a></PRE>
+      <div class="B_-_Body"><a name="2507080">You must be as careful in Gosu with static variables and synchronizing data in them to be thread safe as in Java. Use the Java concurrent data types describes in this section to ensure safe access.</a></div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="2507081">Thread safety APIs that use blocking can affect performance negatively. For highest performance, use such APIs wisely and test your code under heavy loads that test the concurrency.</a></div>
+      <div class="B_-_Body"><a name="2558908">For important information about concurrency, see </a><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">“Concurrency” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">Gosu Reference Guide</a></span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2502858">Using Java Concurrent Data Types, Even from Gosu</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2502859">The simplest way to synchronizing access to a static variable in Java is to store data as an instance of a Java classes defined in the package </a><span class="cv_-_computer_voice">java.util.concurrent</span>. The objects in that package automatically implement synchronization of their data, and no additional code or syntax is necessary to keep all access to this data thread-safe. For example, to store a mapping between keys and values, instead of using a standard Java <span class="cv_-_computer_voice">HashMap</span> object, instead use <span class="cv_-_computer_voice">java.util.concurrent.ConcurrentHashMap</span>.</div>
+      <div class="B_-_Body"><a name="2427601">These tools protect the integrity of the keys and values in the map. However, you must ensure that if multiple threads or user sessions use the plugin, the business logic still does something appropriate with shared data. You must test the logic under multi-user and multi-thread situations.</a></div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="2427464">All thread safety APIs that use blocking can affect performance negatively. For high performance, use such APIs carefully and test all code under heavy loads that test the concurrency.</a></div>
+      <div class="B_-_Body"><a name="2558930">For important information about concurrency, see </a><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">“Concurrency” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">Gosu Reference Guide</a></span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2425399">Using Synchronized Methods (Java Only)</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2425918">Java provides a feature called synchronization that protects shared access to static variables. It lets you tag some or all methods so that no more than one of these methods can be run at once. Then, you can add code safely to these methods that get or set the object’s static class variables, and such access are thread safe.</a></div>
+      <div class="B_-_Body"><a name="2427455">If an object is visible to more than one thread, and one thread is running a synchronized method, the object is locked. If an object is locked, other threads cannot run a synchronized method of that object until the lock releases. If a second thread starts a synchronized method before the original thread finishes running a synchronized method on the same object, the second thread waits until the first thread finishes. This is known as </a><span class="e_-_emphasis">blocking</span> or <span class="e_-_emphasis">suspending execution</span> until the original thread is done with the object.</div>
+      <div class="B_-_Body"><a name="2427458">Mark one or more methods with this special status by applying the </a><span class="cv_-_computer_voice">synchronized</span> keyword in the method definition. This example shows a simple class with two synchronized methods that use a static class variable:</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425438">public class SyncExample {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425439">&nbsp;&nbsp;private static int contents;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425440">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425441">&nbsp;&nbsp;public int get() {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425442">&nbsp;&nbsp;&nbsp;&nbsp;return contents;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425443">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425444">&nbsp;&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425500">&nbsp;&nbsp;// Define a synchronized method. Only one thread can run a syncced method at one time for this object</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425501">&nbsp;&nbsp;public synchronized void put1(int value) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425502">&nbsp;&nbsp;&nbsp;&nbsp;contents = value;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425579">&nbsp;&nbsp;&nbsp;&nbsp;// do some other action here perhaps...</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425503">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425592">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425602">&nbsp;&nbsp;// Define a synchronized method. Only one thread can run a syncced method at one time for this object</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425570">&nbsp;&nbsp;public synchronized void put2(int value) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425593">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425571">&nbsp;&nbsp;&nbsp;&nbsp;contents = value;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425605">&nbsp;&nbsp;&nbsp;&nbsp;// do some other action here perhaps...</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425606">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425612">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425615">}</a></PRE>
+      <div class="B_-_Body"><a name="2427345">Synchronization protects invocations of all synchronized methods on the object: it is not possible for invocations of two different synchronized methods on the same object to interleave. For the earlier example, the Java virtual machine does all of the following:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2502949">Prevents two threads simultaneously running </a><span class="cv_-_computer_voice">put1</span> at the same time</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2502954">Prevents </a><span class="cv_-_computer_voice">put1</span> from running while <span class="cv_-_computer_voice">put2</span> is still running</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2502955">Prevents </a><span class="cv_-_computer_voice">put2</span> from running while <span class="cv_-_computer_voice">put1</span> is still running.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2427357">This approach protects integrity of access to the shared data. However, you must still ensure that if multiple threads or user sessions use the plugin, your code does something appropriate with this shared data. Always test your business logic under multi-user and multi-thread situations.</a></div>
+      <div class="B_-_Body"><a name="2427347">PolicyCenter calls the plugin method initialization method </a><span class="cv_-_computer_voice">setParameters</span> exactly once, hence only by one thread, so that method is automatically safe. The <span class="cv_-_computer_voice">setParameters</span> method is a special method that PolicyCenter calls during plugin initialization. This method takes a <span class="cv_-_computer_voice">Map</span> with initialization parameters that you specify in the Plugins registry in Studio. For more information about plugin parameters, see <a href="javascript:WWHClickedPopup('integration', 'plugins.14.06.html#2846404', '');" title="Special Notes For Java Plugins">“Special Notes For Java Plugins”</a>.</div>
+      <div class="B_-_Body"><a name="2426722">On a related note, Java class constructors cannot be synchronized; using the Java keyword </a><span class="cv_-_computer_voice">synchronized</span> with a constructor generates a syntax error. Synchronizing constructors does not make sense because only the thread that creates an object has access to during the time Java is constructing it.</div>
+      <div class="B_-_Body"><a name="2558945">For important information about concurrency, see </a><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">“Concurrency” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">Gosu Reference Guide</a></span>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2425463">Using Java Synchronized Blocks of Code (Java only)</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2425979">Java code can also synchronize access to shared resources by defining a block of statements that can only be run by one thread at a time. If a second thread starts that block of code, it waits until the first thread is done before continuing. Compared to the method locking approach described earlier in this section, synchronizing a block of statements allows much smaller granularity for locking.</a></div>
+      <div class="B_-_Body"><a name="2426084">To synchronize a block of statements, use the synchronized keyword and pass it a Java object or class identifier. In the context of protecting access to static variables, always pass the class identifier </a><span class="ps_-_parameter_in_code_snippets">ClassName</span><span class="cv_-_computer_voice">.class</span> for the class hosting the static variables.</div>
+      <div class="B_-_Body"><a name="2425980">For example, this demonstrates statement-level or block-level synchronization:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425224">class MyPluginClass implements IMyPluginInterface {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425225">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425226">&nbsp;&nbsp;private static byte[] myLock = new byte[0];</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425953"> </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425954">&nbsp;&nbsp;public void MyMethod(Address f){</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425955">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425250">&nbsp;&nbsp;&nbsp;&nbsp;// SYNCHRONIZE ACCESS TO SHARED DATA!</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425247">&nbsp;&nbsp;&nbsp;&nbsp;synchronized(MyPluginClass.class){</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425231"> </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425232">&nbsp;&nbsp;&nbsp;&nbsp;// Code to lock is here....</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425233">&nbsp;&nbsp;} </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2425297">}</a></PRE>
+      <div class="B_-_Body"><a name="2427368">This finer granularity of locking reduces the frequency that one thread is waiting for another to complete some action. Depending on the type of code and real-world use cases, this finer granularity could improve performance greatly over using synchronized methods. This is particularly the case if there are many threads. However, you might be able to refactor your code to convert blocks of synchronized statements into separate synchronized methods. For more information, see </a><a href="javascript:WWHClickedPopup('integration', 'plugins.14.10.html#2425399', '');" title="Plugin Thread Safety">“Using Synchronized Methods (Java Only)”</a>.</div>
+      <div class="B_-_Body"><a name="2427372">Both approaches protects integrity of access to the shared data. However, you must plan to handle multiple threads or user sessions to use your plugin, and do safely access any shared data. Also, test your business logic under realistic heavy loads for multi-user and multi-thread situations.</a></div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="2507051">Thread safety APIs that use blocking can affect performance negatively. For highest performance, use such APIs wisely and test your code under heavy loads that test the concurrency.</a></div>
+      <div class="B_-_Body"><a name="2558967">For important information about concurrency, see </a><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">“Concurrency” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">Gosu Reference Guide</a></span>.</div>
+      <h4 class="H2_-_Heading_2"><a name="2424787">Avoid Singletons Due to Thread-Safety Issues</a></h4>
+      <div class="B_-_Body"><a name="2424790">The thread safety problems discussed in the previous section apply to any Java object that has only a single instance (also referred to as a </a><span class="e_-_emphasis">singleton</span>) implemented using static variables. Because static variable access in multi-threaded code is complex, Guidewire strongly discourages using singleton Java classes. You must synchronize access to all data singleton instances just as for other static variables as described earlier in this section. This restriction is important for all Gosu Java that PolicyCenter runs.</div>
+      <div class="B_-_Body"><a name="2426310">This is an example of a creating a singleton using a class static variable:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2427043">public class MySingleton {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2427044"> private static MySingleton _instance =</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2427045">  new MySingleton();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2427046">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2427047"> private MySingleton() {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2427048">  // construct object . . .</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2427049"> }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2427050">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2427051"> public static MySingleton getInstance() {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2427052">  return _instance;</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2427053"> }</a></PRE>
+      <div class="B_-_Body"><a name="2427040">For more information about singletons in Java, see:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2426412">http://java.sun.com/developer/technicalArticles/Programming/singletons</a></div>
+      <div class="B_-_Body"><a name="2426521">If you absolutely must use a singleton, you must synchronize updates to class static variables as discussed at the beginning of </a><a href="javascript:WWHClickedPopup('integration', 'plugins.14.10.html#2558848', '');" title="Plugin Thread Safety">“Plugin Thread Safety”</a>.</div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="2629915">Avoid creating singletons, which are classes that enforce only a single instance of the class. If you really must use singletons, you must use the synchronization techniques discussed in </a><a href="javascript:WWHClickedPopup('integration', 'plugins.14.10.html#2558848', '');" title="Plugin Thread Safety">“Plugin Thread Safety”</a> to be thread safe.</div>
+      <div class="B_-_Body"><a name="2629922">For important other information about concurrency, see </a><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">“Concurrency” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">Gosu Reference Guide</a></span>.</div>
+      <h4 class="H2_-_Heading_2"><a name="2629924">Design Plugin Implementations to Support Server Clusters</a></h4>
+      <div class="B_-_Body"><a name="2426574">Generally speaking, if your plugin deploys in a PolicyCenter server cluster, there are instances of the plugin deployed on every server in the cluster. Consequently, design your plugin code (and any associated integration code) to support concurrent instances. If the Gosu code calls out to Java for any network connections, that code must support concurrent connections.</a></div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2426578">There is an exception for this cluster rule: messaging plugins exist only for the single server designated the batch server. See </a><a href="javascript:WWHClickedPopup('integration', 'eventsmessaging.26.02.html#3036501', '');" title="Messaging Overview">“Messaging Flow Details”</a>.</div>
+      <div class="B_-_Body"><a name="2426526">Because there may be multiple instances of the plugin, you must ensure that you update a database from Java code carefully. Your code must be thread safe, handle errors fully, and operate logically for database transactions in interactions with external systems. For example, if several updates to a database must be treated as one action or several pieces of data must be modified as one atomic action, design your code accordingly.</a></div>
+      <div class="B_-_Body"><a name="2507167">The thread safety synchronization techniques in </a><a href="javascript:WWHClickedPopup('integration', 'plugins.14.10.html#2558848', '');" title="Plugin Thread Safety">“Plugin Thread Safety”</a> are insufficient to synchronize data shared across multiple servers in a cluster. Each server has its own Java virtual machine, so it has its own data space. Write your plugins to know about the other server’s plugins but not to rely on anything other than the database to communicate among each other across servers. </div>
+      <div class="B_-_Body"><a name="2426606">You must implement your own approach to ensure access to shared resources safely even if accessed simultaneously by multiple threads and on multiple servers.</a></div>
+      <div class="B_-_Body"><a name="2559004">For important information about concurrency, see </a><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">“Concurrency” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'concurrency.25.1.html#1441309', '');" title="Concurrency">Gosu Reference Guide</a></span>.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

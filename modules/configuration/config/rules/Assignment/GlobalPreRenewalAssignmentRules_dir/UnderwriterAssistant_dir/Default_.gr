@@ -1,0 +1,29 @@
+package rules.Assignment.GlobalPreRenewalAssignmentRules_dir.UnderwriterAssistant_dir
+
+uses gw.api.system.PCLoggerCategory
+
+@gw.rules.RuleName("Default")
+internal class Default_ {
+  static function doCondition(policy : entity.Policy) : boolean {
+    
+/*start00rule*/
+return // If all else fails, pick a default user.
+true
+/*end00rule*/
+
+  }
+
+  static function doAction(policy : entity.Policy, actions : gw.rules.Action) {
+
+/*start00rule*/
+PCLoggerCategory.RULES.debug( "##### This is the Global Pre-renewal Assignment rule " + actions.getRule().DisplayName)
+PCLoggerCategory.RULES.debug( "Could not assign by normal rules, so assigning to a default group.")
+
+var group = gw.api.database.Query.make(entity.Group).compare(Group#Name.PropertyInfo.Name, Equals,"Los Angeles Branch UW").select().FirstResult
+policy.CurrentRoleAssignment.assignGroup(group)
+
+actions.exit()
+/*end00rule*/
+
+  }
+}

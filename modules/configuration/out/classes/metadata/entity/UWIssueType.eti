@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  entity="UWIssueType"
+  type="retireable"
+  desc="Types of undewriting issues."
+  exportable="true"
+  extendable="true"
+  ignoreForEvents="true"
+  subpackage="community"
+  platform="false"
+  readOnly="true"
+  loadable="false"
+  table="uwissuetype">
+  <column
+    name="Code"
+    type="varchar"
+    desc="The concise name of the issue type, used to identify the issue within rules."
+    nullok="false">
+    <columnParam
+      name="size"
+      value="60"/>
+  </column>
+  <column
+    name="Name"
+    type="shorttext"
+    desc="The more human-readable name of the issue type."
+    nullok="false">
+    <localization
+        nullok="false" tableName="uwisstype_name"/>
+  </column>
+  <column
+    name="Description"
+    type="mediumtext"
+    desc="The more human-readable description of the issue type."
+    nullok="false">
+    <localization
+        nullok="false" tableName="uwisstype_desc"/>
+  </column>
+  <typekey
+    name="Comparator"
+    typelist="ValueComparator"
+    desc="The comparator to use with this issue"
+    typefilter="Allowed_UWIssueType"
+    nullok="false"/>
+  <typekey
+    name="ValueFormatterType"
+    typelist="ValueFormatterType"
+    desc="The type of the formatter to be used for issue and grant values of this issue type"
+    nullok="false"/>
+  <typekey
+    name="BlockingPoint"
+    typelist="UWIssueBlockingPoint"
+    desc="The point at which this issue should block progress of a job"
+    nullok="false"/>
+  <typekey
+    name="CheckingSet"
+    typelist="UWIssueCheckingSet"
+    desc="The point at which issues of this type are created."
+    nullok="false"/>
+  <column
+    name="AutoApprovable"
+    type="bit"
+    desc="Whether or not this issue defines an automatically approvable issue."
+    default="false"
+    nullok="false"/>
+  <column
+    name="DefaultEditBeforeBind"
+    type="bit"
+    desc="Default value for the edit before bind flag"
+    default="true"
+    nullok="false"/>
+  <typekey
+    name="DefaultDurationType"
+    typelist="UWApprovalDurationType"
+    desc="Default value for the duration type"
+    default="NextChange"
+    nullok="false"/>
+  <typekey
+    name="DefaultApprovalBlockingPoint"
+    typelist="UWIssueBlockingPoint"
+    desc="Default point to which an approval can advance this job."
+    nullok="false"/>
+  <typekey
+    name="DefaultValueAssignmentType"
+    typelist="UWValueAssignmentType"
+    desc="Specifies the mechanism by which a default value is assigned to the &quot;Reference Value&quot;"
+    nullok="true"/>
+  <column
+    name="DefaultValueOffsetAmount"
+    type="decimal"
+    desc="The numeric amount of offset to apply to the original &quot;Reference Value&quot; in order compute a default value for the approval.  This value is ignored when the &quot;DefaultValueAssignmentType&quot; is &quot;Fixed&quot;"
+    nullok="true">
+    <columnParam
+      name="scale"
+      value="4"/>
+    <columnParam
+      name="precision"
+      value="20"/>
+  </column>
+  <typekey
+      name="DefaultValueOffsetCurrency"
+      typelist="Currency"
+      desc="Currency to be used for the DefaultValueOffsetAmount if the comparator is a MonetaryAmount one and the DefaultValueAssignmentType is OffsetAmount."
+      nullok="true"/>
+  <index
+    name="uwissuetypeu1"
+    desc="Ensures uniqueness among issue type codes."
+    unique="true">
+    <indexcol
+      name="Code"
+      keyposition="1"/>
+    <indexcol
+      name="Retired"
+      keyposition="2"/>
+  </index>
+</entity>

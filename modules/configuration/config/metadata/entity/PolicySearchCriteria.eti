@@ -1,0 +1,190 @@
+<?xml version="1.0"?>
+<nonPersistentEntity
+  xmlns="http://guidewire.com/datamodel"
+  desc="Non-persistent entity containing the criteria for a policy search"
+  entity="PolicySearchCriteria"
+  exportable="true"
+  subpackage="policy">
+  <column
+    default="false"
+    desc="If true, filters results so only the ones the user has permission to view are shown"
+    name="Secure"
+    nullok="true"
+    type="bit"/>
+  <column
+    default="false"
+    desc="If true, include archived in search"
+    name="IncludeArchived"
+    nullok="true"
+    type="bit"/>
+  <!-- Common search parameters to all Policy Searches -->
+  <column
+    desc="Account number for which to search."
+    name="AccountNumber"
+    nullok="true"
+    type="mediumtext"/>
+  <column
+    desc="PolicyPeriod number for which to search."
+    name="PolicyNumber"
+    nullok="true"
+    type="mediumtext"/>
+  <column
+    desc="As Of Date for which to search. Only applies to policy searches; ignored for job searches."
+    name="AsOfDate"
+    nullok="true"
+    type="datetime"/>
+  <column
+    desc="The Product for which to search"
+    name="ProductCode"
+    nullok="true"
+    type="patterncode"/>
+  <column
+    desc="Primary Insured city for which to search"
+    name="PrimaryInsuredCity"
+    nullok="true"
+    type="mediumtext"/>
+  <column
+    desc="Primary Insured postal code for which to search"
+    name="PrimaryInsuredPostalCode"
+    nullok="true"
+    type="postalcode"/>
+  <!-- Job Searches only -->
+  <column
+    desc="Job number for which to search."
+    name="JobNumber"
+    nullok="true"
+    type="mediumtext"/>
+  <column
+    default="false"
+    desc="Search for only open jobs if true.  Search for all jobs otherwise."
+    name="JobOpen"
+    nullok="true"
+    type="bit"/>
+  <column
+    default="false"
+    desc="Search multiple versions of a job instead of only searching for the selected one. Ignored for policy searches."
+    name="MultiVersionSearch"
+    nullok="true"
+    type="bit"/>
+  <!-- Define the kind of search we are performing -->
+  <typekey
+    desc="Distinguishes between various job types (e.g., Submission, Cancellations) and Policies"
+    name="SearchObjectType"
+    nullok="true"
+    typelist="SearchObjectType"/>
+  <typekey
+    desc="State that policy-associated contacts are in."
+    name="State"
+    nullok="true"
+    typelist="Jurisdiction"/>
+  <typekey
+    desc="Primary Insured state for which to search."
+    name="PrimaryInsuredState"
+    nullok="true"
+    typelist="State"/>
+  <typekey
+    desc="Primary Insured country for which to search."
+    name="PrimaryInsuredCountry"
+    nullok="true"
+    typelist="Country"/>
+  <typekey
+    desc="PolicyPeriod status for which to search."
+    name="PolicyStatus"
+    nullok="true"
+    typelist="PolicyPeriodStatus"/>
+  <!-- Submission searches only -->
+  <column
+    default="true"
+    desc="If true, ignores the PolicyNumber field if the SearchObjectType is set to Submission"
+    name="IgnoreSubmissionPolicyNumber"
+    nullok="true"
+    type="bit"/>
+  <column
+    desc="PrimaryInsured Phone number for which to search"
+    name="PrimaryInsuredPhone"
+    nullok="true"
+    type="phone"/>
+  <column
+    default="false"
+    desc="First name is an exact match"
+    name="FirstNameExact"
+    nullok="true"
+    type="bit"/>
+  <column
+    default="false"
+    desc="Last name is an exact match"
+    name="LastNameExact"
+    nullok="true"
+    type="bit"/>
+  <column
+    default="false"
+    desc="Company name is an exact match"
+    name="CompanyNameExact"
+    nullok="true"
+    type="bit"/>
+  <column
+    default="true"
+    desc="Use the most permissive search possible. May cause performance problems if set to true. Setting this to false may break legacy beavhior."
+    name="PermissiveSearch"
+    nullok="true"
+    type="bit"/>
+  <!-- Cancellation searches only -->
+  <typekey
+    desc="Cancellation reason codes"
+    name="CancelReasonCode"
+    nullok="true"
+    typelist="ReasonCode">
+    <keyfilters>
+      <keyfilter
+        name="CancelSource"/>
+    </keyfilters>
+  </typekey>
+  <typekey
+    desc="The method use to calculate the amount of refund due"
+    name="CancelRefundCalcMethod"
+    nullok="true"
+    typelist="CalculationMethod"/>
+  <typekey
+    desc="Party that initiated cancellation (carrier or insures)"
+    name="CancelSource"
+    nullok="true"
+    typelist="CancellationSource"/>
+  <foreignkey
+    columnName="DateCriteriaID"
+    desc="Date criteria search elements. Only applies to job searches; ignored for policy searches."
+    fkentity="DateCriteria"
+    name="DateCriteria"
+    nullok="false"/>
+  <foreignkey
+    columnName="NameCriteriaID"
+    desc="Name criteria search elements"
+    fkentity="NameCriteria"
+    name="NameCriteria"
+    nullok="false"/>
+  <foreignkey
+    columnName="AuditInfoCriteriaID"
+    desc="Audit information criteria search elements"
+    fkentity="AuditInfoCriteria"
+    name="AuditInfoCriteria"
+    nullok="false"/>
+  <foreignkey
+    desc="The account holder for which to search.  If specified, any name criteria will be ignored."
+    fkentity="Contact"
+    name="AccountHolder"
+    nullok="true"/>
+  <foreignkey
+    desc="The organization for which to search"
+    fkentity="Organization"
+    name="Producer"
+    nullok="true"/>
+  <foreignkey
+    desc="Searching against the producer code"
+    fkentity="ProducerCode"
+    name="ProducerCode"
+    nullok="true"/>
+  <foreignkey
+    desc="A policy period to exclude from the search results."
+    fkentity="PolicyPeriod"
+    name="ExcludedPolicyPeriod"
+    nullok="true"/>
+</nonPersistentEntity>

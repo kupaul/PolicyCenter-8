@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    id="ContactClaimsLV">
+    <Require
+      name="claims"
+      type="Claim[]"/>
+    <Require
+      name="preferredCurrency"
+      type="Currency"/>
+    <RowIterator
+      editable="false"
+      elementName="claim"
+      pageSize="10"
+      value="claims">
+      <Row>
+        <Cell
+          action="PolicyFileForward.go(claim.PolicyPeriod.PolicyNumber)"
+          actionAvailable="claim.PolicyPeriod != null"
+          id="PolicyNumber"
+          label="displaykey.Web.Claims.PolicyNumber"
+          value="claim.PolicyPeriod.PolicyNumberDisplayString"/>
+        <Cell
+          id="ProductCode"
+          label="displaykey.Web.Claims.Product"
+          sortOrder="1"
+          value="claim.PolicyPeriod.Policy.Product.DisplayName"/>
+        <Cell
+          id="Insured"
+          label="displaykey.Web.Claims.Insured"
+          value="claim.PolicyPeriod.PrimaryInsuredName"/>
+        <DateCell
+          id="LossDate"
+          label="displaykey.Web.Claims.LossDate"
+          sortDirection="descending"
+          sortOrder="2"
+          value="claim.LossDate"/>
+        <Cell
+          id="ClaimNumber"
+          label="displaykey.Web.Claims.ClaimNumber"
+          value="claim.ClaimNumber"/>
+        <Cell
+          id="Status"
+          label="displaykey.Web.Claims.Status"
+          value="claim.Status"/>
+        <Cell
+          footerSumValue="claim.TotalIncurred == null ? null : claim.TotalIncurred?.convertAmount(preferredCurrency)"
+          id="TotalIncurred"
+          label="displaykey.Web.Claims.TotalIncurred"
+          value="claim.TotalIncurred"/>
+      </Row>
+    </RowIterator>
+  </ListViewPanel>
+</PCF>

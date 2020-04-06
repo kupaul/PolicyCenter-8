@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="BusinessWeekDetailDV"
+    mode="CA">
+    <Require
+      name="BusinessWeek"
+      type="BusinessWeek"/>
+    <Variable
+      initialValue="null"
+      name="zoneType"
+      type="ZoneType"/>
+    <Variable
+      initialValue="null"
+      name="linkedZone"
+      type="Zone"/>
+    <Variable
+      initialValue="typekey.Country.TC_CA"
+      name="country"
+      type="Country"/>
+    <InputColumn>
+      <RangeInput
+        editable="true"
+        hideIfReadOnly="true"
+        id="zoneType"
+        label="displaykey.Web.Admin.BusinessWeekDetailDV.BusinessWeekType"
+        value="zoneType"
+        valueRange="gw.api.admin.BaseAdminUtil.getRegionZoneTypesWithGranularity(country)"
+        visible="true">
+        <PostOnChange
+          onChange="linkedZone=null;BusinessWeek.filterCriteria.LinkedZone=null;                         BusinessWeek.filterCriteria.ZoneType=zoneType"/>
+      </RangeInput>
+      <ListViewInput
+        def="BusinessWeekZonesLV(BusinessWeek, zoneType, country)"
+        editable="true"
+        hideIfReadOnly="true"
+        label="displaykey.Web.Admin.BusinessWeeksLV.Zones"
+        visible="BusinessWeek.filterCriteria.ZoneType==&quot;fsa&quot;">
+        <Toolbar
+          visible="true">
+          <IteratorButtons
+            iterator="BusinessWeekZonesLV.BusinessWeekZonesLV"/>
+        </Toolbar>
+      </ListViewInput>
+      <!-- filter for cities, filter on province before showing
+           shuttlelist -->
+      <RangeInput
+        editable="true"
+        hideIfReadOnly="true"
+        id="province"
+        label="displaykey.Java.Admin.BusinessWeeks.SelectProvince"
+        value="linkedZone"
+        valueRange="Zone.finder.findZones(country,typekey.ZoneType.TC_PROVINCE)"
+        visible="BusinessWeek.FilterCriteria.ZoneType == &quot;city&quot;">
+        <PostOnChange
+          onChange="BusinessWeek.FilterCriteria.LinkedZone=linkedZone"/>
+      </RangeInput>
+      <!-- TODO: change this once indexed properties are supported  shuttle-list for zone selection.
+           used here for counties,provinces,states and cities
+           not visible if applicable filter has not been selected -->
+      <RangeInput
+        editable="true"
+        hideIfReadOnly="true"
+        id="ZoneInput"
+        label="displaykey.Web.Admin.BusinessWeekDetailDV.Zones"
+        numRows="10"
+        shuttleList="true"
+        value="BusinessWeek.ZoneCodes"
+        valueRange="Zone.finder.findZoneCodes(country,BusinessWeek.filterCriteria.ZoneType,BusinessWeek.filterCriteria.LinkedZone)"
+        visible="!(BusinessWeek.filterCriteria.ZoneType==null || BusinessWeek.filterCriteria.ZoneType==&quot;fsa&quot;                   || (BusinessWeek.filterCriteria.ZoneType == &quot;city&quot; and BusinessWeek.filterCriteria.LinkedZone==null))"/>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

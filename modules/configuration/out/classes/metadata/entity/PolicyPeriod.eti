@@ -1,0 +1,609 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  desc="Policy Period allows a point in time reconstruction of all key policy attributes."
+  effDatedContainerField="Policy"
+  entity="PolicyPeriod"
+  exportable="true"
+  loadable="false"
+  lockable="true"
+  subpackage="policy.period"
+  table="policyperiod"
+  type="effdatedbranch">
+  <implementsInterface
+    iface="gw.api.reinsurance.ReinsurableCoverable"
+    impl="gw.reinsurance.risk.PolicyReinsurableCoverableAdapter"/>
+  <implementsInterface
+    iface="gw.api.history.CustomHistory"
+    impl="gw.api.history.PolicyPeriodCustomHistoryImpl"/>
+  <implementsEntity
+    adapter="com.guidewire.pc.domain.archiving.impl.PolicyPeriodInfoAdapter"
+    name="RootInfo"/>
+  <implementsEntity
+    adapter="gw.question.PolicyPeriodAnswerContainerAdapter"
+    name="AnswerContainer"/>
+  <implementsInterface
+    iface="gw.api.domain.DenormalizedFKOutOfDomainGraph"
+    impl="gw.contact.PolicyPeriodDenormalizedFKImpl"/>
+  <column
+    createhistogram="true"
+    default="false"
+    desc="Flag for policy/risk assigned by state requirement"
+    name="AssignedRisk"
+    nullok="true"
+    type="bit"/>
+  <column
+    desc="The reference name of this branch of the job"
+    name="BranchName"
+    nullok="true"
+    type="shorttext"/>
+  <column
+    desc="The number of this branch of the job"
+    name="BranchNumber"
+    nullok="true"
+    type="integer"/>
+  <monetaryamount
+    amountColumnName="DepositCollected"
+    amountRange="nonnegative"
+    desc="The deposit amount collected"
+    name="DepositCollected"
+    nullok="true"/>
+  <column
+    default="false"
+    desc="True if this is a draft PolicyPeriod in an OOS job that has failed validation"
+    name="FailedOOSEValidation"
+    nullok="true"
+    type="bit"/>
+  <column
+    default="false"
+    desc="True if this is a PolicyPeriod in an OOS job that has blocking UWIssues at a later slice than the current primary slice"
+    name="FailedOOSEEvaluation"
+    nullok="true"
+    type="bit"/>
+  <column
+    desc="A sequence number that starts at 1 and is incremented on a renewal and rewrite, usually to distinguish between different periods of a same policy."
+    name="TermNumber"
+    nullok="true"
+    type="integer"/>
+  <column
+    desc="The policy number for this policy period. This value may be different from the core policy number on the associated Policy."
+    name="PolicyNumber"
+    nullok="true"
+    type="policynumber"/>
+  <column
+    desc="The display name of the primary names insured (denormalization)."
+    name="PrimaryInsuredName"
+    nullok="true"
+    supportsLinguisticSearch="true"
+    type="shorttext"/>
+  <foreignkey
+    desc="The primary named insured's contact on the policy. Denorm field so contact is retained when the policyperiod is archived."
+    exportasid="true"
+    fkentity="Contact"
+    name="PNIContactDenorm"
+    nullok="true"
+    setterScriptability="doesNotExist"/>
+  <column
+    default="false"
+    desc="Whether or not the policy's pricing information is up to date and accurate.  This should be set by the markValidQuote() and markInvalidQuote() domain methods."
+    name="ValidQuote"
+    nullok="false"
+    setterScriptability="doesNotExist"
+    type="bit"/>
+  <column
+    desc="Nominally, the date this period was created. For reinstatements, it is the written date of the reinstated period. For rewrites, it can be the date of the rewrite or the date of the original period."
+    name="WrittenDate"
+    nullok="true"
+    type="dateonly"/>
+  <column
+    desc="The code of the pattern to use for creating and scheduling single checking audits"
+    name="SingleCheckingPatternCode"
+    nullok="true"
+    type="patterncode"/>
+  <column
+    desc="The code of the pattern to use for creating and scheduling a series of checking audits"
+    name="SeriesCheckingPatternCode"
+    nullok="true"
+    type="patterncode"/>
+  <column
+    default="false"
+    desc="Whether to override the billing allocation for installments plan"
+    name="OverrideBillingAllocation"
+    nullok="true"
+    type="bit"/>
+  <column
+    default="0"
+    desc="The percentage to bill immediately if overriding billing allocation for installments plan"
+    name="BillImmediatelyPercentage"
+    nullok="true"
+    type="percentagedec"/>
+  <column
+    desc="Override of the default reporting deposit % of the reporting pattern chosen"
+    name="DepositOverridePct"
+    nullok="true"
+    type="decimal">
+    <columnParam
+      name="scale"
+      value="3"/>
+    <columnParam
+      name="precision"
+      value="12"/>
+  </column>
+  <monetaryamount
+    amountColumnName="DepositAmount"
+    amountRange="nonnegative"
+    desc="Deposit amount calculated from the deposit % and total cost subject to reporting"
+    name="DepositAmount"
+    nullok="true"/>
+  <column
+    default="false"
+    desc="Whether to waive the deposit amount change from current policy period and the based on"
+    name="WaiveDepositChange"
+    nullok="true"
+    type="bit"/>
+  <column
+    desc="The number of the billing account which may only exist in billing system."
+    name="AltBillingAccountNumber"
+    nullok="true"
+    type="shorttext"/>
+  <column
+    desc="The public id of the invoice stream in billing system."
+    name="InvoiceStreamCode"
+    nullok="true"
+    type="shorttext"/>
+  <column
+    default="false"
+    desc="Whether the quote is hidden from users without permission to view quote"
+    name="QuoteHidden"
+    nullok="false"
+    type="bit"/>
+  <column
+    default="false"
+    desc="Whether the PolicyPeriod is locked from edit by users without permission to edit"
+    name="EditLocked"
+    nullok="false"
+    type="bit"/>
+  <column
+    default="false"
+    desc="If true indicates that the user wants to use custom billing instead of relying on BC default values"
+    name="CustomBilling"
+    nullok="false"
+    type="bit"/>
+  <!-- DENOMALIZED FIELDS -->
+  <monetaryamount
+    amountColumnName="TotalPremiumRPT"
+    desc="Total amount of all premium (but not taxes or any other costs) for the entire policy period. The total is denormalized for higher performance UI display and reporting support."
+    name="TotalPremiumRPT"
+    nullok="true"/>
+  <monetaryamount
+    amountColumnName="TotalCostRPT"
+    desc="Total amount of all premium, taxes, and any other costs for the entire policy period. The total is denormalized for higher performance UI display and reporting support."
+    name="TotalCostRPT"
+    nullok="true"/>
+  <monetaryamount
+    amountColumnName="TransactionPremiumRPT"
+    desc="Total change in premium (but not taxes or any other costs) caused by a job. For a job that creates a new policy period (i.e. Submission, Renewal, or Rewrite), the TransactionPremiumRPT will be the same as the TotalPremiumRPT because there were no prior premiums for the period. For mid-term jobs (Policy Change, Cancellation, etc.), this field represents the change in amount from the prior job. The total is denormalized for UI display and reporting support."
+    name="TransactionPremiumRPT"
+    nullok="true"/>
+  <monetaryamount
+    amountColumnName="TransactionCostRPT"
+    desc="Total change in premium, taxes, and any other costs caused by a job. For a job that creates a new policy period (i.e. Submission, Renewal, or Rewrite), the TransactionCostRPT will be the same as the TotalCostRPT because there were no prior costs for the period. For mid-term jobs (Policy Change, Cancellation, etc.), this field represents the change in amount from the prior job. The total is denormalized for UI display and reporting support."
+    name="TransactionCostRPT"
+    nullok="true"/>
+  <column
+    default="1"
+    desc="True if reinsurables were generated sucessfully."
+    name="ValidReinsurance"
+    nullok="true"
+    type="bit"/>
+  <column
+    desc="The date the policy should be rated"
+    name="RateAsOfDate"
+    nullok="true"
+    type="datetime"/>
+  <column
+    default="false"
+    desc="Do not purge any of this policy period."
+    name="DoNotPurge"
+    nullok="false"
+    setterScriptability="doesNotExist"
+    type="bit"/>
+  <typekey
+    desc="The method to allocate the remainder of cost if overriding billing allocation for installments plan"
+    name="AllocationOfRemainder"
+    nullok="true"
+    typelist="BillingRemainderAllocate"/>
+  <typekey
+    desc="State the policy period is based in."
+    name="BaseState"
+    nullok="true"
+    typelist="Jurisdiction"/>
+  <typekey
+    desc="Market segment this policy period is in."
+    name="Segment"
+    nullok="true"
+    typelist="Segment"/>
+  <typekey
+    createhistogram="true"
+    desc="The period's status. This field can only be updated via workflow methods available on the various Job entities."
+    name="Status"
+    nullok="false"
+    typelist="PolicyPeriodStatus"/>
+  <typekey
+    desc="The method used to calculate the amount of refund due.  Once a policy is canceled, subsequent policy periods inherit this until it is reinstated, at which point this field is reset to null.  Also returns null if the cancellation cannot be found (e.g. if the cancellation was done in an external system)."
+    name="RefundCalcMethod"
+    nullok="true"
+    typelist="CalculationMethod"/>
+  <typekey
+    desc="Billing Method (Agency Bill, Direct Bill, etc)"
+    name="BillingMethod"
+    nullok="true"
+    typelist="BillingMethod"/>
+  <typekey
+    desc="Preferred Coverage Currency"
+    name="PreferredCoverageCurrency"
+    nullok="false"
+    typelist="Currency"/>
+  <typekey
+    desc="Preferred Settlement Currency"
+    name="PreferredSettlementCurrency"
+    nullok="false"
+    typelist="Currency"/>
+  <foreignkey
+    columnName="JobID"
+    desc="The job this policy period is part of."
+    exportable="false"
+    fkentity="Job"
+    name="Job"
+    nullok="true"
+    setterScriptability="doesNotExist"/>
+  <foreignkey
+    desc="Sequence to autonumber policy locations"
+    fkentity="AutoNumberSequence"
+    name="LocationAutoNumberSeq"
+    nullok="true"/>
+  <foreignkey
+    deprecated="true"
+    desc="The minimum premium required for the policy period."
+    fkentity="MinimumPremium"
+    name="MinimumPremium"
+    nullok="true"/>
+  <!-- foreignkey columnName="PaymentScheduleID" desc="Payment Schedule" fkentity="PaymentSchedule" name="PaymentSchedule"/ PolicyID can be null at branch creation, we need this to support moving branches from one policy to another -->
+  <foreignkey
+    columnName="PolicyID"
+    desc="The policy to which this period belongs"
+    fkentity="Policy"
+    name="Policy"
+    nullok="false"
+    setterScriptability="doesNotExist"/>
+  <foreignkey
+    columnName="PolicyTermID"
+    desc="Policy term information associated with this period"
+    fkentity="PolicyTerm"
+    name="PolicyTerm"
+    nullok="false"
+    setterScriptability="hidden"/>
+  <foreignkey
+    columnName="ProducerCodeOfRecordID"
+    desc="The producer code that created this policy in this period and should get the commissions."
+    exportasid="true"
+    fkentity="ProducerCode"
+    name="ProducerCodeOfRecord"
+    nullok="false"/>
+  <foreignkey
+    desc="Underwriting company that insures this policy.  This can only change on a Cancellation or Rewrite, never mid-term."
+    exportasid="true"
+    fkentity="UWCompany"
+    name="UWCompany"
+    nullok="true"/>
+  <onetoone
+    desc="The new invoice stream created by this policy period."
+    fkentity="BillingInvoiceStream"
+    name="NewInvoiceStream"
+    nullok="true"
+    owner="true"/>
+  <edgeForeignKey
+    desc="The workflow that is active from the perspective of the UI. This workflow will be polled when the UI is waiting for results."
+    edgeTableName="PRActiveWorkflow"
+    exportable="false"
+    fkentity="PolicyPeriodWorkflow"
+    name="ActiveWorkflow"
+    nullok="true"/>
+  <array
+    arrayentity="PeriodAnswer"
+    cascadeDelete="true"
+    desc="Set of answers for this policy period."
+    name="PeriodAnswers"/>
+  <array
+    arrayentity="Form"
+    cascadeDelete="true"
+    desc="Forms associated with this policy."
+    name="Forms"/>
+  <array
+    arrayentity="PolicyLine"
+    desc="Lines (e.g. Auto, Property,etc.) of this policy."
+    name="Lines"/>
+  <array
+    arrayentity="PolicyContactRole"
+    cascadeDelete="true"
+    desc="The policy contact roles of this policy period."
+    name="PolicyContactRoles"
+    owner="true"/>
+  <array
+    arrayentity="UWIssue"
+    cascadeDelete="true"
+    desc="Issues generated during policy evaluation."
+    name="UWIssuesIncludingSoftDeleted"/>
+  <array
+    arrayentity="PolicyLocation"
+    cascadeDelete="true"
+    desc="The period locations."
+    name="PolicyLocations"/>
+  <array
+    arrayentity="PolicyPeriodWorkflow"
+    arrayfield="PolicyPeriod"
+    cascadeDelete="true"
+    desc="Set of workflows associated with this period."
+    exportable="false"
+    name="Workflows"/>
+  <array
+    arrayentity="Note"
+    cascadeDelete="true"
+    desc="Notes associated with this PolicyPeriod."
+    name="Notes"/>
+  <!-- RI Risk arrays.  When delete policy period, we probably want to delete all of these even though there is
+        a chance that it can mess up end-dating of attachments -->
+  <array
+    arrayentity="LocationRisk"
+    cascadeDelete="true"
+    desc="All reinsurable risks associated with policy locations on this policy period."
+    name="LocationRisks"/>
+  <array
+    arrayentity="PolicyRisk"
+    cascadeDelete="true"
+    desc="The reinsurable risk associated with this policy period."
+    name="PolicyRisks"/>
+  <array
+    arrayentity="RIRiskVersionList"
+    cascadeDelete="true"
+    exportable="false"
+    name="RIRiskVersionLists"/>
+  <array
+    arrayentity="PolicyFXRate"
+    cascadeDelete="true"
+    desc="fx rates used for monetary amount conversions"
+    name="PolicyFXRates"/>
+  <!-- CHECKNEEDED: No overlapping bound active policy periods of same policy CHECKNEEDED: PolicyPeriod.Lines.length > 0  CHECKNEEDED: PolicyPeriod.EditEffectiveDate must be >= PolicyPeriod.PeriodStart  CHECKNEEDED: PolicyPeriod.EditEffectiveDate must be < PolicyPeriod.PeriodEnd  CHECKNEEDED: If two PRs belong to the same Job, they must also belong to the same Policy  CHECKNEEDED: All PolicyPeriods with this PeriodID belong to the same Policy  This isn't really the right place for these, but they all generate checks for multiple entities,
+         so it doesn't necessarily matter where they're declared.  What we don't want is for them to
+         be declared multiple times, since that would result in redundant checks. -->
+  <dbcheckbuilder
+    className="com.guidewire.pc.domain.coverage.dbchecks.CoverableDBCheckBuilder"/>
+  <dbcheckbuilder
+    className="com.guidewire.pc.domain.coverage.dbchecks.CoverageDBCheckBuilder"/>
+  <dbcheckbuilder
+    className="com.guidewire.pc.domain.policy.dbchecks.ModifiableDBCheckBuilder"/>
+  <dbcheckbuilder
+    className="com.guidewire.pc.domain.policy.dbchecks.ModifierDBCheckBuilder"/>
+  <dbcheckbuilder
+    className="com.guidewire.pc.domain.policy.dbchecks.EffDatedBeanDBCheckBuilder"/>
+  <dbcheckbuilder
+    className="com.guidewire.pc.domain.policy.period.dbchecks.PolicyPeriodDBCheckBuilder"/>
+  <dbcheckbuilder
+    className="com.guidewire.pc.domain.financials.dbchecks.TransactionDBCheckBuilder"/>
+  <events>
+    <event
+      description="Event fired to notify external system to bind a submission for a particular policy period."
+      name="BindSubmission"/>
+    <event
+      description="Event fired to notify external system to issue a submission for a particular policy period."
+      name="IssueSubmission"/>
+    <event
+      description="Event fired to notify external system to issue a policy change for a particular policy period."
+      name="IssuePolicyChange"/>
+    <event
+      description="Event fired to notify external system to issue a renewal for a particular policy period."
+      name="IssueRenewal"/>
+    <event
+      description="Event fired to notify external system to issue a reinstatement for a particular policy period."
+      name="IssueReinstatement"/>
+    <event
+      description="Event fired to notify external system to issue a rewrite for a particular policy period."
+      name="IssueRewrite"/>
+    <event
+      description="Event fired to send a message to an external rating system to request a quote for a particular policy period."
+      name="RequestQuote"/>
+    <event
+      description="Event fired to notify external system about a non-renewal."
+      name="SendNonRenewal"/>
+    <event
+      description="Event fired to notify external system to send non-renewal-related documents."
+      name="SendNonRenewalDocuments"/>
+    <event
+      description="Event fired to notify external system about a not-taken policy."
+      name="SendNotTaken"/>
+    <event
+      description="Event fired to notify external system to send not-taken related documents."
+      name="SendNotTakenDocuments"/>
+    <event
+      description="Event fired to notify external system to send renewal-related documents."
+      name="SendRenewalDocuments"/>
+    <event
+      description="Event fired to notify external system to send cancellation notices"
+      name="SendCancellationNotices"/>
+    <event
+      description="Event fired to notify external system to send rescind cancellation notices"
+      name="SendRescindNotices"/>
+    <event
+      description="Event fired to notify external system to issue a cancellation for a particular policy period."
+      name="IssueCancellation"/>
+    <event
+      description="Event fired when a policy period has been preempted."
+      name="PreemptedPeriod"/>
+    <event
+      description="Event fired when a policy period has been purged."
+      name="PolicyPeriodPurged"/>
+  </events>
+  <onetoone
+    desc="Stores fields that change in effective time but do not fit in any policy line."
+    fkentity="EffectiveDatedFields"
+    name="EffectiveDatedFields"
+    nullok="true"/>
+  <onetoone
+    desc="ArchiveRoot for Worksheet data, if present"
+    fkentity="WorksheetContainer"
+    name="WorksheetContainer"
+    nullok="true"
+    owner="true"/>
+  <index
+    desc="Used for looking up period's by PolicyNumber."
+    name="policyperiod1">
+    <indexcol
+      keyposition="1"
+      name="PolicyNumber"/>
+  </index>
+  <index
+    desc="Used for purging preemted and orphaned policy periods."
+    name="policyperiodPurge">
+    <indexcol
+      keyposition="1"
+      name="Preempted"/>
+  </index>
+  <index
+    desc="Perf index for team page stats."
+    expectedtobecovering="true"
+    name="polperPerf1">
+    <indexcol
+      keyposition="1"
+      name="JobID"/>
+    <indexcol
+      keyposition="2"
+      name="Retired"/>
+    <indexcol
+      keyposition="3"
+      name="ModelNumber"/>
+  </index>
+  <index
+    desc="Perf index for team page stats."
+    expectedtobecovering="true"
+    name="polperPerf4">
+    <indexcol
+      keyposition="1"
+      name="JobID"/>
+    <indexcol
+      keyposition="2"
+      name="Retired"/>
+    <indexcol
+      keyposition="3"
+      name="Status"/>
+    <indexcol
+      keyposition="4"
+      name="ModelNumber"/>
+    <indexcol
+      keyposition="5"
+      name="TemporaryBranch"/>
+  </index>
+  <index
+    desc="Index for job expiration batch process."
+    name="polperPerf5">
+    <indexcol
+      keyposition="1"
+      name="EditEffectiveDate"/>
+    <indexcol
+      keyposition="2"
+      name="Retired"/>
+    <indexcol
+      keyposition="3"
+      name="Locked"/>
+    <indexcol
+      keyposition="4"
+      name="Status"/>
+    <indexcol
+      keyposition="5"
+      name="JobId"/>
+    <indexcol
+      keyposition="6"
+      name="TemporaryBranch"/>
+  </index>
+  <index
+    desc="Covering index for policy/job search."
+    expectedtobecovering="true"
+    name="polperPerf6"
+    unique="true">
+    <indexcol
+      keyposition="1"
+      name="ID"/>
+    <indexcol
+      keyposition="2"
+      name="Retired"/>
+    <indexcol
+      keyposition="3"
+      name="JobId"/>
+    <indexcol
+      keyposition="4"
+      name="PolicyId"/>
+    <indexcol
+      keyposition="5"
+      name="TemporaryBranch"/>
+    <indexcol
+      keyposition="6"
+      name="MostRecentModel"/>
+  </index>
+  <index
+    desc="Index for performance of policy search."
+    name="polperPerf7"
+    unique="true">
+    <indexcol
+      keyposition="1"
+      name="MostRecentModel"/>
+    <indexcol
+      keyposition="2"
+      name="PolicyId"/>
+    <indexcol
+      keyposition="3"
+      name="ID"/>
+    <indexcol
+      keyposition="4"
+      name="Retired"/>
+    <indexcol
+      keyposition="5"
+      name="ModelNumber"/>
+    <indexcol
+      keyposition="6"
+      name="TemporaryBranch"/>
+  </index>
+  <index
+    desc="Index for performance of finding eligible policies by the renewal batch process."
+    expectedtobecovering="true"
+    name="polperPerf8"
+    unique="true">
+    <indexcol
+      keyposition="1"
+      name="PolicyTermID"/>
+    <indexcol
+      keyposition="2"
+      name="Retired"/>
+    <indexcol
+      keyposition="3"
+      name="MostRecentModel"/>
+    <indexcol
+      keyposition="4"
+      name="TemporaryBranch"/>
+    <indexcol
+      keyposition="5"
+      name="PeriodEnd"/>
+    <indexcol
+      keyposition="6"
+      name="CancellationDate"/>
+    <indexcol
+      keyposition="7"
+      name="PolicyId"/>
+    <indexcol
+      keyposition="8"
+      name="ID"/>
+  </index>
+  <onetoone
+    desc="The selected payment plan for this period"
+    fkentity="PaymentPlanSummary"
+    name="SelectedPaymentPlan"
+    nullok="true"/>
+</entity>

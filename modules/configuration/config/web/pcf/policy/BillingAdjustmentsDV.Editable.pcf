@@ -1,0 +1,223 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="BillingAdjustmentsDV"
+    mode="Editable">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="new gw.web.policy.BillingAdjustmentsUIHelper(CurrentLocation, policyPeriod)"
+      name="billingUIHelper"/>
+    <Variable
+      initialValue="billingUIHelper.AvailableBillingMethods"
+      name="availableBillingMethods"/>
+    <InputColumn>
+      <InputDivider/>
+      <Label
+        label="displaykey.Web.Policy.Payment.Title"/>
+      <RangeInput
+        editable="true"
+        id="BillingMethod"
+        label="displaykey.Web.Policy.Payment.BillingMethod"
+        required="true"
+        value="policyPeriod.BillingMethod"
+        valueRange="availableBillingMethods"
+        visible="availableBillingMethods != null and availableBillingMethods.HasElements">
+        <PostOnChange
+          onChange="billingUIHelper.resetBillingInfo(); gw.api.web.PebblesUtil.invalidateIterators(CurrentLocation, entity.PaymentPlanSummary)"/>
+      </RangeInput>
+      <InputSetRef
+        def="AccountContactBillingInputSet(policyPeriod, true, billingUIHelper)"
+        visible="policyPeriod.BillingMethod != TC_AGENCYBILL"/>
+      <InputDivider/>
+      <InputSet
+        id="PlanInputSet">
+        <Label
+          label="displaykey.Web.Policy.Payment.Schedule"/>
+        <TypeKeyInput
+          editable="true"
+          id="PaymentMethod"
+          label="displaykey.Web.Policy.Payment.PlanType"
+          value="billingUIHelper.PaymentMethodChoice"
+          visible="billingUIHelper.hasBothInstallmentsAndReportPlans()">
+          <PostOnChange
+            onChange="billingUIHelper.initPaymentPlan()"
+            target="PlanInputSet"/>
+        </TypeKeyInput>
+        <ListViewInput
+          def="BillingAdjustmentsInstallmentsLV(billingUIHelper.PolicyPeriod, billingUIHelper.InstallmentPlans)"
+          editable="true"
+          id="InstallmentPlan"
+          label="displaykey.Web.Policy.Payment.InstallmentPlan"
+          labelAbove="true"
+          visible="billingUIHelper.PaymentMethodChoice == PaymentMethod.TC_INSTALLMENTS">
+          <Toolbar/>
+        </ListViewInput>
+        <ContentInput
+          boldLabel="true"
+          id="PreviewPayments">
+          <Link
+            action="billingUIHelper.previewPayments()"
+            available="policyPeriod.SelectedPaymentPlan != null"
+            id="PreviewPaymentsLink"
+            label="displaykey.Web.Policy.Payment.PreviewPayments"
+            styleClass="miniButton"
+            visible="policyPeriod.InstallmentsPlanSelected"/>
+        </ContentInput>
+        <Label
+          label="displaykey.Web.Policy.Payment.PremiumReportPlans"
+          visible="billingUIHelper.PaymentMethodChoice == PaymentMethod.TC_REPORTINGPLAN"/>
+        <RangeInput
+          editable="true"
+          id="PremiumReportPlan"
+          label="displaykey.Web.Policy.Payment.PremiumReportPlan"
+          optionLabel="VALUE.Name"
+          required="billingUIHelper.PaymentMethodChoice == PaymentMethod.TC_REPORTINGPLAN"
+          value="billingUIHelper.SelectedReportingPlan"
+          valueRange="billingUIHelper.ReportingPlans"
+          visible="billingUIHelper.PaymentMethodChoice == PaymentMethod.TC_REPORTINGPLAN">
+          <PostOnChange
+            onChange="policyPeriod.selectPaymentPlan(billingUIHelper.SelectedReportingPlan)"/>
+        </RangeInput>
+        <Input
+          id="DepositDefault"
+          label="displaykey.Web.Policy.Payment.DepositDefault"
+          value="policyPeriod.ReportingPattern.ReportingDefaultDepositPct"
+          visible="policyPeriod.ReportingPlanSelected"/>
+        <TextInput
+          editable="perm.PolicyPeriod.overridebilling"
+          id="DepositOverride"
+          label="displaykey.Web.Policy.Payment.DepositOverridePct"
+          requestValidationExpression="!(VALUE &lt; 0 || VALUE &gt; 100) ? null : displaykey.Web.Policy.Payment.DepositOverride.OutOfRange"
+          value="policyPeriod.DepositOverridePct"
+          visible="policyPeriod.ReportingPlanSelected">
+          <PostOnChange
+            onChange="policyPeriod.calculateAndSetDepositAmountOnReporting()"/>
+        </TextInput>
+        <Input
+          id="DepositAmount"
+          label="displaykey.Web.Policy.Payment.DepositAmt"
+          value="policyPeriod.DepositAmount"
+          visible="policyPeriod.ReportingPlanSelected"/>
+      </InputSet>
+      <CheckBoxInput
+        available="policyPeriod.BillingMethod != TC_LISTBILL"
+        boldLabel="true"
+        editable="true"
+        id="Advanced"
+        label="displaykey.Web.Policy.Payment.Advanced"
+        required="false"
+        value="policyPeriod.CustomBilling"
+        visible="policyPeriod.BillingMethod == TC_DIRECTBILL or policyPeriod.BillingMethod == TC_LISTBILL">
+        <PostOnChange
+          target="InvoicingInputSet"/>
+      </CheckBoxInput>
+      <InputSet
+        id="InvoicingInputSet"
+        visible="policyPeriod.CustomBilling">
+        <InputSet
+          visible="policyPeriod.BillingMethod != TC_AGENCYBILL and policyPeriod.BillingMethod != null">
+          <BooleanRadioInput
+            available="policyPeriod.BillingMethod != TC_LISTBILL and !billingUIHelper.InvoiceStreams.IsEmpty"
+            editable="true"
+            falseLabel="displaykey.Web.Policy.Payment.Existing"
+            id="NewInvoicing"
+            label="displaykey.Web.Policy.Payment.Invoicing"
+            trueLabel="displaykey.Web.Policy.Payment.New"
+            value="billingUIHelper.NewInvoicing">
+            <PostOnChange
+              onChange="billingUIHelper.invoicingOptionChanged() "/>
+          </BooleanRadioInput>
+          <ListViewInput
+            def="InvoiceStreamsLV(billingUIHelper)"
+            editable="true"
+            id="InvoiceStreams"
+            labelAbove="true"
+            visible="not billingUIHelper.NewInvoicing"
+            widgets="AccountContactBillingInputSet">
+            <Toolbar/>
+          </ListViewInput>
+          <InputSetRef
+            def="BillingInvoiceStreamInputSet(policyPeriod)"
+            visible="billingUIHelper.NewInvoicing"/>
+        </InputSet>
+        <InputSet
+          visible="billingUIHelper.NewInvoicing">
+          <Label
+            label="displaykey.Web.Policy.Payment.PaymentDetails"/>
+          <BooleanRadioInput
+            editable="true"
+            falseLabel="billingUIHelper.displayAccountUnappliedOrExisting()"
+            id="UnappliedFund"
+            label="displaykey.Web.Policy.Payment.UnappliedFund"
+            trueLabel="displaykey.Web.Policy.Payment.New"
+            value="billingUIHelper.NewUnappliedFund">
+            <PostOnChange
+              onChange="billingUIHelper.unappliedFundOptionChanged()"/>
+          </BooleanRadioInput>
+          <TextInput
+            editable="true"
+            id="UnappliedFundInput"
+            label="displaykey.Web.Policy.Payment.UnappliedFundDescription"
+            required="true"
+            value="policyPeriod.NewInvoiceStream.UnappliedFundDescription"
+            visible="billingUIHelper.NewUnappliedFund"/>
+          <ListViewInput
+            id="UnappliedFundSelect"
+            visible="not billingUIHelper.NewUnappliedFund and not billingUIHelper.UnappliedFunds.IsEmpty">
+            <Toolbar/>
+            <ListViewPanel>
+              <RowIterator
+                editable="true"
+                elementName="unappliedFundInfo"
+                value="billingUIHelper.UnappliedFunds">
+                <Row>
+                  <RadioButtonCell
+                    action="policyPeriod.NewInvoiceStream.UnappliedFundID = unappliedFundInfo.PublicID"
+                    align="center"
+                    editable="true"
+                    id="UnappliedFundSelect"
+                    label="displaykey.Web.Policy.Payment.UnappliedFundsLV.Select"
+                    radioButtonGroup="UnappliedFundGroup"
+                    required="true"
+                    value="policyPeriod.NewInvoiceStream.UnappliedFundID == unappliedFundInfo.PublicID">
+                    <PostOnChange/>
+                  </RadioButtonCell>
+                  <Cell
+                    id="UnappliedFund"
+                    label="displaykey.Web.Policy.Payment.UnappliedFundsLV.UnappliedFund"
+                    value="unappliedFundInfo.Description"/>
+                </Row>
+              </RowIterator>
+            </ListViewPanel>
+          </ListViewInput>
+        </InputSet>
+      </InputSet>
+      <InputDivider/>
+      <Label
+        label="displaykey.Web.BillingAuditDV.Payments"/>
+      <MonetaryAmountInput
+        currency="policyPeriod.PreferredSettlementCurrency"
+        editable="true"
+        formatType="currency"
+        id="CollectedByAgent"
+        label="displaykey.Web.Policy.Payment.CollectedByAgent"
+        value="policyPeriod.DepositCollected"/>
+      <Label
+        label="displaykey.Web.BillingAuditDV.Audits"
+        visible="policyPeriod.IsAuditable"/>
+      <RangeInput
+        available="!policyPeriod.ReportingPlanSelected"
+        editable="perm.Audit.create"
+        id="FinalAudit"
+        label="displaykey.Web.BillingAuditDV.FinalAudit"
+        required="true"
+        value="policyPeriod.FinalAuditOption"
+        valueRange="typekey.FinalAuditOption.getTypeKeys( true )"
+        visible="policyPeriod.IsAuditable"/>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

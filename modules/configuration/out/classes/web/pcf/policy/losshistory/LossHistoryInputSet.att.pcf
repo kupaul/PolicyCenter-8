@@ -1,0 +1,81 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <InputSet
+    id="LossHistoryInputSet"
+    mode="att">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Input
+      editable="true"
+      id="NumberOfLosses"
+      label="displaykey.Web.Policy.LossHistory.Attach.NumberOfLosses"
+      required="true"
+      value="policyPeriod.Policy.NumPriorLosses"/>
+    <MonetaryAmountInput
+      currency="policyPeriod.PreferredCoverageCurrency"
+      editable="true"
+      id="TotalIncurred"
+      label="displaykey.Web.Policy.LossHistory.Attach.TotalIncurred"
+      required="true"
+      value="policyPeriod.Policy.PriorTotalIncurred"/>
+    <ButtonInput
+      action="NewLossHistoryDocumentWorksheet.goInWorkspace(policyPeriod)"
+      hideIfReadOnly="true"
+      id="NewDocument"
+      shortcut="O"
+      value="displaykey.Web.Policy.LossHistory.Attach.NewDocument"/>
+    <ListViewInput>
+      <Toolbar/>
+      <ListViewPanel
+        id="LossHistoryDocumentsLV">
+        <Variable
+          initialValue="createLossHistorySearchCriteria()"
+          name="lossHistorySearchCriteria"
+          type="DocumentSearchCriteria"/>
+        <RowIterator
+          editable="false"
+          elementName="document"
+          value="lossHistorySearchCriteria.performSearch() as DocumentQuery">
+          <Row>
+            <Cell
+              id="Name"
+              label="displaykey.Web.Policy.LossHistory.Document.Name"
+              value="document.Name"/>
+            <LinkCell
+              id="Files"
+              label="displaykey.Web.Policy.LossHistory.Document.File">
+              <DocumentLink
+                document="document"
+                documentAction="viewRepositoryVersion"
+                id="LossHistoryInputSet_ViewLink"
+                label="displaykey.Web.DocumentsLV.Button.View"
+                styleClass="miniButton"
+                visible="perm.Document.view(document)"/>
+            </LinkCell>
+            <LinkCell
+              available="perm.Document.delete(document)"
+              id="Delete"
+              label="displaykey.Web.DocumentsLV.Delete">
+              <Link
+                action="web.document.DocumentsHelper.deleteDocument(document)"
+                available="not policyPeriod.Locked"
+                confirmMessage="displaykey.Web.DocumentsLV.Button.Delete.Confirm"
+                id="DocumentsLV_DeleteLink"
+                label="displaykey.Web.DocumentsLV.Button.Delete"
+                styleClass="miniButton"/>
+            </LinkCell>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </ListViewInput>
+    <Code><![CDATA[function createLossHistorySearchCriteria() : DocumentSearchCriteria {
+        var c = new DocumentSearchCriteria(policyPeriod)
+        c.RelatedTo = policyPeriod
+        c.Type = "loss_history"
+        return c
+      }]]></Code>
+  </InputSet>
+</PCF>

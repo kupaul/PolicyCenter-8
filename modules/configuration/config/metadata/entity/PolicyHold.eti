@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" admin="true" desc="Policy hold definition (rules, regions, etc.)" entity="PolicyHold" exportable="true" extendable="true" loadable="false" platform="false" subpackage="policyhold" table="policyhold" type="retireable">
+  <typekey desc="The type of the hold (ie., uw hold or regulatory hold)" name="HoldType" nullok="false" typefilter="PolicyHoldsTypeFilter" typelist="UWIssueCheckingSet"/>
+  <column desc="A description of the policy hold." name="Description" nullok="false" type="shorttext">
+    <localization nullok="false" tableName="polholddesc_l10n"/>
+  </column>
+  <column desc="The unique code of the policy hold that will be used to raise uw issues." name="PolicyHoldCode" nullok="false" type="shorttext"/>
+  <column desc="The start date for the hold." name="StartDate" nullok="false" type="datetime"/>
+  <column desc="The end date for the hold." name="EndDate" nullok="true" type="datetime"/>
+  <column desc="The long description of the selected uw issue." name="UWIssueLongDesc" nullok="false" type="mediumtext">
+    <localization nullok="false" tableName="polholdlong_l10n"/>
+  </column>
+  <foreignkey columnName="IssueTypeID" desc="The uw issue that will be raised when the hold conditions are met." fkentity="UWIssueType" name="IssueType" nullok="false"/>
+  <array arrayentity="PolicyHoldRule" cascadeDelete="true" desc="The list of specific rules for this Policy Hold." name="Rules" owner="true"/>
+  <array arrayentity="PolicyHoldZone" cascadeDelete="true" desc="The zones that define this policy hold." name="PolicyHoldZones" owner="true"/>
+  <array arrayentity="PolicyHoldJob" cascadeDelete="false" desc="Jobs that are held by this policy hold along with the last time they were evaluated." name="HeldJobs" owner="false"/>
+  <index desc="Index ensuring the uniqueness of policy hold codes. Also used for looking up holds by code." name="policyholdu1" unique="true">
+    <indexcol keyposition="1" name="PolicyHoldCode"/>
+    <indexcol keyposition="2" name="Retired"/>
+  </index>
+</entity>

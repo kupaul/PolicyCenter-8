@@ -1,0 +1,55 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    beforeCommit="beforeCommitNewContact()"
+    canEdit="true"
+    id="NewContactPopup"
+    returnType="Contact"
+    startInEditMode="true"
+    title="displaykey.Web.Contact.NewContact(entity.Contact.Type.TypeInfo.DisplayName)">
+    <LocationEntryPoint
+      signature="NewContactPopup(contactType : typekey.ContactType)"/>
+    <Variable
+      name="contactType"
+      type="typekey.ContactType"/>
+    <Variable
+      initialValue="gw.api.contact.ContactUtil.createNewContact(contactType)"
+      name="contact"
+      type="Contact"/>
+    <Variable
+      initialValue="new gw.pcf.duplicatecontacts.DuplicateContactsPopupHelper(contact)"
+      name="duplicateContactsPopupHelper"/>
+    <Screen>
+      <Toolbar>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.checkForDuplicatesOrUpdate(\ -&gt; CurrentLocation.pickValueAndCommit(contact))"
+          id="ForceDupCheckUpdate"
+          label="displaykey.Button.OK"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+        <EditButtons
+          pickValue="contact"
+          updateVisible="not duplicateContactsPopupHelper.ShowButton"/>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.push()"
+          id="CheckForDuplicates"
+          label="displaykey.Web.Contact.CheckForDuplicates"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+      </Toolbar>
+      <PanelRef
+        def="ContactPanelSet(contact)"/>
+    </Screen>
+    <Code><![CDATA[function beforeCommitNewContact() {
+   var existingPCContactWithABContactMatch = duplicateContactsPopupHelper.existingPCContactWithABContactMatch
+   if (existingPCContactWithABContactMatch != null) { // existing ab contact that matches the current new contact
+     // copy over the value
+     contact.Bundle.add(existingPCContactWithABContactMatch)
+     existingPCContactWithABContactMatch.copyFromContact(contact)
+     contact.OfficialIDs.each(\ o -> o.remove())
+     contact.remove()
+     //contact = existingPCContactWithABContactMatch
+  }
+}]]></Code>
+  </Popup>
+</PCF>

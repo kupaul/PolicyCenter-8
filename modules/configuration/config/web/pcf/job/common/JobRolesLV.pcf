@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="pcf.xsd">
+  <ListViewPanel
+    id="JobRolesLV">
+    <ExposeIterator
+      valueType="entity.JobUserRoleAssignment"
+      widget="JobRolesLV"/>
+    <Require
+      name="currentJob"
+      type="Job"/>
+    <RowIterator
+      checkBoxVisible="assignment.Role != &quot;Creator&quot;"
+      editable="true"
+      elementName="assignment"
+      hasCheckBoxes="true"
+      hideCheckBoxesIfReadOnly="true"
+      toCreateAndAdd="currentJob.createAndAddRoleAssignment()"
+      toRemove="currentJob.removeFromRoleAssignments(assignment)"
+      value="currentJob.RoleAssignments">
+      <Row
+        editable="assignment.Role != &quot;Creator&quot;">
+        <TypeKeyCell
+          editable="assignment.New"
+          filter="gw.assignment.AssignmentUtil.filterAssignableRoles( currentJob, VALUE )"
+          id="AssignmentRole"
+          label="displaykey.Web.JobRoles.Role"
+          required="true"
+          unique="true"
+          value="assignment.Role"/>
+        <AltUserCell
+          editable="true"
+          id="AssignedUser"
+          label="displaykey.Web.JobRoles.AssignedUser"
+          required="true"
+          value="assignment.AssignedUser"
+          width="250"/>
+        <RangeCell
+          editable="true"
+          id="AssignedGroup"
+          label="displaykey.Web.Account.Participants.AssignedGroup"
+          required="true"
+          value="assignment.AssignedGroup"
+          valueRange="assignment.AssignedUser.AllGroups as Group[]"
+          width="300"/>
+      </Row>
+    </RowIterator>
+  </ListViewPanel>
+</PCF>

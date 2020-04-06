@@ -1,0 +1,57 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="PersonalAuto_AllVehicleCoveragesDV">
+    <Require
+      name="paLine"
+      type="PersonalAutoLine"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="paLine.Pattern.getCoverageCategory(&quot;PAPLiabGrp&quot;)"
+      name="liabilityCategory"/>
+    <Variable
+      initialValue="paLine.Pattern.getCoverageCategory(&quot;PAPip&quot;)"
+      name="pipCategory"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="liabilityCategory.coveragePatternsForEntity(PersonalAutoLine).whereSelectedOrAvailable(paLine, openForEdit)"
+      name="liabilityCategoryCoveragePatterns"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="pipCategory != null ? pipCategory.coveragePatternsForEntity(PersonalAutoLine).whereSelectedOrAvailable(paLine, openForEdit) : null"
+      name="pipCategoryCoveragePatterns"
+      recalculateOnRefresh="true"/>
+    <InputColumn>
+      <InputIterator
+        elementName="coveragePattern"
+        forceRefreshDespiteChangedEntries="true"
+        id="PALiabCategoryIterator"
+        value="liabilityCategoryCoveragePatterns">
+        <IteratorSort
+          sortBy="coveragePattern.Priority"
+          sortOrder="1"/>
+        <InputSetRef
+          def="CoverageInputSet(coveragePattern, paLine, openForEdit)"
+          mode="coveragePattern.Code"/>
+      </InputIterator>
+    </InputColumn>
+    <InputColumn>
+      <InputIterator
+        elementName="coveragePattern"
+        forceRefreshDespiteChangedEntries="true"
+        id="PAPipCategoryIterator"
+        value="pipCategoryCoveragePatterns">
+        <IteratorSort
+          sortBy="coveragePattern.Priority"
+          sortOrder="1"/>
+        <InputSetRef
+          def="CoverageInputSet(coveragePattern, paLine, openForEdit)"
+          mode="coveragePattern.Code"/>
+      </InputIterator>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

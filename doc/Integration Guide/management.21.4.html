@@ -1,0 +1,183 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Integrating With the Included JMX Management Plugin</title>
+    <link rel="StyleSheet" href="css/management.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-plugins.html#2265798">Plugins</a> : <a class="WebWorks_Breadcrumb_Link" href="management.21.1.html#2265798">Management Integration</a> : Integrating With the Included JMX Management Plugin</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2265798">Integrating With the Included JMX Management Plugin</a></h3>
+      <div class="B_-_Body"><a name="2265802">PolicyCenter includes an example plugin that implements JMX using the management plugin interface. This plugin is compiled and automatically installed in </a><span class="cv_-_computer_voice">PolicyCenter/modules/configuration/plugins</span> so that you need only to change one setting in the plugin registry in Studio to enable it. </div>
+      <div class="B_-_Body"><a name="2305968">In the Plugins editor, select </a><span class="ui_-_UI_element">Resources</span> → <span class="ui_-_UI_element">Plugins</span> → <span class="ui_-_UI_element">gw</span> → <span class="ui_-_UI_element">plugin</span> → <span class="ui_-_UI_element">management</span> → <span class="ui_-_UI_element">ManagementPlugin</span>, then check the box for <span class="ui_-_UI_element">Enabled</span>. This supported JMX management plugin works only with the Apache Tomcat web server. The source code for this example is included as part of the PolicyCenter examples directory, at the following path:</div>
+      <div class="CS_-_Code_Single_Line"><a name="2322382">PolicyCenter\java-api\examples\src\examples\plugins\management</a></div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2306049">JMX support differs between web servers, but the JMX management plugin is designed for and supported in Guidewire production environments that use Apache Tomcat only. The JMX management plugin is supported for jetty in development environments. Modifications to the source code and use of different JMX libraries could enable the management plugin for other web servers. Guidewire provides the source code in case such changes are desired.</a></div>
+      <div class="B_-_Body"><a name="2265817">After you enable the JMX plugin, it publishes a JMX service called a </a><span class="e_-_emphasis">JMX JSR160 connector</span> under Apache Tomcat.<span style="font-family: &quot;Lucida Sans Typewriter&quot;; font-size: 7.0pt"> </span>A remote management console or your integration code can call the JMX JSR160 connector by creating <span class="e_-_emphasis">JMX&nbsp;connector client </span>code that connects to the published service. </div>
+      <div class="B_-_Body"><a name="2265818">The following example demonstrates a simple Java application that can retrieve a system attribute programmatically from a remote system. This example relies on the following conditions:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2265822">The PolicyCenter server must be running under the Apache Tomcat web server.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2265823">The JMX plugin must be installed (which it is by default).</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2265824">The JMX plugin must be enabled in the Plugins editor</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2265825">This example retrieves the </a><span class="cv_-_computer_voice">HolidayList</span> system attribute programmatically from a remote system:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2265826">package com.mycompany.pc.integration.jmx;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265827">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265828">import java.util.HashMap;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265829">import java.util.Map;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265830">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265831">import javax.management.MBeanServerConnection;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265832">import javax.management.ObjectName;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265833">import javax.management.remote.JMXConnector;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265834">import javax.management.remote.JMXConnectorFactory;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265835">import javax.management.remote.JMXServiceURL;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265836">import javax.naming.Context;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265837">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265841">// Create a “JMX JSR160 connector” to connect to PolicyCenter</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265842">//</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265843">public class TestJMXClientConnector {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265844">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265845">    public static void main(String[] args) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265846">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265847">        try {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265848">            // The address of the connector server</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265849">            JMXServiceURL address = new JMXServiceURL(</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265850">                    "service:jmx:rmi:///jndi/rmi://akitio:1099/jrmp");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265851">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265852">            // The creation environment map, null in this case</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265853">            Map creationEnvironment = null;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265854">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265855">            // Create the JMXCconnectorServer</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265856">            JMXConnector cntor = JMXConnectorFactory.newJMXConnector(address,</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265857">                    creationEnvironment);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265858">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265859">            </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265860">            // May contain - for example - user's credentials</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265861">            Map environment = new HashMap();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265862">            environment.put(Context.INITIAL_CONTEXT_FACTORY, </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265863">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"com.sun.jndi.rmi.registry.RegistryContextFactory");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265864">            environment.put(Context.PROVIDER_URL, "rmi://localhost:1099");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265865">            String[] credentials = new String[]{"su", "cc"};</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265866">            environment.put(JMXConnector.CREDENTIALS, credentials);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265867">            </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265868">            // Connect</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265869">            cntor.connect(environment);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265870">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265871">            // Obtain a "stub" for the remote MBeanServer</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265872">            MBeanServerConnection mbsc = cntor.getMBeanServerConnection();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265873">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265874">            // Call the remote MBeanServer</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265875">            String domain = mbsc.getDefaultDomain();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265876">            ObjectName delegate =</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265877">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;ObjectName.getInstance("com.guidewire.pl.system.configuration:type=configuration");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265878">            String holidayList = (String)mbsc.getAttribute(delegate, "HolidayList");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265879">            System.out.println(holidayList);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265880">        } </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265881">        catch (Exception e) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265882">            e.printStackTrace();</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265883">        }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2265884">    }</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2265885">}</a></PRE>
+      <div class="B_-_Body"><a name="2305923">&nbsp;</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

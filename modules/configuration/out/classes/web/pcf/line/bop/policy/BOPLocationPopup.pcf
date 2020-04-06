@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Popup
+    afterCommit="gw.api.web.PebblesUtil.invalidateIterators(TopLocation, PolicyLocation); bopLocation.Location.syncQuestions()"
+    beforeCommit="gw.lob.bop.BOPLocationValidation.validateBOPLocation(bopLocation.Location)"
+    canEdit="openForEdit"
+    countsAsWork="false"
+    id="BOPLocationPopup"
+    returnType="BOPLocation"
+    startEditing="maybeCreateLocation()"
+    startInEditMode="startInEdit"
+    title="displaykey.Web.Policy.LocationContainer.Location.LocationInformation.Title">
+    <LocationEntryPoint
+      signature="BOPLocationPopup(accountLocation : AccountLocation, bopLocation : BOPLocation, policyPeriod : PolicyPeriod, openForEdit : boolean, startInEdit : boolean, jobWizardHelper : web.job.JobWizardHelper)"/>
+    <Variable
+      name="accountLocation"
+      type="AccountLocation"/>
+    <Variable
+      name="bopLocation"
+      type="BOPLocation"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      name="startInEdit"
+      type="boolean"/>
+    <Variable
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Screen
+      id="LocationScreen">
+      <Toolbar>
+        <EditButtons
+          hideIfReadOnly="true"
+          pickValue="bopLocation"/>
+      </Toolbar>
+      <PanelSet
+        id="LocationDetailPanelSet">
+        <PanelRef
+          def="PreferredCoverageCurrencyPanelSet(bopLocation, openForEdit, jobWizardHelper)"
+          id="PreferredCoverageCurrencySelectorRef"/>
+        <PanelRef
+          def="LocationDetailCV(bopLocation.Location, openForEdit, bopLocation.BOPLine.SupportsNonSpecificLocations)"/>
+      </PanelSet>
+    </Screen>
+    <Code><![CDATA[function maybeCreateLocation() {
+  if (startInEdit and openForEdit) {
+    if (bopLocation == null) {
+      if (accountLocation != null) {
+        bopLocation = policyPeriod.BOPLine.addToLineSpecificLocations(accountLocation) as BOPLocation
+        for(var tc in bopLocation.Location.TerritoryCodes)
+          tc.fillWithFirst()
+      } else {
+        bopLocation = policyPeriod.BOPLine.addNewLineSpecificLocation() as BOPLocation
+      }
+    }
+  }
+}]]></Code>
+  </Popup>
+</PCF>

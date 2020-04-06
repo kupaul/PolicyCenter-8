@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ToolbarButtonSet
+    id="JobWizardToolbarButtonSet"
+    mode="Rewrite">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="CurrentLocation as pcf.api.Wizard"
+      name="wizard"
+      type="pcf.api.Wizard"/>
+    <Variable
+      initialValue="job as Rewrite"
+      name="rewrite"
+      recalculateOnRefresh="true"
+      type="Rewrite"/>
+    <Variable
+      initialValue="policyPeriod.RewriteProcess"
+      name="rewriteProcess"/>
+    <ToolbarButton
+      action="UWActivityPopup.push(policyPeriod, ActivityPattern.finder.getActivityPatternByCode(&quot;uw_review_approved&quot;),&quot;UWApproval&quot;)"
+      id="Unlock"
+      label="displaykey.Job.Operation.ReleaseLock"
+      shortcut="K"
+      visible="rewriteProcess.canReleaseLock()"/>
+    <ToolbarButton
+      action="jobWizardHelper.requestQuote(policyPeriod, jobWizardHelper.getQuoteStep(policyPeriod))"
+      id="QuoteOrReview"
+      label="displaykey.Job.Operation.Quote"
+      shortcut="Q"
+      visible="rewriteProcess.canRequestQuote().Okay"/>
+    <ToolbarButton
+      action="rewriteProcess.edit(); wizard.saveDraft(); jobWizardHelper.goToVisibleStep(policyPeriod)"
+      confirmMessage="displaykey.Job.Operation.Edit.Confirm"
+      id="EditPolicy"
+      label="displaykey.Job.Operation.EditWorkOrder"
+      shortcut="E"
+      visible="rewriteProcess.canEdit().Okay"/>
+    <ToolbarButton
+      action="wizard.saveDraft()"
+      hideIfReadOnly="true"
+      id="Draft"
+      label="displaykey.Button.SaveDraft"
+      shortcut="S"/>
+    <ToolbarButton
+      action="jobWizardHelper.requestIssueJob(policyPeriod)"
+      confirmMessage="displaykey.Job.Operation.IssuePolicy.Confirm"
+      id="BindRewrite"
+      label="displaykey.Job.Operation.IssuePolicy"
+      shortcut="I"
+      visible="rewriteProcess.canRewrite().Okay"/>
+    <ToolbarButton
+      action="jobWizardHelper.withdraw(policyPeriod); PolicyFileForward.go(policyPeriod.PolicyNumber);"
+      confirmMessage="displaykey.Job.Operation.Withdraw.Confirm"
+      id="WithdrawJob"
+      label="displaykey.Job.Operation.Withdraw"
+      shortcut="W"
+      visible="rewriteProcess.canWithdraw().Okay"/>
+  </ToolbarButtonSet>
+</PCF>

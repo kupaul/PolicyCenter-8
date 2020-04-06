@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<entity xmlns="http://guidewire.com/datamodel"
+        desc="Table linking reinsurance programs to treaties."
+        entity="ProgramTreaty"
+        subpackage="reinsurance"
+  loadable="false"
+        table="programtreaty"
+        extendable="false"
+        final="true"
+        type="joinarray">
+  <fulldescription>
+      Table linking reinsurance programs to agreements to support many-to-many relationship.
+  </fulldescription>
+  <foreignkey columnName="TreatyID"
+              desc="Associated agreement."
+              fkentity="RIAgreement"
+              name="Treaty"
+              nullok="false"/>
+  <foreignkey columnName="ProgramID"
+              desc="Associated program."
+              fkentity="RIProgram"
+              name="Program"
+              nullok="false"/>
+  <!-- All array tables must have a unique index. For example, contactaddress accessed through
+      contact, so we have key be (addressid, contactid) and eliminate backing index on
+      contactid since unique index is usable for FK. -->
+  <index desc="Enforce uniqueness, only one entry can join a particular program to a agreement"
+         name="programtreatyu1" unique="true">
+    <indexcol keyposition="1" name="ProgramID"/>
+    <indexcol keyposition="2" name="TreatyID"/>
+  </index>
+</entity>

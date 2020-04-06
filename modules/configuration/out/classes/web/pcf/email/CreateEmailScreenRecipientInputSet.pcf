@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InputSet
+    id="CreateEmailScreenRecipientInputSet">
+    <Require
+      name="title"
+      type="String"/>
+    <Require
+      name="contacts"
+      type="List&lt;gw.api.email.EmailContact&gt;"/>
+    <Require
+      name="account"
+      type="Account"/>
+    <Variable
+      initialValue="new gw.api.contact.ContactEmailAutocompleteHandler(account.AccountContacts.map(\contact -&gt; contact.Contact))"
+      name="autoCompleteHandler"/>
+    <ListViewInput
+      editable="true"
+      id="RecipientLVInput"
+      label="title"
+      labelAbove="true"
+      visible="true">
+      <Toolbar
+        visible="true">
+        <IteratorButtons
+          addVisible="true"
+          iterator="RecipientLV"
+          removeVisible="true"/>
+        <ToolbarDivider/>
+      </Toolbar>
+      <ListViewPanel
+        editable="true"
+        id="RecipientLV"
+        visible="true">
+        <RowIterator
+          autoAdd="true"
+          editable="true"
+          elementName="recipient"
+          numEntriesRequired="0"
+          numEntriesToAdd="1"
+          toCreateAndAdd="var newEmailContact = new gw.api.email.EmailContact(); contacts.add(newEmailContact); return newEmailContact;"
+          toRemove="contacts.remove( recipient )"
+          validationLabel="title"
+          value="contacts as gw.api.email.EmailContact[]">
+          <Row
+            editable="true">
+            <!-- <LinkCell
+              id="ABPickerCell"
+              label="displaykey.Web.Email.Search">
+              <PickerLink
+                action="AddressBookPickerPopup.push(Contact, true, Account )"
+                icon="&quot;menu_claim_search.png&quot;"
+                id="ABPickerLink"
+                onPick="recipient.Contact = PickedValue"/>
+            </LinkCell> -->
+            <TextCell
+              autoComplete="autoCompleteHandler"
+              editable="true"
+              id="Name"
+              label="displaykey.Web.Email.Name"
+              numCols="15"
+              value="recipient.Name">
+              <PostOnChange
+                onChange="recipient.EmailAddress = autoCompleteHandler.getEmailForName(recipient.Name)"
+                target="DATA_ONLY"/>
+            </TextCell>
+            <TextCell
+              editable="true"
+              id="Email"
+              label="displaykey.Web.Email.EmailAddress"
+              numCols="15"
+              requestValidationExpression="VALUE == null ? displaykey.Web.Email.Error.AddressForRecipientRequried : null"
+              required="true"
+              value="recipient.EmailAddress"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </ListViewInput>
+  </InputSet>
+</PCF>

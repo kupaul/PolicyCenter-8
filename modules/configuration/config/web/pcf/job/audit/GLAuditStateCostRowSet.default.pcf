@@ -1,0 +1,58 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <RowSet
+    id="GLAuditStateCostRowSet"
+    mode="default">
+    <Require
+      name="auditCostWrapper"
+      type="ui.AuditCostWrapper"/>
+    <Variable
+      initialValue="auditCostWrapper.Cost as GLCost"
+      name="glCost"
+      type="GLCost"/>
+    <Row
+      id="CostRow"
+      visible="not glCost.ActualAmountBilling.IsZero">
+      <Cell
+        id="LocNumber"/>
+      <Cell
+        id="ClassCode"/>
+      <Cell
+        id="Description"
+        value="auditCostWrapper.Description"/>
+      <TextCell
+        align="right"
+        format="&quot;0.0000&quot;"
+        id="Rate"
+        value="glCost.ActualAdjRate == 0 ? &quot;&quot; : glCost.ActualAdjRate.DisplayValue"/>
+      <Cell
+        align="right"
+        id="EstimatedBasis"
+        value="glCost.BasedOn.Basis == 0 ? &quot;&quot; : glCost.BasedOn.Basis.DisplayValue"/>
+      <Cell
+        align="right"
+        id="AuditedBasis"
+        value="glCost.Basis == 0 ? &quot;&quot; : glCost.Basis.DisplayValue"/>
+      <MonetaryAmountCell
+        align="right"
+        formatType="currency"
+        id="EstimatedPremium"
+        numCols="6"
+        value="glCost.BasedOn.ActualAmountBilling"/>
+      <MonetaryAmountCell
+        align="right"
+        formatType="currency"
+        id="AuditedPremium"
+        numCols="6"
+        value="glCost.ActualAmountBilling"/>
+      <MonetaryAmountCell
+        align="right"
+        formatType="currency"
+        id="Change"
+        numCols="6"
+        value="glCost.ActualAmountBilling - glCost.BasedOn.ActualAmountBilling"/>
+    </Row>
+  </RowSet>
+</PCF>

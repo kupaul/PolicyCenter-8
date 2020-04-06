@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    canEdit="false"
+    canVisit="perm.System.viewreinsuranceprogram or perm.System.editreinsuranceforpolicybasic"
+    id="AgreementSearchPopup"
+    returnType="RIAgreement[]"
+    title="displaykey.Web.Reinsurance.Agreement.Search.Title">
+    <LocationEntryPoint
+      signature="AgreementSearchPopup(searchType : int, currency : Currency, toExcludes : RIAgreement[])"/>
+    <LocationEntryPoint
+      signature="AgreementSearchPopup(ririsk : RIRisk)"/>
+    <Variable
+      name="searchType"
+      type="int"/>
+    <Variable
+      name="toExcludes"
+      type="RIAgreement[]"/>
+    <Variable
+      name="ririsk"
+      type="RIRisk"/>
+    <Variable
+      name="currency"
+      type="Currency"/>
+    <Screen>
+      <SearchPanel
+        cachingEnabled="false"
+        criteriaName="criteria"
+        resultsName="searchResults"
+        search="criteria.performSearch()"
+        searchCriteria="gw.web.admin.ReinsuranceUIHelper.createCriteria(searchType, currency, toExcludes, ririsk)"
+        searchResultsType="RIAgreementQuery">
+        <PanelRef
+          def="AgreementSearchDV(criteria)">
+          <Toolbar>
+            <ToolbarButton
+              action="CurrentLocation.cancel()"
+              id="Cancel"
+              label="displaykey.Button.Cancel"/>
+          </Toolbar>
+        </PanelRef>
+        <PanelRef
+          def="AgreementSearchResultsLV(searchResults, false /* not in search page */)">
+          <TitleBar
+            appendListViewPaging="true"
+            title="displaykey.Web.Search.Results"/>
+          <Toolbar>
+            <CheckedValuesToolbarButton
+              allCheckedRowsAction="CurrentLocation.pickValueAndCommit(CheckedValues)"
+              id="Add"
+              iterator="AgreementSearchResultsLV.AgreementSearchResultsLV"
+              label="displaykey.Button.Add"/>
+          </Toolbar>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+  </Popup>
+</PCF>

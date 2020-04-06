@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" desc="A FormPattern specifies the conditions for attaching a particular form to a policy." entity="FormPattern" exportable="true" final="true" loadable="false" subpackage="form" table="formpattern" type="retireable">
+  <column desc="The Unique ID of the form" name="Code" nullok="true" type="shorttext"/>
+  <column desc="The human-readable name/description of the form" name="Description" nullok="true" type="mediumtext">
+    <localization nullok="true" tableName="formpat_dsc_l10n"/>
+  </column>
+  <column desc="The edition of the form, as the string MM YY" name="Edition" nullok="true" type="shorttext"/>
+  <column desc="True if the form is endorsement numbered" name="EndorsementNumbered" nullok="true" type="bit"/>
+  <column desc="The number of the form, which is set in the FormNumber field of a Form inferred from this pattern" name="FormNumber" nullok="true" type="shorttext"/>
+  <typekey desc="Determines when data related to the form is gathered" name="InferenceTime" nullok="true" typelist="FormInferenceTime"/>
+  <column desc="Determines processing order of form patterns" name="Priority" nullok="true" type="integer"/>
+  <column desc="For customer integration purposes; unused by Guidewire" name="RefCode" nullok="true" type="shorttext"/>
+  <column desc="Form is a removal endorsement, generated for removals or replacements. Removal endorsements must be contract forms and are always processed last so that they can have access to the set of forms that will need to be removed." name="InternalRemovalEndorsement" nullok="true" type="bit"/>
+  <column desc="Form is reissued when its contents change. If false, could either mean that it is a blanket notice that doesn't require changes or that any changes following the initial form issuance will happen via targeted endorsements." name="InternalReissueOnChange" nullok="true" type="bit"/>
+  <column desc="The form number of the removal endorsement that handles this form's removal/replacement." name="RemovalEndorsementFormNumber" nullok="true" type="shorttext"/>
+  <column desc="Unique code that groups a set of forms that, for jurisdictional replacement reasons, need to be processed together." name="InternalGroupCode" nullok="true" type="shorttext"/>
+  <column desc="Code of another form pattern to be replaced (within the same group) during jurisdictional replacement." name="UseInsteadOfCode" nullok="true" type="shorttext"/>
+  <column desc="Fully-qualified name of generic form inference class, used if CustomFormInference system table has no entry for this form." name="GenericInferenceClass" nullok="true" type="shorttext"/>
+  <column desc="If this is a line-specific form, the Code of the associated PolicyLinePattern." name="PolicyLinePatternCode" nullok="true" type="patterncode"/>
+  <column desc="The clause pattern associated with this form pattern (used by GenericClauseSelectionForm and GenericCovTermSelectionForm)." name="ClausePatternCode" nullok="true" type="patterncode"/>
+  <column default="false" desc="Must the product model pattern exist on all the instances of its parent that exist on the policy? (used by GenericClauseSelectionForm and GenericCovTermSelectionForm)" name="PatternExistsOnAll" nullok="true" type="bit"/>
+  <column desc="Fully-qualified name of the Coverable entity type used to infer this form (used by GenericCoverableTypeKeyForm)." name="CoverableType" nullok="true" type="shorttext"/>
+  <column desc="Name of the TypeList field on CoverableType used to infer this form (used by GenericCoverableTypeKeyForm)." name="CoverableTypeList" nullok="true" type="shorttext"/>
+  <column desc="Code of the TypeKey value on CoverableTypeList used to infer this form (used by GenericCoverableTypeKeyForm)." name="CoverableTypeKey" nullok="true" type="shorttext"/>
+  <column desc="Must the CoverableTypeKey value be selected on all instances of the coverable on this form's policy line? (used by GenericCoverableTypeKeyForm)" name="CoverableTypeKeyExistsOnAll" nullok="true" type="bit"/>
+  <array arrayentity="FormPatternProduct" cascadeDelete="true" desc="Products associated with this form pattern." name="FormPatternProducts" owner="true"/>
+  <array arrayentity="FormPatternJob" cascadeDelete="true" desc="Jobs associated with this form pattern." name="FormPatternJobs" owner="true"/>
+  <array arrayentity="FormPatternCovTerm" cascadeDelete="true" desc="Cov Term patterns associated with this form pattern's selected clause pattern." name="FormPatternCovTerms" owner="true"/>
+  <array arrayentity="FormPatternCoverableProperty" cascadeDelete="true" desc="The properties of a coverable associated with this form pattern's selected clause pattern." name="FormPatternCoverableProperties" owner="true"/>
+  <array arrayentity="FormPatternLookup" cascadeDelete="true" desc="Availability lookups associated with this form pattern." name="Lookups" owner="true"/>
+  <index desc="Index ensuring uniqueness of form codes. Also used for looking up forms by form code." name="formu1" unique="true">
+    <indexcol keyposition="1" name="Code"/>
+    <indexcol keyposition="2" name="Retired"/>
+  </index>
+</entity>

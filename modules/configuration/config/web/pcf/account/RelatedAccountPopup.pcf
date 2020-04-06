@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    canEdit="perm.Account.edit(account)"
+    id="RelatedAccountPopup"
+    returnType="AccountAccount"
+    startInEditMode="true"
+    title="displaykey.Web.AccountFile.RelatedAccounts.EditPopup">
+    <LocationEntryPoint
+      signature="RelatedAccountPopup(account : Account)"/>
+    <LocationEntryPoint
+      signature="RelatedAccountPopup(account : Account, accountAccount : AccountAccount)"/>
+    <Variable
+      name="account"
+      type="Account"/>
+    <Variable
+      initialValue="new AccountAccount(){:SourceAccount = account}"
+      name="accountAccount"
+      type="AccountAccount"/>
+    <Variable
+      initialValue="accountAccount.getRelationship(account)"
+      name="relationship"/>
+    <Screen>
+      <Toolbar>
+        <EditButtons
+          pickValue="accountAccount"/>
+      </Toolbar>
+      <DetailViewPanel>
+        <InputColumn>
+          <TypeKeyInput
+            editable="true"
+            id="RelationshipType"
+            label="displaykey.Web.AccountFile.RelatedAccounts.Relationship"
+            required="true"
+            value="relationship.RelationshipType"/>
+          <PickerInput
+            editable="true"
+            id="RelatedAccount"
+            inputConversion="account.checkedFindByNumber(VALUE, \ a -&gt; perm.Account.view(a))"
+            label="displaykey.Web.AccountFile.RelatedAccounts.RelatedAccount"
+            pickLocation="SearchRelatedAccountPopup.push()"
+            required="true"
+            value="relationship.OtherAccount">
+            <PostOnChange/>
+          </PickerInput>
+          <Input
+            id="Name"
+            label="displaykey.Web.AccountFile.RelatedAccounts.Name"
+            value="relationship.OtherAccount.AccountHolderContact.DisplayName"/>
+          <Input
+            id="Address"
+            label="displaykey.Web.AccountFile.RelatedAccounts.Address"
+            value="relationship.OtherAccount.AccountHolderContact.PrimaryAddressDisplayValue"/>
+        </InputColumn>
+      </DetailViewPanel>
+    </Screen>
+  </Popup>
+</PCF>

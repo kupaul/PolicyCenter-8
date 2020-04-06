@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Forward
+    desc="Searches by JobNumber and forwards to the found Job"
+    id="JobNumberForward"
+    parent="PolicyForward()">
+    <LocationEntryPoint
+      signature="JobNumberForward(jobNumber : String)"/>
+    <Variable
+      name="jobNumber"
+      type="String"/>
+    <Variable
+      initialValue="Job.finder.findJobByJobNumber(jobNumber)"
+      name="jobToFind"
+      type="Job"/>
+    <Variable
+      initialValue="checkForError()"
+      name="error"
+      type="String"/>
+    <Variable
+      name="paymentMethod"
+      type="String"/>
+    <ForwardCondition
+      action="PolicySearch.go(error)"
+      condition="error &lt;&gt; null"/>
+    <ForwardCondition
+      action="JobForward.go(jobToFind)"
+      condition="jobToFind != null"/>
+    <Code><![CDATA[function checkForError() : String{
+  if (jobNumber == null)
+    return displaykey.Web.Errors.MissingUrlParameter("JobNumber")
+  if (jobToFind == null)
+    return displaykey.Web.Errors.InvalidUrlParameter("JobNumber", jobNumber)
+  if (not User.util.CurrentUser.canView( jobToFind ))
+    return displaykey.Java.Error.Permission.View("job")
+  return null
+}]]></Code>
+  </Forward>
+</PCF>

@@ -1,0 +1,256 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Working with Row Queries</title>
+    <link rel="StyleSheet" href="css/querybuilder.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>Gosu Reference Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="querybuilder.10.01.html#2239119">Query Builder APIs</a> : Working with Row Queries</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2239119">Working with Row Queries</a></h3>
+      <div class="B_-_Body"><a name="2900979">You cannot achieve certain kinds of SQL results with entity queries. For example, entity queries cannot achieve the results of SQL aggregate queries. Neither can entity queries achieve results that involve SQL outer joins. In both cases, use row queries, instead. In addition, sometimes you need a only few columns in the result, not the complete entity object graph. In such cases, use row queries to select and return only the columns of data that you need. </a></div>
+      <h4 class="H2_-_Heading_2"><a name="2930783">Setting Up Row Queries</a></h4>
+      <div class="B_-_Body"><a name="2930794">You set up a a row query by calling the </a><span class="cv_-_computer_voice">select</span> method on query objects that accepts a <span class="e_-_emphasis">block </span>of column selections. In Gosu, a block is an in-line function that you define within another function. The block that you pass to the <span class="cv_-_computer_voice">select</span> method takes an object of the query type and returns whatever you want. The return type can be anything that you specify. Any arbitrary type is fine, so you can choose whatever is most convenient for your program. The type does not need to match the native types for the columns in the database. </div>
+      <div class="B_-_Body"><a name="2239141">The full method signature of this alternate </a><span class="cv_-_computer_voice">select</span> method is the following:</div>
+      <PRE class="CF_-_Code_First_Line"><span class="pc_-_parameter_in_code"><a name="3063979">queryObject</a></span>.<span class="s_-_strong">select(</span>\ <span class="pc_-_parameter_in_code">resultRow</span> -&gt; (&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// The block argument is a selected row.</PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3064347">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{"</a><span class="pc_-_parameter_in_code">key1</span>" -&gt; <span class="pc_-_parameter_in_code">resultRow.objectPathExpression1</span>[,&nbsp;&nbsp;&nbsp;// Field selections are hash map members.</PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3064141">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"</a><span class="pc_-_parameter_in_code">key2</span>" -&gt; <span class="pc_-_parameter_in_code">resultRow.objectPathExpression2</span>[, ...]</PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3064294">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}&nbsp;&nbsp;// end of hash map declaration</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3064829">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;) &nbsp;&nbsp;&nbsp;// and block body</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3064410">&nbsp;&nbsp;</a><span class="s_-_strong">&nbsp;&nbsp;)</span> &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// end of select method</PRE>
+      <div class="B_-_Body"><a name="3064957">Gosu inspects the block passed to the </a><span class="cv_-_computer_voice">select</span> method at compile time to determine which database columns provide results to the query. At compile time, Gosu looks inside the block without running it. By detecting that you referenced the <span class="cv_-_computer_voice">Address1</span> property on an <span class="cv_-_computer_voice">Address</span> entity, Gosu knows that it must load the <span class="cv_-_computer_voice">Address1</span> property. Any properties not mentioned at all in your block are not loaded from the database for this query.</div>
+      <div class="B_-_Body"><a name="2880653">Gosu also inspects the block passed to the </a><span class="cv_-_computer_voice">select</span> block at run time to determine which properties to load. As you iterate across the result set, after a row loads from the database, Gosu runs your block. For each item in the result, Gosu executes your block and replaces the values of column names with values for the item from the database. </div>
+      <div class="B_-_Body"><a name="3230825">The use of the </a><span class="cv_-_computer_voice">select</span> method that accepts a Gosu block of column selections is available only on query objects, not tables or restrictions. You cannot use virtual properties, enhancement methods, or other entity methods within the block that you pass to the <span class="cv_-_computer_voice">select</span> method. Refer to the <span class="e_-_emphasis">Data Dictionary </span>to determine which properties are backed by database columns.</div>
+      <div class="B_-_Body"><a name="2239157">Gosu imposes the following rules on what kinds of tasks you can do inside the Gosu block:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2239158">All references from the block argument (the database row) must refer to properties backed by actual database columns. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2239160">Any references to a database function, which are static methods on the </a><span class="cv_-_computer_voice">DBFunction</span> class, must contain exactly one column reference. Additionally that column reference can have a cast associated with it, and that cast becomes a database cast in the final output. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2239162">For example, to extract three database columns into a string array, you could use code similar to the following:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2239163">uses gw.api.database.Query</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2969353">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2969355">// Define constants for each selected column in the row array.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2969407">var FirstName = 0</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2969426">var LastName = 1</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2969444">Var State = 2</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239164">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239165">var query = Query.make(Person)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239166">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239167">// Select columns from the Person table to return in the result. </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239168">var resultRows = query.</a><span class="s_-_strong">select</span>(\ <span class="s_-_strong">row</span> -&gt; {<span class="s_-_strong">return</span> {</PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239169">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a><span class="s_-_strong">row</span>.FirstName,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// element 0 in the returned row array</PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2969126">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a><span class="s_-_strong">row</span>.LastName,&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// element 1 in the returned row array</PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239171">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a><span class="s_-_strong">row</span>.PrimaryAddress.State as String&nbsp;&nbsp;// element 2 in the returned row array</PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239172">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239173">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Return the selected columns for each select row as String array. </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239174">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;} </a><span class="s_-_strong">as String[]</span> })</PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239175">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239176">for (</a><span class="s_-_strong">row</span> in resultRows) {</PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2969219">&nbsp;&nbsp;&nbsp;&nbsp;// Print the array elements for the selected columns the current result row. </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239177">&nbsp;&nbsp;&nbsp;&nbsp;print (</a><span class="s_-_strong">row</span>[FirstName] + " " + <span class="s_-_strong">row</span>[LastName] + ", " + <span class="s_-_strong">row</span>[State])</PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2239178">}</a></PRE>
+      <div class="B_-_Body"><a name="2239180">In the previous example, note the references to </a><span class="cv_-_computer_voice">row.FirstName</span>, <span class="cv_-_computer_voice">row.LastName</span>, and <span class="cv_-_computer_voice">row.PrimaryAddress.State</span>. In the final result, these references become database references.</div>
+      <div class="B_-_Body"><a name="2239181">The following is a more subtle example that fetches three columns, assuming that </a><span class="cv_-_computer_voice">MyEntity.E</span> references an entity that contains properties named <span class="cv_-_computer_voice">E1</span> and <span class="cv_-_computer_voice">E2</span>:</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239182">var rows = Query.make(MyEntity).select(\row-&gt; new HashMap&lt;String, Integer&gt;() {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239183">&nbsp;&nbsp;"A_plus_ten" -&gt; row.A + 10,</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239184">&nbsp;&nbsp;"E1_minus_E2" -&gt; row.E.E1 - row.E.E2</a></PRE>
+      <div class="B_-_Body"><a name="2239191">This returns an </a><span class="cv_-_computer_voice">IQueryResult&lt;</span><span style="font-family: &quot;Lucida Sans Typewriter&quot;; font-size: 7.0pt">MyEntity</span><span class="cv_-_computer_voice">, HashMap&lt;String,Integer&gt;&gt;</span>. The <span class="cv_-_computer_voice">IQueryResult</span> class extends <span class="cv_-_computer_voice">Iterable</span>, more specifically <span class="cv_-_computer_voice">IQueryResult&lt;QT,RT&gt;</span> extends <span class="cv_-_computer_voice">Iterable&lt;RT&gt;</span>. This means that this method returns an iterable object of type <span class="cv_-_computer_voice">Iterable&lt;HashMap&lt;String,Integer&gt;&gt;</span>.</div>
+      <div class="B_-_Body"><a name="2239192">In the previous example, note the references to </a><span class="cv_-_computer_voice">row.A</span> and <span class="cv_-_computer_voice">row.E</span>. In the final result, these references become database references.</div>
+      <div class="B_-_Body"><a name="2239193">The following is a more subtle example that fetches three columns, assuming that MyEntity.E references an entity that contains properties named E1 and E2:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239194">var rows = Query.make(MyEntity).select(\row-&gt; new HashMap&lt;String, Integer&gt;() {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239195">&nbsp;&nbsp;"A_plus_ten" -&gt; row.A + 10,</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239196">&nbsp;&nbsp;"E1_minus_E2" -&gt; row.E.E1 - row.E.E2</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239197">})</a></PRE>
+      <div class="B_-_Body"><a name="2239199">The columns in the following example are more subtle. This fetches three columns from the database:</a></div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt; margin-bottom: 2.0pt; margin-top: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cvt_-_computer_voice_table"><a name="2239200">row.A</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt; margin-bottom: 2.0pt; margin-top: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cvt_-_computer_voice_table"><a name="2239201">row.E.E1</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt; margin-bottom: 2.0pt; margin-top: 2.0pt; vertical-align: baseline">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap; color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="color: #000000; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none"><span class="cvt_-_computer_voice_table"><a name="2239202">row.E.E2</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2239203">Gosu permits the line with a computation, </a><span class="cv_-_computer_voice">row.A + 10</span>, a shown in the example below. Gosu does not use an SQL feature called <span class="e_-_emphasis">computed&nbsp;columns </span>to optimize rows with computations in the relational database. Instead, Gosu loads the column values from the database and performs the calculation in the Gosu block at run time. Be aware of this implementation detail if you implement complex calculations in your block. </div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="2292144">If your block applies complex calculations to a row, test and profile query performance with large data loads to determine the performance impact of your Gosu calculations.</a></div>
+      <div class="B_-_Body"><a name="2239206">The following is a complex example that returns a custom anonymous inner class and initializing two properties (A and E):</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239207">&nbsp;&nbsp;var rows = Query.make(TestA).select(\row-&gt; {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239208">      if (row.A &lt; 10) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239209">        return new MyObject() {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239210">          :A row.A + 10,</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239211">          :E -&gt; row.E.E1 - row.E.E2</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239212">        })</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239213">      } else {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239214">        return new MyObject() {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239215">          :A row.A + 1000,</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239216">          :E -&gt; row.E.E1 + row.E.E2</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239217">      }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2239218">    }</a></PRE>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="2239219">Choose the type you want for the result carefully. Performance characteristics vary depending on the type that you choose.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="2930909">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('gosu', 'blocks.18.1.html#1445150', '');" title="Gosu Blocks" name="2930977">“Gosu Blocks”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('gosu', 'generics.19.5.html#1447291', '');" title="Generics and Blocks" name="2930932">“Generics and Blocks”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('gosu', 'generics.19.6.html#1441541', '');" title="How Generics Help Define Collection APIs" name="2933690">“How Generics Help Define Collection APIs”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

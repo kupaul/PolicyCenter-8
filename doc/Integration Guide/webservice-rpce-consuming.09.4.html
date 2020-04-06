@@ -1,0 +1,280 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Calling RPCE Web Service from Gosu: ICD-9 Example</title>
+    <link rel="StyleSheet" href="css/webservice-rpce-consuming.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-webservices.html#2074808">Web Services</a> : <a class="WebWorks_Breadcrumb_Link" href="webservice-rpce-consuming.09.1.html#2074808">Calling RPCE Web Services from Gosu</a> : Calling RPCE Web Service from Gosu: ICD-9 Example</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2074808">Calling RPCE Web Service from Gosu: ICD-9 Example</a></h3>
+      <div class="B_-_Body"><a name="2074809">Suppose your application wants to look up special codes. For example, ICD-9 codes represent International Statistical Classification of Diseases and Related Health Problems. One way to look up codes is to put all information directly into your application, such as a large look-up table. However, in some cases it might be necessary to let an external system look up the code, especially if the information changes frequently. This example looks up codes using an external web service. It create a utility class in Gosu to help connect to this service and prepare its arguments.</a></div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="2074810">Guidewire does not certify the web service mentioned in the example to integrate with ICD-9 codes. This example simply demonstrates how web services might be used in application logic.</a></div>
+      <div class="B_-_Body"><a name="2074811">Set up the external web service in Studio:</a></div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2074812">Launch studio</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2074813">Create a new web service</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2074814">Name the web service </a><span class="cv_-_computer_voice">ICD9</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2074815">Click the </a><span class="ui_-_UI_element">Update</span> button to update the WSDL location</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2074816">Type the web service URL: </a><span class="cv_-_computer_voice">http://www.webservicemart.com/icd9code.asmx?WSDL</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2074817">Save the web service definition.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2074818">Carefully note the created service name. The .NET service class has the original name of the class plus </a><span class="cv_-_computer_voice">Soap</span> at the end. Because the original name for the service is <span class="cv_-_computer_voice">ICD9Code</span>, Gosu creates this class as <span class="cv_-_computer_voice">ICD9CodeSoap</span> and you must use that name to connect to it.</div>
+      <div class="B_-_Body"><a name="2074819">To create a class to represent a single ICD-9 code, add the following code in the package </a><span class="cv_-_computer_voice">example.webservice.icd9</span> in Studio:</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074820">package example.webservice.icd9</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074821">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074822">/**</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074823"> * A single ICD9 code containing a code and a description.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074824"> * </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074825">*/</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074826">class ICD9Code</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074827">{</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074828">  private var _code : String as Code</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074829">  private var _desc : String as Desc</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074830">  construct()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074831">  {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074832">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074833">  </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074834">  construct(aCode  : String, aDesc : String){</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074835">    _code = aCode;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074836">    _desc = aDesc;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074837">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074838">}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074839">&nbsp;</a></PRE>
+      <div class="B_-_Body"><a name="2074840">Next use a utility class to talk to this web service and to prepare data to send over the web service. In this case, the service requires a list of string lengths (code lengths) to be provided as a list. For example, to look for 3-to-6-character codes, the service expects the string </a><span class="cv_-_computer_voice">"(3,4,5,6)"</span>. The <span class="cv_-_computer_voice">lookupICD9CodesByPrefix</span> method provides an easy-to-use API to provide a minimum and maximum length argument, and the method generates the list automatically</div>
+      <div class="B_-_Body"><a name="2074841">Add this class in the package </a><span class="cv_-_computer_voice">example.webservice.icd9</span>:</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074842">package example.webservice.icd9</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074843">uses java.lang.Integer</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074844">uses java.lang.IllegalArgumentException</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074845">uses java.util.ArrayList</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074846">uses gw.api.xml.XMLNode</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074847">uses java.lang.RuntimeException</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074848">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074849">class ICD9Util</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074850">{</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074851">  private var _api : soap.ICD9.api.ICD9CodeSoap</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074852">  </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074853">  construct()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074854">  {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074855">    _api = new soap.ICD9.api.ICD9CodeSoap()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074856">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074857">  </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074858">  private function getICD9Codes(code : String, len : String) : String {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074859">    return _api.ICD9Codes( code, len )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074860">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074861">  </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074862">  static function getICD9Codes2(code : String, len : String) : String {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074863">    var util = new ICD9Util()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074864">    return util.getICD9Codes( code, len )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074865">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074866">  </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074867">  /**</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074868">   * @codePrefix the prefix of any code that to look up.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074869">   * @minLen the minimum number of characters the code must contain.  This may be null</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074870">   * @maxLen the maximum number of characters the code must contain.  This may be null. </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074871">&nbsp;&nbsp;&nbsp;* If both the minLen and maxLen are null, then </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074872">   */</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074873">  static function lookupICD9CodesByPrefix(codePrefix : String, minLen : Integer, </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074874">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;maxLen : Integer) : List&lt;ICD9Code&gt;{</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074875">    //no-op   </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074876">    var pre = codePrefix + "*"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074877">    var lenStr = createLengthFilter( minLen, maxLen )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074878">    var result = getICD9Codes2( pre, lenStr )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074879">    return parseResultIntoCodes( result )    </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074880">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074881">  </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074882">  private static function parseResultIntoCodes(result : String) : List&lt;ICD9Code&gt; {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074883">    var codes = new ArrayList&lt;ICD9Code&gt;()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074884">    var itemsNode = XMLNode.parse( result )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074885">    if (itemsNode.ElementName != "items"){</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074886">      throw new RuntimeException("Could not parse the result into ICD9 Codes.")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074887">    }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074888">    itemsNode.Children.each( \ item -&gt; { </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074889">        var code = item.Attributes.get( "code")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074890">        var desc = item.Attributes.get( "description")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074891">        if (item.ElementName != "item" || code == null){</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074892">          throw new RuntimeException("Could not parse the result into ICD9 Codes.")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074893">        }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074894">        codes.add(new ICD9Code(code, desc))      </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074895">      })</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074896">   </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074897">    return codes</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074898">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074899">  </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074900">  private static function createLengthFilter(minLen : Integer, maxLen : Integer) : String{</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074901">    if ((minLen != null &amp;&amp; minLen &lt; 0) || (maxLen != null &amp;&amp; maxLen &lt; 0)){</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074902">       throw new IllegalArgumentException("Cannot have a minimum length or maximum </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074903">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;length that is negative: Min:" + minLen + ", Max:" + maxLen)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074904">    }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074905">        </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074906">    if (minLen != null &amp;&amp; maxLen != null &amp;&amp; minLen &gt; maxLen){</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074907">       throw new IllegalArgumentException("Maximum length is less than the minimum length: "</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074908">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;+ minLen + " &gt; " + maxLen)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074909">    }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074910">    var min = minLen == null ? 0 : minLen</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074911">    var max = maxLen == null ? 15 : maxLen //assume that no ICD9 code is more than 15 characters long</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074912">    var diff = (max + 1) - min</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074913">    var range : int[] = new int[diff]</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074914">    for (i in diff){</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074915">      range[i] = i + min</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074916">    }    </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074917">    var rangeStr = range.join( "," )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074918">    return "(" + rangeStr + ")"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074919">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074920">}</a></PRE>
+      <h6 class="HS_-_Head_Sub"><a name="2074921">Test the ICD-9 Web Service from Gosu Scratchpad</a></h6>
+      <div class="B_-_Body"><a name="2074922">Launch the Gosu Scratchpad and invoke the web service to test it. You must create an instance of the web service that has the class:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="2074923">soap.</a><span class="pc_-_parameter_in_code">WEBSERVICE</span>.api.<span class="pc_-_parameter_in_code">SERVICE</span></div>
+      <div class="B_-_Body"><a name="2074924">In this case, the fully qualified name is </a><span class="cv_-_computer_voice">soap.ICD9.api.ICD9CodeSoap</span>.</div>
+      <div class="B_-_Body"><a name="2074925">For a simple test, paste the following code in the Gosu Scratchpad:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2074926">var api = new soap.ICD9.api.ICD9CodeSoap()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074927">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074928">var code = "E*"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074929">var len = "(2,3,4)"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074930">var result = api.ICD9Codes( code, len )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074931">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2074932">print(result) // print the final answer</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1444253">&nbsp;</a></PRE>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

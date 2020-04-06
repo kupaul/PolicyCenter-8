@@ -1,0 +1,25 @@
+package rules.Assignment.GlobalJobAssignmentRules_dir.Requestor_dir
+
+@gw.rules.RuleName("Assign To Creator")
+internal class AssignToCreator {
+  static function doCondition(job : entity.Job) : boolean {
+    
+/*start00rule*/
+return job.getUserRoleAssignmentByRole("Creator") != null and 
+job.getUserRoleAssignmentByRole("Creator").AssignedUser != null
+/*end00rule*/
+
+  }
+
+  static function doAction(job : entity.Job, actions : gw.rules.Action) {
+
+/*start00rule*/
+var assignment = job.CurrentRoleAssignment
+var userRoleAssignment = job.getUserRoleAssignmentByRole("Creator")
+assignment.assign(userRoleAssignment.AssignedGroup, userRoleAssignment.AssignedUser)
+gw.assignment.AssignmentUtil.logUserRoleAssignment(assignment, actions as java.lang.String)
+actions.exit()
+/*end00rule*/
+
+  }
+}

@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    beforeCommit="policyPriNamedInsured.resetPrimaryNamedInsured(duplicateContactsPopupHelper.existingPCContactWithABContactMatch)"
+    canEdit="true"
+    countsAsWork="false"
+    id="NewPrimaryNamedInsuredPopup"
+    returnType="PolicyPriNamedInsured"
+    startInEditMode="true"
+    title="displaykey.Web.Contact.NewContact(entity.PolicyPriNamedInsured.Type.TypeInfo.DisplayName)">
+    <LocationEntryPoint
+      signature="NewPrimaryNamedInsuredPopup(period: PolicyPeriod, contactType: typekey.ContactType)"/>
+    <Variable
+      name="period"
+      type="PolicyPeriod"/>
+    <Variable
+      name="contactType"
+      type="typekey.ContactType"/>
+    <Variable
+      initialValue="initializePrimaryNamedInsured()"
+      name="policyPriNamedInsured"/>
+    <Variable
+      initialValue="period.Job.NewTerm ? null : policyPriNamedInsured.BasedOn.IndustryCode"
+      name="previousIndustryCode"
+      type="IndustryCode"/>
+    <Variable
+      initialValue="new gw.pcf.duplicatecontacts.DuplicateContactsPopupHelper(policyPriNamedInsured.AccountContactRole.AccountContact.Contact)"
+      name="duplicateContactsPopupHelper"/>
+    <Screen
+      editable="true"
+      id="ContactDetailScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.checkForDuplicatesOrUpdate(\ -&gt; CurrentLocation.pickValueAndCommit(policyPriNamedInsured))"
+          id="ForceDupCheckUpdate"
+          label="displaykey.Button.OK"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+        <EditButtons
+          pickValue="policyPriNamedInsured"
+          updateVisible="not duplicateContactsPopupHelper.ShowButton"/>
+        <ToolbarButton
+          action="duplicateContactsPopupHelper.push()"
+          id="CheckForDuplicates"
+          label="displaykey.Web.Contact.CheckForDuplicates"
+          visible="duplicateContactsPopupHelper.ShowButton"/>
+      </Toolbar>
+      <DetailViewPanel
+        id="PrimaryNamedInsuredInfoDV">
+        <InputColumn>
+          <IndustryCodeInput
+            domain="&quot;SIC&quot; as IndustryCodeType"
+            editable="true"
+            id="IndustryCode"
+            label="displaykey.Web.EditAccount.IndustryCode"
+            pickLocation="IndustryCodeSearchPopup.push(&quot;SIC&quot; as IndustryCodeType, ReferenceDate, previousIndustryCode)"
+            previousCode="previousIndustryCode.Code"
+            referenceDate="ReferenceDate"
+            value="(policyPriNamedInsured.AccountContactRole as NamedInsured).IndustryCode"
+            visible="not period.Policy.Product.Personal and policyPriNamedInsured.AccountContactRole.AccountContact.Company"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef
+        def="NewPolicyContactRoleDetailsCV(policyPriNamedInsured, false)"/>
+    </Screen>
+    <Code><![CDATA[function initializePrimaryNamedInsured() : PolicyPriNamedInsured {
+  period.changePrimaryNamedInsuredTo(period.Policy.Account.addNewAccountContactOfType(contactType).Contact)
+  return period.PrimaryNamedInsured
+}
+
+property get ReferenceState() : Jurisdiction {
+ return gw.api.util.JurisdictionMappingUtil.getJurisdiction(policyPriNamedInsured.AccountContactRole.AccountContact.Contact.PrimaryAddress) 
+}
+
+property get ReferenceDate() : DateTime {
+  return ReferenceState == null ? period.EditEffectiveDate : period.getReferenceDateForCurrentJob(ReferenceState)  
+}]]></Code>
+  </Popup>
+</PCF>

@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Screen
+    editable="openForEdit"
+    id="BAVehiclesScreen">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="policyPeriod.BusinessAutoLine"
+      name="baLine"
+      recalculateOnRefresh="true"
+      type="BusinessAutoLine"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, policyPeriod.Job, jobWizardHelper)"/>
+    </Toolbar>
+    <PanelRef
+      def="OOSEPanelSet(policyPeriod, jobWizardHelper)"/>
+    <PanelRef
+      def="BAVehiclesLV(policyPeriod, openForEdit, baLine, true)">
+      <TitleBar
+        title="displaykey.Web.PolicyLine.VehicleDetail"/>
+      <Toolbar>
+        <IteratorButtons
+          addLabel="displaykey.Web.LineWizardMenu.Vehicles.CreateVehicle"
+          id="BAVehiclesScreenIteratorButtons"
+          iterator="BAVehiclesLV.BAVehiclesLV"
+          removeLabel="displaykey.Web.LineWizardMenu.Vehicles.RemoveVehicle"/>
+        <CheckedValuesToolbarButton
+          allCheckedRowsAction="CheckedValues.each( \ bv -&gt; bv.cloneVehicleAndCoveragesAndModifiers() )"
+          hideIfReadOnly="true"
+          id="VehiclesScreen_CloneVehicleButton"
+          iterator="BAVehiclesLV.BAVehiclesLV"
+          label="displaykey.Web.Policy.BA.CloneVehicle"/>
+      </Toolbar>
+    </PanelRef>
+  </Screen>
+</PCF>

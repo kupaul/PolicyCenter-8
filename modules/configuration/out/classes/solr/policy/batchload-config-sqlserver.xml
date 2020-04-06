@@ -1,0 +1,394 @@
+<?xml version="1.0"?>
+
+<document
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xsi:noNamespaceSchemaLocation="file:///opt/gwsolr/pc/solr/policy_active/conf/solr-batchload-config.xsd"
+        version="1">
+
+    <param name="debug" value="false"/>
+    <param name="appPrefix" value="pc"/>
+    <!--
+    If the Solr Batch Loader is run from within the Guidewire app (ClaimCenter,
+    PolicyCenter, etc.), the location of the solrServerConfigFile
+    param is taken from the Guidewire app, not from the parameter below and the
+    value for the absolutePathToWorkDir param is determined from the contents of
+    that file, not from the parameter below.
+    -->
+    <param name="solrServerConfigFile" value="/opt/gwsolr/pc/solr/policy_active/conf/solrserver-config.xml"/>
+    <param name="absolutePathToWorkDir" value="/opt/gwsolr/pc/solr/policy_active/workDir"/>
+    <!--
+    The parameter absolutePathToSortExe specifies what sort facility the
+    SolrBatchLoader should use. You can either specify the literal "internalSort"
+    or an absolute path to an external sort utility:
+
+    1.) internalSort : this will cause the SolrBatchLoader to use an in-memory
+    Java-based sort facility. This option should be used only in development/demo
+    mode where the number of entity rows to be fetched by the batch loader is less
+    than 10000 (if you exceed 10000 rows, the batch loader will throw an exception).
+
+    2.) <abolute_path_to_an_external_sort_utility> : this will cause the
+    SolrBatchLoader to use an external, high-performance sort utility. This option
+    should be used in production mode. On Unix/Linux the sort utility is typically
+    located at /usr/bin/sort. On Windows, Guidewire only supports the Cygwin sort
+    utility (you must download and install Cygwin). Typically, the Cygwin sort
+    utility is located at c:\cygwin\bin\sort.exe. Be sure to include the .exe
+    extension in the value of absolutePathToSortExe if you are specifying the
+    location of the sort utility on Windows.
+    -->
+    <param name="absolutePathToSortExe" value="internalSort"/>
+    <param name="sortType" value="lexicographic"/>
+
+    <!--
+    The three parameters, sortFieldArgStyle, entitySortMemSize, and absolutePathToSortTmpDir, are enabled
+    only if you are using an external sort utility. The parameters entitySortMemSize and absolutePathToSortTmpDir
+    are also only enabled for the entity. That is, the sorts for mvFields just get the default values, which should
+    be adequate for their smaller sizes.
+    -->
+    <param name="sortFieldArgStyle" value="posix"/>
+    <param name="entitySortMemSize" value="2G"/>
+    <param name="absolutePathToSortTmpDir" value="/opt/gwsolr/pc/solr/policy_active/workDir/sortTmpDir"/>
+
+    <!--
+    The list of transforms (as defined in the <transformer> elements; see below)
+    gets applied to the stream of documents coming out of the last joiner. The
+    application of these transforms to any one document is independent of their application
+    to all other documents. So, the stream of documents can be partitioned and the list of
+    transforms can be applied in parallel to each partition. The following parameter
+    specifies how many partitions and separate threads should be created to do the
+    transforming. In order to run multiple transformer threads, ALL TRANSFORMER CLASSES
+    MUST BE THREAD SAFE. In particular, since the input line and the transformed
+    output line are in XML and XML parsing and formatting are not thread safe, you must
+    allocate separate parsers and formatters for each instance of a transformer. In other
+    words, your transformer should not share static resources unless you are sure they
+    are read-only/immutable. Serializing access to shared static resources will just degrade
+    performance. The maximum number of transform threads is 10.
+    -->
+    <param name="numTransformThreads" value="3"/>
+
+    <!--
+    If the Solr Batch Loader is run from within the Guidewire app (ClaimCenter,
+    PolicyCenter, etc.), the settings in the following <dataSource> element are
+    overridden by the settings in the <database> element in config.xml or
+    config-override.xml.
+    -->
+
+    <dataSource name="ds_sqlserver" driver="com.microsoft.sqlserver.jdbc.SQLServerDriver" url="jdbc:sqlserver://HOST:PORT;databaseName=DATABASENAME;user=USER;password=PASSWORD"/>
+    <!--
+    <dataSource name="ds_h2" driver="org.h2.Driver" url="jdbc:h2:file:/tmp/guidewire/pc;MODE=Oracle;MVCC=true;user=;password="/>
+    <dataSource name="ds_orcl" driver="oracle.jdbc.OracleDriver" url="jdbc:oracle:thin:USER/PASSWORD@//HOST:PORT/SERVICENAME"/>
+    <dataSource name="ds_db2" driver="com.ibm.db2.jcc.DB2Driver" url="jdbc:db2://HOST:PORT/DATABASENAME;user=USER;password=PASSWORD"/>
+    -->
+
+    <!--
+         IMPORTANT: the postprocessor expects to find the first three fields (periodIDWithSliceDate, sliceDate, urn)
+         up front and in that order.  If you change this, the postprocessor scripts also need to be changed.
+      -->
+    <entity
+            name="policy"
+            query="
+SELECT DISTINCT
+       pp.publicid + '@' + cast(pp2.editEffectiveDate as varchar)       AS periodIdWithSliceDate,
+       pp2.EditEffectiveDate                                            AS sliceDate,
+       'policyPublicID=' + pol.publicid                                 AS urn,
+       pp.TermNumber                                                    AS termNumber,
+       pni.FirstNameInternal + ' ' + pni.LastNameInternal               AS fullName,
+       pni.CompanyNameInternal                                          AS companyName,
+       pp.publicid                                                      AS periodID,
+       pol.publicid                                                     AS policyPublicID,
+       ppstatus.typecode                                                AS periodStatus,
+       pp.policynumber                                                  AS policyNumber,
+
+         (
+           case when (pp.Status = (SELECT id
+								   FROM   pctl_policyperiodstatus
+                                   WHERE  typecode = 'Draft')
+                      AND job.Subtype IN (SELECT jst.ID
+                                     FROM pctl_job jst
+                                     WHERE jst.typecode IN ('Submission', 'Issuance')))
+                then (addr.AddressLine1)
+                else (paddr.addressline1internal)
+          end)
+                                                                          AS addressLine1,
+
+         (
+           case when (pp.Status = (SELECT id
+								   FROM   pctl_policyperiodstatus
+                                   WHERE  typecode = 'Draft')
+                      AND job.Subtype IN (SELECT jst.ID
+                                     FROM pctl_job jst
+                                     WHERE jst.typecode IN ('Submission', 'Issuance')))
+                then (addr.City)
+                else (paddr.CityInternal)
+          end)
+                                                                          AS city,
+
+         (
+           case when (pp.Status = (SELECT id
+								   FROM   pctl_policyperiodstatus
+                                   WHERE  typecode = 'Draft')
+                      AND job.Subtype IN (SELECT jst.ID
+                                     FROM pctl_job jst
+                                     WHERE jst.typecode IN ('Submission', 'Issuance')))
+                then (SELECT pstate2.TYPECODE FROM pctl_state pstate2 WHERE addr.State = pstate2.ID)
+                else (SELECT pstate.TYPECODE FROM pctl_state pstate WHERE paddr.StateInternal = pstate.ID)
+          end)                                                              AS state,
+
+         (
+           case when (pp.Status = (SELECT id
+								   FROM   pctl_policyperiodstatus
+                                   WHERE  typecode = 'Draft')
+                      AND job.Subtype IN (SELECT jst.ID
+                                     FROM pctl_job jst
+                                     WHERE jst.typecode IN ('Submission', 'Issuance')))
+                then (addr.PostalCode)
+                else (paddr.postalcodeinternal)
+          end)
+                                                                        AS postalCode,
+
+       pol.productcode                                                  AS product,
+       juris.typecode                                                   AS jurisdiction,
+
+       (SELECT TYPECODE
+        FROM   pctl_job jobTl
+        WHERE  jobTl.ID = job.Subtype)                                  AS jobType,
+
+       COALESCE(
+          (SELECT offID.OfficialIDValue
+           FROM pc_officialid offID
+           WHERE offID.ContactID = con.ID
+                  and offID.OfficialIDType = (SELECT ID
+                                    FROM pctl_officialidtype
+                                    WHERE TYPECODE = 'FEIN')),
+
+          (SELECT offID.OfficialIDValue
+           FROM pc_officialid offID
+           WHERE offID.ContactID = con.ID
+                  and offID.OfficialIDType = (SELECT ID
+                                              FROM pctl_officialidtype
+                                              WHERE TYPECODE = 'SSN'))) AS OfficialID,
+
+       (SELECT MIN(pp1.periodstart)
+        FROM   pc_policyperiod pp1
+        WHERE  pp1.policyid = pp.policyid)                              AS policyStart,
+
+       (SELECT COALESCE((pp3.cancellationdate), (pp3.periodend))
+               FROM   pc_policyperiod pp3
+               WHERE  pp3.policyid = pp.policyid
+                                                   AND pp3.MostRecentModel = 1
+                                                   AND pp3.TermNumber =(SELECT MAX(pp5.TermNumber)
+                                                                        FROM pc_policyperiod pp5
+                                                                        WHERE pp5.PolicyID = pp.PolicyID
+                                                                        AND pp5.MostRecentModel = 1))   AS policyEnd,
+
+       pp.PeriodStart                                                   AS periodStart,
+       pp.PeriodEnd                                                     AS periodEnd,
+
+       org.name                                                         AS producer,
+       pcos.code                                                        AS producerCodeOfService
+
+FROM   pc_policyperiod AS pp
+       INNER JOIN pc_policyperiod pp2
+               ON pp2.PolicyID = pp.PolicyID
+              AND pp2.Status = pp.Status
+              AND pp2.TemporaryBranch = 0
+              AND pp2.Preempted = 0
+              AND pp2.ArchiveState IS NULL
+              AND (pp2.TermNumber = pp.TermNumber or pp.TermNumber IS NULL)
+
+       INNER JOIN pctl_policyperiodstatus ppstatus
+               ON ppstatus.id = pp.status
+
+       INNER JOIN pctl_jurisdiction juris
+               ON juris.id = pp.basestate
+
+       INNER JOIN pc_policy pol
+               ON pol.id = pp.policyid
+
+       INNER JOIN pc_policyaddress paddr
+               ON paddr.branchid = pp.id
+
+       INNER JOIN pc_producercode pcos
+               ON pcos.id = pol.producercodeofserviceid
+
+       INNER JOIN pc_effectivedatedfields edf
+               ON edf.BranchID = pp.ID
+
+       INNER JOIN pc_producercode pcode
+               ON pcode.id = pp.ProducerCodeOfRecordID
+
+       INNER JOIN pc_organization org
+               ON org.id = pcode.organizationid
+
+       INNER JOIN pc_policycontactrole pni
+               ON (pni.FixedID = edf.PrimaryNamedInsured AND pni.BranchID = pp.ID)
+
+       INNER JOIN pc_job job
+               ON pp.JobID = job.ID
+
+       INNER JOIN pc_contact con
+               ON con.ID = pp.PNIContactDenorm
+
+       INNER JOIN pc_address addr
+               ON addr.ID = paddr.Address
+
+WHERE (   pp.MostRecentModel = 1
+         OR (    pp.MostRecentModel = 0
+             AND pp.ID = pp2.ID
+             AND pp.Status IN (SELECT id
+                               FROM   pctl_policyperiodstatus
+                               WHERE  typecode NOT IN ('Bound','Quoting'))
+             AND job.Subtype NOT IN (SELECT jst.ID
+                                     FROM pctl_job jst
+                                     WHERE jst.typecode IN ('Audit', 'Cancellation'))))
+  AND pp.TemporaryBranch = 0
+  AND pp.Preempted = 0
+  AND pp.ArchiveState IS NULL
+  AND (edf.EffectiveDate  IS NULL OR edf.EffectiveDate  &lt;= pp2.EditEffectiveDate )
+  AND (edf.ExpirationDate IS NULL OR edf.ExpirationDate &gt;  pp2.EditEffectiveDate )
+  AND (paddr.EffectiveDate  IS NULL OR paddr.EffectiveDate  &lt;= pp2.EditEffectiveDate )
+  AND (paddr.ExpirationDate IS NULL OR paddr.ExpirationDate &gt;  pp2.EditEffectiveDate )
+  AND (pni.EffectiveDate  IS NULL OR pni.EffectiveDate  &lt;= pp2.EditEffectiveDate )
+  AND (pni.ExpirationDate IS NULL OR pni.ExpirationDate &gt;  pp2.EditEffectiveDate )
+"
+            keys="periodIdWithSliceDate"/>
+
+    <mvField
+            name="ANIfullName"
+            query="
+SELECT DISTINCT pp.PublicID + '@' + cast(pp2.EditEffectiveDate as varchar) as periodIdWithSliceDate,
+       firstNameInternal + ' ' + lastNameInternal AS ANIfullName
+FROM pc_policycontactrole pcr
+INNER JOIN pc_policyperiod pp
+        ON pp.ID = pcr.BranchID
+    , pc_policyperiod pp2
+WHERE (pp.MostRecentModel = 1 or  (pp.MostRecentModel = 0 AND pp.ID = pp2.ID
+                                                AND pp.Status IN (SELECT id
+												FROM   pctl_policyperiodstatus
+												WHERE   typecode NOT IN ('Bound','Quoting')) ))
+  AND pp2.PolicyID = pp.PolicyID
+  AND pp2.Status = pp.Status
+  AND pp.ArchiveState IS NULL
+  AND pp2.ArchiveState IS NULL
+  AND (pp2.TermNumber = pp.TermNumber or pp.TermNumber IS NULL)
+  AND (pcr.effectiveDate IS NULL OR effectiveDate &lt;= pp2.EditEffectiveDate)
+  AND (pcr.expirationDate IS NULL OR expirationDate &gt; pp2.EditEffectiveDate)
+  AND (pcr.companyNameInternal IS NULL)
+  AND pcr.subtype IN (SELECT id FROM pctl_policycontactrole
+                                WHERE typecode IN ('PolicyAddlNamedInsured', 'PolicySecNamedInsured'))
+"
+            entityKey="periodIdWithSliceDate"
+            keys="periodIdWithSliceDate"
+            />
+
+    <mvField
+            name="ANIcompanyName"
+            query="
+SELECT DISTINCT pp.PublicID + '@' + cast(pp2.EditEffectiveDate as varchar) as periodIdWithSliceDate,
+       companyNameInternal AS ANIcompanyName
+FROM pc_policycontactrole pcr
+INNER JOIN pc_policyperiod pp
+        ON pp.ID = pcr.BranchID
+    , pc_policyperiod pp2
+WHERE (pp.MostRecentModel = 1 or  (pp.MostRecentModel = 0 AND pp.ID = pp2.ID
+                                            AND pp.Status IN (SELECT id
+												FROM   pctl_policyperiodstatus
+												WHERE   typecode NOT IN ('Bound','Quoting')) ))
+  AND pp2.PolicyID = pp.PolicyID
+  AND pp2.Status = pp.Status
+  AND pp.ArchiveState IS NULL
+  AND pp2.ArchiveState IS NULL
+  AND (pp2.TermNumber = pp.TermNumber or pp.TermNumber IS NULL)
+  AND (pcr.effectiveDate IS NULL OR effectiveDate &lt;= pp2.EditEffectiveDate)
+  AND (pcr.expirationDate IS NULL OR expirationDate &gt; pp2.EditEffectiveDate)
+  AND (pcr.companyNameInternal IS NOT NULL)
+  AND pcr.subtype IN (SELECT id FROM pctl_policycontactrole
+                                WHERE typecode IN ('PolicyAddlNamedInsured', 'PolicySecNamedInsured'))
+"
+            entityKey="periodIdWithSliceDate"
+            keys="periodIdWithSliceDate"
+            />
+
+    <mvField
+            name="phone"
+            query="
+SELECT DISTINCT con.FaxPhone as Phone,
+       pp.PublicID + '@' + CAST(pp2.EditEffectiveDate as varchar) as periodIdWithSliceDate
+FROM pc_policyperiod pp, pc_contact con
+    , pc_policyperiod pp2
+WHERE (pp.MostRecentModel = 1 or  (pp.MostRecentModel = 0 AND pp.ID = pp2.ID AND pp.Status IN (SELECT id
+												FROM   pctl_policyperiodstatus
+												WHERE   typecode NOT IN ('Bound','Quoting')) ))
+
+  AND pp2.PolicyID = pp.PolicyID
+  AND pp2.Status = pp.Status
+  AND pp.ArchiveState IS NULL
+  AND pp2.ArchiveState IS NULL
+  AND (pp2.TermNumber = pp.TermNumber or pp.TermNumber IS NULL)
+  AND con.ID = pp.PNIContactDenorm and con.FaxPhone IS NOT NULL
+
+UNION
+
+SELECT DISTINCT con.HomePhone as Phone,
+       pp.PublicID + '@' + CAST(pp2.EditEffectiveDate as varchar) as periodIdWithSliceDate
+FROM pc_policyperiod pp, pc_contact con
+    , pc_policyperiod pp2
+WHERE (pp.MostRecentModel = 1 or  (pp.MostRecentModel = 0 AND pp.ID = pp2.ID AND pp.Status IN (SELECT id
+												FROM   pctl_policyperiodstatus
+												WHERE   typecode NOT IN ('Bound','Quoting')) ))
+  AND pp2.PolicyID = pp.PolicyID
+  AND pp2.Status = pp.Status
+  AND pp.ArchiveState IS NULL
+  AND pp2.ArchiveState IS NULL
+  AND (pp2.TermNumber = pp.TermNumber or pp.TermNumber IS NULL)
+  AND con.ID = pp.PNIContactDenorm and con.HomePhone IS NOT NULL
+
+UNION
+
+SELECT DISTINCT con.WorkPhone as Phone,
+       pp.PublicID + '@' + CAST(pp2.EditEffectiveDate as varchar) as periodIdWithSliceDate
+FROM pc_policyperiod pp, pc_contact con
+    , pc_policyperiod pp2
+WHERE (pp.MostRecentModel = 1 or  (pp.MostRecentModel = 0 AND pp.ID = pp2.ID AND pp.Status IN (SELECT id
+												FROM   pctl_policyperiodstatus
+												WHERE   typecode NOT IN ('Bound','Quoting')) ))
+  AND pp2.PolicyID = pp.PolicyID
+  AND pp2.Status = pp.Status
+  AND pp.ArchiveState IS NULL
+  AND pp2.ArchiveState IS NULL
+  AND (pp2.TermNumber = pp.TermNumber or pp.TermNumber IS NULL)
+  AND con.ID = pp.PNIContactDenorm and con.WorkPhone IS NOT NULL
+
+UNION
+
+SELECT DISTINCT con.CellPhone as Phone,
+       pp.PublicID + '@' + CAST(pp2.EditEffectiveDate as varchar) as periodIdWithSliceDate
+FROM pc_policyperiod pp, pc_contact con
+    , pc_policyperiod pp2
+WHERE (pp.MostRecentModel = 1 or  (pp.MostRecentModel = 0 AND pp.ID = pp2.ID AND pp.Status IN (SELECT id
+												FROM   pctl_policyperiodstatus
+												WHERE   typecode NOT IN ('Bound','Quoting')) ))
+  AND pp2.PolicyID = pp.PolicyID
+  AND pp2.Status = pp.Status
+  AND pp.ArchiveState IS NULL
+  AND pp2.ArchiveState IS NULL
+  AND (pp2.TermNumber = pp.TermNumber or pp.TermNumber IS NULL)
+  AND con.ID = pp.PNIContactDenorm and con.CellPhone IS NOT NULL
+"
+            entityKey="periodIdWithSliceDate"
+            keys="periodIdWithSliceDate"
+            />
+
+    <!-- -->
+    <transformer
+            name="digestTransformer"
+            class="com.guidewire.solr.pc.batchload.xform.PCDigestTransformer"
+            ignoreElems="urn, periodID, policyPublicID, sliceDate, termNumber, periodStart, periodEnd, policyStart, policyEnd, periodIdWithSliceDate, jobType"
+            algorithm="SHA"
+            />
+    <!-- -->
+
+    <postprocessor
+            name="postprocessor"
+            absolutePathToPostprocessorExe="c:\opt\gwsolr\pc\solr\policy_active\conf\postprocess.bat"
+            />
+</document>

@@ -1,0 +1,54 @@
+<HTML>
+<head>
+
+<!-- Example for including custom JS or AX resources:
+  <script type="text/javascript" language="javascript" src="mySpellCheckHelper.js" />
+  <object id="myAxSpellCheckHelper" classid="CLSID:something"/>
+-->
+
+  <script type="text/javascript">
+
+    /**
+    * Clients who want to implement spell checker need to provide an implementation
+    * of this JavaScript function.
+    *
+    * @param changedFields
+    *          An array of HTML elements, each of which needs to be spell checked.
+    *
+    * The implementation below is purely for testing and as an example, it does
+    * not really perform any spell checking. It asks the user whether to remove
+    * string "spellchecktest" from each field that contains this string.
+     */
+    function checkSpelling (changedFields) {
+
+      // foo(changedFields);           // example for invoking custom JS function
+      // myAxSpellCheckHelper.bar();   // example for invoking custom AX method
+
+      var illegalText = 'spellchecktest';
+      var win = null;
+
+      for (var index = 0; index < changedFields.length; index++) {
+        var elem = changedFields[index];
+        if(elem.document) {
+          win = elem.document.parentWindow;
+        } else {
+          win = elem.ownerDocument.defaultView;
+        }
+        var text = elem.value;
+        if (text.indexOf(illegalText) >= 0) {
+          var oldColor = elem.style.color;
+          elem.style.color = 'orange';
+          if (win.confirm("'" +illegalText+ "' found in the text. Remove?")) {
+            changedFields[index].value = text.replace(illegalText, '');
+          }
+          elem.style.color = oldColor;
+        }
+      }
+
+      if (win != null) {
+        win.alert('Spell check done!');
+      }
+    }
+  </script>
+</head>
+</HTML>

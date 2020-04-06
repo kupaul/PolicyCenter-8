@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <InputSet
+    id="RegionSearchInputSet"
+    mode="US">
+    <Require
+      name="searchCriteria"
+      type="gw.api.admin.PCZoneSearchCriteria"/>
+    <Require
+      name="policyHold"
+      type="PolicyHold"/>
+    <Label
+      label="displaykey.Web.Admin.PolicyHold.SearchCriteria"/>
+    <RangeInput
+      editable="true"
+      id="Country"
+      label="displaykey.Web.Admin.PolicyHold.Country"
+      required="false"
+      value="searchCriteria.Country"
+      valueRange="searchCriteria.getPossibleCountries()">
+      <PostOnChange
+        onChange="searchCriteria.ZoneType = null; searchCriteria.LinkedZone = null; searchCriteria.clearFilters()"/>
+    </RangeInput>
+    <RangeRadioInput
+      editable="true"
+      id="ZoneType"
+      label="displaykey.Web.Admin.PolicyHold.RegionType"
+      required="true"
+      value="searchCriteria.ZoneType"
+      valueRange="searchCriteria.getRelevantZoneTypesForCountry()">
+      <PostOnChange
+        onChange="searchCriteria.clearFilters()"/>
+    </RangeRadioInput>
+    <RangeInput
+      editable="true"
+      id="linkzone"
+      label="displaykey.Web.Admin.PolicyHold.State"
+      required="false"
+      value="searchCriteria.LinkedZone"
+      valueRange="Zone.finder.findZones(searchCriteria.Country, typekey.ZoneType.TC_STATE)"/>
+    <Choice
+      id="choicefilterbycity"
+      option="typekey.ZoneType.TC_CITY.Code"
+      value="searchCriteria.FilterZoneType">
+      <Input
+        available="searchCriteria.FilterZoneType == typekey.ZoneType.TC_CITY"
+        editable="true"
+        id="filterbycity"
+        label="displaykey.Web.Admin.PolicyHold.ByCity"
+        value="searchCriteria.FilterByCity"/>
+    </Choice>
+    <Choice
+      id="choicefilterbycounty"
+      option="typekey.ZoneType.TC_COUNTY.Code"
+      value="searchCriteria.FilterZoneType">
+      <Input
+        available="searchCriteria.FilterZoneType == typekey.ZoneType.TC_COUNTY"
+        editable="true"
+        id="filterbycounty"
+        label="displaykey.Web.Admin.PolicyHold.ByCounty"
+        value="searchCriteria.FilterByCounty"/>
+    </Choice>
+    <Choice
+      id="choicefilterbyzip"
+      option="typekey.ZoneType.TC_ZIP.Code"
+      value="searchCriteria.FilterZoneType">
+      <Input
+        available="searchCriteria.FilterZoneType == typekey.ZoneType.TC_ZIP"
+        editable="true"
+        id="filterbyzip"
+        label="displaykey.Web.Admin.PolicyHold.ByZIP"
+        value="searchCriteria.FilterByZIP"/>
+    </Choice>
+  </InputSet>
+</PCF>

@@ -1,0 +1,225 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <CardViewPanel
+    id="WorkersCompCoverageCV">
+    <Require
+      name="wcLine"
+      type="WorkersCompLine"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="wcLine.InterstateNamedInsuredOfficialIDs"
+      name="namedInsuredOfficialIDs"
+      recalculateOnRefresh="true"
+      type="OfficialID[]"/>
+    <Card
+      id="StateCoverages"
+      title="displaykey.Web.Policy.WC.StateCoverages">
+      <DetailViewPanel
+        available="namedInsuredOfficialIDs.Count &gt; 0"
+        id="NamedInsuredOfficialIDDV"
+        visible="namedInsuredOfficialIDs.Count &gt; 0">
+        <InputColumn>
+          <Label
+            id="InterstateLabel"
+            label="displaykey.Web.Policy.WC.Interstate"/>
+          <InputIterator
+            elementName="officialId"
+            id="officialIDs"
+            value="namedInsuredOfficialIDs">
+            <Input
+              align="left"
+              editable="true"
+              id="ANI_OfficialIDEntry"
+              label="officialId.OfficialIDInsuredAndType"
+              numCols="20"
+              validationExpression="officialId.validateValue()"
+              value="officialId.OfficialIDValue">
+              <PostOnChange
+                target="NamedInsuredOfficialIDDV"/>
+            </Input>
+          </InputIterator>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef>
+        <Toolbar>
+          <AddButton
+            id="AddCoveredJurisdiction"
+            iterator="PolicyLinePerStateConfig_LV"
+            label="displaykey.Web.Policy.WC.AddCoveredJurisdiction">
+            <AddMenuItemIterator
+              elementName="locationState"
+              value="gw.web.line.wc.policy.WorkersCompCoverageCVUIHelper.JurisdictionsThatCanBeAdded(wcLine)">
+              <AddMenuItem
+                id="addJurisdiction"
+                iterator="PolicyLinePerStateConfig_LV"
+                label="locationState"
+                toCreateAndAdd="return wcLine.addJurisdiction(locationState)"/>
+            </AddMenuItemIterator>
+          </AddButton>
+          <IteratorButtons
+            addVisible="false"
+            iterator="PolicyLinePerStateConfig_LV"
+            removeFlags="all removable"
+            removeVisible="true"/>
+          <ToolbarButton
+            action="gw.web.line.wc.policy.WorkersCompCoverageCVUIHelper.updateAllBasis(wcLine, CurrentLocation)"
+            hideIfReadOnly="true"
+            id="SplitBases"
+            label="displaykey.Web.Policy.WC.SplitBases"/>
+          <!-- http://jira/jira/browse/CC-38105 -->
+          <CheckedValuesToolbarButton
+            allCheckedRowsAction="SplitPeriodPopup.push( wcLine, CheckedValues )"
+            hideIfReadOnly="true"
+            id="SplitPeriod"
+            iterator="PolicyLinePerStateConfig_LV"
+            label="displaykey.Web.Policy.WC.SplitPeriod"/>
+        </Toolbar>
+        <ListDetailPanel
+          selectionName="selectedJurisdiction"
+          selectionType="WCJurisdiction">
+          <ListViewPanel
+            available="selectedJurisdiction != null"
+            id="PolicyLinePerStateConfig_LV"
+            visible="true">
+            <RowIterator
+              checkBoxVisible="openForEdit"
+              editable="false"
+              elementName="covJuris"
+              toRemove="wcLine.removeJurisdiction( covJuris ); util.LocationUtil.addRequestScopedInfoMessage(displaykey.Web.Policy.WC.RemoveJurisdictionWarning) "
+              value="wcLine.Jurisdictions">
+              <IteratorSort
+                sortBy="covJuris.State.DisplayName"
+                sortOrder="1"/>
+              <ToolbarFlag
+                condition="covJuris.CanRemove"
+                name="removable"/>
+              <Row>
+                <TextCell
+                  id="StateName"
+                  label="displaykey.Web.Policy.LocationContainer.Location.State"
+                  numCols="16"
+                  value="covJuris.State"/>
+                <TextCell
+                  id="RiskID"
+                  label="displaykey.Web.Policy.PolicyLine.PerState.OfficialIDs"
+                  numCols="100"
+                  numEntries="5"
+                  outputConversion="gw.web.line.wc.policy.WorkersCompCoverageCVUIHelper.outputConverterForOfficialIDs(VALUE)"
+                  value="gw.web.line.wc.policy.WorkersCompCoverageCVUIHelper.getOfficalIDsForJurisdictionThatMatchPNIContactsOfficialIDs(wcLine, covJuris)"
+                  width="500"
+                  wrap="true"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+          <CardViewPanel>
+            <Card
+              id="GeneralInfoCard"
+              title="displaykey.Web.Policy.PolicyLine.PerState.Panel.GeneralInfo.Title">
+              <PanelRef
+                def="PolicyLinePerStateConfigDV(wcLine, selectedJurisdiction)"/>
+              <PanelRef>
+                <TitleBar
+                  title="displaykey.Web.Policy.WC.CoveredEmployees"/>
+                <DetailViewPanel>
+                  <InputColumn>
+                    <InputSetRef
+                      def="WorkersCompClassesInputSet(selectedJurisdiction, wcLine)"/>
+                  </InputColumn>
+                </DetailViewPanel>
+              </PanelRef>
+            </Card>
+          </CardViewPanel>
+        </ListDetailPanel>
+      </PanelRef>
+    </Card>
+    <Card
+      id="PolicyCoverages"
+      title="displaykey.Web.Policy.WC.PolicyCoveragesandExclusions">
+      <PanelRef>
+        <DetailViewPanel
+          id="WCPolicyCoveragesDV">
+          <Variable
+            initialValue="wcLine.Pattern.getCoverageCategory(&quot;WorkersCompGrp&quot;).coveragePatternsForEntity(WorkersCompLine).whereSelectedOrAvailable(wcLine, openForEdit).where(\ c -&gt; c.DisplayName != &quot;Workers' Comp&quot;)"
+            name="wcGroupCoveragePatterns"
+            recalculateOnRefresh="true"/>
+          <Variable
+            initialValue="wcLine.Pattern.getCoverageCategory(&quot;WorkersCompGrp&quot;).exclusionPatternsForEntity(WorkersCompLine).whereSelectedOrAvailable(wcLine, openForEdit).where(\ e -&gt; e.DisplayName != &quot;Workers' Comp&quot;)"
+            name="wcGroupExclusionPatterns"
+            recalculateOnRefresh="true"/>
+          <InputColumn>
+            <Label
+              label="displaykey.Web.Policy.WC.WCCoveredStates"/>
+            <Input
+              id="CoveredStates"
+              label="displaykey.Web.Policy.WC.CoveredStates"
+              value="wcLine.Jurisdictions*.State.join(&quot;,&quot;)"/>
+            <InputIterator
+              elementName="coveragePattern"
+              forceRefreshDespiteChangedEntries="true"
+              id="WCCoverageGroupIterator"
+              value="wcGroupCoveragePatterns">
+              <IteratorSort
+                sortBy="coveragePattern.Priority"
+                sortOrder="1"/>
+              <InputSetRef
+                def="CoverageInputSet(coveragePattern, wcLine, true)"
+                mode="coveragePattern.Code"/>
+            </InputIterator>
+            <InputIterator
+              elementName="exclusionPattern"
+              forceRefreshDespiteChangedEntries="true"
+              id="WCExclusionGroupIterator"
+              value="wcGroupExclusionPatterns">
+              <IteratorSort
+                sortBy="exclusionPattern.Priority"
+                sortOrder="1"/>
+              <InputSetRef
+                def="CoverageInputSet(exclusionPattern, wcLine, true)"
+                mode="exclusionPattern.Code"/>
+            </InputIterator>
+          </InputColumn>
+        </DetailViewPanel>
+      </PanelRef>
+    </Card>
+    <Code><![CDATA[uses gw.api.util.StateJurisdictionMappingUtil
+
+//function updateAllBasis(){
+//  if((CurrentLocation as pcf.api.Wizard).saveDraft()){
+//    wcLine.updateWCExposuresAndModifiers()
+//  }
+//}
+
+//property get JurisdictionsThatCanBeAdded(): Jurisdiction[] {
+//  var existingJurisdictions = wcLine.Jurisdictions.map(\j -> j.State).toSet()
+//  var possibleJurisdicitons = wcLine.Branch.LocationStates.toSet()
+//  possibleJurisdicitons.removeAll(existingJurisdictions)
+//  return possibleJurisdicitons.toTypedArray()
+//}
+
+//function getOfficalIDsForJurisdictionThatMatchPNIContactsOfficialIDs(covJuris : WCJurisdiction) : entity.OfficialID[] {
+//  return wcLine.Branch.PrimaryNamedInsured.AccountContactRole.AccountContact.Contact.OfficialIDs
+//        .where(\ officialID ->
+//          officialID.State == StateJurisdictionMappingUtil.getStateMappingForJurisdiction(covJuris.State))
+//}
+
+//function outputConverterForOfficialIDs(VALUE : OfficialID[]) : String {
+//  var str = ""
+//  var first = true
+//  for (var Item in VALUE) {
+//    var idValue = Item.getOfficialIDValue()
+//    if(idValue != null) {
+//      if(!first) {
+//        str = str + ", "
+//      }
+//      first = false
+//      str = str + idValue
+//    }
+//  }
+//  return str
+//}]]></Code>
+  </CardViewPanel>
+</PCF>

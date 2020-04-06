@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<Entity
+  name="PolicyContactRole">
+  <Columns>
+    <Column
+      beanPath="PolicyContactRole.AccountContactRole.AccountContact.Contact"
+      name="contact"/>
+    <Column
+      beanPath="PolicyContactRole.CompanyName"
+      name="CompanyName"
+      sortBeanPath=""
+      sortOrder="1"/>
+    <Column
+      beanPath="PolicyContactRole.FirstName"
+      name="FirstName"
+      sortBeanPath=""
+      sortOrder="3"/>
+    <Column
+      beanPath="PolicyContactRole.LastName"
+      name="LastName"
+      sortBeanPath=""
+      sortOrder="2"/>
+    <Column
+      beanPath="PolicyContactRole.FirstNameKanji"
+      name="FirstNameKanji"/>
+    <Column
+      beanPath="PolicyContactRole.LastNameKanji"
+      name="LastNameKanji"/>
+    <Column
+      beanPath="PolicyContactRole.CompanyNameKanji"
+      name="CompanyNameKanji"/>
+    <Column
+      beanPath="PolicyContactRole.Particle"
+      name="Particle"/>
+  </Columns>
+  <DisplayName><![CDATA[
+uses gw.api.name.NameFormatter
+uses gw.api.name.PersonNameFieldsImpl
+uses gw.api.name.ContactNameFieldsImpl
+uses gw.api.name.NameOwnerFieldId
+
+var sType = contact.Subtype
+if (sType != null && Person.Type.isAssignableFrom(Type.forName("entity." + sType))) {
+    var personNameField = new PersonNameFieldsImpl(){
+            : LastName = LastName,
+            : LastNameKanji = LastNameKanji,
+            : FirstName = FirstName,
+            : FirstNameKanji = FirstNameKanji,
+            : Particle = Particle,
+            : Name = CompanyName,
+            : NameKanji = CompanyNameKanji
+    }
+    return new NameFormatter().format(personNameField, " ", NameOwnerFieldId.DISPLAY_NAME_FIELDS)
+} else {
+    var contactNameField = new ContactNameFieldsImpl(){
+            : Name = CompanyName,
+            : NameKanji = CompanyNameKanji
+    }
+    return new NameFormatter().format(contactNameField, " ")
+}
+]]></DisplayName>
+</Entity>

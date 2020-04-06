@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="canEdit"
+    id="SubmissionWizard_PaymentScreen">
+    <Require
+      name="submission"
+      type="Submission"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="policyPeriod.Status == TC_NEW or policyPeriod.Status == TC_DRAFT or policyPeriod.Status == TC_QUOTED"
+      name="canEdit"
+      recalculateOnRefresh="true"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, submission, jobWizardHelper)"/>
+    </Toolbar>
+    <PanelRef
+      def="BindSummaryDV(policyPeriod)"/>
+    <PanelRef
+      def="BillingAdjustmentsDV(policyPeriod)"
+      mode="canEdit ? &quot;Editable&quot; : &quot;ReadOnly&quot;"/>
+  </Screen>
+</PCF>

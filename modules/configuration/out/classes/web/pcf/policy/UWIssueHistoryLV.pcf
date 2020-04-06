@@ -1,0 +1,87 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    editable="canEdit"
+    id="UWIssueHistoryLV">
+    <Require
+      name="issue"
+      type="UWIssue"/>
+    <Require
+      name="approvalHistories"
+      type="UWIssueHistory[]"/>
+    <Require
+      name="canEdit"
+      type="boolean"/>
+    <RowIterator
+      editable="canEdit"
+      elementName="history"
+      pageSize="0"
+      value="approvalHistories.orderByDescending(\ h -&gt; h.CreateTimeOrNow)">
+      <Row
+        editable="history.New">
+        <Cell
+          id="ResponsibleUser"
+          label="displaykey.Web.UWIssue.UWIssueHistoryLV.ResponsibleUser"
+          value="getResponsibleUser(history)"/>
+        <DateCell
+          id="HistoryCreateDate"
+          label="displaykey.Web.UWIssue.UWIssueHistoryLV.HistoryCreateDate"
+          value="history.CreateDate"/>
+        <DateCell
+          id="HistoryEffDate"
+          label="displaykey.Web.UWIssue.UWIssueHistoryLV.HistoryEffDate"
+          value="history.EffDate"/>
+        <Cell
+          action="JobForward.go(history.PolicyPeriod.Job, history.PolicyPeriod)"
+          actionAvailable="history.PolicyPeriod.Job != issue.PolicyPeriod.Job and perm.Job.view(history.PolicyPeriod.Job)"
+          id="Job"
+          label="displaykey.Web.UWIssue.UWIssueHistoryLV.Job"
+          value="getJobDescription(history)"/>
+        <Cell
+          enableSort="false"
+          id="ReferenceValue"
+          label="displaykey.Web.UWIssue.UWIssueHistoryLV.ReferenceValue"
+          value="history.FormattedReferenceValue"
+          visible="issue.IssueType.Comparator != &quot;None&quot;"/>
+        <Cell
+          enableSort="false"
+          id="EditBeforeBind"
+          label="displaykey.Web.UWIssue.UWIssueHistoryLV.EditBeforeBind"
+          value="editBeforeBind(history)"/>
+        <Cell
+          id="ThroughValue"
+          label="displaykey.Web.UWIssue.UWIssueHistoryLV.Through"
+          value="history.BlockingPoint.DisplayAsThroughValue"/>
+        <Cell
+          id="InvalidFrom"
+          label="displaykey.Web.UWIssue.UWIssueHistoryLV.InvalidFrom"
+          value="history.ApprovalInvalidFrom"/>
+        <TypeKeyCell
+          id="HistoryStatus"
+          label="displaykey.Web.UWIssue.UWIssueHistoryLV.Status"
+          value="history.Status"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function getJobDescription(history : UWIssueHistory) : String {
+  var period = history.PolicyPeriod
+  var job = period.Job
+  return (job.Periods.Count == 1) ?
+    displaykey.Web.UWIssue.UWIssueHistoryLV.Job.JobDescription(job.Subtype, job.JobNumber) :
+    displaykey.Web.UWIssue.UWIssueHistoryLV.Job.JobAndVersionDescription(job.Subtype, job.JobNumber, period.BranchName)
+}
+
+function editBeforeBind(history : UWIssueHistory) : Boolean {
+  return (history.Status == "Approved") ? history.EditBeforeBind : null
+}
+
+function getResponsibleUser(history : UWIssueHistory) : String {
+  var result = history.ResponsibleUser.DisplayName
+  if (history.AutomaticOperationCause != null) {
+    result = displaykey.Web.UWIssue.UWIssueHistoryLV.ResponsibleUser.Automated(result)
+  }
+  return result
+}]]></Code>
+  </ListViewPanel>
+</PCF>

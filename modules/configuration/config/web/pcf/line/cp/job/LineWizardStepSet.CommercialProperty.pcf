@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <WizardStepSet
+    id="LineWizardStepSet"
+    mode="CommercialProperty">
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <JobWizardStep
+      beforeSave="gw.lob.cp.CPLineValidation.validateBuildings(policyPeriod.CPLine)"
+      id="CPBuildings"
+      save="openForEdit"
+      screen="CPBuildingsScreen(policyPeriod.CPLine, openForEdit, jobWizardHelper)"
+      title="displaykey.Web.LineWizardMenu.BuildingsandLocations"/>
+    <JobWizardStep
+      beforeSave="gw.lob.cp.CPLineValidation.validateBlankets(policyPeriod.CPLine)"
+      id="CPBlanket"
+      save="openForEdit"
+      screen="CPBlanketScreen(policyPeriod.CPLine, openForEdit, jobWizardHelper)"
+      title="displaykey.Web.LineWizardMenu.Blankets"/>
+    <JobWizardStep
+      beforeSave="gw.lob.cp.CPLineValidation.validateModifiers(); gw.validation.ValidationUtil.checkCurrentResult()"
+      id="Modifiers"
+      onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncModifiers( {policyPeriod.CPLine}, jobWizardHelper)}"
+      save="openForEdit"
+      screen="ModifiersScreen(policyPeriod, openForEdit, jobWizardHelper, policyPeriod.CPLine.CPModifiers)"
+      title="displaykey.Web.SubmissionWizardMenu.Modifiers"
+      visible="policyPeriod.CanViewModifiers"/>
+  </WizardStepSet>
+</PCF>

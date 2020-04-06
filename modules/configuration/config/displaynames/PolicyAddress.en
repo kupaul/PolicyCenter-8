@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<Entity
+  name="PolicyAddress">
+  <Columns>
+    <Column
+      beanPath="PolicyAddress.Branch.Status"
+      name="periodStatus"/>
+    <Column
+      beanPath="PolicyAddress.Description"
+      name="description"
+      sortOrder="1"/>
+    <Column
+      beanPath="PolicyAddress.AddressLine1"
+      name="addressLine1"
+      sortOrder="5"/>
+    <Column
+      beanPath="PolicyAddress.City"
+      name="city"
+      sortOrder="4"/>
+    <Column
+      beanPath="PolicyAddress.State"
+      name="state"
+      sortOrder="3"/>
+    <Column
+      beanPath="PolicyAddress.AddressLine2"
+      name="addressLine2"
+      sortOrder="6"/>
+    <Column
+      beanPath="PolicyAddress.PostalCode"
+      name="postalCode"
+      sortOrder=""/>
+    <Column
+      beanPath="PolicyAddress.Country"
+      name="country"
+      sortOrder="2"/>
+    <Column
+      beanPath="PolicyAddress.AddressLine1Kanji"
+      name="addressLine1Kanji"/>
+    <Column
+      beanPath="PolicyAddress.CityKanji"
+      name="cityKanji"
+      sortOrder=""/>
+    <Column
+      beanPath="PolicyAddress.CEDEX"
+      name="CEDEX"/>
+    <Column
+      beanPath="PolicyAddress.CEDEXBureau"
+      name="CEDEXBureau"/>
+  </Columns>
+  <DisplayName><![CDATA[// PolicyAddress is an AccountSyncable, and as such the DisplayName varies
+// depending on if it is synced to the account or not.  We handle this by
+// binding our fields to the account syncable enhancement properties
+// (e.g. AddressLine1, City) -- which switch their values based on the
+// synced status -- instead of the actual DB fields
+// (e.g. AddressLine1Internal, CityInternal).
+if (description.NotBlank) {
+  return description
+} else {
+  /**
+   * This is built for address internationalization.  See AddressFormatter and usages.
+   */
+  var aFormat = new gw.api.address.AddressFormatter() {:IncludeCountry = false}
+  aFormat.AddressLine1 = addressLine1
+  aFormat.AddressLine1Kanji = addressLine1Kanji
+  // use short form - no line 2
+  //aFormat.AddressLine2 = addressLine2
+  aFormat.City         = city
+  aFormat.CityKanji    = cityKanji
+  aFormat.State        = state
+  aFormat.PostalCode   = postalCode
+  // We are not displaying country here, however we still want to set the country field for the AddressFormatter because
+  // different country has different formatting.
+  aFormat.Country = country
+  aFormat.CEDEX = CEDEX
+  aFormat.CEDEXBureau = CEDEXBureau
+  return aFormat.format(aFormat, ", ")
+} ]]></DisplayName>
+</Entity>

@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Popup
+    id="CreateAccountFromContactSearchPopup"
+    returnType="Contact"
+    title="displaykey.Web.AddressBook.ContactSearchPage.Title">
+    <LocationEntryPoint
+      signature="CreateAccountFromContactSearchPopup(accountSearchCriteria : gw.account.AccountSearchCriteria)"/>
+    <Variable
+      initialValue="gw.plugin.Plugins.get(gw.plugin.contact.IContactConfigPlugin)"
+      name="contactConfigPlugin"/>
+    <Variable
+      initialValue="contactConfigPlugin.getAllowedContactTypesForAccountContactRoleType(typekey.AccountContactRole.TC_ACCOUNTHOLDER)"
+      name="contactTypes"
+      type="ContactType[]"/>
+    <Variable
+      name="accountSearchCriteria"
+      type="gw.account.AccountSearchCriteria"/>
+    <Variable
+      name="forNewSubmission"
+      type="boolean"/>
+    <Variable
+      initialValue="convertContactSearchCriteria(accountSearchCriteria)"
+      name="contactSearchCriteria"
+      type="ContactSearchCriteria"/>
+    <ScreenRef
+      def="ContactSearchScreen(getAvailableSubtypes(), contactSearchCriteria, false)"/>
+    <Code><![CDATA[public static function getAvailableSubtypes() : typekey.Contact[] {
+  var subTypes = contactTypes.map(\ c -> c == "company" ?
+      typekey.Contact.TC_COMPANY : typekey.Contact.TC_PERSON)
+      .sortBy(\ c -> c.DisplayName)
+  return subTypes
+}
+
+public static function convertContactSearchCriteria(searchCriteria : gw.account.AccountSearchCriteria) : ContactSearchCriteria {
+  var returnSearchCriteria = new ContactSearchCriteria()
+    if (searchCriteria.CompanyName != null) {
+      returnSearchCriteria.Keyword = searchCriteria.CompanyName
+      returnSearchCriteria.KeywordKanji = searchCriteria.CompanyNameKanji
+      returnSearchCriteria.ContactSubtype = "Company"
+    } else {
+      returnSearchCriteria.Keyword = searchCriteria.LastName
+      returnSearchCriteria.KeywordKanji = searchCriteria.LastNameKanji
+      returnSearchCriteria.FirstName = searchCriteria.FirstName
+      returnSearchCriteria.FirstNameKanji = searchCriteria.FirstNameKanji
+      returnSearchCriteria.ContactSubtype = "Person"
+    }
+    returnSearchCriteria.Address.AddressLine1 = searchCriteria.AddressLine1
+    returnSearchCriteria.Address.AddressLine1Kanji = searchCriteria.AddressLine1Kanji
+    returnSearchCriteria.Address.AddressLine2 = searchCriteria.AddressLine2
+    returnSearchCriteria.Address.AddressLine2Kanji = searchCriteria.AddressLine2Kanji
+    returnSearchCriteria.Address.City = searchCriteria.City
+    returnSearchCriteria.Address.CityKanji = searchCriteria.CityKanji
+    returnSearchCriteria.Address.County = searchCriteria.County
+    returnSearchCriteria.Address.State = searchCriteria.State
+    returnSearchCriteria.Address.PostalCode = searchCriteria.PostalCode
+    returnSearchCriteria.Address.Country = searchCriteria.Country
+    return returnSearchCriteria
+  }]]></Code>
+  </Popup>
+</PCF>

@@ -1,0 +1,136 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ToolbarButtonSet
+    id="JobWizardToolbarButtonSet"
+    mode="Cancellation">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="CurrentLocation as pcf.api.Wizard"
+      name="wizard"
+      type="pcf.api.Wizard"/>
+    <Variable
+      initialValue="job as Cancellation"
+      name="cancellation"
+      type="Cancellation"/>
+    <Variable
+      initialValue="policyPeriod.CancellationProcess"
+      name="cancellationProcess"/>
+    <ToolbarButton
+      action="UWActivityPopup.push(policyPeriod, ActivityPattern.finder.getActivityPatternByCode(&quot;uw_review_approved&quot;), &quot;UWApproval&quot;)"
+      id="Unlock"
+      label="displaykey.Job.Operation.ReleaseLock"
+      shortcut="K"
+      visible="cancellationProcess.canReleaseLock()"/>
+    <ToolbarButton
+      action="jobWizardHelper.requestQuote(policyPeriod, jobWizardHelper.getQuoteStep(policyPeriod))"
+      id="QuoteOrReview"
+      label="displaykey.Job.Operation.Quote"
+      shortcut="Q"
+      visible="cancellationProcess.canRequestQuote().Okay "/>
+    <ToolbarButton
+      action="cancellationProcess.edit(); wizard.saveDraft(); jobWizardHelper.goToVisibleStep(policyPeriod)"
+      confirmMessage="displaykey.Job.Operation.Edit.Confirm"
+      id="EditPolicy"
+      label="displaykey.Job.Operation.EditWorkOrder"
+      shortcut="E"
+      visible="cancellationProcess.canEdit().Okay"/>
+    <ToolbarButton
+      action="wizard.saveDraft()"
+      hideIfReadOnly="true"
+      id="Draft"
+      label="displaykey.Button.SaveDraft"
+      shortcut="S"/>
+    <ToolbarButton
+      action="HandlePreemptionPopup.push(wizard, jobWizardHelper, policyPeriod, true)"
+      id="HandlePreemptions"
+      label="displaykey.Job.Operation.HandlePreemption"
+      shortcut="H"
+      visible="cancellationProcess.canHandlePreemptions().Okay"/>
+    <ToolbarButton
+      action="jobWizardHelper.applyChangesToFutureBoundRenewal(policyPeriod)"
+      confirmMessage="displaykey.Job.Operation.ApplyToRenewal.ConfirmBound"
+      id="ApplyToBoundRenewal"
+      label="displaykey.Job.Operation.ApplyToRenewal"
+      shortcut="L"
+      visible="policyPeriod.JobProcess.canApplyChangesToFutureBoundRenewal()"/>
+    <ToolbarButton
+      action="jobWizardHelper.applyChangesToFutureUnboundRenewal(policyPeriod)"
+      confirmMessage="displaykey.Job.Operation.ApplyToRenewal.ConfirmUnbound"
+      id="ApplyToUnboundRenewal"
+      label="displaykey.Job.Operation.ApplyToRenewal"
+      shortcut="Y"
+      visible="policyPeriod.JobProcess.canApplyChangesToFutureUnboundRenewal()"/>
+    <ToolbarButton
+      id="BindOptions"
+      label="displaykey.Job.Operation.BindOptions"
+      shortcut="B"
+      visible="(cancellationProcess.canScheduleCancellation().Okay and not cancellation.ForRewrite) or  cancellationProcess.canImmediatelyScheduleCancellation().Okay">
+      <MenuItem
+        action="if (jobWizardHelper.revalidateModel()) { cancellationProcess.scheduleCancellation(policyPeriod.EditEffectiveDate); wizard.finish(); JobComplete.go(policyPeriod.Job, policyPeriod) }"
+        confirmMessage="displaykey.Job.Operation.CancelPolicy.Confirm"
+        id="SubmitCancellation"
+        label="displaykey.Job.Operation.CancelPolicy"
+        shortcut="H"
+        visible="cancellationProcess.canScheduleCancellation().Okay and cancellation.InitialNotificationDate == null and not cancellation.ForRewrite  "/>
+      <MenuItem
+        action="if (jobWizardHelper.revalidateModel()) { cancellationProcess.rescheduleCancellation(policyPeriod.EditEffectiveDate); wizard.finish(); JobComplete.go(policyPeriod.Job, policyPeriod) }"
+        confirmMessage="displaykey.Job.Operation.CancelPolicy.Confirm"
+        id="RescheduleCancellation"
+        label="displaykey.Job.Operation.RescheduleCancellation"
+        shortcut="S"
+        visible="cancellationProcess.canRescheduleCancellation().Okay and cancellation.InitialNotificationDate != null and not cancellation.ForRewrite"/>
+      <MenuItem
+        action="if (jobWizardHelper.revalidateModel()) { cancellationProcess.cancelImmediately(); wizard.finish(); jobWizardHelper.redirectAfterBinding(&quot;Canceling&quot;); }"
+        confirmMessage="getCancelNowMessage()"
+        id="CancelNow"
+        label="displaykey.Job.Operation.CancelNow"
+        shortcut="C"
+        visible="cancellationProcess.canImmediatelyScheduleCancellation().Okay"/>
+    </ToolbarButton>
+    <ToolbarButton
+      id="CloseOptions"
+      label="displaykey.Job.Operation.CloseOptions"
+      shortcut="C"
+      visible="(cancellationProcess.ActiveCancellationWorkflow != null and cancellationProcess.ActiveCancellationWorkflow.isTriggerAvailable(&quot;Rescind&quot;)) or cancellationProcess.canWithdraw().Okay">
+      <MenuItem
+        action="if (jobWizardHelper.revalidateModel()) { cancellationProcess.ActiveCancellationWorkflow.invokeTrigger(&quot;Rescind&quot;); wizard.finish(); PleaseBePatientPopup.push(policyPeriod, jobWizardHelper, null, new gw.job.patience.BranchStatus( jobWizardHelper, &quot;Rescinding&quot; )); }"
+        id="RescindCancellation"
+        label="displaykey.Job.Operation.Rescind"
+        shortcut="R"
+        visible="cancellationProcess.ActiveCancellationWorkflow != null and cancellationProcess.ActiveCancellationWorkflow.isTriggerAvailable(&quot;Rescind&quot;)"/>
+      <MenuItem
+        action="jobWizardHelper.withdraw(policyPeriod); JobComplete.go(cancellation, policyPeriod)"
+        confirmMessage="displaykey.Job.Operation.Withdraw.Confirm"
+        id="WithdrawJob"
+        label="displaykey.Job.Operation.Withdraw"
+        shortcut="W"
+        visible="cancellationProcess.canWithdraw().Okay"/>
+    </ToolbarButton>
+    <Code><![CDATA[function getCancelNowMessage() : String {
+  var renewals = policyPeriod.FutureRenewals
+  if (renewals.isEmpty()) {
+    return displaykey.Job.Operation.CancelPolicy.Confirm
+  } else {
+    if (policyPeriod.CancellationProcess.hasBoundRenewalToCancel()) {
+      return displaykey.Job.Operation.CancelPolicy.ConfirmBoundRenewal
+    } else if (policyPeriod.CancellationProcess.hasOpenRenewalToWithdraw()) {
+      return displaykey.Job.Operation.CancelPolicy.ConfirmUnboundRenewal( renewals.first().Job.JobNumber )
+    } else {
+      return displaykey.Job.Operation.CancelPolicy.Confirm
+    }
+  }
+}
+
+]]></Code>
+  </ToolbarButtonSet>
+</PCF>

@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Working with Cycles</title>
+    <link rel="StyleSheet" href="css/domain_graph.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Configuration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-datamodel_2.html#2293623">Data Model Configuration</a> : <a class="WebWorks_Breadcrumb_Link" href="domain_graph.23.1.html#2293623">The Domain Graph</a> : Working with Cycles</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2293623">Working with Cycles</a></h3>
+      <div class="BKN_-_Body_002c_Keep_Next"><a name="2293645">There are two types of cycles that can cause issues in the PolicyCenter data model. They are:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2293761">Cycles that involve circular references between objects, through the use of foreign keys. The concern with this type of cycle is the </a><span class="e_-_emphasis">safe ordering</span> of foreign keys between objects.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2293778">Cycles that involve the ownership of objects in the domain graph. The concern with this type of cycle is the ownership—both overt and implicit—of one object by another in the domain graph.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h6 class="HS_-_Head_Sub"><a name="2293728">Circular Foreign Key References</a></h6>
+      <div class="B_-_Body"><a name="2302450">It is possible to have a a circle in a foreign key chain. In a foreign key circle, object A has a foreign key to object B, and B has a foreign key to A. This kind of circular reference is illegal in the PolicyCenter data model. The reason is that, given a bundle containing both A and B objects, it is not possible to determine which object to commit first. It is possible that A references B, which has not yet been committed. Thus, committing A first causes a constraint violation. Any attempt to commit B first can cause the opposite problem.</a></div>
+      <div class="B_-_Body"><a name="2328775">To solve this kind of circular dependency between foreign keys, Guidewire recommends that you use an edge foreign key (</a><span class="cv_-_computer_voice">&lt;edgeForeignKey&gt;</span>). An edge foreign key from A to B introduces a new, hidden entity that has a foreign key to A and a foreign key to B. However, it does not create any direct foreign key from A to B. As such, PolicyCenter can safely commit the A objects first, then the B objects, and finally, the hidden A/B edge foreign key entities.</div>
+      <div class="B_-_Body"><a name="2312370">In actual practice, a circular chain of foreign keys can exist between multiple objects, not simply between two objects.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="2293742">Ownership Cycles</a></h6>
+      <div class="B_-_Body"><a name="2302519">In the domain graph, the concern is with </a><span class="e_-_emphasis">ownership cycles</span>, not simple foreign key cycles. Ownership, by default, flows in the opposite direction to a foreign key. For example, if A has a foreign key to B then B, by default, owns A. </div>
+      <div class="B_-_Body"><a name="2346842">However, it is sometimes necessary to reverse this behavior. The way to indicate this relationship is to add the special </a><span class="cv_-_computer_voice">owner="true"</span> attribute to the foreign key to make the ownership clear.</div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2346844">Guidewire strongly recommends that you do not use edge foreign keys as you sort out ownership cycles in the domain graph. Do not introduce edge foreign keys into the domain graph except in the unlikely case that there is an actual safe ordering cycle that you need to correct.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="2293676">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('config', 'domain_graph.23.4.html#2313837', '');" title="Accessing the Domain Graph" name="2293690">“Accessing the Domain Graph”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

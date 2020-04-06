@@ -1,0 +1,104 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <!-- The reason a specific input set is used for this coverage is that the
+coverage requires a list view of the schedule items. -->
+  <InputSet
+    id="CoverageInputSet"
+    mode="BOPToolsSchedCov">
+    <Require
+      name="coveragePattern"
+      type="gw.api.productmodel.ClausePattern"/>
+    <Require
+      name="coverable"
+      type="Coverable"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="coveragePattern"
+      name="scheduledEquipmentPattern"/>
+    <Variable
+      initialValue="coverable.PolicyLine as BOPLine"
+      name="bopLine"/>
+    <HiddenInput
+      id="CovPatternDisplayName"
+      value="coveragePattern.DisplayName"/>
+    <InputGroup
+      allowToggle="coveragePattern.allowToggle(coverable)"
+      childrenVisible="coverable.getCoverageConditionOrExclusion(coveragePattern) != null"
+      id="BOPSchedEquipInputGroup"
+      label="scheduledEquipmentPattern.DisplayName"
+      onToggle="bopLine.setCoverageConditionOrExclusionExists( scheduledEquipmentPattern, VALUE )">
+      <ListViewInput
+        boldLabel="true"
+        editable="true"
+        id="BOPSchedEquipLV"
+        label="displaykey.Web.Policy.BOP.ScheduledEquipement"
+        labelAbove="true">
+        <Toolbar>
+          <IteratorButtons
+            iterator="EquipmentLV"/>
+        </Toolbar>
+        <ListViewPanel
+          id="EquipmentLV">
+          <RowIterator
+            editable="true"
+            elementName="scheduledItem"
+            hasCheckBoxes="true"
+            numEntriesRequired="0"
+            toCreateAndAdd="bopLine.createAndAddScheduledEquip()"
+            toRemove="bopLine.removeScheduledEquip(scheduledItem); bopLine.maybeUnselectCoverage()"
+            type="BOPScheduledEquipment"
+            value="bopLine.BOPScheduledEquipments">
+            <Row>
+              <TextCell
+                align="left"
+                id="WquipmentNumber"
+                label="displaykey.Web.Policy.BOP.EquipmentNumber"
+                value="scheduledItem.EquipmentNumber"/>
+              <TextCell
+                align="left"
+                editable="true"
+                id="SerialNumber"
+                label="displaykey.Web.Policy.BOP.SerialNumber"
+                value="scheduledItem.SerialNumber"/>
+              <TextCell
+                align="left"
+                editable="true"
+                id="Description"
+                label="displaykey.Web.Policy.BOP.Description"
+                required="true"
+                value="scheduledItem.Description"/>
+              <TextCell
+                align="right"
+                editable="true"
+                id="EquipmentValue"
+                label="displaykey.Web.Policy.BOP.InsuredValue"
+                required="true"
+                value="scheduledItem.EquipmentValue">
+                <PostOnChange
+                  onChange="bopLine.sumBOPToolsValue()"
+                  target="SchedEquipLimit"/>
+              </TextCell>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+      </ListViewInput>
+      <TextInput
+        boldLabel="true"
+        boldValue="true"
+        formatType="currency"
+        id="SchedEquipLimit"
+        inputConversion="gw.pcf.coverage.CovTermDirectInputSetHelper.convertFromString(VALUE)"
+        label="bopLine.BOPToolsSchedCov.BOPToolsSchedLimTerm.DisplayName"
+        outputConversion="gw.pcf.coverage.CovTermDirectInputSetHelper.convertToString(VALUE)"
+        validationExpression="gw.pcf.coverage.CovTermDirectInputSetHelper.validate(bopLine.BOPToolsSchedCov.BOPToolsSchedLimTerm)"
+        value="bopLine.BOPToolsSchedCov.BOPToolsSchedLimTerm.Value"
+        visible="bopLine.BOPToolsSchedCov.hasCovTerm(&quot;BOPToolsSchedLim&quot;)"/>
+    </InputGroup>
+    <InputDivider
+      visible="openForEdit or coverable.getCoverageConditionOrExclusion(coveragePattern) != null"/>
+  </InputSet>
+</PCF>

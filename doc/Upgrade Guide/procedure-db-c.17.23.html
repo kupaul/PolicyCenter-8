@@ -1,0 +1,150 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Dropping Unused Columns on Oracle</title>
+    <link rel="StyleSheet" href="css/procedure-db-c.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Upgrade Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="part-basicupgrade_2.html#2001134">Upgrading from 4.0.x</a> : <a class="WebWorks_Breadcrumb_Link" href="procedure-db-c.17.01.html#2001134">Upgrading the PolicyCenter 4.0.x Database</a> : Dropping Unused Columns on Oracle</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2001134">Dropping Unused Columns on Oracle</a></h3>
+      <div class="B_-_Body"><a name="2001138">By default, the PolicyCenter database upgrade on Oracle marks columns that have been removed from the data model as unused. Marking a column unused is a faster operation than dropping a column. Because these columns are not physically dropped from the database, the space used by these columns is not released immediately to the table and index segments. </a></div>
+      <div class="B_-_Body"><a name="2001139">You can configure the upgrade to drop removed columns immediately by setting the </a><span class="cv_-_computer_voice">deferDropColumns</span> parameter to <span class="cv_-_computer_voice">false</span> before running the database upgrade. This parameter is within the <span class="cv_-_computer_voice">&lt;upgrade&gt;</span> block of the <span class="cv_-_computer_voice">&lt;database&gt;</span> block of <span class="cv_-_computer_voice">database-config.xml</span>.</div>
+      <div class="B_-_Body"><a name="2001140">If you did not set </a><span class="cv_-_computer_voice">deferDropColumns</span> to <span class="cv_-_computer_voice">true</span> before the upgrade, perform the procedure in this topic to drop unused columns after the upgrade. You can drop the unused columns after the upgrade during off-peak hours to free the space. PolicyCenter does not have to be shutdown to perform this maintenance task. You can drop all unused columns in one procedure, or you can drop unused columns for individual tables.</div>
+      <h6 class="HS_-_Head_Sub"><a name="2001144">To drop all unused columns</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2001145">Create the following Oracle procedure to purge all unused columns:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CF_-_Code_First_Line"><a name="2001146">DECLARE</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2001147">&nbsp;&nbsp;dropstr VARCHAR2(100);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2001148">&nbsp;&nbsp;CURSOR unusedcol IS</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2001149">&nbsp;&nbsp;&nbsp;&nbsp;SELECT table_name</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2001150">&nbsp;&nbsp;&nbsp;&nbsp;FROM user_unused_col_tabs;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2001151">BEGIN</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2001152">&nbsp;&nbsp;FOR tabs IN unusedcol LOOP</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2001153">&nbsp;&nbsp;&nbsp;&nbsp;dropstr := 'alter table '</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2001154">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;||tabs.table_name</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2001155">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;||' drop unused columns';</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2001156">&nbsp;&nbsp;&nbsp;&nbsp;EXECUTE IMMEDIATE dropstr;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2001157">&nbsp;&nbsp;END LOOP;</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2001158">END;</a></PRE>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2001159">Run the procedure during a period of relatively low activity.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h6 class="HS_-_Head_Sub"><a name="2001160">To drop unused columns for a single table</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2001161">Start the server to run the schema verifier. The schema verifier runs each time the server starts. If there are unused columns, the schema verifier reports a difference between the physical database and the data model. The schema verifier reports the name of each table and provides an SQL command to remove unused columns from each table.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2001162">Run the SQL command provided by the schema verifier. This command has the following format:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><a name="2001163">ALTER TABLE </a><span class="pc_-_parameter_in_code">tableName</span> DROP UNUSED COLUMNS</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

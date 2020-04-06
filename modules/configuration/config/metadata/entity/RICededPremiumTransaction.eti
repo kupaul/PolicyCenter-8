@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?><delegate xmlns="http://guidewire.com/datamodel" extendable="true" name="RICededPremiumTransaction" requires="gw.api.reinsurance.RICededPremiumTxnAdapter" subpackage="reinsurance">
+  <implementsEntity name="SimpleEffDated"/>
+  <implementsEntity name="Extractable"/>
+  <monetaryamount amountColumnName="CededRiskAmount" amountRange="nonnegative" desc="The amount of risk ceded to the agreement." name="CededRiskAmount" nullok="true" scaleToCurrency="true"/>
+  <monetaryamount amountColumnName="BasisGNP" desc="The Gross Net Premium that was used for the purposes of this calculation." name="BasisGNP" nullok="false" scaleToCurrency="true"/>
+  <column desc="The ceding rate used for the calculation. The source of this value depends on the type of agreement. For a proportional agreement, this is the proportion of risk ceded to the agreement; for a non-proportional agreement it is the specified ceding rate. " name="CedingRate" nullok="false" type="longpercentage"/>
+  <column desc="The rate used for the calculation of commission, denormalized from the agreement at the time this transaction was created." name="CommissionRate" nullok="false" type="longpercentage"/>
+  <column desc="The rate used for the calculation of markup, denormalized from the (Fac) agreement at the time this transaction was created." name="MarkupRate" nullok="true" type="longpercentage"/>
+  <monetaryamount amountColumnName="CededPremium" desc="The amount of premium to cede to the agreement for effective time [EffDate, ExpDate). This value can be negative, as in the case of an offset (certainly) but also in some cases where so much was ceded to prior treaties that what is left is a negative amount." name="CededPremium" nullok="false" scaleToCurrency="true"/>
+  <monetaryamount amountColumnName="CededPremiumMarkup" desc="The amount of markup to the agreement for effective time [EffDate, ExpDate). This value can be negative, for the same reasons that CededPremium can be. Normally their signs will match, and the net owed to the reinsurer is CededPremium - Commission." name="CededPremiumMarkup" nullok="false" scaleToCurrency="true"/>
+  <monetaryamount amountColumnName="Commission" desc="The amount of commission earned from the agreement for effective time [EffDate,ExpDate). This value can be negative, for the same reasons that CededPremium can be. Normally their signs will match, and the net owed to the reinsurer is CededPremium - Commission." name="Commission" nullok="true" scaleToCurrency="true"/>
+  <column desc="The order of calculation, essentially for documentation purposes." name="CalculationOrder" nullok="false" type="positiveinteger"/>
+  <column desc="The date the transaction was created" name="DatePosted" nullok="false" type="dateonly"/>
+  <column desc="The date the ceding should be recognized for financial purposes." name="DateWritten" nullok="false" type="dateonly"/>
+  <column desc="The date and time on which ceding calculation was done." name="CalcTimestamp" nullok="false" type="datetime"/>
+  <foreignkey desc="The policy foreign exchange rate used to convert the ceded premium to the settlement currency." fkentity="PolicyFXRate" name="PolicyFXRate" nullok="true"/>
+  <!--
+  These keys are Line-of-business specific, but must be included in the implementing class!
+  <foreignkey fkentity="RICededPremium" name="RICededPremium" nullok="false"
+          desc="The RICededPremium that this is associated with (back pointer for array)">
+  <foreignkey fkentity="RICededPremiumHistory" name="RecalcHistory" nullok="true"
+          desc="If this premium is the result of a recalculation, RecalcHistory will explain the reason for it."/>
+    -->
+  <foreignkey desc="The agreement being ceded to" fkentity="RIAgreement" name="Agreement" nullok="false"/>
+  <!-- can the program be null in case of a Fac? -->
+  <foreignkey desc="The reinsurance program that applies to this premium" fkentity="RIProgram" name="Program" nullok="true"/>
+  <fulldescription>
+      A delegate for RICededPremiumTransaction, which is an individual ceding calculation done between a direct premium
+      Transaction which insures an RIRisk, and a RIAgreement which reinsures that RIRisk.
+  </fulldescription>
+</delegate>

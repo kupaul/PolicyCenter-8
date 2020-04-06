@@ -1,0 +1,94 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Popup
+    alwaysInEditMode="true"
+    canEdit="true"
+    id="BuildingSearchPopup"
+    returnType="CPBuilding"
+    startInEditMode="true"
+    title="displaykey.Web.CopyPolicyData.CommercialProperty.Buildings.CopyCoverages.BuildingSearchPopup.Title">
+    <LocationEntryPoint
+      signature="BuildingSearchPopup(period : PolicyPeriod)"/>
+    <Variable
+      name="period"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="findAllSelectableBuildings(period)"
+      name="buildings"/>
+    <Screen>
+      <Toolbar>
+        <EditButtons
+          cancelVisible="true"
+          editVisible="false"
+          showUpdateConfirmMessage="false"
+          updateVisible="false"/>
+      </Toolbar>
+      <ListViewPanel>
+        <RowIterator
+          checkBoxVisible="false"
+          editable="true"
+          elementName="building"
+          id="buildingIterator"
+          pageSize="20"
+          pickValue="building"
+          value="buildings">
+          <ToolbarFilter
+            cacheOptions="false"
+            id="BuildingFromFilter"
+            label="displaykey.Web.CopyPolicyData.CommercialProperty.Buildings.DisplayLocations"
+            name="cPBuildingFilterFrom">
+            <ToolbarFilterOption
+              filter="new gw.api.filters.StandardBeanFilter(displaykey.Web.CopyPolicyData.CommercialProperty.Buildings.AllLocations, \ b -&gt; true)"/>
+            <ToolbarFilterOptionGroup
+              filters="(new gw.lob.cp.CPBuildingFilterSet(buildings)).createBuildingFilters()"/>
+          </ToolbarFilter>
+          <Row>
+            <TextCell
+              align="left"
+              id="BuildingDescription"
+              label="displaykey.Web.Policy.LocationContainer.Location.Building.Description"
+              sortBy="building.DisplayName"
+              value="building"/>
+            <Cell
+              id="BuildingLocation"
+              label="displaykey.Web.Policy.LocationContainer.Location"
+              sortBy="building.CPLocation.Location.LocationNum"
+              value="building.CPLocation"/>
+            <Cell
+              align="right"
+              id="BldgLimit"
+              label="displaykey.Web.Policy.CP.Location.Building.BuildingLimit"
+              sortBy="building.CPBldgCov.CPBldgCovLimitTerm.Value"
+              value="building.CPBldgCov.CPBldgCovLimitTerm.DisplayValue"/>
+            <Cell
+              align="right"
+              id="BusPersPropLimit"
+              label="displaykey.Web.Policy.CP.Location.Building.BuildingBPPLimit"
+              sortBy="building.CPBPPCov.CPBPPCovLimitTerm.Value"
+              value="building.CPBPPCov.CPBPPCovLimitTerm.DisplayValue"/>
+            <Cell
+              align="right"
+              id="BusIncome"
+              label="displaykey.Web.Policy.CP.Location.Building.BusinessIncomeLimit"
+              sortBy="building.BusIncomeLimitSum"
+              value="building.BusIncomeLimitSumDisplay"/>
+            <Cell
+              align="right"
+              id="ExtraExpense"
+              label="displaykey.Web.Policy.CP.Location.Building.ExtraExpenseLimit"
+              sortBy="building.CPBldgExtraExpenseCov.CPBldgExtraExpenseCovLimitTerm.Value"
+              value="building.CPBldgExtraExpenseCov.CPBldgExtraExpenseCovLimitTerm.DisplayValue"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </Screen>
+    <Code><![CDATA[function findAllSelectableBuildings(policyPeriod : PolicyPeriod) :CPBuilding[] {
+  var sortedBuildings : List<CPBuilding> = {}
+  var sortedLocations = policyPeriod.CPLine.CPLocations.sortBy(\ l -> l.Location.LocationNum)
+  sortedLocations.each(\ l -> sortedBuildings.addAll(l.Buildings.sortBy(\ b -> b.Building.BuildingNum).toList()))
+  return sortedBuildings.toArray(new CPBuilding[sortedBuildings.Count])
+}]]></Code>
+  </Popup>
+</PCF>

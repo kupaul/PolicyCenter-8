@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?><internalExtension xmlns="http://guidewire.com/datamodel" entityName="Activity">
+  <implementsEntity name="PCAssignable"/>
+  <typekey desc="The role on the associated entity that this activity is assigned to." loadable="false" name="AssociatedRole" nullok="true" typelist="UserRole"/>
+  <foreignkey columnName="JobID" desc="The job this activity is associated with." exportasid="true" fkentity="Job" loadable="false" name="Job" nullok="true" setterScriptability="hidden"/>
+  <foreignkey columnName="AccountID" desc="The Account this activity is associated with." exportasid="true" fkentity="Account" loadable="false" name="Account" nullok="false"/>
+  <foreignkey columnName="PolicyID" desc="The policy this activity is associated with." exportasid="true" fkentity="Policy" loadable="false" name="Policy" nullok="true" setterScriptability="hidden"/>
+  <foreignkey columnName="AccountContactID" desc="AccountContact this activity is associated with." exportasid="true" fkentity="AccountContact" loadable="false" name="AccountContact" nullok="true"/>
+  <dbcheckbuilder className="com.guidewire.pc.domain.activity.dbchecks.PCActivityDBCheckBuilder"/>
+  <description>An instance of work assigned to a user and belonging to an underwriting file. Activities are associated with pre-defined workflows and rules.</description>
+  <!-- <foreignkey name="WorkflowID" fkentity="Workflow" setterScriptability="hidden"
+          loadable="false" desc="Optional pointer to the workflow this activity is associated with."/> -->
+  <events/>
+  <index desc="Perf index for finding activities assigned to the specified group." expectedtobecovering="true" name="AssignedGroupPerf1" unique="true">
+    <indexcol keyposition="1" name="AssignedGroupId"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="Status"/>
+    <indexcol keyposition="4" name="CloseDate"/>
+    <indexcol keyposition="5" name="JobID"/>
+    <indexcol keyposition="6" name="ID"/>
+  </index>
+  <index desc="Perf index for finding activities assigned to the specified group with conditions." expectedtobecovering="true" name="AssignedGroupPerf2" unique="true">
+    <indexcol keyposition="1" name="AssignedGroupId"/>
+    <indexcol keyposition="2" name="Status"/>
+    <indexcol keyposition="3" name="Type"/>
+    <indexcol keyposition="4" name="ID"/>
+    <indexcol keyposition="5" name="Retired"/>
+  </index>
+  <index desc="Perf index for finding activities assigned to the specified job with a given status." name="ActivityJobPerf1" unique="false">
+    <indexcol keyposition="1" name="JobID"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="Status"/>
+  </index>
+  <index desc="Perf covering index for finding activities assigned to a specific user and linked to a job." expectedtobecovering="true" name="ActivityJobPerf2" unique="false">
+    <indexcol keyposition="1" name="AssignedUserID"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="Status"/>
+    <indexcol keyposition="4" name="UpdateTime"/>
+    <indexcol keyposition="5" name="CreateTime"/>
+    <indexcol keyposition="6" name="JobID"/>
+  </index>
+  <index desc="Perf covering index for finding activities to retire." expectedtobecovering="true" name="ActivityJobPerf3" unique="true">
+    <indexcol keyposition="1" name="AssignedUserID"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="Status"/>
+    <indexcol keyposition="4" name="CloseDate"/>
+    <indexcol keyposition="5" name="ID"/>
+  </index>
+  <index desc="Compound index to speed ActivitySearchAssignedToMeXXX" name="activityu1" trackUsage="true" unique="true">
+    <indexcol keyposition="1" name="AssignedUserId"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="Status"/>
+    <indexcol keyposition="4" name="AssignmentStatus"/>
+    <indexcol keyposition="5" name="Type"/>
+    <indexcol keyposition="6" name="Priority"/>
+    <indexcol keyposition="7" name="TargetDate"/>
+    <indexcol keyposition="8" name="ID"/>
+  </index>
+</internalExtension>

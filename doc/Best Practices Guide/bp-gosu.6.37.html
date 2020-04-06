@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Use Comparison Methods to Filter Queries</title>
+    <link rel="StyleSheet" href="css/bp-gosu.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Best Practices&nbsp;Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="bp-gosu.6.01.html#2250362">Gosu Language Best Practices </a> : <a class="WebWorks_Breadcrumb_Link" href="bp-gosu.6.29.html#2250362">Gosu Performance Best Practices</a> : Use Comparison Methods to Filter Queries</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h4 class="H2B_-_Heading_2_Break"><a name="2250362">Use Comparison Methods to Filter Queries</a></h4>
+      <div class="B_-_Body"><a name="2250366">The relational database that supports PolicyCenter filters the results of a query much more efficiently than your own Gosu code, because it avoids loading unnecessary data into the application server. As a performance best practice, Guidewire recommends that you filter your queries with comparisons methods rather than filter the results with your own code. </a></div>
+      <div class="B_-_Body"><a name="2250367">The following sample Gosu code suffers a performance problem. It inadvertently loads most of the claims, along with their policies, from the relational database. Then, the code iterates the loaded claims and their policies and process only those few that match a specific policy. In other words, the code loads an excessive amount of data unnecessarily and takes an excessive amount of time to search for a few instances to process. </a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2250368">var targetPolicy : Policy</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2250369">var claimQuery = Query.make(Claim)&nbsp;&nbsp;// Performance suffers because the query loads all claims. </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2250370">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2250371">for (claim in claimQuery.select()) {&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2250372">&nbsp;&nbsp;</a><span class="s_-_strong">if (claim.Policy == targetPolicy)</span> {&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Local Gosu code filters claims.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; </PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2250373">&nbsp;&nbsp;&nbsp;&nbsp;// Do something on claims of targeted policies. </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2250374">&nbsp;&nbsp;&nbsp;&nbsp;...</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2250375">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2250376">}</a></PRE>
+      <div class="B_-_Body"><a name="2250377">The following modified sample Gosu code improves performance. It finds only relevant policies to process with the compare method: </a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2250378">var targetPolicy : Policy</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2250379">var claimQuery = Query.make(Claim)&nbsp;&nbsp;// Performance improves because the query loads few claims.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2288267">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><span class="s_-_strong"><a name="2250380">claimQuery.compare("policy", Equals, targetPolicy)</a></span>&nbsp;&nbsp;// Query comparison method filters claims. </PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2250381">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2250382">for (claim.Policy in query.select()) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2250383">&nbsp;&nbsp;// 	Do something on claims of targeted policies.</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2250384">}</a></PRE>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

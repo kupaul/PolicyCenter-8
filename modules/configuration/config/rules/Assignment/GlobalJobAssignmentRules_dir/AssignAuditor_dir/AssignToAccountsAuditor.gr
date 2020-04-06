@@ -1,0 +1,24 @@
+package rules.Assignment.GlobalJobAssignmentRules_dir.AssignAuditor_dir
+
+@gw.rules.RuleName("Assign To Account's Auditor")
+internal class AssignToAccountsAuditor {
+  static function doCondition(job : entity.Job) : boolean {
+    
+/*start00rule*/
+return (job as Audit).AuditInformation.AuditMethod == AuditMethod.TC_PHYSICAL
+/*end00rule*/
+
+  }
+
+  static function doAction(job : entity.Job, actions : gw.rules.Action) {
+
+/*start00rule*/
+var acctAuditor = job.Policy.Account.getUserRoleAssignmentByRole( "Auditor" )
+if(acctAuditor != null){
+  job.assignUserRole(acctAuditor.AssignedUser, acctAuditor.AssignedGroup, acctAuditor.Role)
+  actions.exit()  
+}
+/*end00rule*/
+
+  }
+}

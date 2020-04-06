@@ -1,0 +1,182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+  <prerequisites>
+    <maven>3.0</maven>
+  </prerequisites>
+
+  <groupId>com.guidewire.pl</groupId>
+  <artifactId>pl-documentassistant-root</artifactId>
+  <version>8.2.0</version>
+
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>applet</module>
+    <module>resources</module>
+    <module>bundle</module>
+  </modules>
+
+  <organization>
+    <name>Guidewire Software, Inc.</name>
+    <url>http://guidewire.com</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>Guidewire proprietary license</name>
+      <url>nourl</url>
+      <distribution>manual</distribution>
+    </license>
+  </licenses>
+
+  <properties>
+    <maven.build.timestamp.format>YYYYMMddHHmmssZ</maven.build.timestamp.format>
+    <DA.version>${project.version}</DA.version>
+
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <keystore.path>keystore</keystore.path>
+    <keystore.type>JKS</keystore.type>
+    <keystore.alias>guidewire</keystore.alias>
+    <keystore.password>password</keystore.password>
+    <keystore.store.password>password</keystore.store.password>
+    <keystore.key.password>password</keystore.key.password>
+    <timesignatureauthority>https://timestamp.geotrust.com/tsa</timesignatureauthority>
+  </properties>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-compiler-plugin</artifactId>
+          <version>2.5.1</version>
+          <configuration>
+            <fork>true</fork>
+            <maxmem>768m</maxmem>
+            <encoding>UTF-8</encoding>
+            <source>1.7</source>
+            <target>1.7</target>
+            <generatedSourcesDirectory>src/main/java</generatedSourcesDirectory>
+            <generatedTestSourcesDirectory>src/test/java</generatedTestSourcesDirectory>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jar-plugin</artifactId>
+          <version>2.4</version>
+          <configuration>
+            <archive>
+              <addMavenDescriptor>false</addMavenDescriptor>
+              <manifest>
+                <addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+                <addDefaultSpecificationEntries>true</addDefaultSpecificationEntries>
+              </manifest>
+              <manifestEntries>
+                <Built-by>Guidewire Software, Inc.</Built-by>
+              </manifestEntries>
+            </archive>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-jarsigner-plugin</artifactId>
+          <version>1.3.1</version>
+          <configuration>
+            <verbose>true</verbose>
+            <removeExistingSignatures>true</removeExistingSignatures>
+            <storetype>${keystore.type}</storetype>
+            <keystore>${keystore.path}</keystore>
+            <alias>${keystore.alias}</alias>
+            <storepass>${keystore.store.password}</storepass>
+            <keypass>${keystore.key.password}</keypass>
+            <arguments>
+              <argument>-tsa</argument>
+              <argument>${timesignatureauthority}</argument>
+            </arguments>
+          </configuration>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <version>1.7</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-install-plugin</artifactId>
+          <version>2.4</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-deploy-plugin</artifactId>
+          <version>2.7</version>
+        </plugin>
+        <plugin>
+          <groupId>org.codehaus.mojo</groupId>
+          <artifactId>build-helper-maven-plugin</artifactId>
+          <version>1.8</version>
+        </plugin>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.3.2</version>
+          <configuration>
+            <autoVersionSubmodules>true</autoVersionSubmodules>
+            <tagNameFormat>@{project.version}</tagNameFormat>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <artifactId>maven-release-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </build>
+
+  <scm>
+    <developerConnection>scm:git:git@stash.guidewire.com:pl/document-assistant.git</developerConnection>
+    <connection>scm:git:git://stash.guidewire.com/pl/document-assistant.git</connection>
+    <tag>8.2.0</tag>
+  </scm>
+
+  <repositories>
+    <repository>
+      <id>gw.thirdparty</id>
+      <name>Guidewire Nexus repository for third party libs not in Central</name>
+      <url>http://nexus/content/repositories/thirdparty</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+    <repository>
+      <id>gw.central</id>
+      <name>Guidewire Nexus repository proxy in Central</name>
+      <url>http://nexus/content/repositories/central</url>
+      <snapshots>
+        <enabled>false</enabled>
+      </snapshots>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </repository>
+  </repositories>
+
+  <distributionManagement>
+    <repository>
+      <id>gw.releases.documentassistant</id>
+      <url>http://nexus/content/repositories/releases/</url>
+      <name>Guidewire internal releases repository</name>
+    </repository>
+    <snapshotRepository>
+      <id>gw.snapshots.documentassistant</id>
+      <url>http://nexus/content/repositories/snapshots/</url>
+      <name>Guidewire internal snapshots repository</name>
+    </snapshotRepository>
+  </distributionManagement>
+
+</project>

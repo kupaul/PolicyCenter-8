@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    afterCancel="SubmissionManager.go(account)"
+    afterCommit="SubmissionLetterSuccess.go(account)"
+    beforeCommit="letter.addJobs( gw.job.SubmissionLetterHelper.getCheckedSubmissions() ); letter.createAndAttachDocument()"
+    canEdit="true"
+    canVisit="perm.Account.newSubmission(account)"
+    id="SubmissionRejectLetter"
+    parent="SubmissionManager(account)"
+    showUpLink="true"
+    startInEditMode="true"
+    title="displaykey.Web.SubmissionRejectLetter"
+    validateOnBundleCommit="false">
+    <LocationEntryPoint
+      signature="SubmissionRejectLetter(letterType : LetterType, account : Account)"/>
+    <Variable
+      name="letterType"
+      type="LetterType"/>
+    <Variable
+      name="account"
+      type="Account"/>
+    <Variable
+      initialValue="initLetter()"
+      name="letter"
+      type="Letter"/>
+    <Screen
+      id="SubmissionRejectLetterScreen">
+      <Toolbar>
+        <EditButtons
+          updateLabel="displaykey.Web.SubmissionRejectLetter.GenerateLetter"/>
+      </Toolbar>
+      <PanelRef
+        def="SubmissionRejectLetterDV(account, letter)"/>
+    </Screen>
+    <Code><![CDATA[function initLetter() : Letter {
+        var result = new Letter()
+        result.Type = letterType
+        return result
+      }]]></Code>
+  </Page>
+</PCF>

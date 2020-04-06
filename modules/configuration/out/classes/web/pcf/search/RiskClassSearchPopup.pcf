@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    countsAsWork="false"
+    id="RiskClassSearchPopup"
+    returnType="RiskClass"
+    title="displaykey.Web.RiskClassSearch">
+    <LocationEntryPoint
+      signature="RiskClassSearchPopup(policyLinePattern : gw.api.productmodel.PolicyLinePattern, coveragePattern : gw.api.productmodel.CoveragePattern)"/>
+    <Variable
+      name="policyLinePattern"
+      type="gw.api.productmodel.PolicyLinePattern"/>
+    <Variable
+      name="coveragePattern"
+      type="gw.api.productmodel.CoveragePattern"/>
+    <Screen
+      id="RiskClassSearchScreen">
+      <SearchPanel
+        criteriaName="searchCriteria"
+        resultsName="riskClasses"
+        search="searchCriteria.performSearch()"
+        searchCriteria="return createCriteria()"
+        searchOnEnter="true"
+        searchResultsType="RiskClassQuery">
+        <PanelRef
+          def="RiskClassSearchDV(searchCriteria)"/>
+        <PanelRef
+          def="RiskClassSearchResultsLV(riskClasses, policyLinePattern)">
+          <TitleBar
+            appendListViewPaging="true"
+            title="displaykey.Web.Search.Results"/>
+          <Toolbar/>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+    <Code><![CDATA[function createCriteria() : gw.lob.common.RiskClassSearchCriteria {
+        var criteria = new gw.lob.common.RiskClassSearchCriteria()
+        criteria.PolicyLinePatternCode = policyLinePattern.Code
+        criteria.CoveragePatternCode = coveragePattern.Code
+        return criteria
+      }]]></Code>
+  </Popup>
+</PCF>

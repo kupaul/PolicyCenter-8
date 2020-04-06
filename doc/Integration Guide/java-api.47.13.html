@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Accessing Gosu Classes from Java Using Reflection</title>
+    <link rel="StyleSheet" href="css/java-api.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-claims.html#2264547">Other Integration Topics</a> : <a class="WebWorks_Breadcrumb_Link" href="java-api.47.01.html#2264547">Java and OSGi Support</a> : Accessing Gosu Classes from Java Using Reflection</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2264547">Accessing Gosu Classes from Java Using Reflection</a></h3>
+      <div class="B_-_Body"><a name="2269423">From Java, you must use </a><span class="e_-_emphasis">reflection</span> to access Gosu types. Reflection means asking the type system about types at run time to get data, set data, or invoke methods. Reflection is a powerful way of accessing type information at run time, but is not type safe. For example, language elements such as class names and method names are manipulated as <span class="cv_-_computer_voice">String</span> values. Be careful to correctly type the names of classes and methods because the Java compiler cannot validate the names at compile time.</div>
+      <div class="B_-_Body"><a name="2169683">To use reflection from Java or Gosu, use the utility class </a><span class="cv_-_computer_voice">gw.lang.reflect.ReflectUtil</span>. The <span class="cv_-_computer_voice">ReflectUtil</span> class contains various APIs to get information about a class, get information about features (properties and methods), and invoke object methods or instance methods. </div>
+      <div class="B_-_Body"><a name="2169684">For example, the following Java code calls a static method on a Gosu class using the </a><span class="cv_-_computer_voice">ReflectUtil</span> method <span class="cv_-_computer_voice">invokeStaticMethod</span>. </div>
+      <div class="B_-_Body"><a name="2169685">The Gosu class definition:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169686">package test1</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169687">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169688">class MyGosuClass {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169689">     public static  function   myMethod(input : String) : String {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169690">      return "MyGosuClass returns the value ${input} as the result!"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169691">    }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169692">}</a></PRE>
+      <div class="B_-_Body"><a name="2169693">To call the static method from Java with the argument </a><span class="cv_-_computer_voice">"hello"</span>, use the following code:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="2169694">package test1;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169695">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169696">import gw.lang.reflect.ReflectUtil;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169697">import gw.transaction.Bundle;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169698">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169699">public class MyClass {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169700">  public void doIt() {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169701">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169702">&nbsp;&nbsp;&nbsp;&nbsp;// call a static method on a Gosu class</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169703">    String r = (String) ReflectUtil.invokeStaticMethod("test1.MyGosuClass", "myMethod", "hello") ;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169704">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169705">&nbsp;&nbsp;&nbsp;&nbsp;// print the return result</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169706">    System.out.print(r);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2169707">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2169708">}</a></PRE>
+      <div class="B_-_Body"><a name="2207017">If you write your own Gosu class and you want to call methods on it from Java, there is pattern that increases the degree of type safety. See the following procedure.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="2207018">To make your Java code that calls Gosu classes more typesafe</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2207019">Create a Java interface containing only the set of methods that you need to call from Java. For getting and setting properties, define the interface using getter and setter methods, such as </a><span class="cv_-_computer_voice">getMyField</span> and <span class="cv_-_computer_voice">setMyField</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2169713">Create a Gosu class that implements that interface. It can contain additional methods if desired if they are not needed from Java.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2169714">In code that needs to get a reference to the object, use </a><span class="cv_-_computer_voice">ReflectUtil</span> to create an instance of the desired Gosu class. There are several approaches:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="2207232">Create an instance using </a><span class="cv_-_computer_voice">ReflectUtil</span>. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="2207239">Alternatively, define a method on an object that creates an instance. Next, call that method with </a><span class="cv_-_computer_voice">ReflectUtil</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2207242">In both cases, at compile time any new object instances returned by </a><span class="cv_-_computer_voice">ReflectUtil</span> have the type <span class="cv_-_computer_voice">Object</span>. At run time, downcast to your new Java interface and assign to a new variable of that interface type.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2169715">You now have an instance of an object that conforms to your interface. Call methods on it as you normally would from Gosu. The getters, setters, and other method names are defined in your interface, so the method calls are typesafe. For example, the Java compiler can protect against misspelled method names.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

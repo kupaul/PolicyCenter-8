@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Page
+    afterEnter="gw.api.web.PebblesUtil.addWebMessages(CurrentLocation, slicePeriod.PolicyFileMessages)"
+    canVisit="perm.PolicyPeriod.view(policyPeriod) and perm.System.pfilepricing"
+    id="PolicyFile_CPP_Pricing"
+    parent="PolicyFile(policyPeriod, asOfDate)"
+    title="displaykey.Web.PolicyFile.Pricing">
+    <LocationEntryPoint
+      signature="PolicyFile_CPP_Pricing(policyPeriod : PolicyPeriod, asOfDate : DateTime)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="asOfDate"
+      type="DateTime"/>
+    <Variable
+      initialValue="policyPeriod.getSlice(asOfDate)"
+      name="slicePeriod"/>
+    <Variable
+      initialValue="slicePeriod.OpenForEdit"
+      name="isEditable"
+      type="boolean"/>
+    <Screen
+      editable="false"
+      id="PolicyFile_PricingScreen">
+      <TitleBar/>
+      <Toolbar/>
+      <PanelRef
+        def="CostOverridesWarningPanelSet(slicePeriod)"/>
+      <PanelRef
+        def="PolicyFile_Quote_SummaryDV(slicePeriod)"/>
+      <CardViewPanel>
+        <Card
+          id="PolicyFile_Pricing_CumulativeCard"
+          title="displaykey.Web.PolicyFile.Pricing.Cumulative">
+          <PanelRef
+            def="RatingPanelSet(slicePeriod, null, isEditable)"
+            mode="slicePeriod.Policy.ProductCode"/>
+        </Card>
+      </CardViewPanel>
+    </Screen>
+  </Page>
+</PCF>

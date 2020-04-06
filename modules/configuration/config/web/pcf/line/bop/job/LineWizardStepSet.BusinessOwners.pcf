@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <WizardStepSet
+    id="LineWizardStepSet"
+    mode="BusinessOwners">
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <JobWizardStep
+      beforeSave="gw.lob.bop.BOPLineValidation.validateSchedules(policyPeriod.BOPLine)"
+      id="BOP"
+      onChange="gw.lob.bop.BOPLineWizardStepSetValidation.validateContextAndAdditionalInsuredAndTypeUnique(policyPeriod.BOPLine)"
+      onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages({policyPeriod.BOPLine}, jobWizardHelper); gw.web.productmodel.ProductModelSyncIssuesHandler.syncConditions({policyPeriod.BOPLine}, jobWizardHelper); gw.web.productmodel.ProductModelSyncIssuesHandler.syncExclusions({policyPeriod.BOPLine}, jobWizardHelper)}"
+      save="openForEdit"
+      screen="BOPScreen(job, policyPeriod, openForEdit, jobWizardHelper)"
+      title="policyPeriod.BOPLine.Pattern.Name"/>
+    <!-- ExposureUnits are automatically numbered when they are created in the UI, but here we force renumbering when
+         to remove any gaps that may arise from deleting exposures when creating a new policy period. -->
+    <JobWizardStep
+      beforeSave="gw.policy.PolicyLocationValidation.validateLocationsStep(policyPeriod.PolicyLocations)"
+      handlesValidationIssue="VALUE typeis entity.BOPLocation"
+      id="Locations"
+      onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.sync(policyPeriod.BOPLine.BOPLocations, null, policyPeriod.PolicyLocations, null, jobWizardHelper)}"
+      save="openForEdit"
+      screen="BOPLocationsScreen(policyPeriod, openForEdit,jobWizardHelper)"
+      title="displaykey.Web.LineWizardMenu.Locations"/>
+    <JobWizardStep
+      beforeSave="gw.lob.bop.BOPLineValidation.validateBuildings(policyPeriod.BOPLine)"
+      handlesValidationIssue="VALUE typeis entity.BOPBuilding"
+      id="BOPBuildings"
+      onEnter="if (openForEdit) {gw.web.productmodel.ProductModelSyncIssuesHandler.syncCoverages(policyPeriod.BOPLine.BOPLocations*.Buildings, jobWizardHelper)}"
+      save="openForEdit"
+      screen="BOPBuildingsScreen(policyPeriod, openForEdit, jobWizardHelper)"
+      title="displaykey.Web.LineWizardMenu.Buildings"/>
+    <!-- This step is shown for full (not quick) submissions and all other jobs. (This file is shared by all the
+         job wizards). Also, this step is only visible if questions are actually available for the line. -->
+    <JobWizardStep
+      beforeSave="gw.lob.bop.BOPLineValidation.validateSupplementalStep(policyPeriod.BOPLine)"
+      id="BOPSupplemental"
+      onEnter="if(openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncQuestions( {policyPeriod.BOPLine}, jobWizardHelper )}"
+      save="openForEdit"
+      screen="BOPSupplementalScreen(policyPeriod, openForEdit,jobWizardHelper)"
+      title="displaykey.Web.LineWizardMenu.PolicyLines.Supplemental"
+      visible="policyPeriod.BOPLine.hasSupplementalQuestions() and (not (job typeis Submission) or (job as Submission).FullMode)"/>
+    <JobWizardStep
+      beforeSave="gw.validation.ValidationUtil.checkCurrentResult()"
+      id="Modifiers"
+      onEnter="if (openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncModifiers( {policyPeriod.BOPLine}, jobWizardHelper)}"
+      save="openForEdit"
+      screen="ModifiersScreen(policyPeriod, openForEdit,jobWizardHelper, policyPeriod.BOPLine.BOPModifiers)"
+      title="displaykey.Web.SubmissionWizardMenu.Modifiers"
+      visible="policyPeriod.CanViewModifiers"/>
+  </WizardStepSet>
+</PCF>

@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Popup
+    id="CovPatternSearchPopup"
+    returnType="gw.api.productmodel.CoveragePattern"
+    title="displaykey.Web.Admin.PolicyHold.CoverageSearch">
+    <LocationEntryPoint
+      signature="CovPatternSearchPopup(policyLine : typekey.PolicyLine, linePattern : gw.api.productmodel.PolicyLinePattern)"/>
+    <Variable
+      name="policyLine"
+      type="typekey.PolicyLine"/>
+    <Variable
+      name="linePattern"
+      type="gw.api.productmodel.PolicyLinePattern"/>
+    <Variable
+      initialValue="linePattern.CoverageCategories*.Code"
+      name="categories"/>
+    <Screen
+      id="CovPatternSearchScreen">
+      <SearchPanel
+        cachingEnabled="false"
+        criteriaName="searchCriteria"
+        resultsName="coveragePatterns"
+        search="searchCriteria.performSearch().cast( gw.api.productmodel.CoveragePattern )"
+        searchCriteria="createSearchCriteria()"
+        searchOnEnter="false"
+        searchResultsType="gw.api.productmodel.CoveragePattern[]">
+        <PanelRef
+          def="CoveragePatternSearchDV(searchCriteria, linePattern, categories, true)"/>
+        <PanelRef>
+          <Toolbar/>
+          <ListViewPanel
+            id="CovPatternSearchResultsLV">
+            <RowIterator
+              editable="true"
+              elementName="pattern"
+              pickValue="pattern"
+              value="coveragePatterns">
+              <Row>
+                <Cell
+                  id="Coverage"
+                  label="displaykey.Web.Coverage.SearchPage.Coverage"
+                  value="pattern.DisplayName"/>
+                <Cell
+                  id="Category"
+                  label="displaykey.Web.Coverage.SearchPage.Category"
+                  value="pattern.CoverageCategory.DisplayName"/>
+                <Cell
+                  id="ClauseType"
+                  label="displaykey.Web.Coverage.SearchPage.Type"
+                  value="pattern.ClauseName"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+    <Code><![CDATA[function createSearchCriteria() : gw.productmodel.ClausePatternSearchCriteria {
+  var criteria = new gw.productmodel.ClausePatternSearchCriteria()
+  criteria.SearchType = TC_COVERAGE
+  criteria.PolicyLinePatternCode = linePattern.Code
+  return criteria
+}]]></Code>
+  </Popup>
+</PCF>

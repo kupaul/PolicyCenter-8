@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Popup
+    afterCommit="gw.api.web.PebblesUtil.invalidateIterators(TopLocation, entity.IMLocation)"
+    canEdit="openForEdit"
+    countsAsWork="false"
+    id="IMLocationPopup"
+    returnType="IMLocation"
+    startEditing="initialize()"
+    startInEditMode="startInEdit"
+    title="displaykey.Web.Policy.LocationContainer.Location.LocationInformation.Title">
+    <LocationEntryPoint
+      signature="IMLocationPopup(imLine : InlandMarineLine, openForEdit : boolean, startInEdit : boolean)"/>
+    <LocationEntryPoint
+      signature="IMLocationPopup(imLocation : IMLocation, openForEdit : boolean, startInEdit : boolean)"/>
+    <LocationEntryPoint
+      signature="IMLocationPopup(imLine : InlandMarineLine, acctLocation : AccountLocation, openForEdit : boolean, startInEdit : boolean)"/>
+    <Variable
+      name="imLocation"
+      type="IMLocation"/>
+    <Variable
+      name="acctLocation"
+      type="AccountLocation"/>
+    <Variable
+      name="imLine"
+      type="InlandMarineLine"/>
+    <Variable
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      name="startInEdit"
+      type="boolean"/>
+    <Variable
+      name="period"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="new contact.AddressAutocompleteHandler(&quot;city&quot;,&quot;Country,City,County,State,PostalCode&quot;,true)"
+      name="cityHandler"/>
+    <Variable
+      initialValue="new contact.AddressAutocompleteHandler(&quot;county&quot;,&quot;Country,City,County,State,PostalCode&quot;,true)"
+      name="countyHandler"
+      type="contact.AddressAutocompleteHandler"/>
+    <Variable
+      initialValue="new contact.AddressAutocompleteHandler(&quot;postalcode&quot;,&quot;Country,City,County,State,PostalCode&quot;,true)"
+      name="pchandler"
+      type="contact.AddressAutocompleteHandler"/>
+    <Screen>
+      <Toolbar>
+        <EditButtons
+          hideIfReadOnly="true"
+          pickValue="imLocation"/>
+      </Toolbar>
+      <DetailViewPanel
+        id="LocationDetailDV">
+        <InputColumn>
+          <InputSetRef
+            def="LocationDetailInputSet(imLocation.Location, imLine.SupportsNonSpecificLocations, openForEdit)"/>
+        </InputColumn>
+        <InputColumn>
+          <Label
+            label="displaykey.Web.Policy.LocationContainer.Location.GeneralInfoTitle"/>
+          <Input
+            editable="true"
+            id="FireProtectionClass"
+            label="displaykey.Web.Policy.PolicyLocation.FireProtectionClass"
+            labelAbove="true"
+            value="imLocation.Location.FireProtectClass"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <DetailViewPanel
+        id="AccountLocationUpToDateDV"
+        visible="imLocation.IMLine.Branch.Promoted and !imLocation.Location.isUpToDate()">
+        <InputColumn>
+          <ContentInput
+            boldLabel="true"
+            id="SynchronizedMessage"
+            label="displaykey.Web.Account.Locations.IsSynchronized.Policy.Message">
+            <Link
+              action="AccountLocationPopup.push(imLocation.Location.AccountLocation, imLocation.IMLine.Branch.Policy.Account, false)"
+              id="SynchronizedLink"
+              label="displaykey.Web.Account.Locations.IsSynchronized.Policy.Link"/>
+          </ContentInput>
+        </InputColumn>
+      </DetailViewPanel>
+    </Screen>
+    <Code><![CDATA[function initialize() {
+  if (imLine != null and imLocation == null and acctLocation == null) {  // brand new location
+    imLocation = imLine.addNewLineSpecificLocation() as IMLocation
+  } else if (imLocation != null) {  // existing IMLocation
+    imLine = imLocation.IMLine
+  } else if (acctLocation != null and imLine != null) {  // new IMLocation for given account location
+    imLocation = imLine.addToLineSpecificLocations(acctLocation) as IMLocation
+    imLocation.Location.TerritoryCodes.each( \ tc -> tc.fillWithFirst() )
+  } else {
+    throw "Do not pass null values into popup."
+  }
+}]]></Code>
+  </Popup>
+</PCF>

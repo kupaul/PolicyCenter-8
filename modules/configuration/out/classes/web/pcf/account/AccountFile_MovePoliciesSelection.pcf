@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    autosaveable="false"
+    canEdit="true"
+    id="AccountFile_MovePoliciesSelection"
+    parent="AccountFile_AccountSearch(targetAccount, typekey.AccountSearchType.TC_MOVEPOLICIES)"
+    showUpLink="true"
+    startInEditMode="true"
+    title="displaykey.Web.AccountFile.MovePolicies.Selection">
+    <LocationEntryPoint
+      signature="AccountFile_MovePoliciesSelection(srcAccount : Account, targetAccount : Account)"/>
+    <Variable
+      name="srcAccount"
+      recalculateOnRefresh="true"
+      type="Account"/>
+    <Variable
+      name="targetAccount"
+      recalculateOnRefresh="true"
+      type="Account"/>
+    <Variable
+      initialValue="srcAccount.VisiblePolicies.map(\ p -&gt; p.LatestPeriod).toList()"
+      name="visiblePeriods"
+      recalculateOnRefresh="true"
+      type="List&lt;PolicyPeriod&gt;"/>
+    <Screen>
+      <Toolbar>
+        <CheckedValuesToolbarButton
+          allCheckedRowsAction="movePolicies(CheckedValues)"
+          id="MovePoliciesButton"
+          iterator="AccountFile_MovePoliciesSelectionLV.AccountFile_MovePoliciesSelectionLV"
+          label="displaykey.Web.AccountFile.MovePolicies"/>
+      </Toolbar>
+      <DetailViewPanel>
+        <InputColumn>
+          <Label
+            label="displaykey.Web.AccountFile.MovePolicies.SourceAccountLabel"/>
+          <Input
+            id="AccountNumber"
+            label="displaykey.Web.AccountFile.Summary.AccountNumber"
+            value="srcAccount.AccountNumber"/>
+          <Input
+            id="Name"
+            label="displaykey.Web.AccountFile.Summary.Name"
+            value="srcAccount.AccountHolderContact.DisplayName"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef
+        def="AccountFile_MovePoliciesSelectionLV(visiblePeriods)">
+        <TitleBar
+          title="displaykey.Web.AccountFile.MovePolicies.Policies"/>
+      </PanelRef>
+    </Screen>
+    <Code><![CDATA[function movePolicies(periodsToMove : entity.PolicyPeriod[]){
+  gw.transaction.Transaction.runWithNewBundle(\ b ->{    
+    var targetAcct = b.add(targetAccount)
+    var srcAcct = b.add(srcAccount)
+    targetAcct.movePoliciesFrom(srcAcct, periodsToMove)
+  })
+  AccountFile.go(targetAccount)
+}]]></Code>
+  </Page>
+</PCF>

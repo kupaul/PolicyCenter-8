@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" abstract="true" desc="A reinsurance agreement between insurance companies" entity="RIAgreement" extendable="true" final="false" loadable="false" platform="false" subpackage="reinsurance" table="reinsuranceagreement" type="retireable">
+  <implementsEntity name="RIContract"/>
+  <implementsInterface iface="gw.api.reinsurance.CedingRecipient" impl="gw.plugin.reinsurance.CedingRecipientAdapter"/>
+  <column desc="The name of this contract." name="Name" nullok="false" type="shorttext">
+    <localization nullok="false" tableName="riagree_nam_l10n"/>
+  </column>
+  <column desc="The agreement number of this agreement." name="AgreementNumber" nullok="false" type="shorttext"/>
+  <column desc="Defines percentage ceded to the reinsurer." name="CededShare" nullok="true" type="longpercentage"/>
+  <monetaryamount amountColumnName="AttachmentPoint" amountRange="nonnegative" desc="Defines the lower limit of when coverage starts. For Surplus, this is the lower limit assuming the maximum retention. Not relevant for Quota Share or Proportional Facultative" name="AttachmentPoint" nullok="true" scaleToCurrency="true"/>
+  <monetaryamount amountColumnName="CoverageLimit" amountRange="nonnegative" desc="Defines the upper bound on when coverage stops. Not relevant for Proportional Facultative." name="CoverageLimit" nullok="true" scaleToCurrency="true"/>
+  <monetaryamount amountColumnName="AmountOfCoverage" amountRange="nonnegative" desc="Defines the maximum amount that could be recovered from the agreement." name="AmountOfCoverage" nullok="true" scaleToCurrency="true"/>
+  <column desc="This is the commission that the carrier will earn from the reinsurers for sending them RI business." name="Commission" nullok="true" type="longpercentage">
+  </column>
+  <column default="0" desc="True if commission is adjusted for each participant." name="CommissionAdjusted" nullok="false" type="bit"/>
+  <typekey desc="Payable Basis" name="PayableBasis" nullok="true" typelist="PayableBasisType"/>
+  <column desc="A free form note space for the carrier to note any additional terms that are not used by the system but which are important to document to fully describe the agreement." name="Comments" nullok="true" type="longtext"/>
+  <foreignkey desc="Defines which broker (if any) helped arrange this agreement.  Useful because communications for collections, payments, etc. may be routed through the broker rather than directly to the reinsurers." fkentity="Contact" name="Broker" nullok="true"/>
+  <array arrayentity="ProgramTreaty" desc="All reinsurance programs which include this agreement." name="Programs" owner="true"/>
+  <array arrayentity="AgreementParticipant" desc="All reinsurers participate in this agreement." name="Participants" owner="true"/>
+  <array arrayentity="RIAttachmentInclusion" cascadeDelete="true" desc="The exclusions/special acceptances for attached risks." name="AttachmentInclusions"/>
+  <array arrayentity="AgreementCoverageGroup" desc="All RI coverage groups this agreement applies to." getterScriptability="doesNotExist" name="RICoverageGroups" owner="true" setterScriptability="doesNotExist"/>
+  <dbcheckbuilder className="com.guidewire.pc.domain.reinsurance.dbchecks.BoundPeriodBoundFacDBCheckBuilder"/>
+  <index desc="Index for performance of agreement search." name="agreementidx1" unique="true">
+    <indexcol keyposition="1" name="AgreementNumber"/>
+    <indexcol keyposition="2" name="Retired"/>
+  </index>
+</entity>

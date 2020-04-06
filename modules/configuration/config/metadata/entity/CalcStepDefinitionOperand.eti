@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  desc="Operand for a calculation step"
+  entity="CalcStepDefinitionOperand"
+  loadable="false"
+  subpackage="rating"
+  table="calcstepdefoperand"
+  type="retireable">
+  <implementsEntity
+    adapter="gw.rating.flow.CalcStepDefinitionOperandAdapter"
+    name="CalcStepValueDelegate"/>
+  <column
+    desc="A flag that indicates logical negation if the operand is boolean"
+    name="LogicalNot"
+    nullok="true"
+    type="bit"/>
+  <column
+    default="0"
+    desc="The sort order.  Only used for conditionals, because they are the only thing that uses multiple operands"
+    name="OperandOrder"
+    nullok="false"
+    type="integer"/>
+  <typekey
+    desc="The operator used during calculation routine."
+    name="OperatorType"
+    nullok="true"
+    typelist="CalcStepOperatorType"/>
+  <column
+    desc="If this does a table lookup, code for the table used for the lookup"
+    name="TableCode"
+    nullok="true"
+    type="shorttext"/>
+  <column
+    desc="If this does a table lookup, code for the argument source set used"
+    name="ArgumentSourceSetCode"
+    nullok="true"
+    type="shorttext"/>
+  <array
+    arrayentity="CalcStepDefinitionRateFactor"
+    cascadeDelete="true"
+    desc="The set of factor column names to return for a rate table operand.  An empty array implies returning the factor with the highest priority"
+    name="ReturnFactorColumns"
+    owner="true"/>
+  <column
+    desc="Left Parenthesis String Group"
+    name="LeftParenthesisGroup"
+    nullok="true"
+    type="shorttext"/>
+  <column
+    desc="Right Parenthesis String Group"
+    name="RightParenthesisGroup"
+    nullok="true"
+    type="shorttext"/>
+  <column
+    desc="If this does a function call, name of the function called"
+    name="FunctionName"
+    nullok="true"
+    type="shorttext"/>
+  <array
+    arrayentity="CalcStepDefinitionArgument"
+    cascadeDelete="true"
+    desc="The Argument Sources being used for this operand"
+    name="ArgumentSources"
+    owner="true"/>
+  <foreignkey
+    desc="The calculation step definition"
+    fkentity="CalcStepDefinition"
+    name="CalcStep"
+    nullok="false"/>
+  <typekey
+    desc="The rounding level of the operand, if any."
+    name="RoundingScaleType"
+    nullok="true"
+    typelist="RoundingScaleType"/>
+</entity>

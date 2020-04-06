@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <PanelSet
+    id="PolicyContactRolePanelSet"
+    mode="PolicyPriNamedInsured">
+    <Require
+      name="policyContactRole"
+      type="PolicyContactRole"/>
+    <Variable
+      initialValue="policyContactRole as PolicyPriNamedInsured"
+      name="policyNamedInsured"/>
+    <Variable
+      initialValue="policyContactRole.Branch"
+      name="period"/>
+    <Variable
+      initialValue="gw.api.util.JurisdictionMappingUtil.getJurisdiction(policyContactRole.AccountContactRole.AccountContact.Contact.PrimaryAddress)"
+      name="referenceState"
+      type="Jurisdiction"/>
+    <Variable
+      initialValue="referenceState != null ? period.getReferenceDateForCurrentJob(referenceState) : period.EditEffectiveDate"
+      name="referenceDate"
+      type="java.util.Date"/>
+    <Variable
+      initialValue="period.Job.NewTerm ? null : policyNamedInsured.BasedOn.IndustryCode"
+      name="previousIndustryCode"
+      type="IndustryCode"/>
+    <PanelRef>
+      <TitleBar
+        id="NamedInsuredTitle"
+        title="(typeof policyNamedInsured).TypeInfo.DisplayName"/>
+      <DetailViewPanel
+        id="PolicyNamedInsuredInfoDV">
+        <InputColumn>
+          <!-- IndustryCode is visible for companies on commercial policies CC-52306 -->
+          <IndustryCodeInput
+            domain="&quot;SIC&quot; as IndustryCodeType"
+            editable="true"
+            id="IndustryCode"
+            label="displaykey.Web.EditAccount.IndustryCode"
+            pickLocation="IndustryCodeSearchPopup.push(&quot;SIC&quot; as IndustryCodeType, referenceDate, previousIndustryCode)"
+            previousCode="previousIndustryCode.Code"
+            referenceDate="referenceDate"
+            value="(policyNamedInsured.AccountContactRole as NamedInsured).IndustryCode"
+            visible="policyNamedInsured.AccountContactRole.AccountContact.Company and period.Policy.Product.isContactTypeSuitableForProductAccountType(Company)"/>
+        </InputColumn>
+      </DetailViewPanel>
+    </PanelRef>
+  </PanelSet>
+</PCF>

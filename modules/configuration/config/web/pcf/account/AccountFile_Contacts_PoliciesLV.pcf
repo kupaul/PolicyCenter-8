@@ -1,0 +1,61 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    id="AccountFile_Contacts_PoliciesLV">
+    <Require
+      name="acctContact"
+      type="AccountContact"/>
+    <RowIterator
+      editable="false"
+      elementName="summary"
+      type="PolicyPeriodSummary"
+      value="acctContact.AssociatedPolicies">
+      <Variable
+        initialValue="summary.Product"
+        name="product"
+        recalculateOnRefresh="true"/>
+      <ToolbarFilter
+        hideIfEditable="true"
+        hideIfReadOnly="true"
+        name="filters">
+        <ToolbarFilterOption
+          filter="new web.policy.ViewablePolicyPeriodQueryFilter()"
+          selectOnEnter="true"/>
+      </ToolbarFilter>
+      <Row
+        useArchivedStyle="summary.TermArchived">
+        <Cell
+          action="retrievePolicy(summary)"
+          id="PolicyNumber"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.PolicyNumber"
+          sortBy="summary.PolicyNumber"
+          value="summary.PolicyNumberDisplayString"/>
+        <Cell
+          enableSort="false"
+          id="Product"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.Product"
+          value="product"/>
+        <Cell
+          enableSort="false"
+          id="Status"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.Status"
+          value="summary.PeriodDisplayStatus"/>
+        <Cell
+          id="EffectiveDate"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.EffectiveDate"
+          value="summary.PeriodStart"/>
+        <Cell
+          id="ExpirationDate"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.ExpirationDate"
+          value="summary.PeriodEnd"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[
+function retrievePolicy(summary : PolicyPeriodSummary){
+        PolicyFileForward.go(summary.PolicyNumber, summary.EditEffectiveDate)
+      }
+    ]]></Code>
+  </ListViewPanel>
+</PCF>

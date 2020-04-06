@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Forward
+    canVisit="perm.System.viewteam"
+    id="TeamForward">
+    <LocationEntryPoint
+      signature="TeamForward()"/>
+    <!-- This entry point is required to be valid TeamDataPage from TeamTreeView (see TeamMenuTree.pcf) -->
+    <LocationEntryPoint
+      signature="TeamForward(oldPage : String)"/>
+    <LocationEntryPoint
+      signature="TeamForward(oldPage : String, teamModel : team.TeamModel)"/>
+    <Variable
+      name="oldPage"
+      type="String"/>
+    <Variable
+      initialValue="new web.team.PCRootTeamModel()"
+      name="teamModel"
+      type="team.TeamModel"/>
+    <Variable
+      initialValue="teamModel as web.team.PCTeamModel"
+      name="pCTeamModel"
+      type="web.team.PCTeamModel"/>
+    <!-- Summary is valid only for groups, so the last element before Summary should check this before falling through -->
+    <ForwardCondition
+      action="TeamOtherWorkOrders.go(pCTeamModel)"
+      condition="oldPage == &quot;TeamOtherWorkOrders&quot;"/>
+    <ForwardCondition
+      action="TeamRenewals.go(pCTeamModel)"
+      condition="oldPage == &quot;TeamRenewals&quot;"/>
+    <ForwardCondition
+      action="TeamSubmissions.go(pCTeamModel)"
+      condition="oldPage == &quot;TeamSubmissions&quot;"/>
+    <ForwardCondition
+      action="TeamActivities.go(pCTeamModel)"
+      condition="oldPage == &quot;TeamActivities&quot; or not pCTeamModel.hasSummaryPage()"/>
+    <ForwardCondition
+      action="TeamSummary.go(pCTeamModel)"
+      condition="true"/>
+  </Forward>
+</PCF>

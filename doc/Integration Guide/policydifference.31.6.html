@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>APIs for Calculating Differences</title>
+    <link rel="StyleSheet" href="css/policydifference.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-forms.html#2725777">Policy-related Integrations</a> : <a class="WebWorks_Breadcrumb_Link" href="policydifference.31.1.html#2725777">Policy Difference Customization</a> : APIs for Calculating Differences</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2725777">APIs for Calculating Differences</a></h3>
+      <div class="B_-_Body"><a name="2761546">In many cases, you only need to think about how the difference calculations are triggered by built-in application logic for the two basic types of differences. However, you can trigger difference calculations by using two APIs: </a><span class="cv_-_computer_voice">getDiffItems</span> and <span class="cv_-_computer_voice">compareTo</span>. </div>
+      <div class="B_-_Body"><a name="2761547">Because there are several reasons for calculating differences, you can vary application logic based on the difference reason. Pass a </a><span class="cv_-_computer_voice">DiffReason</span> typecode to the two APIs, with values <span class="cv_-_computer_voice">TC_INTEGRATION</span>, <span class="cv_-_computer_voice">TC_MULTIVERSIONJOB</span>, <span class="cv_-_computer_voice">TC_PREEMPTION</span>, <span class="cv_-_computer_voice">TC_POLICYREVIEW</span>, <span class="cv_-_computer_voice">TC_COMPAREJOBS</span>. If needed, you can extend the <span class="cv_-_computer_voice">DiffReason</span> typelist with additional difference reasons. </div>
+      <h4 class="H2_-_Heading_2"><a name="2760928">Differences Between a Branch at its Based-on Branch</a></h4>
+      <div class="B_-_Body"><a name="2725780">You can get a list of differences between a branch and its based-on branch, which is database generated with </a><span class="cv_-_computer_voice">DiffItem</span> filtering from the policy difference plugin. This is similar to what is done for policy change. Call the <span class="cv_-_computer_voice">getDiffItems</span> method on a <span class="cv_-_computer_voice">PolicyPeriod</span> entity:</div>
+      <div class="CS_-_Code_Single_Line"><a name="2725781">myDifferences = myPolicyPeriod.</a><span class="s_-_strong">getDiffItems</span>(DiffReason.TC_INTEGRATION)</div>
+      <div class="B_-_Body"><a name="2725782">Code similar to this line might be useful for example if you write integration messaging code to keep an external system notified of the changes from Policy Change jobs. You might also use this approach to compare a renewal with the period it was based on. (Although for renewals in some edge cases you might want to use the other approach.)</a></div>
+      <h4 class="H2_-_Heading_2"><a name="2760940">Differences Between any Two Branches</a></h4>
+      <div class="B_-_Body"><a name="2725784">You can get a list of differences between any two branches in the same period, similar to what is done in multi-version user interface. Call the </a><span class="cv_-_computer_voice">compareTo</span> method on a <span class="cv_-_computer_voice">PolicyPeriod</span> entity and pass it another <span class="cv_-_computer_voice">PolicyPeriod</span> entity:</div>
+      <div class="CS_-_Code_Single_Line"><a name="2725785">myDifferences = myPolicyPeriod.</a><span class="s_-_strong">compareTo</span>(DiffReason.TC_MULTIVERSIONJOB, anotherPolicyPeriod)</div>
+      <div class="B_-_Body"><a name="2725786">Code similar to this might be useful for example if you write new PCF code to compare arbitrary revisions, or perhaps a web service that compares two policy periods.</a></div>
+      <div class="B_-_Body"><a name="2702905">&nbsp;</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

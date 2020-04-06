@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Screen
+    id="UWAuthorityProfileDetailScreen">
+    <Require
+      name="profile"
+      type="UWAuthorityProfile"/>
+    <Variable
+      initialValue="new gw.web.admin.UWAuthorityProfileDetailUIHelper(profile)"
+      name="uiHelper"/>
+    <Toolbar>
+      <EditButtons
+        editVisible="true"/>
+    </Toolbar>
+    <DetailViewPanel
+      id="ProfileDetailDV">
+      <InputColumn>
+        <Label
+          label="displaykey.Web.Admin.UWAuthorityProfileDetailScreen.Profile"/>
+        <Input
+          editable="true"
+          id="Name"
+          label="displaykey.Web.Admin.UWAuthorityProfileDetailScreen.Name"
+          required="true"
+          value="profile.Name"/>
+        <TextAreaInput
+          editable="true"
+          id="Description"
+          label="displaykey.Web.Admin.UWAuthorityProfileDetailScreen.ProfileDescription"
+          numRows="3"
+          value="profile.Description"/>
+        <ListViewInput
+          boldLabel="true"
+          label="displaykey.Web.Admin.UWAuthorityProfileDetailScreen.AuthorityGrants"
+          labelAbove="true">
+          <Toolbar>
+            <IteratorButtons
+              iterator="AuthorityGrantsLV"/>
+          </Toolbar>
+          <ListViewPanel
+            id="AuthorityGrantsLV">
+            <RowIterator
+              editable="true"
+              elementName="originalGrant"
+              hasCheckBoxes="true"
+              hideCheckBoxesIfReadOnly="true"
+              toAdd="profile.addToGrants(originalGrant)"
+              toRemove="profile.removeFromGrants(originalGrant)"
+              value="profile.Grants">
+              <Variable
+                name="grantTypeModelValue"
+                type="String"/>
+              <Variable
+                initialValue="new gw.web.community.UWAuthorityGrantUIWrapper(originalGrant)"
+                name="grant"/>
+              <Row>
+                <PickerCell
+                  conversionExpression="PickedValue.Code"
+                  editable="grant.IssueTypeAsString == null"
+                  id="Type"
+                  inputConversion="grantTypeModelValue = VALUE; return VALUE"
+                  label="displaykey.Web.Admin.UWAuthorityProfileDetailScreen.Type"
+                  outputConversion="VALUE == null ? &quot;&quot; : VALUE"
+                  pickLocation="UWIssueTypeSearchPopup.push(profile.Grants.map(\g -&gt; g.IssueType).toSet(), grantTypeModelValue)"
+                  required="true"
+                  sortOrder="1"
+                  unique="true"
+                  value="grant.IssueTypeAsString">
+                  <PostOnChange
+                    onChange="uiHelper.updateValueAndCurrency(grant)"/>
+                </PickerCell>
+                <RangeCell
+                  editable="uiHelper.requiresValue(grant.IssueType)"
+                  id="ComparisonType"
+                  label="displaykey.Web.Admin.UWAuthorityProfileDetailScreen.Comparison"
+                  value="grant.ComparisonType"
+                  valueRange="uiHelper.validComparisonTypes(grant.IssueType)">
+                  <PostOnChange
+                    onChange="uiHelper.updateValueAndCurrency(grant)"/>
+                </RangeCell>
+                <Cell
+                  editable="grant.IssueType != null and grant.IssueType.Comparator != &quot;None&quot; and grant.ComparisonType != &quot;Any&quot;"
+                  id="Value"
+                  label="displaykey.Web.Admin.UWAuthorityProfileDetailScreen.Value"
+                  requestValidationExpression="grant.validate(VALUE)"
+                  required="true"
+                  value="grant.Value">
+                  <PostOnChange/>
+                </Cell>
+                <RangeCell
+                  editable="uiHelper.requiresCurrency(grant.ComparisonType)"
+                  id="Currency"
+                  label="displaykey.Web.Admin.UWAuthorityProfileDetailScreen.Currency"
+                  value="grant.Currency"
+                  valueRange="Currency.getTypeKeys(false)"
+                  visible="uiHelper.shouldDisplayCurrencyColumn()">
+                  <PostOnChange/>
+                </RangeCell>
+                <Cell
+                  id="Description"
+                  label="displaykey.Web.Admin.UWAuthorityProfileDetailScreen.Description"
+                  value="grant.IssueType.Description"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </ListViewInput>
+      </InputColumn>
+    </DetailViewPanel>
+    <PanelRef
+      def="LocalizedValuesDV(profile, { &quot;Name&quot;, &quot;Description&quot;}, { displaykey.Web.Admin.UWAuthorityProfileDetailScreen.Name, displaykey.Web.Admin.UWAuthorityProfileDetailScreen.ProfileDescription })"/>
+    <Code><![CDATA[uses gw.api.util.CurrencyUtil
+uses gw.web.community.UWAuthorityGrantUIWrapper
+
+]]></Code>
+  </Screen>
+</PCF>

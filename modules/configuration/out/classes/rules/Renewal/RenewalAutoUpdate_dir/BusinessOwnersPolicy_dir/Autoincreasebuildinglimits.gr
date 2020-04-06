@@ -1,0 +1,32 @@
+package rules.Renewal.RenewalAutoUpdate_dir.BusinessOwnersPolicy_dir
+
+@gw.rules.RuleName("Auto-increase building limits")
+internal class Autoincreasebuildinglimits {
+  static function doCondition(policyPeriod : entity.PolicyPeriod) : boolean {
+    
+/*start00rule*/
+return policyPeriod.BOPLineExists
+/*end00rule*/
+
+  }
+
+  static function doAction(policyPeriod : entity.PolicyPeriod, actions : gw.rules.Action) {
+
+/*start00rule*/
+for (bld in policyPeriod.BOPLine.BOPLocations*.Buildings) {
+  if (bld.BOPBuildingCov != null) {
+    var increase = bld.BOPBuildingCov.BOPBldgAnnualIncreaseTerm.Value
+    if (increase <> 0) {
+      bld.BOPBuildingCov.BOPBldgLimTerm.Value =
+         bld.BOPBuildingCov.BOPBldgLimTerm.Value * (1 + (increase/100))
+      if (bld.BOPPersonalPropCov != null) {
+        bld.BOPPersonalPropCov.BOPBPPBldgLimTerm.Value =
+           bld.BOPPersonalPropCov.BOPBPPBldgLimTerm.Value * (1 + (increase/100))
+      }
+    }
+  }
+}
+/*end00rule*/
+
+  }
+}

@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    id="JobsLV">
+    <ExposeIterator
+      flags="job"
+      valueType="entity.Job"
+      widget="JobsLV"/>
+    <Require
+      name="jobs"
+      type="Job[]"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <RowIterator
+      checkBoxVisible="!job.SelectedVersion.PolicyTerm.Archived"
+      editable="false"
+      elementName="job"
+      hasCheckBoxes="true"
+      value="jobs">
+      <ToolbarFlag
+        name="job"/>
+      <Row
+        highlighted="job.ResultingBoundPeriod == policyPeriod"
+        useArchivedStyle="job.SelectedVersion.PolicyTerm.Archived">
+        <Cell
+          id="Type"
+          label="displaykey.Web.Job.Type"
+          value="job.DisplayType"/>
+        <DateCell
+          id="EffectiveDate"
+          label="displaykey.Web.Job.EffectiveDate"
+          sortBy="job.LatestPeriod.EditEffectiveDate, job.CreateTime"
+          sortDirection="descending"
+          sortOrder="1"
+          value="job.LatestPeriod.EditEffectiveDate"/>
+        <Cell
+          id="Status"
+          label="displaykey.Web.Job.Status"
+          value="job.DisplayStatus"/>
+        <Cell
+          id="PeriodStatus"
+          label="displaykey.Web.Job.PeriodDisplayStatus"
+          value="job.LatestPeriod.PeriodDisplayStatus"/>
+      </Row>
+    </RowIterator>
+  </ListViewPanel>
+</PCF>

@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Implementing Rating for a New Line of Business</title>
+    <link rel="StyleSheet" href="css/rating-external.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-forms.html#3048160">Policy-related Integrations</a> : <a class="WebWorks_Breadcrumb_Link" href="rating-external.28.01.html#3048160">Rating Integration</a> : Implementing Rating for a New Line of Business</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="3048160">Implementing Rating for a New Line of Business</a></h3>
+      <div class="B_-_Body"><a name="3070266">If you use the pattern of the built-in default rating engine, your main task is to modify the built-in rating engine classes or write your own one based on </a><span class="cv_-_computer_voice">AbstractRatingEngine</span>. The plugin contains the code that actually instantiates the rating engine objects. If you make your own rating engine subclasses, be sure to modify the rating plugin to create the correct rating engine subclass based on the line of business. This topic goes into further detail about what cost data objects and how to subclass <span class="cv_-_computer_voice">AbstractRatingEngine</span>.</div>
+      <div class="B_-_Body"><a name="3070270">As described in more detail in </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.05.html#3002871', '');" title="Where to Override the Default Rating Engine?">“Where to Override the Default Rating Engine?”</a>, the easiest approach is to use the built-in structure of <span class="cv_-_computer_voice">CostData</span> subclasses rather than directly producing <span class="cv_-_computer_voice">Cost</span> entities. </div>
+      <div class="B_-_Body"><a name="3070327">Your rating code can split, merge, prorate, and sum these </a><span class="cv_-_computer_voice">CostData</span> objects until your rating calculations finish. At that point, a built-in method of the <span class="cv_-_computer_voice">AbstractRatingEngine</span> class takes the list of <span class="cv_-_computer_voice">CostData</span> objects that each rating engine produces and compares them with what is in the database. This code alters the <span class="cv_-_computer_voice">Cost</span> entity instances in the database for this line of business. This code may do some combination of adding, modifying, splitting, and removing cost entity instances as appropriate. This is difficult code to write safely, and hence the benefit in abstracting the costs into the cost data objects. </div>
+      <div class="B_-_Body"><a name="2983408">Most built-in rating engine subclasses (although not all) implement rating using the following algorithm, implemented in part by the </a><span class="cv_-_computer_voice">AbstractRatingEngine</span> class:</div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2990191">Find all dates on which anything changes in the branch. In other words, find any entity that starts or ends in effective time. The </a><span class="cv_-_computer_voice">AbstractRatingEngine</span> class constructor implements this and sets the internal instance variable <span class="cv_-_computer_voice">_effectiveDates</span>. The method <span class="cv_-_computer_voice">rateSlice</span> uses this information variable’s contents. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2990192">At each of those dates, traverse down the tree (graph). As the code traverses down the tree, it produces costs for everything that can be rated in </a><span class="e_-_emphasis">slice mode</span>. Slice mode changes includes the common things like personal auto coverage and building costs. The resulting costs are not prorated and span from the slice date to the next slice date. The <span class="cv_-_computer_voice">AbstractRatingEngine</span> class method <span class="cv_-_computer_voice">rateSlice</span> implements this. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2983412">The rating engine rates each slice-mode cost. The </a><span class="cv_-_computer_voice">AbstractRatingEngine</span> class method <span class="cv_-_computer_voice">rateSlice</span> implements this. Your rating engine can override this method to rate each slice.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2986229">The rating engine merges back together any costs that are adjacent in effective time and which are equivalent, which means they have the same rates. There are methods in the base class </a><span class="cv_-_computer_voice">AbstractRatingEngine</span> that perform this task.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2983413">Your rating engine prorates costs that do not yet have an actual amount in the </a><span class="cv_-_computer_voice">ActualAmount</span> property.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2983414">Rate window-mode costs (like discounts and taxes) that might depend on sums of the prior costs</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	7.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2983415">Take the resulting set of cost data objects and adjust </a><span class="cv_-_computer_voice">Cost</span> rows in the database to match them </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2983417">This approach is used by all built-in rating engines other than the built-in workers’ compensation rating engine.</a></div>
+      <div class="B_-_Body"><a name="2985954">You could describe this approach as rating down each slice and then merging costs back together. Think of this as the down-each-slice-and-merge approach. A theoretical alternative is to find all effective-dated split dates, or at least all relevant splits (this would be harder to determine). Next, rate across each object, such as a vehicle or coverage, calculating rates at each relevant point and then splitting off new </a><span class="cv_-_computer_voice">CostData</span> rows when the rates change. Such an approach avoids the need to remerge costs back together. However, it is more difficult to write easy-to-improve and easy-to-maintain code using this approach. As a result, PolicyCenter takes the down-each-slice-and-merge approach instead of the across-each-object-and-split-on-differences approach.</div>
+      <div class="B_-_Body"><a name="2989050">The logic for rating each particular type of object tends to share a common pattern. For </a><span class="e_-_emphasis">rate-scalable</span> types, the computation usually looks like:</div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2989051">Set the base rate to the result of some lookup </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2989052">The lookup result might be based on coverage terms, date, state</a></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2989046">Set the adjusted rate to the base rate multiplied by various other factors </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="2989047">The other factors might include the underwriting company, driver ages, vehicle cost, and modifiers</a></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2984186">Set the term amount to the adjusted rate multiplied by the basis (the basis typically is 1)</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2984187">Set the </a><span class="e_-_emphasis">amount</span> to the value of the formula:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><a name="2990277">&nbsp;&nbsp;&nbsp;(</a><span class="pc_-_parameter_in_code">the_term_amount</span>) * (<span class="pc_-_parameter_in_code">number_of_days_this_cost_spans</span> / <span class="pc_-_parameter_in_code">number_of_days_the_rates_are_for</span>)</div>
+      <div class="LP_-_List_Para"><a name="3070451">The amount computation happens during the proration phase mentioned above, not during the actual initial rating. For basis-scalable costs, the algorithm is similar. However, the basis is generally not 1 and the rating engine simply sets the amount to the term amount rather than prorated based on time.</a></div>
+      <div class="B_-_Body"><a name="3070454">For more information about rating integration strategy possibilities, see </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.05.html#3002871', '');" title="Where to Override the Default Rating Engine?">“Where to Override the Default Rating Engine?”</a>. For details of writing your rating algorithm, including why and how to use standard entities for table lookups, see <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.16.html#3060174', '');" title="Writing Your Own Line-specific Rating Engine Subclass">“Coding Your Actual Rating Algorithm”</a>.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

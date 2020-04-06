@@ -1,0 +1,194 @@
+<script src="../resources/javascript/adapter/ext/UmlCanvas.standalone.min.tacod.js"></script>
+<!--<script type="text/javascript" src="../resources/javascript/adapter/ext/UMLCanvas.src/examples/includes.js"></script>-->
+<!--<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.6.1/jquery.min.js"></script>-->
+<script language="javascript">
+  var iter=0;
+  var maxx = 25;
+  var maxy = -40;
+  var currLvl = 0;
+  function classGetter(className, str, begin, end){
+            var tmp = className;
+            if (str.indexOf(tmp) != (-1)){
+                var twoChar = "  ";
+                while (twoChar != begin){
+                    tmp = str[str.indexOf(tmp) -1] + tmp;
+                    twoChar = tmp[0] + tmp[1];
+                }
+            twoChar = "  ";
+            while (twoChar != end) {
+                tmp += str[str.indexOf(tmp)+tmp.length];
+                twoChar = tmp[tmp.length -2]+tmp[tmp.length -1];}
+            } else {
+                tmp = "undefined"
+            }
+            return tmp;
+    }
+  function newXMLHttpRequest() {
+    var xmlreq = false;
+    if (window.XMLHttpRequest) {
+        xmlreq = new XMLHttpRequest();
+    } else if (window.ActiveXObject) {
+        try {
+            xmlreq = new ActiveXObject("Msxml2.XMLHTTP");
+        } catch (e1) {
+            try {
+                xmlreq = new ActiveXObject("Microsoft.XMLHTTP");
+            } catch (e2) {
+          }
+        }
+    }
+    return xmlreq;
+  }
+  function makeADLClass(str, levl){
+      var curr = document.getElementById("UC_editor_for_entityDiagram").value;
+      var classIDfier="class "+str.toUpperCase()+" ";
+          if (curr.indexOf(classIDfier)== -1) {
+              if (levl ==currLvl){
+                  maxy+=70;
+              } else {
+                  maxx+=200;
+                  maxy=70 + levl*40;
+                  currLvl = levl;
+              }
+                  var tmp = curr.substring(0,32) + "[@" + (maxx) + ","+(maxy) + "]\n"+ classIDfier + " { }\n";
+                  tmp+=curr.substring(32, curr.length);//"Magic numbers" are for formatting :-)*/
+                  document.getElementById("UC_editor_for_entityDiagram").value = tmp;
+                  iter++;
+          } else {
+              if (levl==0 && currLvl == 1){
+                  currLvl = 0;
+              }
+          }
+  }
+
+  function makeLink(from, to, type){
+      var curr = document.getElementById("UC_editor_for_entityDiagram").value;
+      var newLink = "association "+from.toUpperCase()+"to"+to.toUpperCase();
+      var orient = "";
+      switch (type){
+          case ("Subtype") : newLink+="Subtype"; orient="[@corner:sw-w]\n"; break;
+          case ("ForeignKey") : newLink+="FK"; orient="[@corner:ne-nw]\n"; break;
+          case ("Array") : newLink+="Array"; orient="[@corner:se-sw]\n"; break;
+      }
+      newLink=orient+newLink+"{\nrole _ : "+from.toUpperCase()+";\nrole _ : "+to.toUpperCase()+"+navigable; }\n";
+      if ((newLink.indexOf("association {") == -1) && (curr.indexOf(newLink)==-1)){
+          var tmp = curr.substring(0, curr.length-2);
+          tmp+=newLink;
+          tmp+="}";
+          document.getElementById("UC_editor_for_entityDiagram").value = tmp;
+      }
+  }
+
+  function makeLinks(origin, subs, levl) {
+      for (var i = 0; i < subs.length; i++) {
+          var item = subs[i].getAttribute("pointsTo");
+          makeADLClass(item, levl);
+          makeLink(subs[i].getAttribute("pointsFrom"), item, subs[i].getAttribute("type"));
+      }
+  }
+
+  function writer(str) {
+      var allEnts = str.responseXML.getElementsByTagName("entity");
+      for (var j=0; j<allEnts.length; j++){
+          var lang=allEnts[j];
+          if (lang!=null){
+              var origin = lang.getAttribute("name");
+              var links = lang.getElementsByTagName("link");
+              var atts = lang.getElementsByTagName("attribute");
+              var curr = document.getElementById("UC_editor_for_entityDiagram").value;
+
+              makeADLClass(origin, lang.getAttribute("level"));
+              makeLinks(origin, links, lang.getAttribute("level")+1);
+              iter=0;
+
+          }
+      }
+      if (currLvl ==0){currLvl++;}
+  }
+
+
+  function getMyInfo() {
+      var ajaxRequest;
+      var gosuServerURL = "foo";
+      ajaxRequest = newXMLHttpRequest();
+      ajaxRequest.onreadystatechange = function(){
+
+          if (ajaxRequest.readyState==4)
+
+          if (ajaxRequest.status == 200){
+              alert(ajaxRequest.responseXML);
+              writer(ajaxRequest);
+          } else {
+                  alert("Yeah, I don't think so. HTTP Error "+ajaxRequest.statusText);
+              }
+      };//getReadyStateHandler;
+      /*ajaxRequest.onerror = function (event) {
+          console.log(event.target);
+      }*/
+      ajaxRequest.open("POST", gosuServerURL, true);
+      ajaxRequest.setRequestHeader("Content-Type",
+                           "application/x-www-form-urlencoded");
+      var buttonVals=["fk","arr","sub","tk","col"];
+      var awkwardString = "";
+      for (var i=0;i<buttonVals.length;i++){
+          var item=buttonVals[i];
+          awkwardString += "&"+item+"="+document.getElementById(item).checked;
+      }
+                          /*
+      $.ajax(gosuServerURL + "?blarg=0", {
+            type : "POST",
+            data : "var=" + document.getElementById("in").value + "&lvl=" +document.getElementById("levels").value + awkwardString,
+            error : function (response, status, error) {
+               console.log("ERROR!!! ",status, error);
+            },
+            success : function (data) {
+                console.log(data);
+            }            });   */
+
+
+     ajaxRequest.send("var=" + document.getElementById("in").value + "&lvl=" +document.getElementById("levels").value + awkwardString);
+  }
+   /*
+  function getReadyStateHandler() {
+      if (ajaxRequest.readyState == 4) {
+          alert(ajaxRequest.status);
+
+          if (ajaxRequest.status == 200) {
+                writer(ajaxRequest);}
+             else {
+                //alert("HTTP error: "+ajaxRequest.status);
+            }
+        }
+      console.log(ajaxRequest);
+
+  }  */
+
+    function clean(){
+        document.getElementById('UC_editor_for_entityDiagram').value = 'diagram entityDiagram +dynamic{ }';
+        maxx = 25;
+        maxy = -40;
+        iter=0;
+        currLvl = 0;
+    }
+
+</script>
+<input id="in" type="text" value="disbursement"/>
+<button id="xyz" onclick="getMyInfo();">Display</button>
+<button id="cleanup" onclick="clean()">Cleanup</button>
+<br><input type="checkbox" id="fk" value="fk" checked>Foreign keys?
+    <input type="checkbox" id="arr" value="arr" checked> Arrays?
+    <input type="checkbox" id="sub" value="sub" checked>Subtypes?
+    <input type="checkbox" id="tk" value="tk" checked>Typekeys?
+    <input type="checkbox" id="col" value="col" checked>Columns?
+    <select id="levels"><option value="1">1</option><option value="2">2</option><option value="3">3</option>
+        <option value ="3">If you want more than 3 you won't be able to read it. :)</option> </select>
+    <br>
+
+<canvas id="entityDiagram" width=1500 height=2000 class="UmlCanvas">Hey--bad js!</canvas>
+<textarea id="UC_editor_for_entityDiagram" style="display:none">diagram entityDiagram +dynamic{ }</textarea>
+<!--<form action="localhost:8580/bc/service/foo" method="post"> -->
+
+<!--    <textarea id="fifteen"></textarea>
+   <textarea id="sixteen"></textarea>
+    -->
+<!-- </form> -->

@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <groupId>com.guidewire.build</groupId>
+  <artifactId>idea-maven-plugin</artifactId>
+  <version>0.12.0</version>
+  <packaging>maven-plugin</packaging>
+
+  <name>Guidewire IDEA project generator Maven plugin</name>
+
+  <prerequisites>
+    <maven>3.0.4</maven>
+  </prerequisites>
+
+  <organization>
+    <name>Guidewire, Inc.</name>
+    <url>http://guidewire.com</url>
+  </organization>
+
+  <licenses>
+    <license>
+      <name>Guidewire proprietary license</name>
+    </license>
+  </licenses>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+  </properties>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-core</artifactId>
+      <version>3.0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.plugin-tools</groupId>
+      <artifactId>maven-plugin-annotations</artifactId>
+      <version>3.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.apache.maven.shared</groupId>
+      <artifactId>maven-common-artifact-filters</artifactId>
+      <version>1.4</version>
+    </dependency>
+    <dependency>
+      <groupId>com.google.guava</groupId>
+      <artifactId>guava</artifactId>
+      <version>12.0</version>
+    </dependency>
+    <dependency>
+      <groupId>org.antlr</groupId>
+      <artifactId>stringtemplate</artifactId>
+      <version>4.0.2</version>
+    </dependency>
+  </dependencies>
+
+  <scm>
+    <developerConnection>scm:git:git@gh:build/idea-maven-plugin.git</developerConnection>
+    <connection>scm:git://gh/build/idea-maven-plugin</connection>
+    <tag>idea-maven-plugin-0.12.0</tag>
+  </scm>
+
+  <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.apache.maven.plugins</groupId>
+          <artifactId>maven-plugin-plugin</artifactId>
+          <version>3.2</version>
+          <executions>
+            <execution>
+              <!-- Override default mapping -->
+              <id>default-descriptor</id>
+              <phase>process-classes</phase>
+            </execution>
+            <execution>
+              <id>generated-helpmojo</id>
+              <phase>process-classes</phase>
+              <goals>
+                <goal>helpmojo</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+        <plugin>
+          <artifactId>maven-release-plugin</artifactId>
+          <version>2.3.2</version>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+    <plugins>
+      <plugin>
+        <artifactId>maven-invoker-plugin</artifactId>
+        <version>1.6</version>
+        <configuration>
+          <localRepositoryPath>${project.build.directory}/local-repo</localRepositoryPath>
+          <settingsFile>src/it/settings.xml</settingsFile>
+          <showErrors>true</showErrors>
+          <cloneProjectsTo>${project.build.directory}/it</cloneProjectsTo>
+          <cloneClean>true</cloneClean>
+          <goals>
+            <goal>verify</goal>
+          </goals>
+        </configuration>
+        <executions>
+          <execution>
+            <id>integration-test</id>
+            <goals>
+              <goal>install</goal>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-plugin-plugin</artifactId>
+        <version>3.2</version>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <distributionManagement>
+    <repository>
+      <id>gw.releases.build</id>
+      <url>http://nexus/content/repositories/releases/</url>
+      <name>Guidewire internal releases repository</name>
+    </repository>
+    <snapshotRepository>
+      <id>gw.snapshots.build</id>
+      <url>http://nexus/content/repositories/snapshots/</url>
+      <name>Guidewire internal snapshots repository</name>
+    </snapshotRepository>
+  </distributionManagement>
+</project>

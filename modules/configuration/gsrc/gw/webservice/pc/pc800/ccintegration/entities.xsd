@@ -1,0 +1,624 @@
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+           xmlns:gw="http://guidewire.com/xsd"
+           xmlns:tns="http://guidewire.com/pc/ccintegration"
+           elementFormDefault="qualified"
+           targetNamespace="http://guidewire.com/pc/ccintegration">
+
+  <xs:element name="Envelope">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:choice maxOccurs="unbounded" minOccurs="0">
+          <xs:element name="CCAddress" type="tns:CCAddress"/>
+          <xs:element name="CCBuilding" type="tns:CCBuilding"/>
+          <xs:element name="CCClassCode" type="tns:CCClassCode"/>
+          <xs:element name="CCContact" type="tns:CCContact"/>
+          <xs:element name="CCPolicyLocation" type="tns:CCPolicyLocation"/>
+          <xs:element name="CCPropertyOwner" type="tns:CCPropertyOwner"/>
+        </xs:choice>
+        <xs:element name="CCPolicy" type="tns:CCPolicy"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="StringArray">
+    <xs:sequence>
+      <xs:element name="Entry" minOccurs="0" maxOccurs="unbounded" type="xs:string"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:element name="Summaries">
+    <xs:complexType>
+      <xs:sequence>
+        <xs:element name="Entry" minOccurs="0" maxOccurs="unbounded" type="tns:CCPolicySummary"/>
+      </xs:sequence>
+    </xs:complexType>
+  </xs:element>
+
+  <xs:complexType name="CCPCFilteringCriteria">
+    <xs:sequence>
+      <xs:element name="DriverLastNames" minOccurs="0" type="tns:StringArray"/>
+      <xs:element name="LicensePlates" minOccurs="0" type="tns:StringArray"/>
+      <xs:element name="PolicySystemIDs" minOccurs="0" type="tns:StringArray"/>
+      <xs:element name="PostalCodes" minOccurs="0" type="tns:StringArray"/>
+      <xs:element name="VINS" minOccurs="0" type="tns:StringArray"/>
+    </xs:sequence>
+  </xs:complexType>
+
+  <xs:complexType name="CCPersonVendor">
+    <xs:complexContent>
+      <xs:extension base="tns:CCPerson">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCAdjudicator">
+    <xs:complexContent>
+      <xs:extension base="tns:CCPerson">
+        <xs:attribute name="AdjudicativeDomain" use="optional" type="xs:string"/>
+        <xs:attribute name="AdjudicatorLicense" use="optional" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCCompanyVendor">
+    <xs:complexContent>
+      <xs:extension base="tns:CCCompany">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCCompany">
+    <xs:complexContent>
+      <xs:extension base="tns:CCContact">
+        <xs:sequence>
+          <xs:element name="Case" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCContact"/>
+          <xs:element name="Employees" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCPerson"/>
+          <xs:element name="Thirdpartyinsured" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCContact"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCPerson">
+    <xs:complexContent>
+      <xs:extension base="tns:CCContact">
+        <xs:sequence>
+          <xs:element name="Employer" minOccurs="0" type="xs:IDREF" gw:itype="CCCompany"/>
+          <xs:element name="Guardian" minOccurs="0" type="xs:IDREF" gw:itype="CCPerson"/>
+          <xs:element name="Wards" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCPerson"/>
+        </xs:sequence>
+        <xs:attribute name="CellPhoneCountry" use="optional" type="xs:string"/>
+        <xs:attribute name="CellPhone" use="optional" type="xs:string"/>
+        <xs:attribute name="CellPhoneExtension" use="optional" type="xs:string"/>
+        <xs:attribute name="DateOfBirth" use="optional" type="xs:dateTime" gw:type="java.util.Date"/>
+        <xs:attribute name="FirstName" use="optional" type="xs:string"/>
+        <xs:attribute name="FirstNameKanji" use="optional" type="xs:string"/>
+        <xs:attribute name="FormerName" use="optional" type="xs:string"/>
+        <xs:attribute name="Gender" use="optional" type="xs:string"/>
+        <xs:attribute name="LastName" use="optional" type="xs:string"/>
+        <xs:attribute name="LastNameKanji" use="optional" type="xs:string"/>
+        <xs:attribute name="LicenseNumber" use="optional" type="xs:string"/>
+        <xs:attribute name="LicenseState" use="optional" type="xs:string"/>
+        <xs:attribute name="MaritalStatus" use="optional" type="xs:string"/>
+        <xs:attribute name="MiddleName" use="optional" type="xs:string"/>
+        <xs:attribute name="NumDependents" use="optional" type="xs:int"/>
+        <xs:attribute name="NumDependentsU18" use="optional" type="xs:int"/>
+        <xs:attribute name="NumDependentsU25" use="optional" type="xs:int"/>
+        <xs:attribute name="Occupation" use="optional" type="xs:string"/>
+        <xs:attribute name="Particle" use="optional" type="xs:string"/>
+        <xs:attribute name="Prefix" use="optional" type="xs:string"/>
+        <xs:attribute name="Suffix" use="optional" type="xs:string"/>
+        <xs:attribute name="TaxFilingStatus" use="optional" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCLegalVenue">
+    <xs:complexContent>
+      <xs:extension base="tns:CCPlace">
+        <xs:attribute name="VenueType" use="optional" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCPlace">
+    <xs:complexContent>
+      <xs:extension base="tns:CCContact">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCAddress">
+    <xs:attribute name="AddressBookUID" use="optional" type="xs:string"/>
+    <xs:attribute name="AddressLine1" use="optional" type="xs:string"/>
+    <xs:attribute name="AddressLine1Kanji" use="optional" type="xs:string"/>
+    <xs:attribute name="AddressLine2" use="optional" type="xs:string"/>
+    <xs:attribute name="AddressLine2Kanji" use="optional" type="xs:string"/>
+    <xs:attribute name="AddressLine3" use="optional" type="xs:string"/>
+    <xs:attribute name="AddressType" use="optional" type="xs:string"/>
+    <xs:attribute name="City" use="optional" type="xs:string"/>
+    <xs:attribute name="CityKanji" use="optional" type="xs:string"/>
+    <xs:attribute name="Country" use="optional" type="xs:string"/>
+    <xs:attribute name="County" use="optional" type="xs:string"/>
+    <xs:attribute name="Description" use="optional" type="xs:string"/>
+    <xs:attribute name="HTMID" use="optional" type="xs:decimal"/>
+    <xs:attribute name="PostalCode" use="optional" type="xs:string"/>
+    <xs:attribute name="CEDEX" use="optional" type="xs:boolean"/>
+    <xs:attribute name="CEDEXBureau" use="optional" type="xs:string"/>
+    <xs:attribute name="State" use="optional" type="xs:string"/>
+    <xs:attribute name="ValidUntil" use="optional" type="xs:dateTime" gw:type="java.util.Date"/>
+    <xs:attribute name="ID" type="xs:ID"/>
+  </xs:complexType>
+  <xs:complexType name="CCContactAddress">
+    <xs:sequence>
+      <xs:element name="Address" minOccurs="0" type="xs:IDREF" gw:itype="CCAddress"/>
+    </xs:sequence>
+    <xs:attribute name="AddressBookUID" use="optional" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="CCOfficialID">
+    <xs:attribute name="OfficialIDInsuredAndType" use="optional" type="xs:string"/>
+    <xs:attribute name="OfficialIDType" use="optional" type="xs:string"/>
+    <xs:attribute name="OfficialIDValue" use="optional" type="xs:string"/>
+    <xs:attribute name="State" use="optional" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="CCContact">
+    <xs:sequence>
+      <xs:element name="AllAddresses" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCAddress"/>
+      <xs:element name="ContactAddresses" minOccurs="0" maxOccurs="unbounded" type="tns:CCContactAddress"/>
+      <xs:element name="ContactCompany" minOccurs="0" type="xs:IDREF" gw:itype="CCCompany"/>
+      <xs:element name="OfficialIDs" minOccurs="0" maxOccurs="unbounded" type="tns:CCOfficialID"/>
+      <xs:element name="PrimaryAddress" minOccurs="0" type="xs:IDREF" gw:itype="CCAddress"/>
+      <xs:element name="PrimaryContact" minOccurs="0" type="xs:IDREF" gw:itype="CCContact"/>
+    </xs:sequence>
+    <xs:attribute name="ID" type="xs:ID"/>
+    <xs:attribute name="AddressBookUID" use="optional" type="xs:string"/>
+    <xs:attribute name="BureauIDOfficialID" use="optional" type="xs:string"/>
+    <xs:attribute name="DOLIDOfficialID" use="optional" type="xs:string"/>
+    <xs:attribute name="DUNSOfficialID" use="optional" type="xs:string"/>
+    <xs:attribute name="EmailAddress1" use="optional" type="xs:string"/>
+    <xs:attribute name="EmailAddress2" use="optional" type="xs:string"/>
+    <xs:attribute name="FEINOfficialID" use="optional" type="xs:string"/>
+
+    <xs:attribute name="FaxPhoneCountry" use="optional" type="xs:string"/>
+    <xs:attribute name="FaxPhone" use="optional" type="xs:string"/>
+    <xs:attribute name="FaxPhoneExtension" use="optional" type="xs:string"/>
+    <xs:attribute name="HomePhoneCountry" use="optional" type="xs:string"/>
+    <xs:attribute name="HomePhone" use="optional" type="xs:string"/>
+    <xs:attribute name="HomePhoneExtension" use="optional" type="xs:string"/>
+    <xs:attribute name="NCCIIDOfficialID" use="optional" type="xs:string"/>
+    <xs:attribute name="Name" use="optional" type="xs:string"/>
+    <xs:attribute name="NameKanji" use="optional" type="xs:string"/>
+    <xs:attribute name="Notes" use="optional" type="xs:string"/>
+    <xs:attribute name="OrganizationType" use="optional" type="xs:string"/>
+    <xs:attribute name="PolicySystemID" use="optional" type="xs:string"/>
+    <xs:attribute name="Preferred" use="optional" type="xs:boolean"/>
+    <xs:attribute name="PreferredCurrency" use="optional" type="xs:string"/>
+    <xs:attribute name="PrimaryLanguage" use="optional" type="xs:string"/>
+    <xs:attribute name="PrimaryPhone" use="optional" type="xs:string"/>
+    <xs:attribute name="Score" use="optional" type="xs:int"/>
+    <xs:attribute name="SSNOfficialID" use="optional" type="xs:string"/>
+    <xs:attribute name="STAXOfficialID" use="optional" type="xs:string"/>
+    <xs:attribute name="STUNOfficialID" use="optional" type="xs:string"/>
+    <xs:attribute name="SpecialtyType" use="optional" type="xs:string"/>
+    <xs:attribute name="TUNSOfficialID" use="optional" type="xs:string"/>
+    <xs:attribute name="TaxID" use="optional" type="xs:string"/>
+    <xs:attribute name="TaxStatus" use="optional" type="xs:string"/>
+    <xs:attribute name="VendorNumber" use="optional" type="xs:string"/>
+    <xs:attribute name="VendorType" use="optional" type="xs:string"/>
+    <xs:attribute name="W9Received" use="optional" type="xs:boolean"/>
+    <xs:attribute name="W9ReceivedDate" use="optional" type="xs:dateTime" gw:type="java.util.Date"/>
+    <xs:attribute name="W9ValidFrom" use="optional" type="xs:dateTime" gw:type="java.util.Date"/>
+    <xs:attribute name="W9ValidTo" use="optional" type="xs:dateTime" gw:type="java.util.Date"/>
+    <xs:attribute name="WithholdingRate" use="optional" type="xs:decimal"/>
+    <xs:attribute name="WorkPhoneCountry" use="optional" type="xs:string"/>
+    <xs:attribute name="WorkPhone" use="optional" type="xs:string"/>
+    <xs:attribute name="WorkPhoneExtension" use="optional" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="CCClassCode">
+    <xs:attribute name="Code" use="optional" type="xs:string"/>
+    <xs:attribute name="Comments" use="optional" type="xs:string"/>
+    <xs:attribute name="Description" use="optional" type="xs:string"/>
+    <xs:attribute name="ID" type="xs:ID"/>
+  </xs:complexType>
+  <xs:complexType name="CCPropertyCoverage">
+    <xs:complexContent>
+      <xs:extension base="tns:CCRUCoverage">
+        <xs:attribute name="Coinsurance" use="optional" type="xs:decimal"/>
+        <xs:attribute name="CoverageBasis" use="optional" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCRUCoverage">
+    <xs:complexContent>
+      <xs:extension base="tns:CCCoverage">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCVehicleCoverage">
+    <xs:complexContent>
+      <xs:extension base="tns:CCRUCoverage">
+        <xs:attribute name="ClaimAggLimit" use="optional" type="xs:decimal"/>
+        <xs:attribute name="NonmedAggLimit" use="optional" type="xs:decimal"/>
+        <xs:attribute name="PersonAggLimit" use="optional" type="xs:decimal"/>
+        <xs:attribute name="ReplaceAggLimit" use="optional" type="xs:decimal"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCFinancialCovTerm">
+    <xs:complexContent>
+      <xs:extension base="tns:CCCovTerm">
+        <xs:attribute name="FinancialAmount" use="optional" type="xs:string"
+                      gw:type="gw.pl.currency.MonetaryAmount"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCNumericCovTerm">
+    <xs:complexContent>
+      <xs:extension base="tns:CCCovTerm">
+        <xs:attribute name="NumericValue" use="optional" type="xs:decimal"/>
+        <xs:attribute name="Units" use="optional" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCClassificationCovTerm">
+    <xs:complexContent>
+      <xs:extension base="tns:CCCovTerm">
+        <xs:attribute name="Code" use="optional" type="xs:string"/>
+        <xs:attribute name="Description" use="optional" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCCovTerm">
+    <xs:attribute name="CovTermOrder" use="optional" type="xs:int"/>
+    <xs:attribute name="CovTermPattern" use="optional" type="xs:string"/>
+    <xs:attribute name="ModelAggregation" use="optional" type="xs:string"/>
+    <xs:attribute name="ModelRestriction" use="optional" type="xs:string"/>
+    <xs:attribute name="PolicySystemID" use="optional" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="CCCoverage">
+    <xs:sequence>
+      <xs:element name="CovTerms" minOccurs="0" maxOccurs="unbounded" type="tns:CCCovTerm"/>
+    </xs:sequence>
+    <xs:attribute name="Currency" use="optional" type="xs:string" />
+    <xs:attribute name="Deductible" use="optional" type="xs:string" gw:type="gw.pl.currency.MonetaryAmount"/>
+    <xs:attribute name="EffectiveDate" use="optional" type="xs:dateTime" gw:type="java.util.Date"/>
+    <xs:attribute name="ExpirationDate" use="optional" type="xs:dateTime" gw:type="java.util.Date"/>
+    <xs:attribute name="ExposureLimit" use="optional" type="xs:string" gw:type="gw.pl.currency.MonetaryAmount"/>
+    <xs:attribute name="IncidentLimit" use="optional" type="xs:string" gw:type="gw.pl.currency.MonetaryAmount"/>
+    <xs:attribute name="LimitsIndicator" use="optional" type="xs:string"/>
+    <xs:attribute name="Notes" use="optional" type="xs:string"/>
+    <xs:attribute name="PolicySystemID" use="optional" type="xs:string"/>
+    <xs:attribute name="State" use="optional" type="xs:string"/>
+    <xs:attribute name="Type" use="optional" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="CCPolicyCoverage">
+    <xs:complexContent>
+      <xs:extension base="tns:CCCoverage">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCEndorsement">
+    <xs:attribute name="Comments" use="optional" type="xs:string"/>
+    <xs:attribute name="Description" use="optional" type="xs:string"/>
+    <xs:attribute name="EffectiveDate" use="optional" type="xs:dateTime" gw:type="java.util.Date"/>
+    <xs:attribute name="ExpirationDate" use="optional" type="xs:dateTime" gw:type="java.util.Date"/>
+    <xs:attribute name="FormNumber" use="optional" type="xs:string"/>
+    <xs:attribute name="PolicySystemID" use="optional" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="CCBuilding">
+    <xs:attribute name="BuildingNumber" use="optional" type="xs:string"/>
+    <xs:attribute name="Notes" use="optional" type="xs:string"/>
+    <xs:attribute name="PolicySystemID" use="optional" type="xs:string"/>
+    <xs:attribute name="ID" type="xs:ID"/>
+  </xs:complexType>
+  <xs:complexType name="CCPropertyItem">
+    <xs:attribute name="AppraisedValue" use="optional" type="xs:decimal"/>
+    <xs:attribute name="Description" use="optional" type="xs:string"/>
+    <xs:attribute name="PolicySystemID" use="optional" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="CCPropertyOwner">
+    <xs:sequence>
+      <xs:element name="Lienholder" minOccurs="0" type="xs:IDREF" gw:itype="CCContact"/>
+    </xs:sequence>
+    <xs:attribute name="OwnerType" use="optional" type="xs:string"/>
+    <xs:attribute name="ID" type="xs:ID"/>
+  </xs:complexType>
+  <xs:complexType name="CCPolicyLocation">
+    <xs:sequence>
+      <xs:element name="Address" minOccurs="0" type="xs:IDREF" gw:itype="CCAddress"/>
+      <xs:element name="Buildings" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCBuilding"/>
+      <xs:element name="HighValueItems" minOccurs="0" maxOccurs="unbounded" type="tns:CCPropertyItem"/>
+      <xs:element name="Lienholders" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCPropertyOwner"/>
+    </xs:sequence>
+    <xs:attribute name="ID" type="xs:ID"/>
+    <xs:attribute name="FixedID" use="optional" type="xs:int"/>
+    <xs:attribute name="LocationNumber" use="optional" type="xs:string"/>
+    <xs:attribute name="Notes" use="optional" type="xs:string"/>
+    <xs:attribute name="PolicySystemID" use="optional" type="xs:string"/>
+    <xs:attribute name="PrimaryLocation" use="optional" type="xs:boolean"/>
+    <xs:attribute name="Description" use="optional" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="CCPropertyRU">
+    <xs:complexContent>
+      <xs:extension base="tns:CCLocationBasedRU">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCWCCovEmpRU">
+    <xs:complexContent>
+      <xs:extension base="tns:CCLocationBasedRU">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCInlandMarineRU">
+    <xs:complexContent>
+      <xs:extension base="tns:CCLocationBasedRU">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCLocationMiscRU">
+    <xs:complexContent>
+      <xs:extension base="tns:CCLocationBasedRU">
+        <xs:attribute name="OtherRiskType" use="optional" type="xs:string"/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCBuildingRU">
+    <xs:complexContent>
+      <xs:extension base="tns:CCLocationBasedRU">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCLocationBasedRU">
+    <xs:complexContent>
+      <xs:extension base="tns:CCRiskUnit">
+        <xs:sequence>
+          <xs:element name="Building" minOccurs="0" type="xs:IDREF" gw:itype="CCBuilding"/>
+          <xs:element name="Lienholders" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF"
+                      gw:itype="CCPropertyOwner"/>
+          <xs:element name="PolicyLocation" minOccurs="0" type="xs:IDREF" gw:itype="CCPolicyLocation"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCGeneralLiabilityRU">
+    <xs:complexContent>
+      <xs:extension base="tns:CCLocationBasedRU">
+        <xs:sequence/>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCVehicleOwner">
+    <xs:sequence>
+      <xs:element name="Lienholder" minOccurs="0" type="xs:IDREF" gw:itype="CCContact"/>
+    </xs:sequence>
+    <xs:attribute name="OwnerType" use="optional" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="CCVehicle">
+    <xs:sequence>
+      <xs:element name="Lienholders" minOccurs="0" maxOccurs="unbounded" type="tns:CCVehicleOwner"/>
+    </xs:sequence>
+    <xs:attribute name="BoatType" use="optional" type="xs:string"/>
+    <xs:attribute name="Color" use="optional" type="xs:string"/>
+    <xs:attribute name="LicensePlate" use="optional" type="xs:string"/>
+    <xs:attribute name="Loan" use="optional" type="xs:boolean"/>
+    <xs:attribute name="LoanMonthlyPayment" use="optional" type="xs:decimal"/>
+    <xs:attribute name="LoanPayoffAmount" use="optional" type="xs:decimal"/>
+    <xs:attribute name="LoanMonthsRemaining" use="optional" type="xs:int"/>
+    <xs:attribute name="Make" use="optional" type="xs:string"/>
+    <xs:attribute name="Manufacturer" use="optional" type="xs:string"/>
+    <xs:attribute name="Model" use="optional" type="xs:string"/>
+    <xs:attribute name="OffRoadStyle" use="optional" type="xs:string"/>
+    <xs:attribute name="PolicySystemID" use="optional" type="xs:string"/>
+    <xs:attribute name="SerialNumber" use="optional" type="xs:string"/>
+    <xs:attribute name="State" use="optional" type="xs:string"/>
+    <xs:attribute name="Style" use="optional" type="xs:string"/>
+    <xs:attribute name="Vin" use="optional" type="xs:string"/>
+    <xs:attribute name="Year" use="optional" type="xs:int"/>
+  </xs:complexType>
+  <xs:complexType name="CCVehicleRU">
+    <xs:complexContent>
+      <xs:extension base="tns:CCRiskUnit">
+        <xs:sequence>
+          <xs:element name="Vehicle" minOccurs="0" type="tns:CCVehicle"/>
+          <xs:element name="VehicleLocation" minOccurs="0" type="xs:IDREF" gw:itype="CCPolicyLocation"/>
+        </xs:sequence>
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:complexType name="CCRiskUnit">
+    <xs:sequence>
+      <xs:element name="ClassCode" minOccurs="0" type="xs:IDREF" gw:itype="CCClassCode"/>
+      <xs:element name="Coverages" minOccurs="0" maxOccurs="unbounded" type="tns:CCRUCoverage"/>
+    </xs:sequence>
+    <xs:attribute name="Description" use="optional" type="xs:string"/>
+    <xs:attribute name="PolicySystemID" use="optional" type="xs:string"/>
+    <xs:attribute name="RUNumber" use="optional" type="xs:int"/>
+  </xs:complexType>
+  <xs:complexType name="CCStatCode">
+    <xs:attribute name="BuildingNumber" use="optional" type="xs:string"/>
+    <xs:attribute name="ClassCode" use="optional" type="xs:string"/>
+    <xs:attribute name="InsuranceLine" use="optional" type="xs:string"/>
+    <xs:attribute name="InsuranceSubLine" use="optional" type="xs:string"/>
+    <xs:attribute name="LineNumber" use="optional" type="xs:int"/>
+    <xs:attribute name="MajorPeril" use="optional" type="xs:string"/>
+    <xs:attribute name="Notes" use="optional" type="xs:string"/>
+    <xs:attribute name="State" use="optional" type="xs:string"/>
+    <xs:attribute name="VehicleNumber" use="optional" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="CCPolicy">
+    <xs:annotation>
+      <xs:documentation>
+        Represents a ClaimCenter Policy
+      </xs:documentation>
+    </xs:annotation>
+    <xs:sequence>
+      <xs:element name="Agent" minOccurs="0" type="xs:IDREF" gw:itype="CCContact"/>
+      <xs:element name="AltContact" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCPerson"/>
+      <xs:element name="ClassCodes" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCClassCode"/>
+      <xs:element name="Coverages" minOccurs="0" maxOccurs="unbounded" type="tns:CCPolicyCoverage"/>
+      <xs:element name="CoveredParty" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCContact"/>
+      <xs:element name="DoingBusinessAs" minOccurs="0" type="xs:IDREF" gw:itype="CCCompany"/>
+      <xs:element name="Endorsements" minOccurs="0" maxOccurs="unbounded" type="tns:CCEndorsement"/>
+      <xs:element name="ExcludedParty" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCContact"/>
+      <xs:element name="FormerAgent" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCContact"/>
+      <xs:element name="FormerCoveredParty" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCContact"/>
+      <xs:element name="FormerDoingBusinessAs" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCContact"/>
+      <xs:element name="FormerExcludedParty" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCContact"/>
+      <xs:element name="FormerInsured" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCContact"/>
+      <xs:element name="FormerPolicyHolder" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCContact"/>
+      <xs:element name="FormerUnderwriter" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCContact"/>
+      <xs:element name="Insured" minOccurs="0" type="xs:IDREF" gw:itype="CCContact"/>
+      <xs:element name="InsuredRep" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCContact"/>
+      <xs:element name="MainContact" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCContact"/>
+      <xs:element name="Other" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCContact"/>
+      <xs:element name="PolicyHolder" minOccurs="0" type="xs:IDREF" gw:itype="CCContact"/>
+      <xs:element name="PolicyLocations" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCPolicyLocation"/>
+      <xs:element name="RiskUnits" minOccurs="0" maxOccurs="unbounded" type="tns:CCRiskUnit"/>
+      <xs:element name="StatCodes" minOccurs="0" maxOccurs="unbounded" type="tns:CCStatCode"/>
+      <xs:element name="Underwriter" minOccurs="0" type="xs:IDREF" gw:itype="CCPerson"/>
+      <xs:element name="WCCarrier" minOccurs="0" maxOccurs="unbounded" type="xs:IDREF" gw:itype="CCContact"/>
+    </xs:sequence>
+    <xs:attribute name="Account" use="optional" type="xs:string"/>
+    <xs:attribute name="CancellationDate" use="optional" type="xs:dateTime" gw:type="java.util.Date"/>
+    <xs:attribute name="CoverageForm" use="optional" type="xs:string"/>
+    <xs:attribute name="Currency" use="optional" type="xs:string"/>
+    <xs:attribute name="CustomerServiceTier" use="optional" type="xs:string"/>
+    <xs:attribute name="EffectiveDate" use="optional" type="xs:dateTime" gw:type="java.util.Date"/>
+    <xs:attribute name="ExpirationDate" use="optional" type="xs:dateTime" gw:type="java.util.Date"/>
+    <xs:attribute name="FinancialInterests" use="optional" type="xs:string"/>
+    <xs:attribute name="ForeignCoverage" use="optional" type="xs:boolean"/>
+    <xs:attribute name="InsuredSICCode" use="optional" type="xs:string"/>
+    <xs:attribute name="Notes" use="optional" type="xs:string"/>
+    <xs:attribute name="OriginalEffectiveDate" use="optional" type="xs:dateTime" gw:type="java.util.Date"/>
+    <xs:attribute name="OtherInsurance" use="optional" type="xs:boolean"/>
+    <xs:attribute name="OtherInsuranceInfo" use="optional" type="xs:string"/>
+    <xs:attribute name="Participation" use="optional" type="xs:decimal"/>
+    <xs:attribute name="PolicyNumber" use="optional" type="xs:string"/>
+    <xs:attribute name="PolicyRatingPlan" use="optional" type="xs:string"/>
+    <xs:attribute name="PolicySource" use="optional" type="xs:string"/>
+    <xs:attribute name="PolicySuffix" use="optional" type="xs:string"/>
+    <xs:attribute name="PolicySystemPeriodID" use="optional" type="xs:long"/>
+    <xs:attribute name="PolicyType" use="optional" type="xs:string"/>
+    <xs:attribute name="ProducerCode" use="optional" type="xs:string"/>
+    <xs:attribute name="ReportingDate" use="optional" type="xs:dateTime" gw:type="java.util.Date"/>
+    <xs:attribute name="RetroactiveDate" use="optional" type="xs:dateTime" gw:type="java.util.Date"/>
+    <xs:attribute name="ReturnToWorkPrgm" use="optional" type="xs:boolean"/>
+    <xs:attribute name="Status" use="optional" type="xs:string"/>
+    <xs:attribute name="TotalProperties" use="optional" type="xs:int"/>
+    <xs:attribute name="TotalVehicles" use="optional" type="xs:int"/>
+    <xs:attribute name="UnderwritingCo" use="optional" type="xs:string"/>
+    <xs:attribute name="UnderwritingGroup" use="optional" type="xs:string"/>
+    <xs:attribute name="WCOtherStates" use="optional" type="xs:string"/>
+    <xs:attribute name="WCStates" use="optional" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="CCPCSearchCriteria">
+    <xs:annotation>
+      <xs:documentation>
+        Represents a ClaimCenter Policy Search Criteria
+      </xs:documentation>
+    </xs:annotation>
+    <xs:attribute name="AccountNumber" use="optional" type="xs:string"/>
+    <xs:attribute name="AsOfDate" use="optional" type="xs:dateTime" gw:type="java.util.Date"/>
+    <xs:attribute name="CompanyName" use="optional" type="xs:string"/>
+    <xs:attribute name="CompanyNameKanji" use="optional" type="xs:string"/>
+    <xs:attribute name="FirstName" use="optional" type="xs:string"/>
+    <xs:attribute name="FirstNameKanji" use="optional" type="xs:string"/>
+    <xs:attribute name="IncludeArchived" use="optional" type="xs:boolean"/>
+    <xs:attribute name="LastName" use="optional" type="xs:string"/>
+    <xs:attribute name="LastNameKanji" use="optional" type="xs:string"/>
+    <xs:attribute name="NonRenewalCode" use="optional" type="xs:string"/>
+    <xs:attribute name="PolicyNumber" use="optional" type="xs:string"/>
+    <xs:attribute name="PolicyStatus" use="optional" type="xs:string"/>
+    <xs:attribute name="PrimaryInsuredCity" use="optional" type="xs:string"/>
+    <xs:attribute name="PrimaryInsuredCityKanji" use="optional" type="xs:string"/>
+    <xs:attribute name="PrimaryInsuredCountry" use="optional" type="xs:string"/>
+    <xs:attribute name="PrimaryInsuredPostalCode" use="optional" type="xs:string"/>
+    <xs:attribute name="PrimaryInsuredState" use="optional" type="xs:string"/>
+    <xs:attribute name="ProducerCodeString" use="optional" type="xs:string"/>
+    <xs:attribute name="ProducerString" use="optional" type="xs:string"/>
+    <xs:attribute name="Product" use="optional" type="xs:string"/>
+    <xs:attribute name="ProductCode" use="optional" type="xs:string"/>
+    <xs:attribute name="TaxID" use="optional" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="CCPolicySummaryProperty">
+    <!-- Deprecated as of 8.0.1. Use AddressLine1 and AddressLine2 instead. -->
+    <xs:attribute name="Address" use="optional" type="xs:string"/>
+    <xs:attribute name="AddressLine1" use="optional" type="xs:string"/>
+    <xs:attribute name="AddressLine1Kanji" use="optional" type="xs:string"/>
+    <xs:attribute name="AddressLine2" use="optional" type="xs:string"/>
+    <xs:attribute name="AddressLine2Kanji" use="optional" type="xs:string"/>
+    <xs:attribute name="BuildingNumber" use="optional" type="xs:string"/>
+    <xs:attribute name="City" use="optional" type="xs:string"/>
+    <xs:attribute name="CityKanji" use="optional" type="xs:string"/>
+    <xs:attribute name="Description" use="optional" type="xs:string"/>
+    <xs:attribute name="Location" use="optional" type="xs:string"/>
+    <xs:attribute name="Notes" use="optional" type="xs:string"/>
+    <xs:attribute name="PropertyNumber" use="optional" type="xs:int"/>
+    <xs:attribute name="PolicySystemID" use="optional" type="xs:string"/>
+  </xs:complexType>
+  <xs:complexType name="CCPolicySummaryVehicle">
+    <xs:attribute name="Color" use="optional" type="xs:string"/>
+    <xs:attribute name="LicensePlate" use="optional" type="xs:string"/>
+    <xs:attribute name="Make" use="optional" type="xs:string"/>
+    <xs:attribute name="Model" use="optional" type="xs:string"/>
+    <xs:attribute name="PolicySystemID" use="optional" type="xs:string"/>
+    <xs:attribute name="SerialNumber" use="optional" type="xs:string"/>
+    <xs:attribute name="State" use="optional" type="xs:string"/>
+    <xs:attribute name="VehicleNumber" use="optional" type="xs:int"/>
+    <xs:attribute name="Vin" use="optional" type="xs:string"/>
+  </xs:complexType>
+
+  <xs:complexType name="CCPolicySummary">
+    <xs:sequence>
+      <xs:element name="Properties" minOccurs="0" maxOccurs="unbounded" type="tns:CCPolicySummaryProperty"/>
+      <xs:element name="Vehicles" minOccurs="0" maxOccurs="unbounded" type="tns:CCPolicySummaryVehicle"/>
+    </xs:sequence>
+    <!-- Deprecated as of 8.0.1. Use AddressLine1 and AddressLine2 instead. -->
+    <xs:attribute name="Address" type="xs:string" use="optional"/>
+    <xs:attribute name="AddressLine1" type="xs:string" use="optional"/>
+    <xs:attribute name="AddressLine1Kanji" type="xs:string" use="optional"/>
+    <xs:attribute name="AddressLine2" type="xs:string" use="optional"/>
+    <xs:attribute name="AddressLine2Kanji" type="xs:string" use="optional"/>
+    <xs:attribute name="City" type="xs:string" use="optional"/>
+    <xs:attribute name="CityKanji" type="xs:string" use="optional"/>
+    <xs:attribute name="EffectiveDate" type="xs:dateTime" use="optional" gw:type="java.util.Date"/>
+    <xs:attribute name="ExpirationDate" type="xs:dateTime" use="optional" gw:type="java.util.Date"/>
+    <xs:attribute name="InsuredName" type="xs:string" use="optional"/>
+    <xs:attribute name="IsArchived" type="xs:boolean" use="optional"/>
+    <xs:attribute name="PolicyNumber" type="xs:string" use="optional"/>
+    <xs:attribute name="PolicyType" type="xs:string" use="optional"/>
+    <xs:attribute name="PostalCode" type="xs:string" use="optional"/>
+    <xs:attribute name="CEDEX" type="xs:boolean" use="optional"/>
+    <xs:attribute name="CEDEXBureau" type="xs:string" use="optional"/>
+    <xs:attribute name="ProducerCode" type="xs:string" use="optional"/>
+    <xs:attribute name="State" type="xs:string" use="optional"/>
+    <xs:attribute name="Status" type="xs:string" use="optional"/>
+  </xs:complexType>
+    <xs:complexType name="PolicyLocationInfo">
+        <xs:sequence>
+            <xs:element name="PolicyLocationAddress" minOccurs="0" type="tns:CCAddress" gw:itype="CCAddress"/>
+            <xs:element name="PNIAddressFields" minOccurs="0" type="tns:CCAddress" gw:itype="CCAddress"/>
+            <xs:element name="TotalInsuredValues" minOccurs="0" maxOccurs="unbounded" type="tns:MapEntry" gw:itype="MapEntry"/>
+        </xs:sequence>
+        <xs:attribute name="PolicyNumber" type="xs:string" use="optional"/>
+        <xs:attribute name="ProductCode" type="xs:string" use="optional"/>
+        <xs:attribute name="PolicyLocationLatitude" type="xs:string" use="optional"/>
+        <xs:attribute name="PolicyLocationLongitude" type="xs:string" use="optional"/>
+        <xs:attribute name="PolicyLocationGeocodeStatus" type="xs:string" use="optional"/>
+        <xs:attribute name="PolicyLocationPolicySystemID" type="xs:string" use="optional"/>
+        <xs:attribute name="PNIName" type="xs:string" use="optional"/>
+        <xs:attribute name="PNIPhoneCountry" type="xs:string" use="optional"/>
+        <xs:attribute name="PNIPhoneNumber" type="xs:string" use="optional"/>
+        <xs:attribute name="PNIPhoneExtension" type="xs:string" use="optional"/>
+        <xs:attribute name="PNIEmail" type="xs:string" use="optional"/>
+    </xs:complexType>
+    <xs:complexType name="MapEntry">
+        <xs:sequence/>
+        <xs:attribute name="Currency" type="xs:string" use="optional"/>
+        <xs:attribute name="Name" type="xs:string" use="optional"/>
+        <xs:attribute name="Value" type="xs:decimal" use="optional"/>
+  </xs:complexType>
+</xs:schema>

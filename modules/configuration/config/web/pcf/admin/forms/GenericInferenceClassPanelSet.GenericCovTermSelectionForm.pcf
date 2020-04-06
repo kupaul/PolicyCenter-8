@@ -1,0 +1,118 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <PanelSet
+    id="GenericInferenceClassPanelSet"
+    mode="GenericCovTermSelectionForm">
+    <Require
+      name="formPattern"
+      type="FormPattern"/>
+    <Variable
+      initialValue="10"
+      name="maxCoverableProperties"
+      type="int"/>
+    <Variable
+      initialValue="10"
+      name="maxCovTerms"
+      type="int"/>
+    <!-- <Variable
+      initialValue="formPattern.SelectedFormPatternCovTerm"
+      name="selectedCovTerm"
+      recalculateOnRefresh="true"
+      type="FormPatternCovTerm"/> -->
+    <DetailViewPanel>
+      <InputColumn>
+        <BooleanRadioInput
+          editable="true"
+          id="PatternExists"
+          label="displaykey.Web.Admin.FormPatternDetail.InferenceDV.GenericCovtermSelectionForm.PatternExist"
+          required="true"
+          value="formPattern.PatternExistsOnAll"/>
+        <PickerInput
+          editable="true"
+          freeInputEnabled="false"
+          id="ClausePatternSelection"
+          label="displaykey.Web.Admin.FormPatternDetail.InferenceDV.ClausePattern"
+          onPick="gw.api.web.PebblesUtil.invalidateIterators(CurrentLocation, entity.FormPatternCovTerm)"
+          pickLocation="FormClausePatternSelectionPopup.push(formPattern)"
+          required="true"
+          value="formPattern.ClausePattern">
+          <PostOnChange
+            onChange="formPattern.clearDependentClausePatternSelections()"/>
+        </PickerInput>
+        <RangeInput
+          editable="true"
+          id="CovTermPatternSelection"
+          label="displaykey.Web.Admin.FormPatternDetail.InferenceDV.CovtermPattern"
+          optionLabel="VALUE == null ? displaykey.Java.TextValueWidget.NoneSelected : VALUE.Name"
+          required="true"
+          sortValueRange="false"
+          value="formPattern.SelectedCovTerm"
+          valueRange="formPattern.ClausePattern.CovTerms.sortBy(\ c -&gt; c.Priority)"
+          visible="formPattern.ClausePattern != null">
+          <PostOnChange/>
+        </RangeInput>
+      </InputColumn>
+    </DetailViewPanel>
+    <PanelSet>
+      <PanelSet
+        visible="formPattern.ClausePattern != null and formPattern.SelectedCovTerm != null">
+        <PanelRef
+          def="FormPatternCovTermValuesPanelSet(getSelectedFormPatternCovTerm())"
+          mode="formPattern.SelectedCovTermType"/>
+      </PanelSet>
+      <PanelSet
+        visible="formPattern.ReissueOnChange and formPattern.ClausePattern != null">
+        <Verbatim
+          label="displaykey.Web.Admin.FormPatternDetail.InferenceDV.MidTermChangeLabel"/>
+        <PanelRef
+          def="FormPatternCoverablePropertyLV(formPattern)">
+          <TitleBar
+            title="displaykey.Web.Admin.FormPatternDetail.FormPatternCoverablePropertyLV.Title"/>
+          <Toolbar>
+            <ToolbarButton
+              available="formPattern.AvailableFormPatternCoverableProperties.Count &gt; 0"
+              hideIfReadOnly="true"
+              id="AddFormPatternCoverableProperty"
+              label="displaykey.Web.Generic.Add">
+              <MenuItemIterator
+                elementName="formPatternCoverableProperty"
+                id="FormPatternCoverablePropertyIterator"
+                value="getLimitedNumberOfCoverableProperties(formPattern.AvailableFormPatternCoverableProperties)">
+                <MenuItem
+                  action="formPattern.addFormPatternCoverableProperty(formPatternCoverableProperty)"
+                  id="FormPatternCoverablePropertyItem"
+                  label="formPatternCoverableProperty.Name"/>
+              </MenuItemIterator>
+              <PickerMenuItem
+                action="FormPatternCoverablePropertyPopup.push(formPattern)"
+                id="FormPatternCoverablePropertyMore"
+                label="displaykey.Web.Admin.FormPatternDetail.InferenceDV.More"
+                onPick="formPattern.addFormPatternCoverableProperty(PickedValue)"
+                showConfirmMessage="false"
+                visible="formPattern.AvailableFormPatternCoverableProperties.Count &gt; maxCoverableProperties"/>
+            </ToolbarButton>
+            <RemoveButton
+              flags="any formPatternCoverableProperty"
+              hideIfReadOnly="true"
+              id="RemoveFormPatternCoverableProperty"
+              iterator="FormPatternCoverablePropertyLV.FormPatternCoverablePropertyLV"
+              label="displaykey.Web.Generic.Remove"/>
+          </Toolbar>
+        </PanelRef>
+      </PanelSet>
+    </PanelSet>
+    <Code><![CDATA[function getLimitedNumberOfCovTermPatterns(covTermPatterns : gw.api.productmodel.CovTermPattern[]) : gw.api.productmodel.CovTermPattern[] {
+  return covTermPatterns.Count > maxCovTerms ? covTermPatterns.toList().subList(0, maxCovTerms).toTypedArray() : covTermPatterns
+}
+
+function getLimitedNumberOfCoverableProperties(propInfos : gw.lang.reflect.IPropertyInfo[]) : gw.lang.reflect.IPropertyInfo[] {
+  return propInfos.Count > maxCoverableProperties ? propInfos.toList().subList(0, maxCoverableProperties).toTypedArray() : propInfos
+}
+
+function getSelectedFormPatternCovTerm() : FormPatternCovTerm {
+  return (formPattern.FormPatternCovTerms != null and  formPattern.FormPatternCovTerms.Count == 1) ? formPattern.FormPatternCovTerms[0] : null
+}]]></Code>
+  </PanelSet>
+</PCF>

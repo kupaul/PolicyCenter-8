@@ -1,0 +1,325 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Testing Your RPCE Web Service With soap.local Namespace</title>
+    <link rel="StyleSheet" href="css/webservices-rpce-publish.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-webservices.html#3395304">Web Services</a> : <a class="WebWorks_Breadcrumb_Link" href="webservices-rpce-publish.10.01.html#3395304">Publishing Web Services (RPCE)</a> : Testing Your RPCE Web Service With soap.local Namespace</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="3395304">Testing Your RPCE Web Service With </a><span class="cvh_-_computer_voice_in_heading">soap.local</span> Namespace</h3>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="3647560">RPCE web services are deprecated. Convert existing RPCE code to WS-I web services.</a></div>
+      <div class="B_-_Body"><a name="3447057">If you write new web service API, you must carefully test it to confirm that it works. </a></div>
+      <div class="B_-_Body"><a name="3544460">To test only the basic logic of your code or to use your API from other places in Gosu, do not need to connect over SOAP. Instead, just call it directly from Gosu using the class name, such as:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="3394963">var res = MyServiceAPI.MyMethod()</a></div>
+      <div class="B_-_Body"><a name="3544521">However, that does not connect over the SOAP protocol. A better test is to use the SOAP interface to test for issues that might arise due to the SOAP implementation. For example, test that Gosu appropriately serializes and deserializes objects. This approach also tests database transaction management (bundles) more realistically. </a></div>
+      <div class="B_-_Body"><a name="3544524">For information about calling RPCE web services from Gosu, see </a><a href="javascript:WWHClickedPopup('integration', 'webservice-rpce-consuming.09.1.html#2074468', '');" title="Calling RPCE Web Services from Gosu">“Calling RPCE Web Services from Gosu”</a>.</div>
+      <div class="B_-_Body"><a name="3544479">You can call your RPCE SOAP API by using the special </a><span class="cv_-_computer_voice">soap.local.api.</span><span class="ps_-_parameter_in_code_snippets">*</span> namespace to find your API on the same server. This lets you actually call your API over the SOAP protocol, rather than just directly calling the implementation classes. Calling your own server using SOAP is good for testing, but unsupported for production code. See the warning later in this topic.</div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="3561811">To access local SOAP APIs for RPCE web services, you must call the </a><span class="cv_-_computer_voice">gwpc regen-soap-local</span> script to regenerate local files. Also, after you add, modify, or delete an RPCE web service, call <span class="cv_-_computer_voice">regen-soap-local</span> again.</div>
+      <div class="B_-_Body"><a name="3544322">The namespace hierarchy of all the web service implementation classes are flattened. The name of your service is not part of the package hierarchy in which you originally defined your class with the </a><span class="cv_-_computer_voice">@WebService</span> annotation. This means that all local web services share the same namespace for all objects related to all SOAP APIs as argument types or return types.</div>
+      <div class="B_-_Body"><a name="3395220">For example, if your web service is </a><span class="cv_-_computer_voice">MyServiceAPI</span>, for testing purposes you can call the API on the same server as a local SOAP endpoint: </div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3394977">var myAPI = soap.local.api.MyServiceAPI</a></PRE>
+      <div class="B_-_Body"><a name="3394972">For example, suppose you publish the following simple web service:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="3395084">@WebService</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395085">class MyServiceAPI {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395115">&nbsp;&nbsp;function echoInputArgs(p1 : String) : String {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395116">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return "You said " + p1</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395120">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3445362">}</a></PRE>
+      <div class="B_-_Body"><a name="3445363">Write a GUnit test to test this using the SOAP interface. You must add</a><span class="cv_-_computer_voice"> @SOAPLocalTest</span> annotation to tell GUnit that your test requires the <span class="cv_-_computer_voice">soap.local.*</span> namespace (otherwise GUnit does not set it up). </div>
+      <PRE class="CF_-_Code_First_Line"><a name="3445364">package example</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395169">uses gw.api.soap.GWAuthenticationHandler</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395170">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3544343">@SOAPLocalTest</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395171">@gw.testharness.ServerTest</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395172">class MyTestClassTest extends gw.testharness.TestBase {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395174">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3620736">&nbsp;&nbsp;public function test1() {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395558">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395559">&nbsp;&nbsp;&nbsp;&nbsp;// Get the API reference, but do not call it yet.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395175">&nbsp;&nbsp;&nbsp;&nbsp;var myAPI = new soap.local.api.MyServiceAPI()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395176">&nbsp;&nbsp;&nbsp;&nbsp;myAPI.addHandler( new GWAuthenticationHandler("su", "gw") )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395560">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395561">&nbsp;&nbsp;&nbsp;&nbsp;// Now, call the API. </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395177">&nbsp;&nbsp;&nbsp;&nbsp;var r = myAPI.echoInputArgs( "San Francisco" )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395178">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395562">&nbsp;&nbsp;&nbsp;&nbsp;// What answer did the API give?</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395179">&nbsp;&nbsp;&nbsp;&nbsp;print(r)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395188">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395189">&nbsp;&nbsp;&nbsp;&nbsp;// Check the answer and throw an exception if it is wrong!</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395180">&nbsp;&nbsp;&nbsp;&nbsp;if (r != "You said San Francisco") {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395181">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw "Wrong answer!"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395182">&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3620809">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395183">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3395184">}</a></PRE>
+      <div class="B_-_Body"><a name="3395137">In Studio, if you select </a><span class="ui_-_UI_element">Class</span> → <span class="ui_-_UI_element">Run Test Class</span>, the following eventually prints in the GUnit console window:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="3395147">22:28:08,536 INFO ********** MyTestClassTest ********** SUITE SETUP OK</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3395148">You said San Francisco</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3408853">22:28:09,017 INFO ********** MyTestClassTest ********** SUITE TEARDOWN</a></PRE>
+      <div class="B_-_Body"><a name="3408897">If you want even simpler and easy-to-read code, use built-in utility functions that compare values and throw exceptions and display user-readable errors. For example:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="3408898">TestBase.assertEquals("My message", r, "You said San Francisco")</a></div>
+      <div class="B_-_Body"><a name="3544135">For the most complete testing, test from external system integration code to confirm your integration code works as expected. It is important to test with large data sets and objects as large as potentially exist in your production system database. Connecting from an external system is also important to test assumptions and interactions regarding database transactions. Be sure to test all your bundle-related code in the web service.</a></div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="3544136">Avoid calling locally-hosted SOAP APIs from within a plugin or the rules engine in production systems. Be careful about any SOAP calls to the same server. If the SOAP API hosted locally modifies entity data and commits the bundle, the current transaction does not always detect and reload local data. Instead, refactor your code to avoid this case. For example, write a Gosu class that performs a similar function as the web service but that does not commit the bundle. This type of refactoring also results in higher server performance. If you have questions about how to convert some particular use locally-hosted SOAP APIs from plugins or rules, contact Customer Support. This is true for all types of local loopback SOAP calls to the same server. This includes </a><span class="cv_-_computer_voice">soap.local.*</span> objects, the SOAP client Java classes from Java plugins, and Studio-registered web services that call the same server as the client. </div>
+      <h4 class="H2_-_Heading_2"><a name="3405216">Extended Web Service Testing</a></h4>
+      <div class="B_-_Body"><a name="3407981">For large Guidewire business data objects (entities), most integration points only need to transfer a subset of the properties and graph. You must not pass large object graphs. Be aware of any objects that might be very large in your real-world deployed production system. Generally speaking, design custom web services to pass your own Gosu classes containing only your necessary properties for that integration point. Do not pass the entire entity. For example, if an integration point only needs a contact name and phone number, create a Gosu class containing only those properties and the standard public&nbsp;ID property.</a></div>
+      <div class="B_-_Body"><a name="3407985">This example uses this approach to get or set information in the system.</a></div>
+      <div class="B_-_Body"><a name="3407986">Suppose you have a simple class to encapsulate user phone numbers:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="3405228">package example</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405229">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405230">class UserPhones {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405232">&nbsp;&nbsp;private var _publicID : String as PublicID</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405233">&nbsp;&nbsp;private var _h : String as HomePhone</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405234">&nbsp;&nbsp;private var _w: String as WorkPhone</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3405236">}</a></PRE>
+      <div class="B_-_Body"><a name="3405223">You can write this web service with getter and setter methods:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405334">package example</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405335">uses example.UserPhones</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405336">uses gw.api.webservice.exception.DataConversionException;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405337">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405338">@WebService</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405339">class MyServiceAPI {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405340">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405341">&nbsp;&nbsp;@Throws(DataConversionException, "Throws if no such user")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405342">&nbsp;&nbsp;function setUserPhones(up : UserPhones)  {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405343">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3432883">&nbsp;&nbsp;&nbsp;&nbsp;// Find user by public ID and load into writable bundle.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3432884">&nbsp;&nbsp;&nbsp;&nbsp;var u = gw.transaction.Transaction.getCurrent().loadByPublicId( User, up.PublicID) as User</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3432885">&nbsp;&nbsp;&nbsp;&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405347">&nbsp;&nbsp;&nbsp;&nbsp;if (u == null) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405348">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw new DataConversionException("No user exists with PublicID: " + up.PublicID);</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405349">    }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405350">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405351">&nbsp;&nbsp;&nbsp;&nbsp;// get associated contact</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405352">&nbsp;&nbsp;&nbsp;&nbsp;var c = u.Contact</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405353">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405354">&nbsp;&nbsp;&nbsp;&nbsp;if (c == null) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405355">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw new DataConversionException("User has no valid contact set up yet.");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405356">&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405357">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405358">&nbsp;&nbsp;&nbsp;&nbsp;c.HomePhone = up.HomePhone</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405359">&nbsp;&nbsp;&nbsp;&nbsp;c.WorkPhone = up.WorkPhone</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405360">&nbsp;&nbsp;&nbsp;&nbsp;gw.transaction.Transaction.getCurrent().commit()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3634375">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405361">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405362">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405363">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405365">&nbsp;&nbsp;function getUserPhones(userPublicID : String) : UserPhones {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405366">&nbsp;&nbsp;&nbsp;&nbsp;// Get a user -- note this is in a READ ONLY bundle. If you need to modify the user,</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405367">&nbsp;&nbsp;&nbsp;&nbsp;// instead use gw.transaction.Transaction.getCurrent().loadByPublicId(...)    </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405368">&nbsp;&nbsp;&nbsp;&nbsp;var u = find ( u in User where u.PublicID == userPublicID).getAtMostOneRow()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405369">&nbsp;&nbsp;&nbsp;&nbsp;if (u == null) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405370">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;throw new DataConversionException("no such user");</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405371">&nbsp;&nbsp;&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405372">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405373">&nbsp;&nbsp;&nbsp;&nbsp;// Create an new instance of your special integration point structure</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405374">&nbsp;&nbsp;&nbsp;&nbsp;var up = new UserPhones()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405375">&nbsp;&nbsp;&nbsp;&nbsp;up.PublicID = u.PublicID</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405376">&nbsp;&nbsp;&nbsp;&nbsp;up.HomePhone = u.Contact.HomePhone</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405377">&nbsp;&nbsp;&nbsp;&nbsp;up.WorkPhone = u.Contact.WorkPhone</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405378">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405379">&nbsp;&nbsp;&nbsp;&nbsp;return up</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405380">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405329">}</a></PRE>
+      <div class="B_-_Body"><a name="3405222">Notice that the web service has two main methods. You must probably test all of the methods at least once. You might need more if you have different types of tasks or different data types to test. </a></div>
+      <div class="B_-_Body"><a name="3405384">The following example shows how you might test this class. It does the following:</a></div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="3405689">Get a user public ID. This example simply uses the </a><span class="cv_-_computer_voice">su</span> user.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3405724">Sets a user’s home phone and work phone numbers.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3405725">Checks a user’s home phone and work phone numbers.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3405729">Sets a user’s home phone and work phone numbers for a second value.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3405730">Checks a user’s home phone and work phone numbers for a second value.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3561923">To access local SOAP APIs for RPCE web services, you must call the </a><span class="cv_-_computer_voice">gwpc regen-soap-local</span> script to regenerate local files. Also, after you add, modify, or delete an RPCE web service, call <span class="cv_-_computer_voice">regen-soap-local</span> again.</div>
+      <div class="B_-_Body"><a name="3405735">Refer to the following code example to test this class or to test in Studio:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405576">package example</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405577">uses gw.api.soap.GWAuthenticationHandler</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405578">uses soap.local.entity.UserPhones</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405579">uses gw.testharness.TestBase</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405580">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405581">@SOAPLocalTest</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3544431">@gw.testharness.ServerTest</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405582">class MyTestClassTest extends gw.testharness.TestBase {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405584">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405585">&nbsp;&nbsp;public function testMyServiceAPI() {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405586">&nbsp;&nbsp;&nbsp;&nbsp;var r : UserPhones  </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405587">&nbsp;&nbsp;&nbsp;&nbsp;var outgoingPhones  : UserPhones </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3634750">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405589">&nbsp;&nbsp;&nbsp;&nbsp;// Get a User, in this case the "su" user.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405590">&nbsp;&nbsp;&nbsp;&nbsp;var userQuery = find (u in User where exists(creds in User.Credential </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405743">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;where creds.UserName == "su"))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405744">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405591">&nbsp;&nbsp;&nbsp;&nbsp;var userPublicID = userQuery.getAtMostOneRow().PublicID</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405592">&nbsp;&nbsp;&nbsp;&nbsp;print("Public ID of the record is " + userPublicID)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405593">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405594">&nbsp;&nbsp;&nbsp;&nbsp;var myAPI = new soap.local.api.MyServiceAPI()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405595">&nbsp;&nbsp;&nbsp;&nbsp;myAPI.addHandler(new GWAuthenticationHandler("su", "gw"))</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405596">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405597">&nbsp;&nbsp;&nbsp;&nbsp;// Set the data for phone #1.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405598">&nbsp;&nbsp;&nbsp;&nbsp;outgoingPhones = new UserPhones()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405599">&nbsp;&nbsp;&nbsp;&nbsp;outgoingPhones.PublicID = userPublicID</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405600">&nbsp;&nbsp;&nbsp;&nbsp;outgoingPhones.HomePhone = "home1"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405601">&nbsp;&nbsp;&nbsp;&nbsp;outgoingPhones.WorkPhone = "work1"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405602">&nbsp;&nbsp;&nbsp;&nbsp;myAPI.setUserPhones(outgoingPhones)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405603">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405604">&nbsp;&nbsp;&nbsp;&nbsp;// Check values for phone #1 numbers.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405605">&nbsp;&nbsp;&nbsp;&nbsp;r = myAPI.getUserPhones(userPublicID)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405606">&nbsp;&nbsp;&nbsp;&nbsp;print("before HomePhone:" + r.HomePhone)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405607">&nbsp;&nbsp;&nbsp;&nbsp;print("before WorkPhone:" + r.WorkPhone)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405608">&nbsp;&nbsp;&nbsp;&nbsp;TestBase.assertEquals(r.HomePhone, "home1")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405609">&nbsp;&nbsp;&nbsp;&nbsp;TestBase.assertEquals(r.WorkPhone, "work1")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405610">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405611">&nbsp;&nbsp;&nbsp;&nbsp;// Set the data phone #2.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405612">&nbsp;&nbsp;&nbsp;&nbsp;outgoingPhones = new UserPhones()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405613">&nbsp;&nbsp;&nbsp;&nbsp;outgoingPhones.PublicID = userPublicID</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405614">&nbsp;&nbsp;&nbsp;&nbsp;outgoingPhones.HomePhone = "home2"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405615">&nbsp;&nbsp;&nbsp;&nbsp;outgoingPhones.WorkPhone = "work2"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405616">&nbsp;&nbsp;&nbsp;&nbsp;myAPI.setUserPhones(outgoingPhones)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405617">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3634726">&nbsp;&nbsp;&nbsp;&nbsp;// Check values for phone #2 numbers.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405618">&nbsp;&nbsp;&nbsp;&nbsp;r = myAPI.getUserPhones( userPublicID )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405619">&nbsp;&nbsp;&nbsp;&nbsp;print("after HomePhone:" + r.HomePhone)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405620">&nbsp;&nbsp;&nbsp;&nbsp;print("after WorkPhone:" + r.WorkPhone)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405621">&nbsp;&nbsp;&nbsp;&nbsp;TestBase.assertEquals(r.HomePhone, "home2")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405622">&nbsp;&nbsp;&nbsp;&nbsp;TestBase.assertEquals(r.WorkPhone, "work2")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405623">  }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405765">}</a></PRE>
+      <div class="B_-_Body"><a name="3405792">In Studio, if you select </a><span class="ui_-_UI_element">Class</span> → <span class="ui_-_UI_element">Run Test Class</span>, the following eventually prints in the GUnit console window:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="3405776">19:37:44,725 INFO ********** MyTestClassTest ********** SUITE SETUP OK</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405777">Public ID of the record is default_data:1</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405778">before HomePhone:home1</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405779">before WorkPhone:work1</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405780">after HomePhone:home2</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3405781">after WorkPhone:work2</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3550441">19:37:47,369 INFO ********** MyTestClassTest ********** SUITE TEARDOWN</a></PRE>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

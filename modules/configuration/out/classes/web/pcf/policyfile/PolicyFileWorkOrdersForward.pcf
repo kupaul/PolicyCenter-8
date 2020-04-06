@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Forward
+    canVisit="perm.PolicyPeriod.view(policyPeriod)"
+    id="PolicyFileWorkOrdersForward">
+    <LocationEntryPoint
+      signature="PolicyFileWorkOrdersForward(job : Job, policyPeriod : PolicyPeriod)"/>
+    <LocationEntryPoint
+      signature="PolicyFileWorkOrdersForward(job : Job, policyPeriod : PolicyPeriod, asOfDate : DateTime)"/>
+    <Variable
+      name="job"
+      type="Job"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="policyPeriod.EditEffectiveDate"
+      name="asOfDate"
+      type="DateTime"/>
+    <ForwardCondition
+      action="PolicyFileForward.go(policyPeriod, asOfDate, &quot;PolicyDraftPeriodError&quot;)"
+      condition="!policyPeriod.Promoted"/>
+    <ForwardCondition
+      action="PolicyFileForward.go(policyPeriod, asOfDate, &quot;PolicyWorkOrders for Job&quot;, {policyPeriod.Job})"/>
+  </Forward>
+</PCF>

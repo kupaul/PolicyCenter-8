@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?><internalExtension xmlns="http://guidewire.com/datamodel" entityName="GroupAssignmentState">
+  <implementsEntity name="LastAssignedUserContainer"/>
+  <column desc="The current load of the group for jobs." name="JobLoad" nullok="true" type="integer"/>
+  <column desc="The current load of the group for policies." name="PolicyLoad" nullok="true" type="integer"/>
+  <column desc="The current load of the group for accounts." name="AccountLoad" nullok="true" type="integer"/>
+  <!-- Check that the LastXXXGrp is a subgroup of the main group -->
+  <customconsistencycheck className="com.guidewire.pc.domain.assignment.dbchecks.GroupAssignmentStateCheck" desc="Check that the LastXXXGrp is a subgroup of the main group (the group referenced by GroupID)" staticMethodName="checkSubgroupReferences"/>
+  <description>Information includes what user/group was last assigned work, user/group job loads and user/group review loads</description>
+  <!-- Check that the LastXXXUser is a member of the LastXXXGrp -->
+  <jointableconsistencycheck jointable="groupuser">
+    <matchingcolumn joincolumn="UserID" name="LastJobUserID"/>
+    <matchingcolumn joincolumn="GroupID" name="LastJobGrpID"/>
+  </jointableconsistencycheck>
+  <jointableconsistencycheck jointable="groupuser">
+    <matchingcolumn joincolumn="UserID" name="LastReviewUserID"/>
+    <matchingcolumn joincolumn="GroupID" name="LastReviewGrpID"/>
+  </jointableconsistencycheck>
+  <jointableconsistencycheck jointable="groupuser">
+    <matchingcolumn joincolumn="UserID" name="LastActivityUserID"/>
+    <matchingcolumn joincolumn="GroupID" name="LastActivityGrpID"/>
+  </jointableconsistencycheck>
+  <jointableconsistencycheck jointable="groupuser">
+    <matchingcolumn joincolumn="UserID" name="LastAccountUserID"/>
+    <matchingcolumn joincolumn="GroupID" name="LastAccountGrpID"/>
+  </jointableconsistencycheck>
+</internalExtension>

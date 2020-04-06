@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?><internalExtension xmlns="http://guidewire.com/datamodel" entityName="Organization">
+  <implementsEntity name="Validatable"/>   
+  <array name="AgencyBillPlans" arrayentity="AgencyBillPlan" cascadeDelete="true" desc="Associated agency bill plans, one per currency"/>
+  <typekey createhistogram="true" desc="The status of the external producer organization." name="ProducerStatus" nullok="true" typelist="ProducerStatus"/>
+  <typekey desc="The tier of the external producer organization." name="Tier" nullok="true" typelist="Tier"/>
+  <!-- Organization-related consistency checks and loader validations. -->
+  <dbcheckbuilder className="com.guidewire.pc.domain.community.dbchecks.OrganizationDBCheckBuilder"/>
+  <description>Defines an organization that has a hierarchy of groups</description>
+  <events/>
+  <index desc="Perf index to find organizations by ProducerStatus" name="OrgProdStatusPerf" unique="true">
+    <indexcol keyposition="1" name="ID"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="ProducerStatus"/>
+  </index>
+  <index desc="Org' Name partial-match look-up index on de-normalization mirror column" expectedtobecovering="true" name="OrgName" unique="true">
+    <indexcol keyposition="1" name="NameDenorm"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="ID"/>
+  </index>
+  <index desc="Org' Type/ID look-up index for Org' By Entity Reference, e.g., through ProducerCode for PolicyPeriod" expectedtobecovering="true" name="OrgType" unique="true">
+    <indexcol keyposition="1" name="Type"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="Name"/>
+    <indexcol keyposition="4" name="ID"/>
+  </index>
+</internalExtension>

@@ -1,0 +1,274 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Screen
+    editable="true"
+    id="BatchProcessScreen">
+    <Require
+      name="batchProcessTypes"
+      type="BatchProcessType[]"/>
+    <Variable
+      initialValue="new gw.api.web.tools.BatchProcessInfoPage()"
+      name="Page"/>
+    <Variable
+      initialValue="gw.api.tools.ClusterInfoData.isBatchServerAvailable()"
+      name="BatchServerAvail"
+      recalculateOnRefresh="true"/>
+    <Verbatim
+      label="Page.Message"/>
+    <ListDetailPanel
+      selectionName="SelectedProcess"
+      selectionOnEnter=""
+      selectionType="BatchProcessType">
+      <PanelRef
+        editable="true">
+        <TitleBar
+          title="displaykey.Web.InternalTools.BatchProcessInfo.Processes"/>
+        <Toolbar>
+          <ToolbarButton
+            action="null"
+            id="refresh"
+            label="displaykey.Button.Refresh"/>
+          <ToolbarButton
+            action="Page.download(batchProcessTypes)"
+            download="true"
+            id="download"
+            label="displaykey.Button.Download"/>
+        </Toolbar>
+        <ListViewPanel
+          editable="false"
+          id="BatchProcessesLV">
+          <RowIterator
+            editable="false"
+            elementName="batchProcessType"
+            pageSize="0"
+            value="batchProcessTypes">
+            <Variable
+              initialValue="new tools.BatchProcess(batchProcessType)"
+              name="batchProcess"/>
+            <Variable
+              initialValue="BatchServerAvail ? tools.BatchProcess.getNextRun( batchProcessType ) : null"
+              name="nextDate"
+              recalculateOnRefresh="true"/>
+            <Variable
+              initialValue="BatchServerAvail ? tools.BatchProcess.getSchedule( batchProcessType ) : null"
+              name="schedule"
+              recalculateOnRefresh="true"/>
+            <ToolbarFilter
+              name="ProcessUsageFilter">
+              <ToolbarFilterOptionGroup
+                filters="gw.api.web.tools.BatchProcessInfoPage.USAGE_FILTERS"/>
+            </ToolbarFilter>
+            <Row
+              visible="batchProcessType != typekey.BatchProcessType.TC_ARCHIVE or gw.api.web.tools.ArchiveInfoPage.isArchivingAvailable()">
+              <Cell
+                id="BatchProcess"
+                label="displaykey.Web.InternalTools.BatchProcessInfo.BatchProcess"
+                sortOrder="1"
+                value="batchProcessType"
+                width="200"/>
+              <Cell
+                id="Description"
+                label="displaykey.Web.InternalTools.BatchProcessInfo.Description"
+                value="batchProcessType.Description"
+                width="220"/>
+              <LinkCell
+                available="batchProcessType.hasCategory( BatchProcessTypeUsage.TC_UIRUNNABLE)"
+                id="RunBatchWithoutNotifyContent"
+                label="displaykey.Web.InternalTools.BatchProcessInfo.Run"
+                visible="BatchServerAvail and (perm.User.EditBatchProcess or perm.User.DevAllAccess)"
+                width="200">
+                <Link
+                  action="Page.start(batchProcess)"
+                  available="batchProcessType.hasCategory(BatchProcessTypeUsage.TC_UIRUNNABLE) and not batchProcess.ProcessRunning"
+                  id="RunBatchWithoutNotify"
+                  label="displaykey.Web.InternalTools.BatchProcessInfo.RunWriterOnly"
+                  styleClass="miniButton"/>
+                <Link
+                  action="batchProcess.requestTermination()"
+                  available="batchProcess.ProcessRunning"
+                  id="TerminateBatchWithoutNotify"
+                  label="displaykey.Web.InternalTools.BatchProcessInfo.Terminate"
+                  styleClass="miniButton"/>
+                <Link
+                  action="SelectedProcess = batchProcessType; BatchProcessDownloadConfigure.go(batchProcessType)"
+                  available="true"
+                  id="DownloadHistory"
+                  label="displaykey.Web.InternalTools.BatchProcessInfo.Download.History"
+                  styleClass="miniButton"/>
+              </LinkCell>
+              <!-- <ProgressCell
+                id="Status"
+                label="displaykey.Web.InternalTools.BatchProcessInfo.ActiveStatus"
+                percentage="calculatePercentage(batchProcess.ProcessStatus)"
+                status="batchProcess.ActiveStatus ? displaykey.Web.InternalTools.BatchProcessInfo.Status.Running : displaykey.Web.InternalTools.BatchProcessInfo.Status.Inactive"
+                visible="BatchServerAvail"/> -->
+              <DateCell
+                dateFormat="short"
+                id="LastRun"
+                label="displaykey.Web.InternalTools.BatchProcessInfo.LastRun"
+                timeFormat="medium"
+                value="tools.BatchProcess.getLastRun( batchProcessType )"
+                visible="BatchServerAvail"
+                width="150"/>
+              <Cell
+                id="LastRunStatus"
+                label="displaykey.Web.InternalTools.BatchProcessInfo.PrevStatus"
+                value="getLastRunStatus(tools.BatchProcess.getLastRunStatus( batchProcessType ))"
+                visible="BatchServerAvail"
+                width="150"/>
+              <DateCell
+                dateFormat="short"
+                id="NextRun"
+                label="displaykey.Web.InternalTools.BatchProcessInfo.NextScheduledRun"
+                timeFormat="medium"
+                value="nextDate"
+                visible="BatchServerAvail"
+                width="150"/>
+              <LinkCell
+                id="ScheduleActions"
+                label="displaykey.Web.InternalTools.BatchProcessInfo.ScheduleAction"
+                width="130">
+                <Link
+                  action="Page.stopSchedule(batchProcessType)"
+                  available="nextDate != null"
+                  id="ScheduleStop"
+                  label="displaykey.Web.InternalTools.BatchProcessInfo.Stop"
+                  styleClass="miniButton"/>
+                <Link
+                  action="Page.startSchedule(batchProcessType)"
+                  available="nextDate == null and schedule != null and schedule != &quot;&quot;"
+                  id="ScheduleStart"
+                  label="displaykey.Web.InternalTools.BatchProcessInfo.Start"
+                  styleClass="miniButton"/>
+              </LinkCell>
+              <Cell
+                enableSort="false"
+                id="Schedule"
+                label="displaykey.Web.InternalTools.BatchProcessInfo.Schedule"
+                value="schedule"
+                visible="BatchServerAvail"/>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+      </PanelRef>
+      <CardViewPanel
+        id="ProcuessHistoryCV">
+        <Card
+          id="ProcessHistoryChartTab"
+          title="displaykey.Web.InternalTools.BatchProcessInfo.ChartTab.Title">
+          <ChartPanel
+            height="500"
+            type="TimeSeries"
+            visible="qp.getCount() &gt; 0"
+            width="750">
+            <Variable
+              initialValue="Page.findLastProcessHistory( SelectedProcess, 14 )"
+              name="qp"
+              recalculateOnRefresh="true"
+              type="ProcessHistoryQuery"/>
+            <DomainAxis
+              dateFormat="short"
+              label="displaykey.Web.InternalTools.BatchProcessInfo.Chart.Time"
+              timeFormat="short"
+              type="Date"/>
+            <RangeAxis
+              label="displaykey.Web.InternalTools.BatchProcessInfo.Chart.ExecutionTime"
+              type="Number"/>
+            <DataSeries
+              dataValues="qp"
+              label="displaykey.Web.InternalTools.BatchProcessInfo.Chart.ExecutionTime"
+              value="(value.CompleteDate.Time - value.StartDate.Time)/1000"
+              xValue="value.StartDate"/>
+            <DualAxisDataSeries
+              axisLabel="displaykey.Web.InternalTools.BatchProcessInfo.ChartTab.AxisLabel"
+              categoryLabel="value.StartDate"
+              dataValues="qp"
+              seriesLabel="displaykey.Web.InternalTools.BatchProcessInfo.Chart.OpsPerformed"
+              type="TimeSeries"
+              value="value.OpsPerformed"/>
+          </ChartPanel>
+        </Card>
+        <Card
+          id="ProcessHistoryTab"
+          title="displaykey.Web.InternalTools.BatchProcessInfo.HistoryTab.Title">
+          <PanelRef>
+            <Toolbar/>
+            <ListViewPanel
+              id="BatchProcessInfo_ProcessHistoryLV">
+              <Variable
+                initialValue="Page.findProcessHistory(SelectedProcess)"
+                name="qp"
+                recalculateOnRefresh="true"
+                type="ProcessHistoryQuery"/>
+              <RowIterator
+                editable="false"
+                elementName="ph"
+                pageSize="10"
+                type="ProcessHistory"
+                value="qp">
+                <ToolbarFilter
+                  name="ProcessHistoryFilter">
+                  <ToolbarFilterOptionGroup
+                    filters="gw.api.web.tools.BatchProcessInfoPage.FILTERS"/>
+                </ToolbarFilter>
+                <Row>
+                  <DateCell
+                    dateFormat="short"
+                    id="StartDate"
+                    label="displaykey.Web.InternalTools.BatchProcessInfo.ProcessHistoryLV.StartDate"
+                    sortDirection="descending"
+                    sortOrder="1"
+                    timeFormat="short"
+                    value="ph.StartDate"/>
+                  <DateCell
+                    dateFormat="short"
+                    enableSort="false"
+                    id="CompleteDate"
+                    label="displaykey.Web.InternalTools.BatchProcessInfo.ProcessHistoryLV.CompleteDate"
+                    timeFormat="short"
+                    value="ph.RanToCompletion ? ph.CompleteDate : null"/>
+                  <Cell
+                    id="Scheduled"
+                    label="displaykey.Web.InternalTools.BatchProcessInfo.ProcessHistoryLV.Scheduled"
+                    value="ph.Scheduled"/>
+                  <Cell
+                    id="OpsPerformed"
+                    label="displaykey.Web.InternalTools.BatchProcessInfo.ProcessHistoryLV.OpsPerformed"
+                    value="ph.OpsPerformed"/>
+                  <Cell
+                    id="FailedOps"
+                    label="displaykey.Web.InternalTools.BatchProcessInfo.ProcessHistoryLV.FailedOps"
+                    value="ph.FailedOps"/>
+                  <Cell
+                    enableSort="false"
+                    id="FailureReason"
+                    label="displaykey.Web.InternalTools.BatchProcessInfo.ProcessHistoryLV.FailedReason"
+                    value="ph.FailureReason"/>
+                </Row>
+              </RowIterator>
+            </ListViewPanel>
+          </PanelRef>
+        </Card>
+      </CardViewPanel>
+    </ListDetailPanel>
+    <Code><![CDATA[function calculatePercentage(processStatus : gw.api.webservice.maintenanceTools.ProcessStatus) : int {
+  if (not processStatus.Running) {
+    return 100
+  }
+  if (processStatus.OpsExpected <= 0 or processStatus.OpsExpected <= processStatus.OpsCompleted) {
+    return -1
+  }
+  return ((processStatus.OpsCompleted * 100) / processStatus.OpsExpected)
+}
+
+function getLastRunStatus(status : Boolean) : String {
+  if (status == null) {
+    return displaykey.Web.InternalTools.BatchProcessInfo.LastRunStatus.Na
+  }
+  
+  return status ? displaykey.Web.InternalTools.BatchProcessInfo.LastRunStatus.Ok : displaykey.Web.InternalTools.BatchProcessInfo.LastRunStatus.NotOk;
+}]]></Code>
+  </Screen>
+</PCF>

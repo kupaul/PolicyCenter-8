@@ -1,0 +1,195 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="rateBook.isDraft()"
+    id="RateBookDetailsScreen">
+    <Require
+      name="rateBook"
+      type="RateBook"/>
+    <Require
+      name="displayImportResults"
+      type="boolean"/>
+    <Require
+      name="warnings"
+      type="List&lt;String&gt;"/>
+    <Variable
+      initialValue="new gw.pcf.rating.ratebook.RateBookDetailsScreenUIHelper (rateBook)"
+      name="rateBookDetailsScreenUIHelper"
+      type="gw.pcf.rating.ratebook.RateBookDetailsScreenUIHelper"/>
+    <Variable
+      initialValue="gw.rating.rtm.util.RatingUIUtil.RateBookCardTabType.TableCard"
+      name="currentCard"
+      type="gw.rating.rtm.util.RatingUIUtil.RateBookCardTabType"/>
+    <Variable
+      initialValue="false"
+      name="validateMissingTablesInRoutine"
+      type="boolean"/>
+    <AlertBar
+      id="ImportSuccessfulMessage"
+      label="displaykey.Web.Rating.Ratebooks.SuccessfullyImported"
+      showConfirmMessage="false"
+      visible="displayImportResults"/>
+    <AlertBar
+      id="RateBookWarningsMessage"
+      label="rateBookDetailsScreenUIHelper.getWarningMessages(warnings)"
+      showConfirmMessage="false"
+      visible="displayImportResults and warnings.Count &gt; 0"/>
+    <AlertBar
+      id="RateTableMissingInCalcRoutineWarning"
+      label="displaykey.Web.Rating.Errors.RateTableMissingFromRateBook(rateBook.RateTablesMissingInCalcRoutines)"
+      showConfirmMessage="false"
+      visible="validateMissingTablesInRoutine and rateBook.RateTablesMissingInCalcRoutines.HasElements"/>
+    <PanelRef>
+      <PanelRow>
+        <PanelColumn>
+          <PanelRef
+            def="RateBookDV(rateBook)"
+            editable="rateBook.Status == RateBookStatus.TC_DRAFT">
+            <Toolbar
+              id="RatebookDetailToolbar">
+              <ToolbarButton
+                action="EditRateBook.go(rateBook, currentCard)"
+                id="EditButton"
+                label="displaykey.Web.Rating.Ratebooks.EditButton"
+                visible="rateBook.isDraft() and perm.System.ratebookedit"/>
+              <ToolbarButton
+                action="rateBookDetailsScreenUIHelper.removeCurrentBook()"
+                confirmMessage="displaykey.Web.Rating.Ratebooks.DeleteConfirmation"
+                id="DeleteButton"
+                label="displaykey.Web.Rating.Ratebooks.DeleteButton"
+                visible="rateBook.isDraft() and perm.System.ratebookedit"/>
+              <ToolbarButton
+                action="rateBookDetailsScreenUIHelper.processInTx(\ rb -&gt; rb.stage()) validateMissingTablesInRoutine=true"
+                id="SubmitForApprovalButton"
+                label="displaykey.Web.Rating.Ratebooks.PromoteToStageButton"
+                visible="rateBook.isDraft() and (not rateBook.Empty) and perm.System.ratebookedit"/>
+              <ToolbarButton
+                action="rateBookDetailsScreenUIHelper.processInTx(\ rb -&gt; rb.approve())"
+                id="ApproveButton"
+                label="displaykey.Web.Rating.Ratebooks.ApproveButton"
+                visible="(rateBook.isStage()) and (not rateBook.Empty) and perm.System.ratebookapprove"/>
+              <ToolbarButton
+                action="rateBookDetailsScreenUIHelper.ValidatedPreExport = false; rateBookDetailsScreenUIHelper.processInTx(\ rb -&gt; rb.returnToDraft())"
+                id="ReturnToDraftButton"
+                label="displaykey.Web.Rating.Ratebooks.ReturnToDraftButton"
+                visible="(rateBook.isStage() or rateBook.isApproved()) and perm.System.ratebookedit"/>
+              <ToolbarButton
+                action="rateBookDetailsScreenUIHelper.processInTx(\ rb -&gt; rb.activate())"
+                confirmMessage="displaykey.Web.Rating.Ratebooks.MoveToProductionConfirmation"
+                id="MoveToProductionButton"
+                label="displaykey.Web.Rating.Ratebooks.MoveToProductionButton"
+                visible="rateBook.isApproved() and (not rateBook.Empty) and perm.System.ratebookapprove"/>
+              <ToolbarButton
+                action="VersionRateBook.go(rateBook)"
+                id="VersionRateBookButton"
+                label="displaykey.Web.Rating.Ratebooks.NewEdition"
+                shortcut="C"
+                visible="rateBook.isActive() and (not rateBook.Empty) and perm.System.ratebookedit"/>
+              <ToolbarButton
+                action="rateBookDetailsScreenUIHelper.exportXML()"
+                available="!rateBook.isDraft()"
+                download="true"
+                id="ExportToXMLButton"
+                label="(!rateBookDetailsScreenUIHelper.ValidatedPreExport) ? displaykey.Web.Rating.Ratebooks.ExportRateBookButton : displaykey.Web.Rating.Ratebooks.ExportRateBookContinueButton"
+                shortcut="X"
+                showConfirmMessage="false"
+                visible="true"/>
+            </Toolbar>
+          </PanelRef>
+        </PanelColumn>
+        <PanelColumn>
+          <PanelRef
+            def="LocalizedValuesDV(rateBook, { &quot;BookName&quot;, &quot;BookDesc&quot;}, { displaykey.Web.Rating.Ratebooks.L10nDV.Name, displaykey.Web.Rating.Ratebooks.L10nDV.Description })"
+            editable="rateBook.Status == RateBookStatus.TC_DRAFT"/>
+        </PanelColumn>
+      </PanelRow>
+    </PanelRef>
+    <CardViewPanel>
+      <Card
+        id="IncludedRateTablesCard"
+        onSelect="currentCard = gw.rating.rtm.util.RatingUIUtil.RateBookCardTabType.TableCard"
+        selectOnEnter="currentCard == gw.rating.rtm.util.RatingUIUtil.RateBookCardTabType.TableCard"
+        title="displaykey.Web.Rating.Ratebooks.SelectedRateTablesTitle">
+        <PanelRef
+          id="IncludedRateTablesPanel">
+          <Toolbar/>
+          <ListViewPanel
+            id="IncludedRateTablesLV">
+            <RowIterator
+              editable="false"
+              elementName="includedRateTable"
+              id="IncludedRateTablesList"
+              value="rateBook != null ? rateBook.SelectedRateTables.orderBy(\ rt -&gt; rt.Definition.TableName).toTypedArray() : java.util.Collections.EMPTY_LIST as entity.RateTable[]">
+              <Row>
+                <TextCell
+                  action="RateTableFactorList.go(gw.rating.rtm.domain.RateTableFactorListController.createDatabaseBasedController(), includedRateTable, rateBook)"
+                  id="Name"
+                  label="displaykey.Web.Rating.RateTables.Name"
+                  value="includedRateTable.Definition.TableName"/>
+                <TextCell
+                  id="Code"
+                  label="displaykey.Web.Rating.RateTables.Code"
+                  value="includedRateTable.Definition.TableCode"/>
+                <TextCell
+                  id="Description"
+                  label="displaykey.Web.Rating.RateTables.Description"
+                  value="includedRateTable.Definition.TableDesc"/>
+                <TextCell
+                  align="center"
+                  id="Usage"
+                  label="displaykey.Web.Rating.RateTables.Usage"
+                  value="gw.rating.rtm.util.RatingUIUtil.getOwnershipLabel(includedRateTable)"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </PanelRef>
+      </Card>
+      <Card
+        id="IncludedRateRoutines"
+        onSelect="currentCard = gw.rating.rtm.util.RatingUIUtil.RateBookCardTabType.RoutineCard"
+        selectOnEnter="currentCard == gw.rating.rtm.util.RatingUIUtil.RateBookCardTabType.RoutineCard"
+        title="displaykey.Web.Rating.Ratebooks.SelectedRateRoutinesTitle">
+        <PanelRef
+          id="IncludedRateRoutinesPanel">
+          <Toolbar/>
+          <ListViewPanel
+            id="IncludedRateRoutinesLV">
+            <RowIterator
+              editable="false"
+              elementName="rateRoutine"
+              id="IncludedRateRoutinesList"
+              value="rateBook != null ? rateBook.updatedCalcRoutines.orderBy(\ c -&gt; c.Name).toTypedArray() : java.util.Collections.EMPTY_LIST as entity.CalcRoutineDefinition[]">
+              <Row>
+                <TextCell
+                  action="RateRoutineDetail.go(rateRoutine)"
+                  align="left"
+                  id="Name"
+                  label="displaykey.Web.Rating.RateRoutines.Name"
+                  value="rateRoutine.Name"/>
+                <TextCell
+                  id="Code"
+                  label="displaykey.Web.Rating.RateRoutines.Code"
+                  value="rateRoutine.Code"/>
+                <TextCell
+                  id="Jurisdiction"
+                  label="displaykey.Web.Rating.RateRoutines.Jurisdiction"
+                  value="rateRoutine.Jurisdiction"/>
+                <TextCell
+                  align="left"
+                  id="Version"
+                  label="displaykey.Web.Rating.RateRoutines.Version"
+                  value="rateRoutine.Version"/>
+                <TextCell
+                  id="Description"
+                  label="displaykey.Web.Rating.RateRoutines.Description"
+                  value="rateRoutine.Description"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </PanelRef>
+      </Card>
+    </CardViewPanel>
+  </Screen>
+</PCF>

@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    afterCommit="afterCommit()"
+    afterEnter="gw.api.web.PebblesUtil.addWebMessages(CurrentLocation, policyPeriod.PolicyFileMessages); policyPeriod.reevalutateAttachments()"
+    beforeCommit="policyPeriod.RIRiskVersionLists.each(\ v -&gt; v.AllVersions.each(\ r -&gt; gw.reinsurance.risk.RIRiskValidation.validateUI(r)))"
+    canEdit="not hasOpenJobs"
+    canVisit="perm.PolicyPeriod.view(policyPeriod) and perm.System.viewpolicyfile and policyPeriod.AllReinsurables.HasElements and perm.System.viewreinsuranceforpolicy"
+    countsAsWork="false"
+    id="PolicyFile_Reinsurance"
+    title="displaykey.Web.PolicyFile.Reinsurance">
+    <LocationEntryPoint
+      signature="PolicyFile_Reinsurance(policyPeriod : PolicyPeriod, asOfDate : DateTime)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="asOfDate"
+      type="DateTime"/>
+    <Variable
+      initialValue="policyPeriod.Policy.OpenJobs.countWhere(\j -&gt; j.Subtype != typekey.Job.TC_AUDIT) &gt; 0"
+      name="hasOpenJobs"
+      recalculateOnRefresh="true"/>
+    <Variable
+      name="cededPremiumComment"
+      type="String"/>
+    <Screen>
+      <Toolbar
+        visible="not hasOpenJobs">
+        <EditButtons
+          editVisible="perm.System.editreinsuranceforpolicybasic"
+          updateVisible="perm.System.editreinsuranceforpolicybasic"/>
+      </Toolbar>
+      <AlertBar
+        allowDismiss="false"
+        id="CannotEdit"
+        label="displaykey.Web.Reinsurance.PolicyFile.OpenJobs"
+        visible="hasOpenJobs"/>
+      <DetailViewPanel>
+        <InputColumn>
+          <TextInput
+            editable="true"
+            hideIfReadOnly="true"
+            id="CedingUpdateComment"
+            label="displaykey.Web.Reinsurance.PolicyFile.CededPremiumRecalcReason"
+            value="cededPremiumComment"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef
+        def="PolicyReinsuranceCV(policyPeriod, asOfDate)"/>
+    </Screen>
+    <Code><![CDATA[function afterCommit() {
+  if (policyPeriod.Status == TC_BOUND) {
+    gw.transaction.Transaction.runWithNewBundle(\ bundle -> {
+      // don't want to do this if policyPeriod is still quoted.
+      var inBundlePP = bundle.add(policyPeriod)
+      inBundlePP.activateDraftFacAgreements()
+      inBundlePP.enqueueForCededPremiumCalculation(RIRecalcReason.TC_POLICYFILEEDIT, cededPremiumComment)
+    })
+  }
+}]]></Code>
+  </Page>
+</PCF>

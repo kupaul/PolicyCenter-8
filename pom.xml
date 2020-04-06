@@ -1,0 +1,160 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.guidewire.pc</groupId>
+    <artifactId>pc-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <relativePath/>
+  </parent>
+
+  <groupId>com.guidewire.pc.appbuild</groupId>
+  <artifactId>root</artifactId>
+  <packaging>pom</packaging>
+
+  <name>PolicyCenter</name>
+
+  <properties>
+    <!-- artifactId of the target module -->
+    <gw.targetmodule>configuration</gw.targetmodule>
+    <!-- groupId:artifactId of the target module -->
+    <gw.pc.targetmodule>com.guidewire.pc.appbuild:${gw.targetmodule}</gw.pc.targetmodule>
+    <idea.version>IC-129.713</idea.version>
+
+    <!-- We would change output folders in generate-project profile, so command-line output is separate from IJ -->
+    <output.directory>target/classes</output.directory>
+    <test.output.directory>target/test-classes</test.output.directory>
+  </properties>
+
+  <modules>
+    <module>modules/configuration</module>
+  </modules>
+
+  <!-- Generating Studio projects -->
+  <build>
+    <outputDirectory>${output.directory}</outputDirectory>
+    <testOutputDirectory>${test.output.directory}</testOutputDirectory>
+
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>com.guidewire.build</groupId>
+          <artifactId>idea-maven-plugin</artifactId>
+          <configuration>
+            <sdk>
+              <name>PolicyCenter SDK</name>
+              <type>JavaSDK</type>
+              <modules>
+                <module>com.guidewire.pc:*</module>
+              </modules>
+            </sdk>
+            <attachSources>false</attachSources>
+            <attachJavadocs>false</attachJavadocs>
+            <disabledPlugins>modules/ant/disabled_plugins.txt</disabledPlugins>
+            <gwConfigDir>config/</gwConfigDir>
+            <checkUpdates>false</checkUpdates>
+            <shadowMode>true</shadowMode>
+            <application>pc</application>
+            <topModule>${gw.targetmodule}</topModule>
+            <settingsRoot>.idea/settings</settingsRoot>
+            <projectRoot>${session.executionRootDirectory}</projectRoot>
+            <useExternalCompiler>false</useExternalCompiler>
+            <!-- Replaced on first Studio start -->
+            <openProject>@PROJECT_ROOT@</openProject>
+            <enableGroups>false</enableGroups>
+            <mavenRepositoryMacro>M2_REPO</mavenRepositoryMacro>
+            <!-- Replaced on first Studio start -->
+            <mavenRepositoryLocation>@M2_REPO@</mavenRepositoryLocation>
+
+            <excludes>
+              <!-- Studio output folder -->
+              <exclude>out</exclude>
+            </excludes>
+          </configuration>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+  </build>
+
+  <profiles>
+    <profile>
+      <id>generate-project</id>
+
+      <properties>
+        <output.directory>out/classes</output.directory>
+        <test.output.directory>out/test-classes</test.output.directory>
+      </properties>
+      <build>
+        <plugins>
+          <plugin>
+            <groupId>com.guidewire.build</groupId>
+            <artifactId>idea-maven-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>generate-project-and-settings</id>
+                <inherited>false</inherited>
+                <goals>
+                  <goal>generate-project</goal>
+                  <goal>generate-settings</goal>
+                </goals>
+              </execution>
+
+              <execution>
+                <id>generate-server-launcher</id>
+                <inherited>false</inherited>
+                <goals>
+                  <goal>generate-launchers</goal>
+                </goals>
+                <configuration>
+                  <memorySettings>modules/configuration/etc/memory.properties</memorySettings>
+                  <jettySettings>modules/configuration/etc/jetty.properties</jettySettings>
+                  <runConfigurations>
+                    <runConfiguration>
+                      <name>Server</name>
+                      <template>application</template>
+                      <targetModule>${gw.targetmodule}</targetModule>
+                      <mainClass>com.guidewire.commons.jetty.GWServerJettyServerMain</mainClass>
+                      <outputFile>Server.xml</outputFile>
+                      <systemProperties>
+                        <gw.server.mode>dev</gw.server.mode>
+                        <gw.devroot.dir>.</gw.devroot.dir>
+                        <gwdebug>true</gwdebug>
+                      </systemProperties>
+                    </runConfiguration>
+                  </runConfigurations>
+                </configuration>
+              </execution>
+            </executions>
+
+            <configuration>
+              <defaultJUnit>
+                <memoryMin>500</memoryMin>
+                <memoryMax>1500</memoryMax>
+                <memoryPerm>300</memoryPerm>
+                <systemProperties>
+                  <gw.ab.env>h2mem</gw.ab.env>
+                  <gw.bc.env>h2mem</gw.bc.env>
+                  <gw.cc.env>h2mem</gw.cc.env>
+                  <gw.pc.env>h2mem</gw.pc.env>
+                  <gw.ph.env>h2mem</gw.ph.env>
+                  <gw.px.env>h2mem</gw.px.env>
+                  <gw.th.env>h2mem</gw.th.env>
+                </systemProperties>
+                <jvmArgs>-ea</jvmArgs>
+              </defaultJUnit>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+  </profiles>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.guidewire.pc</groupId>
+      <artifactId>pc-gunit</artifactId>
+      <version>1.0-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+</project>

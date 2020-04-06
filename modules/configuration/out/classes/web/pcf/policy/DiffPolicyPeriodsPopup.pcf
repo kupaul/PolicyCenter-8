@@ -1,0 +1,122 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    canVisit="perm.PolicyPeriod.view(firstPeriod) and perm.PolicyPeriod.view(secondPeriod)"
+    id="DiffPolicyPeriodsPopup"
+    parent="PolicyFileForward(policyFilePeriod, asOfDate)"
+    title="title">
+    <LocationEntryPoint
+      signature="DiffPolicyPeriodsPopup(firstPeriod : PolicyPeriod, secondPeriod : PolicyPeriod, policyFilePeriod : PolicyPeriod, asOfDate : DateTime, title : String)"/>
+    <Variable
+      name="firstPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="secondPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="policyFilePeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="asOfDate"
+      type="DateTime"/>
+    <Variable
+      name="title"
+      type="String"/>
+    <Variable
+      initialValue="firstPeriod.Job.DisplayType + &quot;: &quot; + firstPeriod.Job.JobNumber"
+      name="firstPeriodName"
+      type="String"/>
+    <Variable
+      initialValue="secondPeriod.Job.DisplayType + &quot;: &quot; + secondPeriod.Job.JobNumber"
+      name="secondPeriodName"
+      type="String"/>
+    <Variable
+      initialValue="gw.diff.tree.DiffTree.recalculateRootNode(firstPeriod, secondPeriod, DiffReason.TC_COMPAREJOBS)"
+      name="rootNode"
+      type="gw.api.tree.RowTreeRootNode"/>
+    <Variable
+      initialValue="policyFilePeriod.Policy.Product.DiffTreeConfig"
+      name="diffTreeConfig"
+      type="java.lang.String"/>
+    <Screen
+      id="DiffPolicyPeriodsScreen">
+      <TitleBar/>
+      <Toolbar/>
+      <ListViewPanel
+        id="Wizard_ManageBranchesLV">
+        <Row renderAsSmartHeader="true">
+          <Cell
+            id="StatusHeader"/>
+          <Cell
+            id="firstBranchName"
+            value="firstPeriodName"/>
+          <Cell
+            id="secondBranchName"
+            value="secondPeriodName"/>
+        </Row>
+        <Row>
+          <Cell
+            id="CreateTime"
+            value="displaykey.Web.JobWizard.ManageBranchesLV.CreateTime"/>
+          <DateCell
+            dateFormat="short"
+            id="firstCreateTime"
+            timeFormat="short"
+            value="firstPeriod.CreateTime"/>
+          <DateCell
+            dateFormat="short"
+            id="secondCreateTime"
+            timeFormat="short"
+            value="secondPeriod.CreateTime"/>
+        </Row>
+        <Row>
+          <Cell
+            id="EffectiveDate"
+            value="displaykey.Web.JobWizard.ManageBranchesLV.EffectiveDate"/>
+          <DateCell
+            dateFormat="short"
+            id="firstEffectiveDate"
+            timeFormat="short"
+            value="firstPeriod.EditEffectiveDate"/>
+          <DateCell
+            dateFormat="short"
+            id="secondEffectiveDate"
+            timeFormat="short"
+            value="secondPeriod.EditEffectiveDate"/>
+        </Row>
+        <Row>
+          <Cell
+            id="PeriodStatus"
+            value="displaykey.Web.JobWizard.ManageBranchesLV.PeriodStatus"/>
+          <Cell
+            id="firstStatus"
+            value="firstPeriod.Status"/>
+          <Cell
+            id="secondStatus"
+            value="secondPeriod.Status"/>
+        </Row>
+        <Row
+          visible="true">
+          <Cell
+            enableSort="false"
+            id="LinePattern"
+            value="displaykey.Web.JobWizard.ManageBranchesLV.PremiumTotals"/>
+          <MonetaryAmountCell
+            align="left"
+            formatType="currency"
+            id="firstSumAmount"
+            value="firstPeriod.ValidQuote ? firstPeriod.TotalCostRPT : 0bd.ofCurrency(firstPeriod.PreferredSettlementCurrency)"/>
+          <MonetaryAmountCell
+            align="left"
+            formatType="currency"
+            id="secondSumAmount"
+            value="secondPeriod.ValidQuote ? secondPeriod.TotalCostRPT : 0bd.ofCurrency(secondPeriod.PreferredSettlementCurrency)"/>
+        </Row>
+      </ListViewPanel>
+      <PanelRef
+        def="DifferencesPanelSet(&quot;CompareJobs&quot;, firstPeriod, secondPeriod, rootNode, diffTreeConfig)"/>
+    </Screen>
+  </Popup>
+</PCF>

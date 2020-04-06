@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    beforeCommit="validatePolicyContacts(policyContactRole.Branch)"
+    canEdit="canEdit"
+    countsAsWork="false"
+    id="EditPolicyContactRolePopup"
+    returnType="PolicyContactRole"
+    startInEditMode="canEdit"
+    title="displaykey.Web.EditPolicyContactRolePopup.Title((typeof policyContactRole).TypeInfo.DisplayName, policyContactRole)">
+    <LocationEntryPoint
+      signature="EditPolicyContactRolePopup(policyContactRole:PolicyContactRole, canEdit: Boolean)"/>
+    <Variable
+      name="policyContactRole"
+      type="PolicyContactRole"/>
+    <Variable
+      name="canEdit"
+      type="Boolean"/>
+    <Screen
+      editable="true"
+      id="ContactDetailScreen">
+      <Toolbar>
+        <EditButtons
+          pickValue="policyContactRole"/>
+      </Toolbar>
+      <PanelRef
+        def="PolicyContactRoleDetailsCV(policyContactRole, canEdit)"/>
+    </Screen>
+    <Code><![CDATA[function validatePolicyContacts(policyPeriod : PolicyPeriod) {
+  
+  gw.validation.PCValidationContext.doPageLevelValidation( \ context -> {
+    for (line in policyPeriod.Lines) {
+      for (policyAddlInsured in line.AdditionalInsureds) {     
+        var addlInsuredValidator = new gw.policy.PolicyAddlInsuredAndTypeUniqueValidation(context, policyAddlInsured)
+        addlInsuredValidator.validate()
+      }
+    }
+    
+    // Check to make sure the user didn't delete the policy address
+    var validator = new gw.policy.PolicyPeriodValidation(context, policyPeriod  )
+    validator.checkPolicyAddress()
+  })
+  
+}]]></Code>
+  </Popup>
+</PCF>

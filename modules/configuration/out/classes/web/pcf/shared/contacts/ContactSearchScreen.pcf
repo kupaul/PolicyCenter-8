@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    id="ContactSearchScreen">
+    <Require
+      name="availableSubtypes"
+      type="typekey.Contact[]"/>
+    <Require
+      name="initialSearchCriteria"
+      type="ContactSearchCriteria"/>
+    <Require
+      name="isFromContactSearchTab"
+      type="boolean"/>
+    <SearchPanel
+      cachingEnabled="false"
+      criteriaName="searchCriteria"
+      resultsName="contactSearchResult"
+      search="gw.web.admin.shared.SharedUIHelper.doSearch(searchCriteria)"
+      searchCriteria="gw.web.admin.shared.SharedUIHelper.createSearchCriteria(initialSearchCriteria, availableSubtypes)"
+      searchResultsType="gw.plugin.contact.impl.ContactResultWrapper">
+      <PanelSet
+        id="SearchWarningMessagePanelSet">
+        <Verbatim
+          id="SearchWarningMessage"
+          label="contactSearchResult.warningMessage"
+          visible="contactSearchResult != null and contactSearchResult.warningMessage != null"
+          warning="true"/>
+      </PanelSet>
+      <DetailViewPanel>
+        <InputColumn>
+          <RangeInput
+            editable="true"
+            id="ContactType"
+            label="displaykey.Web.ContactDetail.Type"
+            required="true"
+            value="searchCriteria.ContactSubtype"
+            valueRange="availableSubtypes">
+            <PostOnChange/>
+          </RangeInput>
+          <InputSetRef
+            def="BasicContactInfoInputSet(searchCriteria)"
+            mode="searchCriteria.ContactSubtype"/>
+        </InputColumn>
+        <InputColumn>
+          <InputSetRef
+            def="AddressOwnerAddressInputSet(new gw.pcf.contacts.AddressAutoFillableOwner(searchCriteria.Address))"/>
+        </InputColumn>
+        <InputFooterSection>
+          <InputSetRef
+            def="SearchAndResetInputSet()"/>
+        </InputFooterSection>
+      </DetailViewPanel>
+      <PanelRef>
+        <TitleBar
+          appendListViewPaging="true"
+          title="displaykey.Web.Search.Results"/>
+        <Toolbar>
+          <ToolbarButton
+            action="gw.api.print.ListViewPrintOptionPopupAction.printListViewOnlyWithOptions( &quot;ContactSearchResultsLV&quot; )"
+            id="PrintMe"
+            label="displaykey.Web.PolicySearch.Export"/>
+        </Toolbar>
+        <Verbatim
+          id="UnselectableMessage"
+          label="displaykey.Web.AccountContactsLV.Warning.UnselectableContact"
+          visible="(not isFromContactSearchTab) and contactSearchResult.contactResults != null  and contactSearchResult.contactResults.hasMatch(\ c -&gt; c.hasAllRequiredFields() == false )"
+          warning="true"/>
+        <ListViewPanel
+          id="ContactSearchResultsLV">
+          <RowIterator
+            canPick="(not isFromContactSearchTab) and contactSearchResultEntry.hasAllRequiredFields()"
+            editable="false"
+            elementName="contactSearchResultEntry"
+            pickValue="contactSearchResultEntry.convertToContact(new gw.plugin.contact.ContactCreator(gw.transaction.Transaction.getCurrent()))"
+            selectLabel="displaykey.Button.Select"
+            value="contactSearchResult.contactResults">
+            <Row>
+              <Cell
+                action="pushToContactSearchDetail(contactSearchResultEntry)"
+                actionAvailable="isFromContactSearchTab"
+                id="Name"
+                label="displaykey.Web.AccountContactsLV.Name"
+                value="contactSearchResultEntry.DisplayName"/>
+              <Cell
+                id="Address"
+                label="displaykey.Web.AccountContactsLV.Address"
+                value="contactSearchResultEntry.DisplayAddress"
+                width="350"
+                wrap="true"/>
+              <Cell
+                id="Phone"
+                label="displaykey.Web.AccountContactsLV.Phone"
+                value="contactSearchResultEntry.PrimaryPhoneValue"
+                width="100"/>
+              <Cell
+                id="Email"
+                label="displaykey.Web.AccountContactsLV.Email"
+                value="contactSearchResultEntry.EmailAddress1"
+                width="200"/>
+              <Cell
+                id="External"
+                label="displaykey.Web.AccountContactsLV.External"
+                value="contactSearchResultEntry.External"/>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+      </PanelRef>
+    </SearchPanel>
+    <Code><![CDATA[function pushToContactSearchDetail(contactSearchResultEntry : gw.plugin.contact.ContactResult) {
+  if (contactSearchResultEntry.External) {
+    ExternalContactFile.go(contactSearchResultEntry)
+  } else {
+    ContactForward.go(contactSearchResultEntry.convertToContact(new gw.plugin.contact.ContactCreator(gw.transaction.Transaction.getCurrent())))
+  }
+}
+]]></Code>
+  </Screen>
+</PCF>

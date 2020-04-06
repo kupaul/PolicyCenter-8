@@ -1,0 +1,1262 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Writing Your Own Line-specific Rating Engine Subclass</title>
+    <link rel="StyleSheet" href="css/rating-external.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-forms.html#3048627">Policy-related Integrations</a> : <a class="WebWorks_Breadcrumb_Link" href="rating-external.28.01.html#3048627">Rating Integration</a> : <a class="WebWorks_Breadcrumb_Link" href="rating-external.28.08.html#3048627">Implementing Rating for a New Line of Business</a> : Writing Your Own Line-specific Rating Engine Subclass</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h4 class="H2B_-_Heading_2_Break"><a name="3048627">Writing Your Own Line-specific Rating Engine Subclass</a></h4>
+      <div class="B_-_Body"><a name="3048628">The </a><span class="cv_-_computer_voice">AbststractRatingEngine</span> class is the parent class for all built-in line-specific rating engine classes. It serves two purposes:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3048629">Defines a basic structure for rating that works for most lines</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3048630">Defines helper functions that could be useful across lines of business</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3058470">The most important top-level method on </a><span class="cv_-_computer_voice">AbstractRatingEngine</span> is the <span class="cv_-_computer_voice">rate</span> method. The default rating plugin calls this method. This method is responsible for rating and then adjusting the <span class="cv_-_computer_voice">Cost</span> rows appropriately. Do not modify this method, generally speaking. It converts cost data objects to cost entity instances, adds them to the policy line, and removes no-longer-used costs on that policy line.</div>
+      <div class="B_-_Body"><a name="3066209">The </a><span class="cv_-_computer_voice">rate</span> method calls out to the <span class="cv_-_computer_voice">rateOnly</span> method. The <span class="cv_-_computer_voice">rateOnly</span> method encodes the default algorithm described in <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.02.html#3051019', '');" title="The Rating Framework">“The Rating Framework”</a>. It rates costs per slice, then merges and prorates, and then finally rates window mode costs. That algorithm suffices for most lines of business. However, other lines such as workers’ compensation and inland marine override the <span class="cv_-_computer_voice">rateOnly</span> method to work differently in built-in code. You could override <span class="cv_-_computer_voice">rateOnly</span> in a rating engine to perform your own custom behavior. The <span class="cv_-_computer_voice">rateOnly</span> method returns the list of <span class="cv_-_computer_voice">CostData</span> objects, which the <span class="cv_-_computer_voice">rate</span> method converts to <span class="cv_-_computer_voice">Cost</span> rows to persist in the database.</div>
+      <div class="B_-_Body"><a name="3058527">For typical rating lines, your actual formulas and table lookups would happen in the </a><span class="cv_-_computer_voice">rateSlice</span> and <span class="cv_-_computer_voice">rateWindow</span> methods. The <span class="cv_-_computer_voice">rateSlice</span> method must rate a <span class="cv_-_computer_voice">PolicyLine</span> viewed as a slice on a specified slice date. The <span class="cv_-_computer_voice">rateWindow</span> method must rate all the window-mode costs for the <span class="cv_-_computer_voice">PolicyLine</span>. If you write your own rating engine subclass, writing your actual rating formulas in these methods are your primary tasks.</div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3062315">For a typical rating integration project, implementing your actual rating algorithm, typically in </a><span class="cv_-_computer_voice">rateSlice</span> and <span class="cv_-_computer_voice">rateWindow</span>, is the majority of your engineering time.</div>
+      <div class="B_-_Body"><a name="3054583">For detailed discussion on potential rating strategies, see </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.05.html#3002871', '');" title="Where to Override the Default Rating Engine?">“Where to Override the Default Rating Engine?”</a>. You might want to read that topic before starting any rating integration programming.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3062530">Checklist for Creating a New Policy Line Rating Engine</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3062531">The following list summarizes the required steps to create a rating engine for a new typical policy line:</a></div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="3062532">Create a new subclass of </a><span class="cv_-_computer_voice">AbstractRatingEngine</span> for the rating line. You must use Gosu generics syntax to parameterize the type with the line of business class. For example for the <span class="cv_-_computer_voice">CommercialPropertyLine</span>:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><a name="3107820">class CPRatingEngine extends AbstractRatingEngine</a><span class="s_-_strong">&lt;CommercialPropertyLine&gt;</span> {</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3189332">Configure your line of business to instantiate your new rating engine class. In your </a><span class="cv_-_computer_voice">PolicyLineMethods</span> class for your line of business, find the <span class="cv_-_computer_voice">createRatingEngine</span> method. This method must return an instance of your new rating engine class. Method arguments include a rate method (<span class="cv_-_computer_voice">RateMethod</span>) and a set of parameters as a <span class="cv_-_computer_voice">java.util.Map</span> object. Optionally use these arguments choose different rating engine subclasses. The following example instantiates a different rating engine if the rate method is <span class="cv_-_computer_voice">TC_SYSTABLE</span>:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3189308">override function createRatingEngine(method : RateMethod, </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3189564">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parameters : Map&lt;RateEngineParameter, Object&gt;) : AbstractRatingEngine&lt;PersonalAutoLine&gt; {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3189309">    if (RateMethod.TC_SYSTABLE == method) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3189310">      return new PASysTableRatingEngine(_line as PersonalAutoLine)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3189311">    }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3189312">    return new PARatingEngine(_line as PersonalAutoLine, </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3189572">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;parameters[RateEngineParameter.TC_RATEBOOKSTATUS] as RateBookStatus)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3189313">  }</a></PRE>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3109348">For more information about Guidewire Rating Management and the PCRatingPlugin, see </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.03.html#3093354', '');" title="Guidewire Rating Management and PCRatingPlugin">“Guidewire Rating Management and PCRatingPlugin”</a>.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3107569">Create a </a><span class="cv_-_computer_voice">CostData</span> subclass for the line and further subclasses of <span class="cv_-_computer_voice">CostData</span> for each subclass of cost on the line. See <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.04.html#3109522', '');" title="Overview of Cost Data Objects">“Overview of Cost Data Objects”</a> and the first few topics in <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.08.html#3048160', '');" title="Implementing Rating for a New Line of Business">“Implementing Rating for a New Line of Business”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3062764">Decide whether your line can be rated from the change date forward only or whether PolicyCenter must re-rate the whole period. See </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.16.html#3056028', '');" title="Writing Your Own Line-specific Rating Engine Subclass">“Decide Whether to Rate Only From Change Date Forward”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3062634">Override methods on </a><span class="cv_-_computer_voice">AbstractRatingEngine</span> to actually do the rate calculations. The exact methods might vary. For detailed discussion on potential rating strategies, see <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.05.html#3002871', '');" title="Where to Override the Default Rating Engine?">“Where to Override the Default Rating Engine?”</a>. You might want to read that topic before starting any rating integration programming.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3062868">Consider encapsulating the logic for each type of rating in a separate classes for each type of rating algorithm. This is where you can put your actual rating formulas and table lookups. Wherever your actual rating code lives, separate your table lookup code from your formulas.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3071758">For more information how to implement table lookups and how to handle changes to your rating algorithm, see </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.16.html#3060174', '');" title="Writing Your Own Line-specific Rating Engine Subclass">“Coding Your Actual Rating Algorithm”</a>.</div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	7.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3062546">If this line handles premium overrides, add relevant logic. See </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.16.html#3067650', '');" title="Writing Your Own Line-specific Rating Engine Subclass">“Handling Premium Overrides”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3070482">For more information about rating integration strategy possibilities, see </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.05.html#3002871', '');" title="Where to Override the Default Rating Engine?">“Where to Override the Default Rating Engine?”</a>. For details of writing your rating algorithm, including why and how to use standard entities for table lookups, see <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.16.html#3060174', '');" title="Writing Your Own Line-specific Rating Engine Subclass">“Coding Your Actual Rating Algorithm”</a>.</div>
+      <div class="B_-_Body"><a name="3070468">For a step-by-step description of implementing a rating engine for real line of business, see </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.17.html#3063403', '');" title="Rating Line Example for Personal Auto">“Rating Line Example for Personal Auto”</a>. </div>
+      <div class="B_-_Body"><a name="3068126">Additionally, review the Gosu source code for other rating engines for the approaches that other built-in lines of business use. Note that workers’ compensation and general liability rating work very differently from typical lines of business. For an overview of rating in unusual lines of business, see </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.19.html#3049413', '');" title="Rating Variations">“Rating Variations”</a>.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3062844">Methods and Properties of the Abstract Rating Engine Class</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3062845">The following table summarizes the methods in the abstract rating class to override or use. The rightmost column indicates whether to expect to override this method in a new rating engine. The methods that appear earliest in the table are methods that a new rating engine would typically override. Some methods listed later are helper methods for the default rating engine, or internal methods that you do not need to override unless you significantly change the logic. Utility methods perform functions such as the following:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3058246">Merging and prorating </a><span class="cv_-_computer_voice">CostData</span> objects</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3072490">Calculating the number of days in the rated term based on the default policy term for the product</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3072491">Calculating a demo tax rate</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3072492">Calculating a short rate penalty rate</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="T_-_Table"><a name="3055107">&nbsp;</a></div>
+      <table class="withHeading" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="3056152">AbstractRatingEngine method (or property as noted)</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="3056154">Description</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="3056156">Override it?</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3056158">existingSliceModeCosts</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3056160">When rating only from the change date forward, this method finds any existing slice-mode costs and returns cost data objects to represent them. Typically, you would omit some costs such as taxes, which PolicyCenter treats as costs that the rating creates in </a><span class="e_-_emphasis">window mode</span> not on a per-slice basis. This method must return costs currently on the period that correspond to costs that are generated during the <span class="cvt_-_computer_voice_table">rateSlice</span> method.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3056162">Yes, for typical rating lines. If you completely override the </a><span class="cvt_-_computer_voice_table">rateOnly</span> method or you override <span class="cvt_-_computer_voice_table">shouldRateThisSliceForward</span> to return <span class="cvt_-_computer_voice_table">false</span>, this method is unused.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3056164">rateSlice</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3070545">Rates a given slice of the policy for this rating line. The method has a policy line (</a><span class="cv_-_computer_voice">PolicyLine</span>) argument that already has its slice date set for this slice. The default logic calls this function once for every slice date in the policy. See <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.05.html#3002871', '');" title="Where to Override the Default Rating Engine?">“Where to Override the Default Rating Engine?”</a>. For details of writing your rating algorithm, including why and how to use standard entities for table lookups, see <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.16.html#3060174', '');" title="Writing Your Own Line-specific Rating Engine Subclass">“Coding Your Actual Rating Algorithm”</a>.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3056170">Yes, for typical rating lines. If you completely override the </a><span class="cvt_-_computer_voice_table">rateOnly</span> method, this method is unused.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3056173">rateWindow</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3056175">Rates the policy in </a><span class="e_-_emphasis">window mode</span>. This is where you would create costs that either:</div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3056176">Depend on the sum of the previous slice costs </a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3056177">Span the entire period and you must rate them just once instead of once for each slice date. </a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="TT_-_Table_Text"><a name="3056178">The argument is the </a><span class="e_-_emphasis">version</span> of the policy line that is earliest in effective time.</div>
+            <div class="TT_-_Table_Text"><a name="3070574">See </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.05.html#3002871', '');" title="Where to Override the Default Rating Engine?">“Where to Override the Default Rating Engine?”</a>. For details of writing your rating algorithm, including why and how to use standard entities for table lookups, see <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.16.html#3060174', '');" title="Writing Your Own Line-specific Rating Engine Subclass">“Coding Your Actual Rating Algorithm”</a>.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3056182">Yes, for typical rating lines. If you completely override the </a><span class="cvt_-_computer_voice_table">rateOnly</span> method, this method is unused.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3056185">createCostDataForCost</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3056187">Given the specified </a><span class="cvt_-_computer_voice_table">Cost</span> entity instance, creates the appropriate <span class="cvt_-_computer_voice_table">CostData</span> subclass and returns it. The <span class="cvt_-_computer_voice_table">extractCostDatasFromExistingCosts</span> method calls this class. The implementation of the <span class="cvt_-_computer_voice_table">createCostDataForCost</span> method must prepare for any <span class="cvt_-_computer_voice_table">Cost</span> subtype that the <span class="cvt_-_computer_voice_table">existingSliceModeCosts</span> method could return.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3056196">Yes, for typical rating lines. If you completely override the </a><span class="cvt_-_computer_voice_table">rateOnly</span> method or you override <span class="cvt_-_computer_voice_table">shouldRateThisSliceForward</span> to return <span class="cvt_-_computer_voice_table">false</span>, this method is unused.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3056674">rateOnly</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3056678">The core rating loop, with the following actions: </a></div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3056740">Rate slices. If the rating line requests rating only from the change date forward, respect that request if possible. For related discussion, see </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.16.html#3056028', '');" title="Writing Your Own Line-specific Rating Engine Subclass">“Decide Whether to Rate Only From Change Date Forward”</a> and <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.06.html#3046587', '');" title="Common Questions About the Default Rating Engine">“Can We Always Rate Only From the Current Slice Forward?”</a>.</div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3056752">Merge cost data objects.</a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3056761">Prorate cost data objects.</a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3056770">Rate window costs.</a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="TT_-_Table_Text"><a name="3070515">See </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.05.html#3002871', '');" title="Where to Override the Default Rating Engine?">“Where to Override the Default Rating Engine?”</a>. For details of writing your rating algorithm, including why and how to use standard entities for table lookups, see <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.16.html#3060174', '');" title="Writing Your Own Line-specific Rating Engine Subclass">“Coding Your Actual Rating Algorithm”</a>.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3056713">Only if you want to bypass the general logic of the rating engine. </a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3056232">shouldRateThisSliceForward</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3056868">Determines whether to rate only from the effective date of the job forward. If this returns </a><span class="cvt_-_computer_voice_table">true</span>, the rating engine tries to rate only from the current slice forward in effective time. For more information, see <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.16.html#3056028', '');" title="Writing Your Own Line-specific Rating Engine Subclass">“Decide Whether to Rate Only From Change Date Forward”</a> and <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.06.html#3046587', '');" title="Common Questions About the Default Rating Engine">“Can We Always Rate Only From the Current Slice Forward?”</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3056250">Only if you want to change the default logic. See the topics mentioned earlier in this table row.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><span class="cvt_-_computer_voice_table"><a name="3058200">ShortRatePenaltyRate</a></span> property</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058202">This </a><span class="cvt_-_computer_voice_table">property get</span> function returns the rate to apply to the penalty for a short rate cancellation. Most built-in rating lines call this method. In contrast, workers’ compensation does not use this because it uses a more complicated lookup based on the associated rating context (<span class="cvt_-_computer_voice_table">WCRatingContext</span>). The default rating engine always returns 10% but you can override this.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058204">Yes</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3058206">getStateTaxRate</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058208">Returns the tax rate for the given state. The postal code can affect local sales taxes, but the built-in logic does not use it. The default rating engine returns varying numbers based on the state, but it is only a default implementation. Override this method to encode your own rates.</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058210">Yes</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><span class="cvt_-_computer_voice_table"><a name="3058212">NumDaysInCoverageRatedTerm&nbsp;</a></span>property</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058214">This </a><span class="cvt_-_computer_voice_table">property get</span> function returns the number of days that in the standard term (not minor variations of it). This number is important so that your rating calculations can use the proper value for a table lookup. For default purposes, the built-in version determines this on the default term type for the product and only supports a couple built-in term types. In a real-world production environment, you would probably hard-code this value into the rating engine. Alternatively, you might use this number to determine which rate tables to use. Also see <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.06.html#3062903', '');" title="Common Questions About the Default Rating Engine">“How Does Proration Handle Minor Differences in Term Length?”</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058216">Yes</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3059047">rate</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3059049">This is the entry point for the rating request. The rating plugin calls this method for each rating line. It does the following:</a></div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3059050">Calls the </a><span class="cvt_-_computer_voice_table">rateOnly</span> method on this object, which generates cost data objects.</div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3059051">Calls the </a><span class="cvt_-_computer_voice_table">attachCostEntities</span> method to convert the cost data objects to actual <span class="cvt_-_computer_voice_table">Cost</span> entities</div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3059052">As part if the </a><span class="cvt_-_computer_voice_table">attachCostEntities</span> method, removes any old <span class="cvt_-_computer_voice_table">Cost</span> entities for this policy line that were untouched by the <span class="cvt_-_computer_voice_table">rateOnly</span> method.</div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3059054">No. Generally speaking, do not override this. For typical rating lines, just override </a><span class="cvt_-_computer_voice_table">rateSlice</span> and <span class="cvt_-_computer_voice_table">rateWindow</span>. If you must bypass or rewrite the built-in rating control structure, generally speaking, override the <span class="cvt_-_computer_voice_table">rateOnly</span> method, not the <span class="cvt_-_computer_voice_table">rate</span> method.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3057166">assertSliceMode</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3057176">Asserts that the specified revisioned entity instance is in slice mode. This is a general utility function you can use. </a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3057170">No. It is a general utility function you can use.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3057225">assertWindowMode</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3057227">Asserts that the specified revisioned entity instance is in window mode. </a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3057229">No. It is a general utility function you can use.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3057160">getNextSliceDateAfter</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3057237">Given a particular date, finds the next effective date following this date. The built-in rating logic uses this method when rating in slice mode to determine the next change date. This allows the rating logic to determine how many days long the current slice is. </a></div>
+            <div class="TT_-_Table_Text"><a name="3068435">This useful to set the effective and expiration dates of the cost. See </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.16.html#3048627', '');" title="Writing Your Own Line-specific Rating Engine Subclass">“Writing Your Own Line-specific Rating Engine Subclass”</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3057164">No</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3057154">extractCostDatasFromExistingCosts</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3057380">This method take a list of costs and a cut-off date and does the following actions:</a></div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3057500">Extracts cost data objects from any existing slice-mode costs on the line. </a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3057510">Adds cost data objects to the internal list for any cost that is effective prior to the given cut-off date.</a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3057519">Prorates any costs that fall across the cut-off date boundary. In the case of normal non-basis-scalable costs, the method prorates by removing the actual amount (the </a><span class="cvt_-_computer_voice_table">ActualAmount</span> property) so that the cost potentially can merge with another slice. After merging, the code re-prorates the cost after slice rating is complete.</div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="TT_-_Table_Text"><a name="3057577">The built-in rating engine only calls this if the method </a><span class="cvt_-_computer_voice_table">shouldRateThisSliceForward</span> returns <span class="cvt_-_computer_voice_table">true</span>. For related discussion, see <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.16.html#3056028', '');" title="Writing Your Own Line-specific Rating Engine Subclass">“Decide Whether to Rate Only From Change Date Forward”</a> and <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.06.html#3046587', '');" title="Common Questions About the Default Rating Engine">“Can We Always Rate Only From the Current Slice Forward?”</a>.</div>
+            <div class="TT_-_Table_Text"><a name="3068472">You probably do not need to use this API unless you greatly change the logic of the class.</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3057158">No</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3058102">addCost</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058104">Adds a cost data object to the internal list of cost data objects for this rating line. You probably do not need to use this API unless you greatly change the logic of the class.</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058106">No</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3058095">prorateToCutOffDate</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058097">Takes a cost, a cut-off date, an amount, and a rounding level. This method prorates the specified amount from the effective date of the cost to the given cut-off date. If the amount is </a><span class="cvt_-_computer_voice_table">null</span>, this method returns <span class="cvt_-_computer_voice_table">null</span>. You probably do not need to use this API unless you greatly change the logic of the class.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058100">No</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3058169">attachCostEntities</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3058171">Converts the cost data objects to actual </a><span class="cvt_-_computer_voice_table">Cost</span> entities</div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="3058172">Removes any old </a><span class="cvt_-_computer_voice_table">Cost</span> entities for this policy line that were untouched by the <span class="cvt_-_computer_voice_table">rateOnly</span> method.</div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058174">No</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3058194">validate</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058196">Ensures that for any given period of time, there is only one </a><span class="cvt_-_computer_voice_table">Cost</span> entity instance with a given cost key (<span class="cvt_-_computer_voice_table">CostKey</span>). If this method fails, it indicates that the rating logic failed. The rating logic, either produced duplicate costs or incorrectly defined the cost data model such that expected operations could produce duplicate costs.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058198">No</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3058188">mergeCosts</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058190">Merge any equal costs that are </a><span class="e_-_emphasis">attributed to the</span> <span class="e_-_emphasis">same elements</span> (they have matching <span class="e_-_emphasis">cost keys</span>) and adjacent in effective time. This method returns a new list of costs rather than modifying the existing list of costs in place.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058192">No</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3058182">attemptToMerge</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058184">If possible, merges two costs. It returns </a><span class="cvt_-_computer_voice_table">true</span> if the merge succeeded, otherwise returns <span class="cvt_-_computer_voice_table">false</span>. This method merges the costs either as basis scalable or not, as the costs specify in the <span class="cvt_-_computer_voice_table">cost.MergeAsBasisScalable</span> property.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058186">No</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="3058176">updateAmount</a></span></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058178">Prorates any costs that do not yet have an </a><span class="cvt_-_computer_voice_table">ActualAmount</span> property set. To do the main task of this method, this method calls each cost’s <span class="cvt_-_computer_voice_table">updateAmountFields</span> method.</div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="3058180">No</a></div>
+          </td>
+        </tr>
+      </table>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3056028">Decide Whether to Rate Only From Change Date Forward</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3052922">Policy changes, reinstatements, and cancellations typically rate the policy only from the change date forward. The application user interface enforces the rule that users cannot make changes that affect prior dates or backdate rate changes. For related overview discussion, see </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.06.html#3046587', '');" title="Common Questions About the Default Rating Engine">“Can We Always Rate Only From the Current Slice Forward?”</a>.</div>
+      <div class="B_-_Body"><a name="3052938">PolicyCenter encapsulates this logic in the </a><span class="cv_-_computer_voice">shouldRateThisSliceForward</span> method on <span class="cv_-_computer_voice">AbstractRatingEngine</span>. </div>
+      <div class="B_-_Body"><a name="3052940">If you want the rating engine to rate the line from the effective date of the job forward, return true. If you want to rate the whole period starting at the period start, return false. </a></div>
+      <div class="B_-_Body"><a name="3052146">The behavior of the built-in implementation is as follows:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3052304">Policy changes rate from the change date forward provided that the period start date did not change. The method returns </a><span class="cv_-_computer_voice">true</span>. If the period start date changed, the method returns <span class="cv_-_computer_voice">false</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3052316">Reinstatements rate from the change date forward provided that the period start date did not change. The method returns </a><span class="cv_-_computer_voice">true</span>. If the period start date changed, the method returns <span class="cv_-_computer_voice">false</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3052272">Cancellations always rate from the change date forward. The method returns </a><span class="cv_-_computer_voice">true</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3052273">All other jobs always rate the whole period. The method returns </a><span class="cv_-_computer_voice">false</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3052956">Subclasses can override this method to return </a><span class="cv_-_computer_voice">true</span> if the rating engine must always re-rate the whole period for a particular line of business. If the line allows for edits that are prior to the effective date, typically it is necessary to re-rate the whole period. For example, in general liability or workers’ compensation lines, any job can result in changes prior to the effective date of that job. This quality is a result of how users edit exposures in window mode (not a particular slice date). If a particular rating engine never rates from the change date forward, you can override the <span class="cv_-_computer_voice">shouldRateThisSliceForward</span>. </div>
+      <div class="B_-_Body"><a name="3052091">This is the case for the built-in general liability line of business rating engine because you can edit some things in </a><span class="e_-_emphasis">window mode</span>. Window mode edits can cause changes to the policy prior to the effective date of the policy change. </div>
+      <div class="B_-_Body"><a name="3048653">When rating from the change date forward, at the end of the rating, PolicyCenter must contain a complete set of </a><span class="cv_-_computer_voice">CostData</span> objects representing the entity graph and its costs. So, PolicyCenter must still create <span class="cv_-_computer_voice">CostData</span> objects for each <span class="cv_-_computer_voice">Cost</span> already in the database even if you do not intend to rate it. </div>
+      <div class="B_-_Body"><a name="3052057">To implement this, the rating engine for every line of business must implement the </a><span class="cv_-_computer_voice">existingSliceModeCosts</span> method. This method must determine which costs are slice mode costs (and thus might not be rated). </div>
+      <div class="B_-_Body"><a name="3052064">You also must implement the rating engine method </a><span class="cv_-_computer_voice">createCostDataForCost</span>. It must create a <span class="cv_-_computer_voice">CostData</span> object from an existing cost. The actual logic that operates using these methods is in the <span class="cv_-_computer_voice">extractCostDatasFromExistingCosts</span> method. It contains additional logic to un-prorate rate-scalable costs and to prorate basis-scalable costs or overridden costs.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3054957">Creating New Cost Data Objects In Your Rating Engine</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3054984">The main task of your line rating engine is to create new cost data objects and set the rating-related properties.</a></div>
+      <div class="B_-_Body"><a name="3055006">For this task, wherever your rating code lives, use the </a><span class="cv_-_computer_voice">new</span> operator with the appropriate <span class="cv_-_computer_voice">CostData</span> subclass. Be sure to use the constructor with individual properties, not the constructor that takes an entire <span class="cv_-_computer_voice">Cost</span>. In other words, use the constructor that looks like the following code from the personal auto rating engine:</div>
+      <div class="CS_-_Code_Single_Line"><a name="3055027">var cost = new PersonalAutoCovCostData(start, end, vehicle.FixedId, cov.FixedId)</a></div>
+      <div class="B_-_Body"><a name="3066296">Next, your rating engine must set all the rating-related properties on new cost data objects. For the reference for all cost data object properties, see the table in </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.10.html#2983434', '');" title="Cost Core Properties">“Cost Core Properties”</a>. Carefully read the rightmost column in that table to see what properties are required to set, and in which cases.</div>
+      <h6 class="HS_-_Head_Sub"><a name="3054765">Cloning a Cost into a New Cost Data Object</a></h6>
+      <div class="B_-_Body"><a name="3066341">In addition to creating an entirely new cost data objects from your main rating algorithm, a rating engine subclass must override the </a><span class="cv_-_computer_voice">createCostDataForCost</span> method. This method takes the cost as a parameter. The method must create and return a new instance of the appropriate subclass of <span class="cv_-_computer_voice">CostData</span>. </div>
+      <div class="B_-_Body"><a name="3067494">The built-in rating code only calls this method when rating from the slice date forward</a></div>
+      <div class="B_-_Body"><a name="3066342">For example, from the personal auto rating engine:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3054819">override function createCostDataForCost(c : Cost) : CostData {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3054784">    switch (typeof c) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3054785">      case PersonalAutoCovCost: return new PersonalAutoCovCostData(c)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3054786">      case PersonalVehicleCovCost: return new PersonalVehicleCovCostData(c)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3054787">      default : throw "Unknown cost type ${(typeof c).Name}"   </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3054788">    }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3054789">  }</a></PRE>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3060174">Coding Your Actual Rating Algorithm</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3071978">Consider encapsulating your actual algorithm into separate Gosu classes, one for each type of premium.</a></div>
+      <div class="B_-_Body"><a name="3071979">Wherever you put your actual rating algorithm, Guidewire strongly recommends that you cleanly and clearly separate your rating logic into two parts:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3071980">Data from lookup tables, which typically carrier business users manage</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3053098">Programming logic in rating formulas, which typically IT departments own and manage</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3053150">Split your rating logic so that most data comes from lookup tables. Business users can manage the lookup table data separate from the pure formulas in programming code.</a></div>
+      <div class="B_-_Body"><a name="3053151">It might be tempting to store table data in system tables, which the application throws away and rebuilds from configuration files on application startup. However, Guidewire strongly recommends that you store your table data as standard entity instances. In other words, store table data as entities that you define in the data model that persist in the PolicyCenter database. Create screens for your business users to directly edit this data. In real-world deployments, this approach is the most versatile for ensuring that business users with the right permissions can change rates without requesting help from the IT department.</a></div>
+      <div class="B_-_Body"><a name="3053229">If you store table data as standard entities, remember that you cannot use source code control to move rate tables from a development or test environment to a production environment. Your data is in the database itself not configuration files. You must create your own process for moving your tables as administrative data. You can export the data from the test server and then load it into your production server. </a></div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="3059391">Guidewire strongly recommends that you store your table data as persisted entity instances in the PolicyCenter database. There are special requirements to consider for copying data to your production system with this approach. This approach lets business users manage the table data in the application user interface. This approach results in the most successful real-world PolicyCenter rating integration implementations.</a></div>
+      <div class="B_-_Body"><a name="3059392">The basic pattern for rating code is:</a></div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="3059393">Define a table with effective dates, the underwriter company (</a><span class="cv_-_computer_voice">UWCompany</span>), the state, and so on.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3053357">Create a class that retrieves data from that table using the query builder APIs. See </a><a href="javascript:WWHClickedPopup('gosu', 'querybuilder.10.01.html#3266101', '');" title="Query Builder APIs">“Query Builder APIs” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('gosu', 'querybuilder.10.01.html#3266101', '');" title="Query Builder APIs">Gosu Reference Guide</a></span>. The built-in rating engines extensively use these types of lookups.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3052531">Create screens for editing those rating tables in the web user interface (PCF files) so business users can manage the data.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3053445">For rate table lookups, it is important to know what date to use for any table lookup that uses a date. As you write rating code, pay extremely close attention to ensuring that you always use the appropriate date.</a></div>
+      <div class="B_-_Body"><a name="3052512">Remember also that PolicyCenter sometimes must recalculate rates even when nothing important to the rate actually changed. Because of this, you must guarantee that your formulas and rate tables always return the same amount if PolicyCenter re-runs the formula at a later date. </a></div>
+      <div class="B_-_Body"><a name="3053733">Thus, all of the following are important rules that you must follow:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="3053522">Reference dates for lookups must be consistent</a></span> – For example, always use the start of the period, not the current date or current time.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="3053548">Never backdate any rate or formula changes</a></span> – If PolicyCenter needs to re-rate a rating request <span class="e_-_emphasis">with the same reference date</span> at a later time to a production system, your code must always return the same result. If you ever need to change the formula, you must preserve the old formula for any existing data. The formula change must take effect in the future, or at least <span class="e_-_emphasis">after</span> the reference date for all existing policies. To change a formula used in rating, your code would preserve the old formula for all your legacy policies but rates on newer effective dates can use the new formula. In other words, your code that actually generates the rate would look like the following:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LS2A_-_List_Start_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS2A_-_List_Start_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">a.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS2A_-_List_Start_002c_Level_2_Alpha_inner"><a name="3053867">Check the effective date of the change.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">b.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="3053868">If the change’s effective date is before the formula’s change date, your code must run your old formula.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="3053948">It is critical that you never permit backdated rates in production systems.</a></div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">c.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="3053699">If the change’s effective date is after the formula’s change date, your code must use your new formula. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="3053603">Avoid round-off errors</a></span> – Be sure to avoid round-off errors in your proration code.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3054022">Of course, if you are using an external rating engine, be sure that your external engine follows this general pattern. If you have questions about supporting these rules, please contact Guidewire Customer Support.</a></div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="3067640">You must carefully implement rates and formulas, and be particularly careful with changes with real production data. Reference dates must be consistent. Never backdate rate changes or formulas. Avoid round-off errors. If you fail to follow these rules, customer data may be affected, and PolicyCenter has undefined behavior.</a></div>
+      <div class="B_-_Body"><a name="3070621">For more information about where to actually inject your rating code, see </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.05.html#3002871', '');" title="Where to Override the Default Rating Engine?">“Where to Override the Default Rating Engine?”</a>. </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3067650">Handling Premium Overrides</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3067651">A line of business can optionally support premium overrides. Of the built-in lines, only the worker’s compensation line supports premium overrides. </a></div>
+      <div class="B_-_Body"><a name="3069115">If a policy type supports premium overrides, then while calculating the premium for a particular cost data object, your rating calculation logic must determine:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3069116">Is there is an existing cost entity instance in the database? </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LP_-_List_Para"><a name="3069117">To find any previous cost entity instance, call the </a><span class="cv_-_computer_voice">AbstractRatingEngine</span> object’s method <span class="cv_-_computer_voice">getExistingCost</span>. Each line-specific rating engine must implement their own version of the <span class="cv_-_computer_voice">getExistingCost</span> method. See <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.14.html#3042589', '');" title="Cost Data APIs That You Can Call">“Getting Cost Entity Instances for This Cost Data Object”</a>.</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3069121">If there is an existing cost entity instance, does it contain overrides? </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="3068603">If there are no overrides for the properties that support overrides, use the standard properties. Standard properties are the pre-override values in properties with names that start with </a><span class="cv_-_computer_voice">Standard</span>. For example, <span class="cv_-_computer_voice">StandardAmount</span>. See the table in <a href="javascript:WWHClickedPopup('integration', 'rating-external.28.10.html#2983434', '');" title="Cost Core Properties">“Cost Core Properties”</a>. Because there are no overrides, your rating engine must copy the <span class="e_-_emphasis">standard&nbsp;properties</span> (the value before any overrides) to the <span class="e_-_emphasis">actual&nbsp;properties.</span> To accomplish this, the rating code for workers’ compensation uses the cost data object method <span class="cv_-_computer_voice">copyStandardColumnsToActualColumns</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="3145728">Only use </a><span class="cv_-_computer_voice">copyStandardColumnsToActualColumns</span> for costs without overrides. Never call the method if the cost has overrides, because the method deletes any existing override data.</div>
+      <div class="BI2_-_Bullet_Item_002c_Level_2_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI2_-_Bullet_Item_002c_Level_2_inner"><a name="3068776">If there are overrides, use the override properties. Override properties are properties with names that start with </a><span class="cv_-_computer_voice">Override</span>. For example, <span class="cv_-_computer_voice">OverrideAmount</span>. The rating engine needs to copy override properties to the <span class="e_-_emphasis">actual properties</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3069075">Be aware that there is a cost data object method called </a><span class="cv_-_computer_voice">copyOverridesFromCost</span>. However, this is not intended for use during the actual rating calculation. The built-in code calls that method to save override values into a cost data object. This ensures that any old override values are not lost when converting to a cost data object and back to a cost entity at a later time. Some people call this process <span class="e_-_emphasis">round-tripping</span> those properties between the costs entity and cost data forms.</div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3069191">The built-in workers’ compensation rating line shows how different override properties to adjust from using standard values to using overridden values. See </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.20.html#2961078', '');" title="Workers’ Compensation Rating">“Workers’ Compensation Rating”</a> for more information.</div>
+      <h6 class="HS_-_Head_Sub"><a name="3069108">To add support for premium overrides</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="3069109">Check if there is an existing cost.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3069140">If so, check if there are non-null values for any override properties. For a detailed reference for override-related cost properties, see </a><a href="javascript:WWHClickedPopup('integration', 'rating-external.28.10.html#2983434', '');" title="Cost Core Properties">“Cost Core Properties”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3069151">If there are overrides, copy the appropriate properties from the existing cost.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3069126">Find and use override properties in your rating table lookups and algorithms. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3068995">Optionally disallow user overrides for a cost by setting the </a><span class="cv_-_computer_voice">Overridable</span> property on a new cost data object to <span class="cv_-_computer_voice">false</span>. The default value of <span class="cv_-_computer_voice">Overridable</span> is <span class="cv_-_computer_voice">true</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3068996">Decide how you want to handle zero-cost costs. A real-world rating engine typically calculates that there is zero cost ($0) for a particular cost in some cases. Normally, this means the rating engine does not bother to generate a cost row. That choice is problematic because the premium overrides user interface allows you to override existing rows but not add new </a><span class="cv_-_computer_voice">Cost</span> rows. In other words, by default, you cannot override a zero-cost cost. To allow users to edit (override) this cost, you can choose to create a zero-cost <span class="cv_-_computer_voice">Cost</span> entity instance in these cases. If you want to do this, you must modify the quote screen to filter&nbsp;out all the zero-cost rows. However, to edit them you must show these zero-cost costs in the premium override screen.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="3063689">Rating Premium Reports</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3063713">When PolicyCenter processes a premium report, it is essentially collecting data and calculating premiums for only a portion of the policy period. The premium report job has non-null values for its properties </a><span class="cv_-_computer_voice">AuditPeriodStartDate</span> and <span class="cv_-_computer_voice">AuditPeriodEndDate</span>. When rating the premium report, the rating logic calculates costs only for amounts overlapping with the audit period.</div>
+      <div class="B_-_Body"><a name="3063714">You can see examples of this in the built-in workers’ compensation rating. The default rating code determines the overlap between each employee (</a><span class="cv_-_computer_voice">WCCoveredEmployee</span>) and the audit period. Next, it prorates the basis by the formula in the following pseudo-code:</div>
+      <div class="CS_-_Code_Single_Line"><a name="3063808">(number of days of overlap)/(number of days in WCCoveredEmployee effective period)</a></div>
+      <div class="B_-_Body"><a name="3063831">Rating logic does not create costs whose effective dates fall outside the audit period. For example, suppose the policy period is from January 1, 2010 to January 1, 2011 and the audit period is for February 1, 2010 through March 1, 2010. Rating must not return any costs that are effective prior to February 1, 2010 or which expire later than March 1, 2010. To prevent mistakes, PolicyCenter detects this condition and throws an exception for any rule violations. </a></div>
+      <div class="B_-_Body"><a name="3063944">The cost (and cost data) property </a><span class="cv_-_computer_voice">SubjectToReporting</span> property controls what happens to the rating and billing of certain types of costs for policies subject to reporting. This property is important if you implement rating for premium reports.</div>
+      <div class="B_-_Body"><a name="3063945">During premium reporting rating calculations, you might want to omit some items from calculations, or handle them differently during rating. For example, in the workers’ compensation rating line:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3064029">The expense constant is meaningful only for the period as a whole, not for any single monthly or quarterly report.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3066408">Taxes are billed up front and at final audit. However, premium reports omit them.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3066409">Rating can determine the premium discount percentage only by looking at the total premium for the entire period. PolicyCenter estimates this at submission or renewal time and determines a discount percentage. During premium reports, the system uses the percentage determined previously. It does not calculate a new discount percentage. This is because the premium report does not calculate a full period premium so it would have no way of deciding which discount percentage is appropriate. At final audit, PolicyCenter calculates the correct final discount and uses it to determine final audited premium.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

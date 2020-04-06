@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity xmlns="http://guidewire.com/datamodel" desc="Business Vehicle" displayName="Business Vehicle" effDatedBranchType="PolicyPeriod" entity="BusinessVehicle" exportable="true" extendable="true" loadable="false" platform="false" table="businessvehicle" subpackage="lob.ba" type="effdated">
+  <implementsInterface iface="gw.api.contact.AdditionalInterestContainer" impl="gw.lob.ba.contact.BAVehicleAdditionalInterestContainer"/>
+  <implementsInterface iface="gw.api.copier.EffDatedCopyable" impl="gw.lob.ba.BusinessVehicleCopier"/>
+  <implementsInterface iface="gw.api.logicalmatch.EffDatedLogicalMatcher" impl="gw.lob.ba.BusinessVehicleMatcher"/>
+   <implementsEntity adapter="gw.lob.ba.BusinessVehicleCoverableAdapter" name="Coverable"/>
+  <implementsEntity adapter="gw.lob.ba.BusinessVehicleModifiableAdapter" name="Modifiable"/>
+  <column desc="Color of the vehicle." name="Color" nullok="true" type="varchar">
+    <columnParam name="size" value="40"/>
+  </column>
+  <monetaryamount amountColumnName="CostNew" desc="Original retail cost of car." name="CostNew" nullok="false"/>
+  <column default="false" desc="If this vehicle is leased or rented." name="LeaseOrRent" nullok="true" type="bit"/>
+  <column desc="License plate of the vehicle." name="LicensePlate" nullok="true" type="varchar">
+    <columnParam name="size" value="40"/>
+  </column>
+  <column desc="Make of the vehicle." name="Make" nullok="true" type="varchar">
+    <columnParam name="size" value="40"/>
+  </column>
+  <column desc="Model of the vehicle." name="Model" nullok="true" type="varchar">
+    <columnParam name="size" value="40"/>
+  </column>
+  <column desc="Internal field for storing the reference date of this entity on bound policy periods." name="ReferenceDateInternal" nullok="true" type="datetime"/>
+  <monetaryamount amountColumnName="StatedValue" desc="User enter stated value of vehicle" name="StatedValue" nullok="true"/>
+  <column desc="Vehicle classification code" name="VehicleClassCode" nullok="true" type="shorttext"/>
+  <column default="true" desc="true if vehicle is new, false if vehicle is used" name="VehicleCondition" nullok="false" type="bit"/>
+  <column desc="Vehicle number" name="VehicleNumber" nullok="false" type="integer"/>
+  <column desc="VIN (vehicle identification number) of the vehicle." name="Vin" nullok="true" type="vin"/>
+  <column desc="Vehicle model year" name="Year" nullok="true" type="year"/>
+  <column desc="year the vehicle is purchased" name="YearPurchased" nullok="true" type="year"/>
+  <typekey desc="Body type of the vehicle." name="BodyType" nullok="true" typelist="BodyType">
+    <keyfilters>
+      <keyfilter name="VehicleType"/>
+    </keyfilters>
+  </typekey>
+  <typekey desc="Destination zone of vehicle" name="DestinationZone" nullok="true" typelist="Zone"/>
+  <typekey desc="Experience of the possible drivers of this vehicle" name="Experience" nullok="true" typelist="CombinedDriverExp"/>
+  <typekey desc="The industry the vehicle is in" name="Industry" nullok="true" typelist="VehicleIndustry"/>
+  <typekey desc="Vehicle industry use" name="IndustryUse" nullok="true" typelist="VehicleIndustryUse">
+    <keyfilters>
+      <keyfilter name="Industry"/>
+    </keyfilters>
+  </typekey>
+  <typekey desc="The lease period of a leased or a rented vehicle." name="LengthOfLease" nullok="true" typelist="LengthOfLease"/>
+  <typekey desc="State in which the vehicle is licensed." name="LicenseState" nullok="true" typelist="State"/>
+  <typekey desc="Origination zone of vehicle" name="OriginationZone" nullok="true" typelist="Zone"/>
+  <typekey desc="Primary use of the vehicle." name="PrimaryUse" nullok="true" typelist="VehiclePrimaryUse">
+    <keyfilters>
+      <keyfilter name="VehicleType"/>
+    </keyfilters>
+  </typekey>
+  <typekey desc="Normal radius of operations from principle garage." name="VehicleRadius" nullok="true" typelist="RadiusCode">
+    <keyfilters>
+      <keyfilter name="VehicleType"/>
+    </keyfilters>
+  </typekey>
+  <typekey desc="Weight or size class of the vehicle." name="VehicleSizeClass" nullok="true" typelist="VehicleSizeClass">
+    <keyfilters>
+      <keyfilter name="VehicleType"/>
+    </keyfilters>
+  </typekey>
+  <typekey desc="Type of the vehicle." name="VehicleType" nullok="true" typelist="VehicleType"/>
+  <foreignkey fkentity="BusinessAutoLine" name="BALine" nullok="false"/>
+  <foreignkey desc="Location of the vehicle." exportable="true" fkentity="PolicyLocation" name="Location" nullok="false"/>
+  <array arrayentity="BAVhcleAddlInterest" cascadeDelete="true" desc="Additional interests on this vehicle" name="AdditionalInterests" owner="false"/>
+  <array arrayentity="BAStateCovVehicleCost" cascadeDelete="true" name="Costs"/>
+  <array arrayentity="BALineCovCost" cascadeDelete="true" desc="Costs for Commercial Auto Line coverages" name="LineCosts"/>
+  <array arrayentity="BusinessVehicleCov" cascadeDelete="true" desc="All coverages that apply directly to this vehicle." name="Coverages" owner="false" setterScriptability="all"/>
+  <array arrayentity="BusinessVehicleModifier" cascadeDelete="true" desc="Rating info for the line." name="BusinessVehicleModifiers" owner="false"/>
+  <!-- (LicensePlate != NULL) ==> (LicenseState != NULL) -->
+  <checkconstraint predicate="LicensePlate IS NULL OR LicenseState IS NOT NULL"/>
+</entity>

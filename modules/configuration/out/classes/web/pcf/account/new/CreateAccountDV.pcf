@@ -1,0 +1,120 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="CreateAccountDV">
+    <Require
+      name="account"
+      type="Account"/>
+    <Require
+      name="producerSelection"
+      type="ProducerSelection"/>
+    <Variable
+      initialValue="account.AccountHolderContact.PrimaryAddress"
+      name="selectedAddress"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="producerSelection.getRangeOfActiveProducerCodesForCurrentUser(true)"
+      name="producerCodeRange"/>
+    <InputColumn>
+      <InputSetRef
+        def="CreateAccountContactInputSet(account.AccountHolderContact)"
+        mode="account.AccountHolderContact.Subtype"/>
+      <InputSetRef
+        def="LinkedAddressInputSet(selectedAddress, account.AccountHolderContact, null, account, CurrentLocation.InEditMode)"/>
+      <InputSetRef
+        def="AddressInputSet(new gw.pcf.contacts.AddressInputSetAddressOwner(selectedAddress, false, true))"
+        editable="selectedAddress.LinkedAddress == null"/>
+      <TypeKeyInput
+        editable="selectedAddress.LinkedAddress == null"
+        id="AddressType"
+        label="displaykey.Web.AddressDetail.AddressType"
+        required="true"
+        value="selectedAddress.AddressType"/>
+      <Input
+        editable="selectedAddress.LinkedAddress == null"
+        id="AddressDescription"
+        label="displaykey.Web.AddressDetail.Description"
+        value="selectedAddress.Description"/>
+      <InputSetRef
+        def="AccountCurrencyInputSet(account, selectedAddress, true)"
+        editable="account.Editable"
+        id="AccountCurrency"
+        visible="gw.api.util.CurrencyUtil.isMultiCurrencyMode()"/>
+      <InputSet
+        visible="account.AccountHolderContact typeis Company">
+        <TypeKeyInput
+          editable="true"
+          id="OrgType"
+          label="displaykey.Web.EditAccount.OrgType"
+          value="account.AccountOrgType"/>
+        <Input
+          editable="true"
+          id="DescriptionOfBusiness"
+          label="displaykey.Web.EditAccount.DescriptionOfBusiness"
+          value="account.BusOpsDesc"/>
+      </InputSet>
+      <Label
+        label="displaykey.Web.AccountFile.Summary.OfficialIDs"/>
+      <InputSetRef
+        def="OfficialIDInputSet(account.AccountHolderContact)"
+        mode="account.AccountHolderContact.Subtype"/>
+      <InputDivider/>
+      <Input
+        editable="true"
+        id="PrimaryLanguage"
+        label="displaykey.Web.NewSubmissionAccountDetail.PrimaryLanguage"
+        required="false"
+        value="account.PrimaryLanguage"
+        visible="gw.api.util.LocaleUtil.getAllLanguages().size() &gt; 1"/>
+      <!-- Account Details -->
+      <IndustryCodeInput
+        domain="&quot;SIC&quot; as IndustryCodeType"
+        editable="true"
+        id="IndustryCode"
+        label="displaykey.Java.IndustryCodeInputWidget.Label"
+        pickLocation="IndustryCodeSearchPopup.push(&quot;SIC&quot; as IndustryCodeType)"
+        value="account.IndustryCode"
+        visible="account.AccountHolder.AccountContact.Company"/>
+      <InputDivider/>
+      <InputSet
+        id="ProducerSelectionInputSet">
+        <Label
+          id="ProducerSelection"
+          label="displaykey.Web.NewSubmission.ProducerSelection"/>
+        <OrgInput
+          editable="not User.util.CurrentUser.ExternalUser"
+          id="Producer"
+          label="displaykey.Web.ProducerSelection.Producer"
+          pickLocation="OrganizationSearchPopup.push(null, true)"
+          required="true"
+          validationExpression="producerSelection.validateProducer()"
+          value="producerSelection.Producer">
+          <PostOnChange
+            onChange="changedProducer()"
+            target="ProducerCode"/>
+        </OrgInput>
+        <RangeInput
+          editable="true"
+          id="ProducerCode"
+          label="displaykey.Web.ProducerSelection.ProducerCode"
+          optionLabel="displaykey.Web.ProducerSelection.ProducerCode.OptionLabel(VALUE.Code, VALUE.Description  != null ? VALUE.Description : &quot;&quot; )"
+          required="true"
+          validationExpression="producerSelection.validateProducerCodeForAccount()"
+          value="producerSelection.ProducerCode"
+          valueRange="producerCodeRange"
+          visible="producerSelection.Producer != null"/>
+      </InputSet>
+    </InputColumn>
+    <Code><![CDATA[function changedProducer() {
+  producerCodeRange = producerSelection.getRangeOfActiveProducerCodesForCurrentUser(true)
+
+  if (producerCodeRange.Count == 1) {
+    producerSelection.ProducerCode = producerCodeRange[0]
+  } else {
+    producerSelection.ProducerCode = null
+  }
+}]]></Code>
+  </DetailViewPanel>
+</PCF>

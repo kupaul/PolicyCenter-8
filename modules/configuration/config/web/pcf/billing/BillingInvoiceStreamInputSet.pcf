@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InputSet
+    id="BillingInvoiceStreamInputSet">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="policyPeriod.NewInvoiceStream"
+      name="newInvoiceStream"/>
+    <Variable
+      initialValue="gw.web.billing.BillingInvoiceStreamUIHelper.getAvailablePaymentInstruments(policyPeriod)"
+      name="paymentInstruments"
+      recalculateOnRefresh="true"/>
+    <RangeInput
+      editable="true"
+      id="Invoice"
+      label="displaykey.Web.Policy.Payment.InvoiceStreamsLV.Invoice"
+      optionLabel="VALUE ? displaykey.Web.Policy.Payment.InvoiceStreamsLV.DueDate : displaykey.Web.Policy.Payment.InvoiceStreamsLV.InvoiceDate"
+      required="true"
+      value="newInvoiceStream.DueDateBilling"
+      valueRange="{true, false}"/>
+    <RangeInput
+      editable="true"
+      id="FirstDayOfMonth"
+      label="displaykey.Web.Policy.Payment.InvoiceStreamsLV.DayOfMonth"
+      required="true"
+      value="newInvoiceStream.FirstDayOfMonth"
+      valueRange="(1..31).toTypedArray()"
+      visible="gw.web.billing.BillingInvoiceStreamUIHelper.isFirstDayOfMonthVisible(newInvoiceStream.Interval)"/>
+    <RangeInput
+      editable="true"
+      id="SecondDayOfMonth"
+      label="displaykey.Web.Policy.Payment.InvoiceStreamsLV.SecondDayOfMonth"
+      required="true"
+      value="newInvoiceStream.SecondDayOfMonth"
+      valueRange="(1..31).toTypedArray()"
+      visible="gw.web.billing.BillingInvoiceStreamUIHelper.isSecondDayOfMonthVisible(newInvoiceStream.Interval)"/>
+    <TypeKeyInput
+      editable="true"
+      id="DayOfWeek"
+      label="displaykey.Web.Policy.Payment.InvoiceStreamsLV.DayOfWeek"
+      required="true"
+      value="newInvoiceStream.DayOfWeek"
+      visible="gw.web.billing.BillingInvoiceStreamUIHelper.isDayOfWeekVisible(newInvoiceStream.Interval)"/>
+    <Input
+      editable="true"
+      id="FirstPaymentDate"
+      label="displaykey.Web.Policy.Payment.InvoiceStreamsLV.FirstPaymentDate"
+      required="true"
+      value="newInvoiceStream.FirstAnchorDate"
+      visible="gw.web.billing.BillingInvoiceStreamUIHelper.isPaymentDateVisible(newInvoiceStream.Interval)"/>
+    <TextInput
+      editable="true"
+      id="InvoiceStreamDescription"
+      label="displaykey.Web.Policy.Payment.InvoiceStreamsLV.Description"
+      value="newInvoiceStream.Description"/>
+    <BooleanRadioInput
+      available="policyPeriod.AllowResponsive"
+      editable="true"
+      falseLabel="displaykey.Web.Policy.Payment.InvoiceStreamsLV.Manual"
+      id="Automatic"
+      label="displaykey.Web.Policy.Payment.InvoiceStreamsLV.Payment"
+      trueLabel="displaykey.Web.Policy.Payment.InvoiceStreamsLV.Automatic"
+      value="newInvoiceStream.Automatic">
+      <PostOnChange
+        onChange="newInvoiceStream = policyPeriod.NewInvoiceStream; gw.web.billing.BillingInvoiceStreamUIHelper.getAvailablePaymentInstruments(policyPeriod)"/>
+    </BooleanRadioInput>
+    <ListViewInput
+      def="PaymentInstrumentsLV(newInvoiceStream, paymentInstruments)"
+      editable="true"
+      id="PaymentInstrument"
+      visible="newInvoiceStream.Automatic">
+      <Toolbar>
+        <ToolbarButton
+          action="CurrentLocation.commit(); gw.web.billing.BillingInvoiceStreamUIHelper.externalPaymentLocation(policyPeriod)"
+          available="gw.api.system.PCConfigParameters.PaymentSystemURL.Value.HasContent"
+          id="AddPaymentInstrument"
+          label="displaykey.Web.Billing.AddPaymentInstrument"/>
+      </Toolbar>
+    </ListViewInput>
+  </InputSet>
+</PCF>

@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <InputSet
+    id="CoverageInputSet"
+    mode="WCEmpLiabCov">
+    <Require
+      name="coveragePattern"
+      type="gw.api.productmodel.ClausePattern"/>
+    <Require
+      name="coverable"
+      type="Coverable"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="coverable as entity.WorkersCompLine"
+      name="wcLine"/>
+    <Variable
+      initialValue="wcLine.WCEmpLiabCov"
+      name="empLiabCov"
+      recalculateOnRefresh="true"/>
+    <HiddenInput
+      id="CovPatternDisplayName"
+      value="coveragePattern.DisplayName"/>
+    <InputGroup
+      allowToggle="coveragePattern.allowToggle(coverable)"
+      childrenVisible="coverable.getCoverageConditionOrExclusion(coveragePattern) != null"
+      id="CovPatternInputGroup"
+      label="coveragePattern.DisplayName"
+      onToggle="coverable.setCoverageConditionOrExclusionExists(coveragePattern, VALUE)">
+      <RangeInput
+        editable="openForEdit and gw.web.productmodel.ChoiceCovTermUtil.isEditable(empLiabCov.WCEmpLiabLimitTerm)"
+        id="EmpLiabPack"
+        label="empLiabCov.WCEmpLiabLimitTerm.Pattern.DisplayName"
+        required="empLiabCov.WCEmpLiabLimitTerm.Pattern.Required"
+        sortValueRange="false"
+        value="empLiabCov.WCEmpLiabLimitTerm.PackageValue"
+        valueRange="gw.web.productmodel.ChoiceCovTermUtil.getModelValueRange(empLiabCov.WCEmpLiabLimitTerm, openForEdit)"
+        visible="empLiabCov.hasCovTerm(&quot;WCEmpLiabLimit&quot;)"/>
+      <RangeInput
+        editable="true"
+        id="StopGapTermInput"
+        label="empLiabCov.WCStopGapOptTerm.Pattern.DisplayName"
+        required="empLiabCov.WCStopGapOptTerm.Pattern.Required"
+        value="empLiabCov.WCStopGapOptTerm.Value"
+        valueRange="empLiabCov.WCStopGapOptTerm?.Pattern.OrderedAvailableValues"
+        visible="empLiabCov.hasCovTerm(&quot;WCStopGapOpt&quot;)">
+        <PostOnChange/>
+      </RangeInput>
+      <InputSet
+        visible="empLiabCov.hasCovTerm(&quot;WCIncludedMonopolisticStates&quot;) and empLiabCov.WCStopGapOptTerm.Value == &quot;ListedStatesOnly&quot;">
+        <TextInput
+          editable="true"
+          id="WCIncludedMonopolisticStatesTermInput"
+          label="empLiabCov.WCIncludedMonopolisticStatesTerm.Pattern.DisplayName"
+          required="empLiabCov.WCIncludedMonopolisticStatesTerm.Pattern.Required"
+          validationExpression="wcLine.validateIncludedMonopolisticStates(empLiabCov.WCIncludedMonopolisticStatesTerm.Value)"
+          value="empLiabCov.WCIncludedMonopolisticStatesTerm.Value"/>
+      </InputSet>
+      <PostOnChange/>
+    </InputGroup>
+  </InputSet>
+</PCF>

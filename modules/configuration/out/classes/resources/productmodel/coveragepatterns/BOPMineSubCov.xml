@@ -1,0 +1,51 @@
+<?xml version="1.0"?>
+<CoveragePattern
+  coverageCategory="BOPBuildingSpecialPerilCat"
+  coverageSubtype="BOPBuildingCov"
+  coveredPartyType="FirstParty"
+  existence="Electable"
+  lookupTableName="BOPBuildingCov"
+  owningEntityType="BOPBuilding"
+  priority="13"
+  public-id="BOPMineSubCov"
+  rICoverageGroupType="Property"
+  referenceDateByType="DefinedObject">
+  <AvailabilityScript><![CDATA[
+// dont need to test states, the lookup does that
+// dont need to test the limit, since the limit is required if the cov exists
+// dont need to test other buildings, just this one
+//var states : State[] = { "IL", "IN", "KY" }
+//return BOPBuilding.BOPLocation.BOPLine.BOPLocations.Buildings.findFirst( \ bldg ->
+//  bldg.BOPBuildingCovExists and states.contains( bldg.BOPLocation.Location.State ) ) != null and
+//  BOPBuilding.BOPBuildingCov.BOPBldgLimTerm.Value != null
+return BOPBuilding.BOPBuildingCovExists
+    
+  ]]></AvailabilityScript>
+  <InitializeScript/>
+  <OnRemovalScript/>
+  <CovTerms>
+    <DirectCovTermPattern
+      aggregationModel="po"
+      coverageColumn="DirectTerm1"
+      lookupTableName="BOPBuildingCovTerm"
+      modelType="Limit"
+      priority="-1"
+      public-id="BOPMineSubLim"
+      required="true"
+      restrictionModel="bld"
+      valueType="money">
+      <AvailabilityScript><![CDATA[
+var states : State[] = { "IN", "IL", "KY" }
+return BOPBuilding.BOPLocation.BOPLine.BOPLocations.Buildings.findFirst( \ bldg ->
+  bldg.BOPBuildingCovExists and states.contains( bldg.BOPLocation.Location.State ) ) != null
+        
+      ]]></AvailabilityScript>
+      <LimitsSet>
+        <CovTermLimits
+          currency="usd"
+          minVal="1"
+          public-id="BOPMineSubLimusd"/>
+      </LimitsSet>
+    </DirectCovTermPattern>
+  </CovTerms>
+</CoveragePattern>

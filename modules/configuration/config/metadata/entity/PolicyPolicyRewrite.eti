@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  desc="Table linking a policy that was rewritten to a new account to its source policy."
+  entity="PolicyPolicyRewrite"
+  exportable="false"
+  subpackage="policy"
+  loadable="false"
+  table="policypolicyrewrite"
+  type="joinarray">
+  <fulldescription><![CDATA[
+      Table linking a policy that preserves the relationship between policies from a RewriteNewAccount job.
+      This join table represents a one-to-one relationship between the source policy that was rewritten and the
+      new policy that was rewritten to.
+    ]]></fulldescription>
+  <foreignkey
+    columnName="RewrittenPolicyID"
+    desc="Pointer to the rewritten policy"
+    exportable="false"
+    fkentity="Policy"
+    getterScriptability="hidden"
+    name="RewrittenPolicy"
+    nullok="false"
+    setterScriptability="doesNotExist"
+    triggersValidation="true"/>
+  <foreignkey
+    columnName="SourcePolicyID"
+    desc="Pointer to the source policy"
+    exportable="false"
+    fkentity="Policy"
+    getterScriptability="hidden"
+    name="SourcePolicy"
+    nullok="false"
+
+    setterScriptability="doesNotExist"
+    triggersValidation="true"/>
+  <index
+    desc="Enforce uniqueness any given policy can only be rewritten into another account once."
+    name="policypolicyrwrtu1"
+    unique="true">
+    <indexcol
+      keyposition="1"
+      name="SourcePolicyID"/>
+  </index>
+  <index
+    desc="Enforce uniqueness any given policy can only be the result of a rewrite once."
+    name="policypolicyrwrtu2"
+    unique="true">
+    <indexcol
+      keyposition="1"
+      name="RewrittenPolicyID"/>
+  </index>
+</entity>

@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <PanelSet
+    id="AuditDetailsPanelSet"
+    mode="WorkersComp">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="policyPeriod.WorkersCompLine"
+      name="wcLine"
+      type="WorkersCompLine"/>
+    <Variable
+      initialValue="policyPeriod.WorkersCompLine.Jurisdictions"
+      name="jurisdictions"/>
+    <PanelIterator
+      elementName="jurisdiction"
+      value="jurisdictions">
+      <IteratorSort
+        sortBy="jurisdiction"
+        sortOrder="1"/>
+      <PanelRef
+        editable="policyPeriod.OpenForEdit">
+        <TitleBar
+          id="StateTitle"
+          title="jurisdiction.DisplayName"/>
+        <PanelSet
+          id="StatePanelSet">
+          <PanelIterator
+            elementName="ratingPeriod"
+            value="jurisdiction.InForceRatingPeriods.toTypedArray()">
+            <DetailViewPanel
+              id="PeriodDV">
+              <InputColumn>
+                <Label
+                  label="displaykey.Web.AuditWizard.Details.PeriodLabel( gw.api.util.StringUtil.formatDate(ratingPeriod.RatingStart, &quot;short&quot;), gw.api.util.StringUtil.formatDate(ratingPeriod.RatingEnd, &quot;short&quot;) )"/>
+                <ListViewInput
+                  labelAbove="true">
+                  <Toolbar/>
+                  <ListViewPanel>
+                    <RowIterator
+                      editable="true"
+                      elementName="wcCovEmp"
+                      pageSize="0"
+                      type="WCCoveredEmployee"
+                      value="wcCoveredEmpInLocation(ratingPeriod)">
+                      <Row>
+                        <Cell
+                          align="left"
+                          id="Location"
+                          label="displaykey.Web.AuditWizard.Details.Location"
+                          numCols="10"
+                          sortOrder="1"
+                          value="wcCovEmp.Location.LocationNum"/>
+                        <Cell
+                          id="ClassCode"
+                          label="displaykey.Web.AuditWizard.Details.ClassCode"
+                          sortOrder="2"
+                          value="wcCovEmp.ClassCode.Code"/>
+                        <Cell
+                          id="Description"
+                          label="displaykey.Web.AuditWizard.Details.Description"
+                          value="wcCovEmp.ClassCode.ShortDesc"/>
+                        <Cell
+                          id="EstPayroll"
+                          label="policyPeriod.Audit.AuditInformation.IsRevision ? displaykey.Web.AuditWizard.PriorAuditedPayroll : displaykey.Web.AuditWizard.EstPayroll"
+                          value="basisForRating(wcCovEmp)"/>
+                        <Cell
+                          editable="true"
+                          id="AuditedAmt"
+                          label="displaykey.Web.AuditWizard.AuditedPayroll"
+                          value="wcCovEmp.AuditedAmount"/>
+                      </Row>
+                    </RowIterator>
+                  </ListViewPanel>
+                </ListViewInput>
+              </InputColumn>
+            </DetailViewPanel>
+          </PanelIterator>
+        </PanelSet>
+      </PanelRef>
+    </PanelIterator>
+    <Code><![CDATA[function wcCoveredEmpInLocation(ratingPeriod : gw.lob.wc.rating.WCRatingPeriod) : WCCoveredEmployee[]{
+  return wcLine.WCCoveredEmployeeVLs.map(\versionList ->
+      versionList.AllVersions.where(\ wcCovEmp ->
+          wcCovEmp.Location.State == gw.api.util.StateJurisdictionMappingUtil.getStateMappingForJurisdiction(ratingPeriod.Jurisdiction.State)
+          and wcCovEmp.EffectiveDateForRating >= ratingPeriod.RatingStart
+          and wcCovEmp.EffectiveDateForRating < ratingPeriod.RatingEnd
+          and wcCovEmp.ExpirationDateForRating > ratingPeriod.RatingStart
+          and wcCovEmp.ExpirationDateForRating <= ratingPeriod.RatingEnd))
+     .where(\l -> l.Count > 0).flatten().toTypedArray()
+}
+
+function basisForRating(wcCovEmp : WCCoveredEmployee) : int {
+  var info = policyPeriod.Audit.AuditInformation
+  var amountToUse : int
+  if (info.IsFinalAudit) {
+    amountToUse = wcCovEmp.BasisAmount
+  }
+  else if (info.IsRevision) {
+    amountToUse = wcCovEmp.LastBilledCoveredEmployee.BasisForRating
+  }
+  else {
+    amountToUse = wcCovEmp.ProratedEstimatedAmount
+  }
+  return amountToUse
+}]]></Code>
+  </PanelSet>
+</PCF>

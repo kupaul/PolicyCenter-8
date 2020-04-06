@@ -1,0 +1,363 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="SideBySideTableLayoutDV">
+    <Require
+      name="jobWizHelper"
+      type="gw.api.web.job.JobWizardHelper"/>
+    <Require
+      name="sideHelper"
+      type="gw.pcf.sidebyside.SideBySideScreenHelper"/>
+    <Variable
+      initialValue="CurrentLocation as pcf.api.Wizard"
+      name="wizard"
+      type="pcf.api.Wizard"/>
+    <Variable
+      initialValue="3"
+      name="maxColsInPeriod"/>
+    <Variable
+      initialValue="1"
+      name="covTermColWidth"/>
+    <Variable
+      initialValue="1 + (maxColsInPeriod * sideHelper.PeriodInfos.Count)"
+      name="columnNumber"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="sideHelper.LineCoverageSets"
+      name="lineCoverageSets"
+      recalculateOnRefresh="true"/>
+    <!-- PCF Layout -->
+    <Layout
+      columns="columnNumber"
+      type="table"/>
+    <Label
+      id="BranchNameLabelId"
+      label="displaykey.Web.Job.SideBySide.PolicyPeriodBranchName">
+      <LayoutConfig
+        tdClass="&quot;pc-sxs-name-label&quot;"/>
+    </Label>
+    <InputIterator
+      elementName="periodInfo"
+      id="BranchNames"
+      value="sideHelper.PeriodInfos">
+      <Input
+        align="center"
+        editable="periodInfo.SxSEditable"
+        id="BranchName"
+        labelAbove="true"
+        value="periodInfo.Period.BranchName">
+        <LayoutConfig
+          colspan="maxColsInPeriod"
+          tdClass="&quot;pc-sxs-col-&quot; + (periodInfo.ColumnIndex % 2) + &quot; pc-sxs-name-col-cell&quot;"/>
+      </Input>
+    </InputIterator>
+    <!-- Offering -->
+    <Label
+      id="OfferingLabelId"
+      label="displaykey.Web.Job.Offering.Selection">
+      <LayoutConfig
+        tdClass="&quot;pc-sxs-label-col&quot;"/>
+    </Label>
+    <InputIterator
+      elementName="periodInfo"
+      id="offeringPeriodInfoIterator"
+      value="sideHelper.PeriodInfos">
+      <RangeInput
+        editable="periodInfo.SxSEditable"
+        id="PickOffering"
+        labelAbove="true"
+        value="periodInfo.Period.Offering"
+        valueRange="periodInfo.Period.Policy.Product.Offerings.where(\ off -&gt;off.isOfferingAvailable(periodInfo.Period))">
+        <LayoutConfig
+          colspan="maxColsInPeriod - 1"
+          tdClass="&quot;pc-sxs-col-&quot; + (periodInfo.ColumnIndex % 2)"/>
+        <PostOnChange
+          onChange="gw.lob.common.SideBySideUtil.syncCoveragesAndRefresh(periodInfo,jobWizHelper)"/>
+      </RangeInput>
+      <ButtonInput
+        action="gw.lob.common.SideBySideUtil.editIfQuotedAndForceSync(periodInfo.Period); jobWizHelper.Wizard.refreshCurrentStep();"
+        align="right"
+        available="periodInfo.SxSEditable"
+        id="ForceSync"
+        labelAbove="true"
+        value="displaykey.Web.Job.SideBySide.ForceSync">
+        <LayoutConfig
+          tdClass="&quot;pc-sxs-col-&quot; + (periodInfo.ColumnIndex % 2)"/>
+      </ButtonInput>
+    </InputIterator>
+    <!-- Total Premium -->
+    <Label
+      id="PolicyPremiumId"
+      label="displaykey.Web.Job.SideBySide.PolicyPremium">
+      <LayoutConfig
+        tdClass="&quot;pc-sxs-label-col&quot;"/>
+    </Label>
+    <InputIterator
+      elementName="periodInfo"
+      id="periodInfoPremiumIterator"
+      value="sideHelper.PeriodInfos">
+      <Input
+        align="center"
+        id="PremiumValue"
+        labelAbove="true"
+        value="periodInfo.PremiumsVisible ? periodInfo.Period.TotalPremiumRPT : null">
+        <LayoutConfig
+          colspan="maxColsInPeriod"
+          tdClass="&quot;pc-sxs-col-&quot; + (periodInfo.ColumnIndex % 2)"/>
+      </Input>
+    </InputIterator>
+    <!-- Action buttons -->
+    <Label
+      id="ActionsId"
+      label="displaykey.Web.Job.SideBySide.ActionButtonsLabel">
+      <LayoutConfig
+        tdClass="&quot;pc-sxs-label-col&quot;"/>
+    </Label>
+    <InputIterator
+      elementName="periodInfo"
+      id="ActionButtonSetsId"
+      value="sideHelper.PeriodInfos">
+      <ContentInput
+        align="center"
+        labelAbove="true">
+        <LayoutConfig
+          colspan="maxColsInPeriod"
+          tdClass="&quot;pc-sxs-action-cell pc-sxs-col-&quot; + (periodInfo.ColumnIndex % 2)"/>
+        <Link
+          action="gw.lob.common.SideBySideUtil.returnToSelectedPeriod(periodInfo.Period, jobWizHelper)"
+          id="SelectButtonId"
+          label="displaykey.Web.Job.SideBySide.SelectPeriod"
+          styleClass="miniButton"/>
+        <Link
+          action="gw.lob.common.SideBySideUtil.goToPeriod(periodInfo.Period, jobWizHelper)"
+          icon="&quot;viewdetail.png&quot;"
+          id="DetailsButtonId"
+          tooltip="displaykey.Web.Job.SideBySide.ViewPeriodDetails"/>
+        <Link
+          action="gw.lob.common.SideBySideUtil.duplicateVersion(periodInfo.Period, wizard, jobWizHelper)"
+          confirmMessage="displayKey.Web.Job.SideBySide.DuplicatePeriod.ConfirmationMsg(periodInfo.Period.BranchName)"
+          icon="&quot;duplicate_16.png&quot;"
+          id="DuplicateButtonId"
+          tooltip="displaykey.Web.Job.SideBySide.DuplicatePeriod"
+          visible="not periodInfo.Period.Job.hasMaxNumberOfSideBySideQuotes()"/>
+        <Link
+          action="gw.lob.common.SideBySideUtil.withdrawSelectedPeriod(periodInfo, jobWizHelper)"
+          confirmMessage="displaykey.Job.Operation.Withdraw.Confirm"
+          icon="&quot;ico_delete.png&quot;"
+          id="RemoveButtonId"
+          tooltip="displaykey.Web.Job.SideBySide.DeletePeriod"/>
+      </ContentInput>
+    </InputIterator>
+    <Label
+      id="ErrorId"
+      label="&quot;&quot;">
+      <LayoutConfig
+        tdClass="&quot;pc-sxs-label-col&quot;"/>
+    </Label>
+    <InputIterator
+      elementName="periodInfo"
+      id="errorWarningPeriodInfoIterator"
+      value="sideHelper.PeriodInfos">
+      <InputSet>
+        <Variable
+          initialValue="gw.lob.common.SideBySideUtil.shouldShowResolveButton(periodInfo)"
+          name="showResolveButton"
+          recalculateOnRefresh="true"/>
+        <Input
+          align="center"
+          boldValue="true"
+          id="Errors"
+          labelAbove="true"
+          value="periodInfo.ErrorText">
+          <LayoutConfig
+            colspan="showResolveButton ? maxColsInPeriod - 1 : maxColsInPeriod"
+            tdClass="&quot;pc-sxs-col-&quot; + (periodInfo.ColumnIndex % 2)"/>
+        </Input>
+        <ButtonInput
+          action="gw.lob.common.SideBySideUtil.displayIssuesToResolve(periodInfo.Validation, periodInfo.Period, jobWizHelper)"
+          align="right"
+          available="showResolveButton"
+          id="Resolve"
+          labelAbove="true"
+          value="displaykey.Web.Job.SideBySide.ResolveButton">
+          <LayoutConfig
+            tdClass="&quot;pc-sxs-col-&quot; + (periodInfo.ColumnIndex % 2)"/>
+        </ButtonInput>
+      </InputSet>
+    </InputIterator>
+    <Label
+      id="LineLevelCoveragesLabelId"
+      label="displaykey.Web.Job.SideBySide.LineCoveragesLabel">
+      <LayoutConfig
+        tdClass="&quot;pc-sxs-section-label&quot;"/>
+    </Label>
+    <InputIterator
+      elementName="periodInfo"
+      id="AllVehicleCovHeaderCells"
+      value="sideHelper.PeriodInfos">
+      <Input
+        id="AllVehicleCovSpacer"
+        value="&quot;&quot;">
+        <LayoutConfig
+          colspan="maxColsInPeriod"
+          tdClass="&quot;pc-sxs-section-col-&quot; + (periodInfo.ColumnIndex % 2)"/>
+      </Input>
+    </InputIterator>
+    <!-- Iterate over line level coverages -->
+    <InputIterator
+      elementName="lineCovSet"
+      id="lineLevelCoverages"
+      value="sideHelper.LineCoverageSets">
+      <Input
+        id="lineLevelCoverageLabelId"
+        labelAbove="true"
+        value="lineCovSet.InitialRow.CoverageLabel">
+        <LayoutConfig
+          tdClass="&quot;pc-sxs-label-col&quot;"/>
+      </Input>
+      <InputIterator
+        elementName="lineCovTermInfo"
+        id="lineCovRow"
+        value="lineCovSet.InitialRow.CovTermInfos">
+        <InputSetRef
+          def="SideBySideCovTermInputSet(lineCovTermInfo, covTermColWidth, true)"
+          id="targetedCovTermId"
+          mode="lineCovTermInfo?.getPostOnChangeMode(lineCovSet)"/>
+        <Input
+          align="right"
+          id="CostForCoverage"
+          labelAbove="true"
+          value="lineCovTermInfo.CovInfo.IsCostVisible ? lineCovTermInfo.CovInfo.TotalCost : null">
+          <LayoutConfig
+            colspan="maxColsInPeriod - 2"
+            tdClass="&quot;pc-sxs-col-&quot; + (lineCovTermInfo.CovInfo.PeriodInfo.ColumnIndex % 2)"/>
+        </Input>
+      </InputIterator>
+      <InputIterator
+        elementName="covTermRow"
+        id="lineCovTermRow"
+        value="lineCovSet.AdditionalCovTermRows">
+        <Input
+          id="CovTermLabelId"
+          labelAbove="true"
+          value="covTermRow.CoverageLabel"/>
+        <InputIterator
+          elementName="lineCovTermInfo"
+          id="lineCovTermRow"
+          value="covTermRow.CovTermInfos">
+          <InputSetRef
+            def="SideBySideCovTermInputSet(lineCovTermInfo, covTermColWidth, false)"
+            id="targetedCovTermId"
+            mode="lineCovTermInfo?.getPostOnChangeMode(lineCovSet)"/>
+        </InputIterator>
+      </InputIterator>
+    </InputIterator>
+    <!-- Vehicle Coverages -->
+    <Label
+      id="VehicleLevelCoveragesId"
+      label="displaykey.Web.Job.SideBySide.PersonalAuto.VehicleCoverageTitle">
+      <LayoutConfig
+        tdClass="&quot;pc-sxs-section-label&quot;"/>
+    </Label>
+    <InputIterator
+      elementName="periodInfo"
+      id="VehicleCovHeaderCells"
+      value="sideHelper.PeriodInfos">
+      <Input
+        id="CovByVehicleSpacer"
+        value="&quot;&quot;">
+        <LayoutConfig
+          colspan="maxColsInPeriod"
+          tdClass="&quot;pc-sxs-section-col-&quot; + (periodInfo.ColumnIndex % 2)"/>
+      </Input>
+    </InputIterator>
+    <InputIterator
+      elementName="vehicleSet"
+      id="vehicleSetsId"
+      value="sideHelper.PAVehicleSets">
+      <Input
+        id="VehicleMakeSpacer"
+        value="&quot;&quot;">
+        <LayoutConfig
+          tdClass="&quot;pc-sxs-label-col&quot;"/>
+      </Input>
+      <InputIterator
+        elementName="vehIndexedLabel"
+        id="vehicleLabelsId"
+        value="vehicleSet.VehicleIndexAndLabels">
+        <Input
+          align="center"
+          boldValue="true"
+          id="vehicleLabel"
+          labelAbove="true"
+          value="vehIndexedLabel.Second">
+          <LayoutConfig
+            colspan="maxColsInPeriod"
+            tdClass="&quot;pc-sxs-col-&quot; + (vehIndexedLabel.First % 2)"/>
+        </Input>
+      </InputIterator>
+      <InputIterator
+        elementName="vehCovSet"
+        id="vehLevelCoverages"
+        value="vehicleSet.VehicleCovSets">
+        <Input
+          id="vehLevelCoverageLabelId"
+          labelAbove="true"
+          value="vehCovSet.InitialRow.CoverageLabel">
+          <LayoutConfig
+            tdClass="&quot;pc-sxs-label-col&quot;"/>
+        </Input>
+        <InputIterator
+          elementName="vehCovTermInfo"
+          id="vehCovRow"
+          value="vehCovSet.InitialRow.CovTermInfos">
+          <InputSetRef
+            def="SideBySideCovTermInputSet(vehCovTermInfo, covTermColWidth, true)"
+            id="targetedCovTermId"
+            mode="vehCovTermInfo?.getPostOnChangeMode(vehCovSet)"/>
+          <Input
+            align="right"
+            id="CostForCoverage"
+            labelAbove="true"
+            value="vehCovTermInfo.CovInfo.IsCostVisible ? vehCovTermInfo.CovInfo.Cost.ActualAmount : null">
+            <LayoutConfig
+              colspan="maxColsInPeriod - 2"
+              tdClass="&quot;pc-sxs-col-&quot; + (vehCovTermInfo.CovInfo.PeriodInfo.ColumnIndex % 2)"/>
+          </Input>
+        </InputIterator>
+        <InputIterator
+          elementName="covTermRow"
+          id="vehCovTermRow"
+          value="vehCovSet.AdditionalCovTermRows">
+          <Input
+            id="CovTermLabelId"
+            labelAbove="true"
+            value="covTermRow.CoverageLabel">
+            <LayoutConfig
+              tdClass="&quot;pc-sxs-label-col&quot;"/>
+          </Input>
+          <InputIterator
+            elementName="lineCovTermInfo"
+            id="lineCovTermRow"
+            value="covTermRow.CovTermInfos">
+            <InputSetRef
+              def="SideBySideCovTermInputSet(lineCovTermInfo, covTermColWidth, !vehCovSet.AdditionalCovTermRows.contains(covTermRow))"
+              id="targetedCovTermId"
+              mode="lineCovTermInfo?.getPostOnChangeMode(vehCovSet)"/>
+            <Input
+              align="right"
+              id="CostForCovTermPlaceHolder"
+              labelAbove="true"
+              value="&quot;&quot;">
+              <LayoutConfig
+                colspan="maxColsInPeriod - 2"
+                tdClass="&quot;pc-sxs-col-&quot; + (lineCovTermInfo.CovInfo.PeriodInfo.ColumnIndex % 2)"/>
+            </Input>
+          </InputIterator>
+        </InputIterator>
+      </InputIterator>
+    </InputIterator>
+  </DetailViewPanel>
+</PCF>

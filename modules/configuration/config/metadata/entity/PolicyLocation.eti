@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<entity xmlns="http://guidewire.com/datamodel" desc="Policy location specific information." effDatedBranchType="PolicyPeriod" entity="PolicyLocation" exportable="true" extendable="true" loadable="false" platform="false" subpackage="policy.period" table="policylocation" type="effdated">
+  <implementsInterface iface="gw.api.domain.account.AccountSyncable" impl="gw.policylocation.PolicyLocationAccountSyncableImpl"/>
+  <implementsInterface iface="gw.api.logicalmatch.EffDatedLogicalMatcher" impl="gw.policylocation.PolicyLocationMatcher"/>
+  <implementsInterface iface="gw.api.copier.EffDatedCopyable" impl="gw.policylocation.PolicyLocationEffDatedCopier"/>
+  <implementsInterface iface="gw.api.effdate.UniqueOnPolicyPeriod" impl="gw.api.effdate.PolicyLocationUniqueKeyGen"/>
+  <implementsInterface iface="gw.api.reinsurance.ReinsurableCoverable" impl="gw.reinsurance.risk.LocationReinsurableCoverableAdapter"/>
+  <implementsEntity adapter="gw.question.PolicyLocationAnswerContainerAdapter" name="AnswerContainer"/>
+  <implementsInterface iface="gw.api.domain.RefersOutOfDomainGraph" impl="gw.policylocation.PolicyLocationRefersOutOfDomainGraphImpl"/>
+  <column desc="The location number of this location" name="LocationNum" nullok="false" setterScriptability="all" type="integer"/>
+  <column desc="Address Line 1" getterScriptability="doesNotExist" name="AddressLine1Internal" nullok="true" setterScriptability="doesNotExist" type="addressline"/>
+  <column desc="Address Line 2" getterScriptability="doesNotExist" name="AddressLine2Internal" nullok="true" setterScriptability="doesNotExist" type="addressline"/>
+  <column desc="Address Line 3" getterScriptability="doesNotExist" name="AddressLine3Internal" nullok="true" setterScriptability="doesNotExist" type="addressline"/>
+  <column desc="City." getterScriptability="doesNotExist" name="CityInternal" nullok="true" setterScriptability="doesNotExist" supportsLinguisticSearch="true" type="varchar">
+    <columnParam name="size" value="60"/>
+  </column>
+  <column
+    name="CountyInternal"
+    type="varchar"
+    nullok="true"
+    desc="County."
+    getterScriptability="doesNotExist"
+    setterScriptability="doesNotExist">
+    <columnParam
+      name="size"
+      value="60"/>
+  </column>
+  <column desc="Postal code; string to handle Zip+4 and international codes." getterScriptability="doesNotExist" name="PostalCodeInternal" nullok="true" setterScriptability="doesNotExist" supportsLinguisticSearch="true" type="postalcode"/>
+  <column desc="Address Description" getterScriptability="doesNotExist" name="DescriptionInternal" nullok="true" setterScriptability="doesNotExist" type="shorttext"/>
+  <column desc="Date Valid Until" getterScriptability="doesNotExist" name="ValidUntilInternal" nullok="true" setterScriptability="doesNotExist" type="datetime"/>
+  <column desc="Employee Count" getterScriptability="doesNotExist" name="EmployeeCountInternal" nullok="true" setterScriptability="doesNotExist" type="nonnegativeinteger"/>
+  <typekey createhistogram="true" desc="State." getterScriptability="doesNotExist" name="StateInternal" nullok="true" setterScriptability="doesNotExist" typelist="State">
+    <keyfilters>
+      <keyfilter name="CountryInternal"/>
+    </keyfilters>
+  </typekey>
+  <typekey desc="Country." getterScriptability="doesNotExist" name="CountryInternal" nullok="true" setterScriptability="doesNotExist" typelist="Country"/>
+  <typekey desc="Type of this address record." getterScriptability="doesNotExist" name="AddressTypeInternal" nullok="true" setterScriptability="doesNotExist" typelist="AddressType"/>
+  <typekey desc="Fire protection class." name="FireProtectClass" nullok="true" typelist="FireProtectClass"/>
+  <foreignkey desc="The TaxLocation for this location." fkentity="TaxLocation" name="TaxLocation" nullok="true"/>
+  <foreignkey columnName="IndustryCodeID" desc="Industry Code of Location" exportasid="true" fkentity="IndustryCode" name="IndustryCode" nullok="true"/>
+  <foreignkey desc="The account location this policy location may be synced with.  While the policy location contains policy contract information, the account location contains shared role information." exportable="true" exportasid="false" fkentity="AccountLocation" name="AccountLocation" nullok="false" setterScriptability="doesNotExist"/>
+  <foreignkey desc="Sequence to autonumber buildings" fkentity="AutoNumberSequence" name="BuildingAutoNumberSeq" nullok="true"/>
+  <array arrayentity="TerritoryCode" cascadeDelete="true" desc="The rating territory codes." name="TerritoryCodes" owner="false"/>
+  <array arrayentity="LocationNamedInsured" cascadeDelete="true" desc="The additional named insured covered at this location" name="LocationNamedInsureds" owner="true"/>
+  <array arrayentity="Building" desc="Set of buildings at a location" name="Buildings" owner="true"/>
+  <array arrayentity="LocationAnswer" cascadeDelete="true" desc="Set of answers for this location." name="LocationAnswers" owner="false"/>
+  <!--When deleting PolicyLocation, we don't want to delete LocationRisk but want to keep it to end-date attachments.-->
+  <array arrayentity="LocationRisk" cascadeDelete="false" desc="A reinsurable risk associated with a Location" name="LocationRisks" owner="false"/>    
+</entity>

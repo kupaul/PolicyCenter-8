@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Popup
+    beforeCommit="userRoleOwners.reassign(userRole, pickedUser)"
+    canEdit="true"
+    id="AssignUserRoleOwnerPopup"
+    returnType="GroupUser"
+    startInEditMode="true"
+    title="displaykey.Web.Job.Assign.Title">
+    <LocationEntryPoint
+      signature="AssignUserRoleOwnerPopup(userRoleOwners : gw.api.assignment.UserRoleOwner[], userRole: typekey.UserRole)"/>
+    <Variable
+      name="userRoleOwners"
+      type="gw.api.assignment.UserRoleOwner[]"/>
+    <Variable
+      name="userRole"
+      type="typekey.UserRole"/>
+    <Variable
+      initialValue="null"
+      name="pickedUser"
+      type="GroupUser"/>
+    <Screen>
+      <Toolbar>
+        <EditButtons
+          editVisible="false"
+          updateVisible="false"/>
+      </Toolbar>
+      <DetailViewPanel>
+        <InputColumn>
+          <Label
+            label="displaykey.Web.Team.Reassign.ReassignRole(userRole.DisplayName)"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <ListViewPanel>
+        <RowIterator
+          editable="false"
+          elementName="roleOwner"
+          value="userRoleOwners">
+          <Row>
+            <Cell
+              id="Type"
+              label="displaykey.Web.Assignment.UserRoleOwner.TypeLabel"
+              value="(typeof roleOwner).RelativeName"/>
+            <Cell
+              id="Number"
+              label="displaykey.Web.Assignment.UserRoleOwner.DisplayNameLabel"
+              value="gw.assignment.AssignmentUtil.getWorkOrderOrPolicyNumber(roleOwner)"/>
+            <Cell
+              id="JobUserRoleAssignedUser"
+              label="userRole.DisplayName"
+              value="roleOwner.getUserRoleAssignmentByRole(userRole).AssignedUser"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+      <SearchPanel
+        criteriaName="searchCriteria"
+        resultsName="searchResult"
+        search="searchCriteria.performSearch()"
+        searchCriteria="var crit = new gw.api.assignment.AssignmentSearchCriteria(); crit.SearchType = AssignmentSearchType.TC_USER; return crit"
+        searchResultsType="gw.api.assignment.AssignmentSearchResult">
+        <DetailViewPanel>
+          <InputColumn>
+            <InputSet
+              id="AssignmentSearchInputSet">
+              <Input
+                editable="true"
+                id="Username"
+                label="displaykey.Web.Assignment.Search.Username"
+                value="searchCriteria.UserCriteria.Username"
+                visible="searchCriteria.SearchType == &quot;User&quot;"/>
+              <InputSetRef
+                def="GlobalPersonNameInputSet(new gw.search.BasicNameOwner(new gw.globalization.ContactSearchCriteriaNameAdapter(searchCriteria.UserCriteria.Contact)))"
+                mode="gw.api.name.NameLocaleSettings.PCFMode"
+                visible="searchCriteria.SearchType == &quot;User&quot;"/>
+              <Input
+                editable="true"
+                id="GroupCriteriaName"
+                label="displaykey.Web.Assignment.Search.GroupName"
+                value="searchCriteria.GroupCriteria.GroupName"
+                visible="searchCriteria.SearchType == &quot;Group&quot;"/>
+              <Input
+                editable="true"
+                id="GroupName"
+                label="displaykey.Web.Assignment.Search.GroupName"
+                value="searchCriteria.QueueCriteria.QueueGroupName"
+                visible="searchCriteria.SearchType == &quot;Queue&quot;"/>
+              <Input
+                editable="true"
+                id="QueueName"
+                label="displaykey.Web.Assignment.Search.QueueName"
+                value="searchCriteria.QueueCriteria.QueueName"
+                visible="searchCriteria.SearchType == &quot;Queue&quot;"/>
+            </InputSet>
+          </InputColumn>
+        </DetailViewPanel>
+        <DetailViewPanel>
+          <InputFooterSection>
+            <InputSetRef
+              def="SearchAndResetInputSet()"/>
+          </InputFooterSection>
+        </DetailViewPanel>
+        <PanelRef>
+          <Toolbar/>
+          <ListViewPanel
+            id="AssignmentUserLV">
+            <RowIterator
+              editable="false"
+              elementName="foundUser"
+              id="UserIterator"
+              pickValue="pickedUser = foundUser; return pickedUser"
+              selectLabel="displaykey.Button.Assign"
+              value="searchResult.Users as gw.api.database.IQueryBeanResult&lt;GroupUser&gt;">
+              <Row>
+                <TextCell
+                  id="User"
+                  label="displaykey.Web.Assignment.Search.User"
+                  sortBy="foundUser.User.Contact.LastName,foundUser.User.Contact.FirstName,foundUser.User.Contact.Name"
+                  sortOrder="1"
+                  value="foundUser.User.DisplayName"/>
+                <Cell
+                  enableSort="false"
+                  id="Group"
+                  label="displaykey.Web.Assignment.Search.Group"
+                  value="foundUser.Group"/>
+                <Cell
+                  enableSort="false"
+                  id="ParentGroup"
+                  label="displaykey.Web.Assignment.Search.ParentGroup"
+                  value="foundUser.Group.Parent"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </PanelRef>
+      </SearchPanel>
+    </Screen>
+  </Popup>
+</PCF>

@@ -1,0 +1,642 @@
+<?xml version="1.0"?>
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" targetNamespace="http://api.webservices.bc.guidewire.com/" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://api.webservices.bc.guidewire.com/" xmlns:intf="http://api.webservices.bc.guidewire.com/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns1="http://entity.webservices.bc.guidewire.com/" xmlns:tns2="http://fault.webservices.bc.guidewire.com/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <!-- WSDL created by Apache Axis version: 1.2.1
+Built on Mar 05, 2007 (11:15:56 PST) -->
+  <wsdl:types>
+    <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://entity.webservices.bc.guidewire.com/">
+      <import namespace="http://fault.webservices.bc.guidewire.com/"/>
+      <import namespace="http://api.webservices.bc.guidewire.com/"/>
+      <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+      <complexType name="AccountBillingSettings">
+        <sequence>
+          <element name="BankABANumber" nillable="true" type="soapenc:string"/>
+          <element name="BankAccountNumber" nillable="true" type="soapenc:string"/>
+          <element name="BankAccountType" nillable="true" type="soapenc:string"/>
+          <element name="BankName" nillable="true" type="soapenc:string"/>
+          <element name="CreditCardExpMonth" type="xsd:int"/>
+          <element name="CreditCardExpYear" type="xsd:int"/>
+          <element name="CreditCardIssuer" nillable="true" type="soapenc:string"/>
+          <element name="CreditCardNumber" nillable="true" type="soapenc:string"/>
+          <element name="InvoiceDeliveryMethod" nillable="true" type="soapenc:string"/>
+          <element name="PaymentMethod" nillable="true" type="soapenc:string"/>
+        </sequence>
+      </complexType>
+      <complexType name="BCPCAccountBillingSummary">
+        <xsd:annotation>
+          <xsd:documentation>
+A summary object that provides the billing summary for an account designed
+explicitly for use with the PolicyCenter product.     </xsd:documentation>
+        </xsd:annotation>
+        <sequence>
+          <element name="BilledOutstandingCurrent" nillable="true" type="soapenc:decimal"/>
+          <element name="BilledOutstandingPastDue" nillable="true" type="soapenc:decimal"/>
+          <element name="BilledOutstandingTotal" nillable="true" type="soapenc:decimal"/>
+          <element maxOccurs="1" minOccurs="0" name="BillingSettings" nillable="true" type="tns1:AccountBillingSettings"/>
+          <element name="CollateralChargesBilled" nillable="true" type="soapenc:decimal"/>
+          <element name="CollateralChargesPastDue" nillable="true" type="soapenc:decimal"/>
+          <element name="CollateralChargesUnbilled" nillable="true" type="soapenc:decimal"/>
+          <element name="CollateralHeld" nillable="true" type="soapenc:decimal"/>
+          <element name="CollateralRequirement" nillable="true" type="soapenc:decimal"/>
+          <element name="Delinquent" type="xsd:boolean"/>
+          <element name="UnappliedFundsTotal" nillable="true" type="soapenc:decimal"/>
+          <element name="UnbilledTotal" nillable="true" type="soapenc:decimal"/>
+        </sequence>
+      </complexType>
+      <complexType name="PCInvoiceInfo">
+        <sequence>
+          <element name="Amount" nillable="true" type="soapenc:decimal"/>
+          <element name="Billed" nillable="true" type="soapenc:decimal"/>
+          <element name="InvoiceDate" nillable="true" type="xsd:dateTime"/>
+          <element name="InvoiceDueDate" nillable="true" type="xsd:dateTime"/>
+          <element name="InvoiceNumber" nillable="true" type="soapenc:string"/>
+          <element name="Paid" nillable="true" type="soapenc:decimal"/>
+          <element name="PaidStatus" nillable="true" type="soapenc:string"/>
+          <element name="PastDue" nillable="true" type="soapenc:decimal"/>
+          <element name="Status" nillable="true" type="soapenc:string"/>
+          <element name="Unpaid" nillable="true" type="soapenc:decimal"/>
+        </sequence>
+      </complexType>
+      <complexType name="ArrayOfPCInvoiceInfo">
+        <complexContent>
+          <restriction base="soapenc:Array">
+            <attribute ref="soapenc:arrayType" wsdl:arrayType="tns1:PCInvoiceInfo[]"/>
+          </restriction>
+        </complexContent>
+      </complexType>
+      <complexType name="PolicyBillingSummary">
+        <complexContent>
+          <extension base="tns1:DisplayableBillingStatus">
+            <sequence>
+              <element name="CurrentOutstanding" nillable="true" type="soapenc:decimal"/>
+              <element name="DepositRequirement" nillable="true" type="soapenc:decimal"/>
+              <element maxOccurs="1" minOccurs="0" name="Invoices" nillable="true" type="tns1:ArrayOfPCInvoiceInfo"/>
+              <element name="Paid" nillable="true" type="soapenc:decimal"/>
+              <element name="PaymentPlanName" nillable="true" type="soapenc:string"/>
+              <element name="Periods" nillable="true" type="impl:ArrayOf_soapenc_string"/>
+              <element name="TotalCharges" nillable="true" type="soapenc:decimal"/>
+            </sequence>
+          </extension>
+        </complexContent>
+      </complexType>
+      <complexType name="DisplayableBillingStatus">
+        <sequence>
+          <element name="BillingMethodCode" nillable="true" type="soapenc:string"/>
+          <element name="Delinquent" type="xsd:boolean"/>
+          <element name="PastDue" nillable="true" type="soapenc:decimal"/>
+          <element name="TotalBilled" nillable="true" type="soapenc:decimal"/>
+          <element name="Unbilled" nillable="true" type="soapenc:decimal"/>
+        </sequence>
+      </complexType>
+      <complexType name="DisplayablePolicyPeriod">
+        <complexContent>
+          <extension base="tns1:DisplayableBillingStatus">
+            <sequence>
+              <element name="EffectiveDate" nillable="true" type="xsd:dateTime"/>
+              <element name="ExpirationDate" nillable="true" type="xsd:dateTime"/>
+              <element name="PolicyNumber" nillable="true" type="soapenc:string"/>
+              <element name="Product" nillable="true" type="soapenc:string"/>
+              <element name="TermNumber" type="xsd:int"/>
+            </sequence>
+          </extension>
+        </complexContent>
+      </complexType>
+      <complexType name="ArrayOfDisplayablePolicyPeriod">
+        <complexContent>
+          <restriction base="soapenc:Array">
+            <attribute ref="soapenc:arrayType" wsdl:arrayType="tns1:DisplayablePolicyPeriod[]"/>
+          </restriction>
+        </complexContent>
+      </complexType>
+    </schema>
+    <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://fault.webservices.bc.guidewire.com/">
+      <import namespace="http://entity.webservices.bc.guidewire.com/"/>
+      <import namespace="http://api.webservices.bc.guidewire.com/"/>
+      <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+      <complexType name="SOAPException">
+        <xsd:annotation>
+          <xsd:documentation>
+A generic SOAP exception.     </xsd:documentation>
+        </xsd:annotation>
+        <sequence>
+          <element name="Message" nillable="true" type="soapenc:string">
+            <xsd:annotation>
+              <xsd:documentation>
+The message associated with this exception       </xsd:documentation>
+            </xsd:annotation>
+          </element>
+          <element name="OtherMessages" nillable="true" type="soapenc:string">
+            <xsd:annotation>
+              <xsd:documentation>
+Other messages attached to this exception. This message may contain information
+related to other exceptions that occurred during a SOAP call, but not directly
+associated with this particular exception.       </xsd:documentation>
+            </xsd:annotation>
+          </element>
+        </sequence>
+      </complexType>
+      <complexType name="SOAPSenderException">
+        <xsd:annotation>
+          <xsd:documentation>SOAPSenderException is the base class for all exceptions that resulted from
+a sender error. This usually means that required data was not properly encoded
+or was absent. Senders should not send the message again unless some steps have
+been taken to make the encoded data valid.     </xsd:documentation>
+        </xsd:annotation>
+        <complexContent>
+          <extension base="tns2:SOAPException">
+            <sequence/>
+          </extension>
+        </complexContent>
+      </complexType>
+      <complexType name="DataConversionException">
+        <xsd:annotation>
+          <xsd:documentation>
+Thrown by many APIs when they encounter a problem translating a SOAP data object into
+an internal system object.     </xsd:documentation>
+        </xsd:annotation>
+        <complexContent>
+          <extension base="tns2:SOAPSenderException">
+            <sequence/>
+          </extension>
+        </complexContent>
+      </complexType>
+      <complexType name="BadIdentifierException">
+        <xsd:annotation>
+          <xsd:documentation>
+Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect).     </xsd:documentation>
+        </xsd:annotation>
+        <complexContent>
+          <extension base="tns2:DataConversionException">
+            <sequence/>
+          </extension>
+        </complexContent>
+      </complexType>
+      <complexType name="PermissionException">
+        <xsd:annotation>
+          <xsd:documentation>
+Thrown when the authenticated SOAP user does not have permission to
+perform the requested operation     </xsd:documentation>
+        </xsd:annotation>
+        <complexContent>
+          <extension base="tns2:SOAPSenderException">
+            <sequence/>
+          </extension>
+        </complexContent>
+      </complexType>
+      <complexType name="SOAPServerException">
+        <xsd:annotation>
+          <xsd:documentation>
+SOAPServerException is the base class for all exceptions that resulted from
+a server error. This is something of a catch-all exception type insofar as
+some things which might in fact be considered SOAPSenderExceptions are reported
+as SOAPServerExceptions. Perhaps a rule failed or something else. Generally it
+indicates a problem in the server that is likely retryable at some future time.
+The database being down, an unavailable plugin, etc would fall into this catagory.     </xsd:documentation>
+        </xsd:annotation>
+        <complexContent>
+          <extension base="tns2:SOAPException">
+            <sequence/>
+          </extension>
+        </complexContent>
+      </complexType>
+      <complexType name="ServerStateException">
+        <xsd:annotation>
+          <xsd:documentation>
+ServerStateException is thrown when a request is made at a time the
+server is in a state that disallows the request. An example is if
+an attempt is made to add a claim and the server is in maintenance
+mode.     </xsd:documentation>
+        </xsd:annotation>
+        <complexContent>
+          <extension base="tns2:SOAPServerException">
+            <sequence/>
+          </extension>
+        </complexContent>
+      </complexType>
+      <complexType name="LoginException">
+        <xsd:annotation>
+          <xsd:documentation>
+Class of exceptions thrown when a user tries to log in and an authentication failure occurs.     </xsd:documentation>
+        </xsd:annotation>
+        <complexContent>
+          <extension base="tns2:PermissionException">
+            <sequence/>
+          </extension>
+        </complexContent>
+      </complexType>
+      <complexType name="EntityStateException">
+        <xsd:annotation>
+          <xsd:documentation>
+Thrown when an attempt is made to manipulate an object that is in a state
+that prevents the operation from being performed. An example is trying to
+modify a Claim that is marked as closed.     </xsd:documentation>
+        </xsd:annotation>
+        <complexContent>
+          <extension base="tns2:SOAPSenderException">
+            <sequence/>
+          </extension>
+        </complexContent>
+      </complexType>
+      <complexType name="DuplicateKeyException">
+        <xsd:annotation>
+          <xsd:documentation>
+Throws if a duplicate data exception is detected in the database. I.e. a unique index violation.     </xsd:documentation>
+        </xsd:annotation>
+        <complexContent>
+          <extension base="tns2:DataConversionException">
+            <sequence/>
+          </extension>
+        </complexContent>
+      </complexType>
+      <complexType name="FieldConversionException">
+        <xsd:annotation>
+          <xsd:documentation>
+Thrown when a data type cannot be converted into the native data type.     </xsd:documentation>
+        </xsd:annotation>
+        <complexContent>
+          <extension base="tns2:DataConversionException">
+            <sequence/>
+          </extension>
+        </complexContent>
+      </complexType>
+      <complexType name="FieldFormatException">
+        <xsd:annotation>
+          <xsd:documentation>
+Thrown when the input type does not match the format specified in the metadata. I.e. a string is too long.     </xsd:documentation>
+        </xsd:annotation>
+        <complexContent>
+          <extension base="tns2:DataConversionException">
+            <sequence/>
+          </extension>
+        </complexContent>
+      </complexType>
+      <complexType name="RequiredFieldException">
+        <xsd:annotation>
+          <xsd:documentation>
+Thrown when required data is missing from a bean.     </xsd:documentation>
+        </xsd:annotation>
+        <complexContent>
+          <extension base="tns2:DataConversionException">
+            <sequence/>
+          </extension>
+        </complexContent>
+      </complexType>
+      <complexType name="UnknownTypeKeyException">
+        <xsd:annotation>
+          <xsd:documentation>
+Thrown when a typekey value isn't available on the server. This exception can only
+happen if the SOAP WSDL that is being used on the remote side is invalid.     </xsd:documentation>
+        </xsd:annotation>
+        <complexContent>
+          <extension base="tns2:DataConversionException">
+            <sequence/>
+          </extension>
+        </complexContent>
+      </complexType>
+      <complexType name="BatchProcessException">
+        <xsd:annotation>
+          <xsd:documentation>
+SOAP Exception specific to batch process operations     </xsd:documentation>
+        </xsd:annotation>
+        <complexContent>
+          <extension base="tns2:SOAPServerException">
+            <sequence/>
+          </extension>
+        </complexContent>
+      </complexType>
+      <complexType name="AlreadyExecutedException">
+        <complexContent>
+          <extension base="tns2:SOAPSenderException">
+            <sequence/>
+          </extension>
+        </complexContent>
+      </complexType>
+    </schema>
+    <schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://api.webservices.bc.guidewire.com/">
+      <import namespace="http://fault.webservices.bc.guidewire.com/"/>
+      <import namespace="http://entity.webservices.bc.guidewire.com/"/>
+      <import namespace="http://schemas.xmlsoap.org/soap/encoding/"/>
+      <complexType name="ArrayOf_soapenc_string">
+        <complexContent>
+          <restriction base="soapenc:Array">
+            <attribute ref="soapenc:arrayType" wsdl:arrayType="soapenc:string[]"/>
+          </restriction>
+        </complexContent>
+      </complexType>
+    </schema>
+  </wsdl:types>
+  <wsdl:message name="updateAccountBillingSettingsRequest">
+    <wsdl:part name="accountNumber" type="soapenc:string">
+      <wsdl:documentation>
+the number of the account   </wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="billingSettings" type="tns1:AccountBillingSettings">
+      <wsdl:documentation>
+the new payment method details   </wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="retrievePolicyBillingSummaryResponse">
+    <wsdl:part name="retrievePolicyBillingSummaryReturn" type="tns1:PolicyBillingSummary">
+      <wsdl:documentation>
+a billing summary for that policy suitable for display in the PolicyCenter UI   </wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="retrieveInvoicesForAccountRequest">
+    <wsdl:part name="accountNumber" type="soapenc:string">
+      <wsdl:documentation>
+the number of the account   </wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="localeCode" type="soapenc:string">
+      <wsdl:documentation>
+null   </wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="updateAccountBillingSettingsResponse">
+    <wsdl:part name="updateAccountBillingSettingsReturn" type="tns1:AccountBillingSettings">
+      <wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PermissionException">
+    <wsdl:part name="fault" type="tns2:PermissionException">
+      <wsdl:documentation>
+Thrown when the authenticated SOAP user does not have permission to perform the requested operation   </wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BadIdentifierException">
+    <wsdl:part name="fault" type="tns2:BadIdentifierException">
+      <wsdl:documentation>
+If no account exists with the given account number   </wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="retrievePeriodsForAccountResponse">
+    <wsdl:part name="retrievePeriodsForAccountReturn" type="tns1:ArrayOfDisplayablePolicyPeriod">
+      <wsdl:documentation>
+an array policy period info   </wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="retrieveAccountBillingSummaryResponse">
+    <wsdl:part name="retrieveAccountBillingSummaryReturn" type="tns1:BCPCAccountBillingSummary">
+      <wsdl:documentation>
+a billing summary for that account suitable for display in the PolicyCenter UI   </wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ServerStateException">
+    <wsdl:part name="fault" type="tns2:ServerStateException">
+      <wsdl:documentation>
+Thrown when a request is made at a time the server is in a state that disallows the request.   </wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SOAPException">
+    <wsdl:part name="fault" type="tns2:SOAPException">
+      <wsdl:documentation>
+Server Exception   </wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="retrievePolicyBillingSummaryRequest">
+    <wsdl:part name="policyNumber" type="soapenc:string">
+      <wsdl:documentation>
+the number of the policy   </wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="termNumber" type="xsd:int">
+      <wsdl:documentation>
+the term number of the policy   </wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="localeCode" type="soapenc:string">
+      <wsdl:documentation>
+the code of the locale to localize strings to, or null if the default should be used instead   </wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="retrieveAccountBillingSummaryRequest">
+    <wsdl:part name="accountNumber" type="soapenc:string">
+      <wsdl:documentation>
+the number of the account   </wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="localeCode" type="soapenc:string">
+      <wsdl:documentation>
+the code of the locale to localize strings to, or null if the default should be used instead   </wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="retrieveInvoicesForAccountResponse">
+    <wsdl:part name="retrieveInvoicesForAccountReturn" type="tns1:ArrayOfPCInvoiceInfo">
+      <wsdl:documentation>
+an array of PCInvoiceInfo   </wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="retrievePeriodsForAccountRequest">
+    <wsdl:part name="accountNumber" type="soapenc:string">
+      <wsdl:documentation>
+the number of the account   </wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="localeCode" type="soapenc:string">
+      <wsdl:documentation>
+null   </wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="BillingSummaryAPI">
+    <wsdl:documentation/>
+    <wsdl:operation name="retrieveAccountBillingSummary" parameterOrder="accountNumber localeCode">
+      <wsdl:documentation>
+Retreives the account-level billing summary for the specified account number.  If no such account exists,
+a BadIdentifierException will be thrown.   </wsdl:documentation>
+      <wsdl:input message="impl:retrieveAccountBillingSummaryRequest" name="retrieveAccountBillingSummaryRequest"/>
+      <wsdl:output message="impl:retrieveAccountBillingSummaryResponse" name="retrieveAccountBillingSummaryResponse"/>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException"/>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException"/>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException"/>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException"/>
+    </wsdl:operation>
+    <wsdl:operation name="retrieveInvoicesForAccount" parameterOrder="accountNumber localeCode">
+      <wsdl:documentation>
+Retreives the all invoices under the given account   </wsdl:documentation>
+      <wsdl:input message="impl:retrieveInvoicesForAccountRequest" name="retrieveInvoicesForAccountRequest"/>
+      <wsdl:output message="impl:retrieveInvoicesForAccountResponse" name="retrieveInvoicesForAccountResponse"/>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException"/>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException"/>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException"/>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException"/>
+    </wsdl:operation>
+    <wsdl:operation name="retrievePeriodsForAccount" parameterOrder="accountNumber localeCode">
+      <wsdl:documentation>
+Retreives the all in force policy periods under the given account   </wsdl:documentation>
+      <wsdl:input message="impl:retrievePeriodsForAccountRequest" name="retrievePeriodsForAccountRequest"/>
+      <wsdl:output message="impl:retrievePeriodsForAccountResponse" name="retrievePeriodsForAccountResponse"/>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException"/>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException"/>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException"/>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException"/>
+    </wsdl:operation>
+    <wsdl:operation name="retrievePolicyBillingSummary" parameterOrder="policyNumber termNumber localeCode">
+      <wsdl:documentation>
+Retreives the policy-level billing summary for a specific policy period.   </wsdl:documentation>
+      <wsdl:input message="impl:retrievePolicyBillingSummaryRequest" name="retrievePolicyBillingSummaryRequest"/>
+      <wsdl:output message="impl:retrievePolicyBillingSummaryResponse" name="retrievePolicyBillingSummaryResponse"/>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException"/>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException"/>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException"/>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException"/>
+    </wsdl:operation>
+    <wsdl:operation name="updateAccountBillingSettings" parameterOrder="accountNumber billingSettings">
+      <wsdl:documentation>
+Update payment method details for account   </wsdl:documentation>
+      <wsdl:input message="impl:updateAccountBillingSettingsRequest" name="updateAccountBillingSettingsRequest"/>
+      <wsdl:output message="impl:updateAccountBillingSettingsResponse" name="updateAccountBillingSettingsResponse"/>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException"/>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException"/>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException"/>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException"/>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="BillingSummaryAPISoapBinding" type="impl:BillingSummaryAPI">
+    <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="retrieveAccountBillingSummary">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="retrieveAccountBillingSummaryRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="retrieveAccountBillingSummaryResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+        <wsdl:documentation>
+Thrown when a request is made at a time the server is in a state that disallows the request.    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdl:documentation>
+Server Exception    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+        <wsdl:documentation>
+Thrown when the authenticated SOAP user does not have permission to perform the requested operation    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+        <wsdl:documentation>
+If no account exists with the given account number    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="retrieveInvoicesForAccount">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="retrieveInvoicesForAccountRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="retrieveInvoicesForAccountResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+        <wsdl:documentation>
+Thrown when a request is made at a time the server is in a state that disallows the request.    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdl:documentation>
+Server Exception    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+        <wsdl:documentation>
+Thrown when the authenticated SOAP user does not have permission to perform the requested operation    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+        <wsdl:documentation>
+If no account exists with the given account number    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="retrievePeriodsForAccount">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="retrievePeriodsForAccountRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="retrievePeriodsForAccountResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+        <wsdl:documentation>
+Thrown when a request is made at a time the server is in a state that disallows the request.    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdl:documentation>
+Server Exception    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+        <wsdl:documentation>
+Thrown when the authenticated SOAP user does not have permission to perform the requested operation    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+        <wsdl:documentation>
+If no account exists with the given account number    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="retrievePolicyBillingSummary">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="retrievePolicyBillingSummaryRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="retrievePolicyBillingSummaryResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+        <wsdl:documentation>
+Thrown when a request is made at a time the server is in a state that disallows the request.    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdl:documentation>
+Server Exception    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+        <wsdl:documentation>
+Thrown when the authenticated SOAP user does not have permission to perform the requested operation    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+        <wsdl:documentation>
+If no policy exists with the given policy number &amp; term number    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="updateAccountBillingSettings">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="updateAccountBillingSettingsRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="updateAccountBillingSettingsResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+        <wsdl:documentation>
+Thrown when a request is made at a time the server is in a state that disallows the request.    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdl:documentation>
+Server Exception    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+        <wsdl:documentation>
+Thrown when the authenticated SOAP user does not have permission to perform the requested operation    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+        <wsdl:documentation>
+If no account exists with the given account number    </wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.bc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="BillingSummaryAPIService">
+    <wsdl:documentation/>
+    <wsdl:port binding="impl:BillingSummaryAPISoapBinding" name="BillingSummaryAPI">
+      <wsdlsoap:address location="http://localhost:8580/bc/soap/BillingSummaryAPI"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

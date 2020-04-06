@@ -1,0 +1,84 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ToolbarButtonSet
+    id="JobWizardToolbarButtonSet"
+    mode="Audit">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="CurrentLocation as pcf.api.Wizard"
+      name="wizard"
+      type="pcf.api.Wizard"/>
+    <Variable
+      initialValue="policyPeriod.AuditProcess"
+      name="auditProcess"/>
+    <Variable
+      initialValue="auditProcess.canHandlePreemptions().Okay"
+      name="hasPreemptions"/>
+    <Variable
+      initialValue="job as Audit"
+      name="audit"
+      type="Audit"/>
+    <ToolbarButton
+      action="UWActivityPopup.push(policyPeriod, ActivityPattern.finder.getActivityPatternByCode(&quot;uw_review_approved&quot;), &quot;UWApproval&quot;)"
+      id="Unlock"
+      label="displaykey.Job.Operation.ReleaseLock"
+      shortcut="K"
+      visible="auditProcess.canReleaseLock()"/>
+    <ToolbarButton
+      action="auditProcess.edit(); wizard.saveDraft(); jobWizardHelper.goDirectlyToStep(&quot;Details&quot;)"
+      confirmMessage="displaykey.Job.Operation.Edit.Confirm"
+      id="EditPolicy"
+      label="(job as Audit).AuditInformation.IsPremiumReport ? displaykey.Web.AuditWizard.EditReport : displaykey.Web.AuditWizard.EditAudit"
+      shortcut="E"
+      visible="!hasPreemptions and auditProcess.canEdit().Okay"/>
+    <ToolbarButton
+      action="wizard.saveDraft()"
+      hideIfReadOnly="true"
+      id="Draft"
+      label="displaykey.Button.SaveDraft"
+      shortcut="S"/>
+    <ToolbarButton
+      action="HandlePreemptionPopup.push(wizard, jobWizardHelper, policyPeriod, false)"
+      id="HandlePreemptions"
+      label="displaykey.Job.Operation.HandlePreemption"
+      shortcut="H"
+      visible="hasPreemptions and perm.Audit.edit"/>
+    <ToolbarButton
+      action="if (jobWizardHelper.revalidateModel()) { auditProcess.complete(); wizard.finish(); JobComplete.go(job, policyPeriod) }"
+      id="SubmitAudit"
+      label="displaykey.Web.AuditWizard.Submit"
+      shortcut="S"
+      visible="!hasPreemptions and auditProcess.canComplete().Okay"/>
+    <ToolbarButton
+      id="CloseOptions"
+      label="displaykey.Job.Operation.CloseOptions"
+      shortcut="C"
+      visible="audit.AuditInformation.UserCanWithdraw or audit.AuditInformation.UserCanWaive">
+      <MenuItem
+        action="jobWizardHelper.withdrawInNewBundle(policyPeriod); wizard.finish(); JobComplete.go(job, policyPeriod)"
+        confirmMessage="displaykey.Job.Operation.Withdraw.Confirm"
+        id="Withdraw"
+        label="displaykey.Job.Operation.Withdraw"
+        shortcut="W"
+        visible="audit.AuditInformation.UserCanWithdraw"/>
+      <MenuItem
+        action="if (jobWizardHelper.revalidateModel()) { auditProcess.waive(); wizard.finish(); JobComplete.go(job, policyPeriod) }"
+        available="policyPeriod.canBeWaived(audit.AuditInformation)"
+        confirmMessage="displaykey.Web.AuditWizard.WaiveConfirm"
+        id="WaiveAudit"
+        label="displaykey.Web.AuditWizard.Waive"
+        shortcut="W"
+        visible="audit.AuditInformation.UserCanWaive"/>
+    </ToolbarButton>
+  </ToolbarButtonSet>
+</PCF>

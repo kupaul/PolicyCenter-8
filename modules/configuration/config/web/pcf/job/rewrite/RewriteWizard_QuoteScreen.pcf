@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="false"
+    id="RewriteWizard_QuoteScreen">
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="isEditable"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="new gw.document.DocumentProduction()"
+      name="documentProduction"
+      type="gw.document.DocumentProduction"/>
+    <Variable
+      initialValue="policyPeriod.RepresentativePolicyLines.first()"
+      name="line"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, job, jobWizardHelper)"/>
+      <ToolbarButton
+        action="policyPeriod.printDocument(&quot;RewriteQuote&quot;, &quot;Rewrite Quote&quot;)"
+        download="true"
+        id="CreateRewriteQuote"
+        label="displaykey.Button.PrintQuote"
+        shortcut="P"/>
+    </Toolbar>
+    <PanelRef
+      def="WarningsPanelSet(policyPeriod.getWizardQuoteScreenWarnings())"/>
+    <PanelRef
+      def="Quote_SummaryDV(policyPeriod)">
+      <Toolbar/>
+    </PanelRef>
+    <CardViewPanel>
+      <Card
+        id="RewriteWizard_Quote_CumulativeCard"
+        title="displaykey.Web.RewriteWizard.QuoteScreen.Cumulative">
+        <PanelRef
+          def="RatingCumulDetailsPanelSet(policyPeriod, jobWizardHelper, isEditable)"
+          mode="line.Pattern.Code">
+          <TitleBar
+            title="line.Pattern.DisplayName"
+            visible="policyPeriod.RepresentativePolicyLines.Count &gt; 1"/>
+        </PanelRef>
+      </Card>
+    </CardViewPanel>
+  </Screen>
+</PCF>

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" entity="WCRatingStepExt" exportable="true" ignoreForEvents="true" loadable="false" platform="false" readOnly="true" table="sample_WCRatingStep" type="keyable">
+  <fulldescription>
+    A sample table storing additional steps for rating Workers Comp policies after the basic calculation of
+      manual premiums (premiums for each location/class code exposure unit).
+  </fulldescription>
+  <column desc="Indicates a row is applicable to a given jurisdiction.  Null indicates a default row which is applicable to all jurisdictions which have no jurisdiction-specific rows for the given effective date. This should be the string value of a typecode in the Jurisdiction typelist. For example, if this is a typecode allowed in the US state of California, the value should be 'CA'. " name="rateState" nullok="true" type="varchar">
+    <columnParam name="size" value="10"/>
+  </column>
+  <column desc="The date on which this factor becomes effective (inclusive).  A null date means this has always been effective." name="effDate" nullok="true" type="datetime"/>
+  <column desc="The date on which this factor expires (exclusive).  A null date means this will always be effective." name="expDate" nullok="true" type="datetime"/>
+  <column desc="Determines the order in which the steps should be executed." name="calcOrder" nullok="false" type="integer"/>
+  <typekey desc="Explains what action should be taken for this step.  Some steps reuse generic actions and others require a Custom action." name="stepAction" nullok="false" typelist="WCRateStepAction"/>
+  <column desc="If stepAction is Custom, then this indicates which custom action to execute." name="customAction" nullok="true" type="varchar">
+    <columnParam name="size" value="20"/>
+  </column>
+  <typekey desc="If step action is Subtotal, then this defines which subtotal to calc and store.  Other step actions also optionally use this to lookup a previously saved subtotal as the basis for the step's calculation." name="subtotal" nullok="true" typelist="RateSubtotalType"/>
+  <column desc="Should match the modifier pattern's public ID.  If stepAction is Modifier, then this should be non-null to indicate which modifier to look-up for the calculation." name="modifierID" nullok="true" type="varchar">
+    <columnParam name="size" value="20"/>
+  </column>
+  <column desc="This field should match the factorName for the correct factor in RateAdjFactor.  Used for taxes and fees.  Also used if the modifier is a boolean type because, if true, the system needs to look up the rate to apply." name="factorName" nullok="true" type="varchar">
+    <columnParam name="size" value="50"/>
+  </column>
+  <typekey desc="If step action looks up a rate and uses it to calculate a new amount, then this field defines how the rate should be interpreted.  (See typelist for a description of options.)" name="rateConversionType" nullok="true" typelist="RateConversionType"/>
+  <column desc="Indicates the class code that should be used for the resulting premiums, if any.  Should be non-null unless this row is not expected to result in a new rating line (e.g. just stores a sub-total)." name="classcode" nullok="true" type="varchar">
+    <columnParam name="size" value="10"/>
+  </column>
+  <typekey desc="Indicates the type of aggregate cost (not specific to a single location/class code exposure unit) to be used for the resulting costs, if any.  Should be non-null unless this row is not expected to result in a new cost (e.g. just stores a sub-total)." name="aggCostType" nullok="true" typelist="WCJurisdictionCostType"/>
+  <typekey desc="Indicates the type (standard vs non-standard premium or taxes/surcharges) of the amount calculated, if any.  Should be non-null unless this row is not expected to result in a new rating line (e.g. just stores a sub-total)." name="amountType" nullok="true" typelist="RateAmountType"/>
+  <column desc="If non-null, this description will be used instead of that of the AggRatingLineType for describing the resulting premiums." name="description" nullok="true" type="varchar">
+    <columnParam name="size" value="50"/>
+  </column>
+  <column default="true" desc="Indicates whether or not this rating step should be performed for premium report jobs" name="includeInReports" nullok="true" type="bit"/>
+</entity>

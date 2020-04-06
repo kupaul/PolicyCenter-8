@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="CPBldgSuggestedCovDV">
+    <Require
+      name="building"
+      type="cPBuilding"/>
+    <Variable
+      initialValue="building.PolicyLine.Pattern.getCoverageCategory(&quot;CPBldgCovCategory&quot;)"
+      name="buildingPropCategory"
+      recalculateOnRefresh="true"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="building.PolicyLine.Pattern.getCoverageCategory( &quot;CPBusIncCovCategory&quot; )"
+      name="incomeExpenseCategory"/>
+    <Variable
+      initialValue="building == null ? null : buildingPropCategory.coveragePatternsForEntity(CPBuilding).whereSelectedOrAvailable(building, openForEdit)"
+      name="buildingPropCategoryCoveragePatterns"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="building == null ? null : incomeExpenseCategory.coveragePatternsForEntity(CPBuilding).whereSelectedOrAvailable(building, openForEdit)"
+      name="incomeExpenseCategoryCoveragePatterns"
+      recalculateOnRefresh="true"/>
+    <InputColumn>
+      <InputIterator
+        elementName="coveragePattern"
+        forceRefreshDespiteChangedEntries="true"
+        id="bldgAndPropIterator"
+        value="buildingPropCategoryCoveragePatterns">
+        <IteratorSort
+          sortBy="coveragePattern.Priority"
+          sortOrder="1"/>
+        <InputSetRef
+          def="CoverageInputSet(coveragePattern, building, openForEdit)"
+          mode="coveragePattern.Code"/>
+      </InputIterator>
+      <InputIterator
+        elementName="coveragePattern"
+        forceRefreshDespiteChangedEntries="true"
+        id="IncomeAndExpenseIterator"
+        value="incomeExpenseCategoryCoveragePatterns">
+        <IteratorSort
+          sortBy="coveragePattern.Priority"
+          sortOrder="1"/>
+        <InputSetRef
+          def="CoverageInputSet(coveragePattern, building, openForEdit)"
+          mode="coveragePattern.Code"/>
+      </InputIterator>
+    </InputColumn>
+    <Code><![CDATA[function getCovPatterns(category: String): gw.api.productmodel.CoveragePattern[] {
+                    var patterns = building.PolicyLine.Pattern.getCoverageCategory(category).coveragePatternsForEntity(CPBuilding).toList()
+                    return patterns.toTypedArray()
+                }]]></Code>
+  </DetailViewPanel>
+</PCF>

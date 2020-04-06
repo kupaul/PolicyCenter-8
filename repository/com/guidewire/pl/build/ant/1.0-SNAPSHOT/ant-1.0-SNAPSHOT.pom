@@ -1,0 +1,59 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.guidewire.pl</groupId>
+    <artifactId>pl-parent</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <relativePath>../pl-parent/pom.xml</relativePath>
+  </parent>
+
+  <groupId>com.guidewire.pl.build</groupId>
+  <artifactId>ant</artifactId>
+  <version>1.0-SNAPSHOT</version>
+  <packaging>pom</packaging>
+
+  <modules>
+    <module>public</module>
+    <module>internal</module>
+  </modules>
+
+  <properties>
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <gosu.version>0.10.2</gosu.version>
+    <contains.sources></contains.sources>
+  </properties>
+
+  <build>
+    <resources>
+      <resource>
+        <directory>gsrc</directory>
+      </resource>
+    </resources>
+
+    <pluginManagement>
+        <plugins>
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-jar-plugin</artifactId>
+            <configuration>
+              <excludes>
+                <!--
+                  Would be nice to include compiled Gosu, but currently it does not work when Aardvark is
+                  started from Ant (mostly because Ant's classloader, AntClassLoader2, is not URLClassLoader and
+                  therefore GosuClassPathThing does not work)
+                 -->
+                <exclude>**/*.class</exclude>
+              </excludes>
+              <archive>
+                <manifestEntries>
+                  <Contains-Sources>${contains.sources}</Contains-Sources>
+                </manifestEntries>
+              </archive>
+            </configuration>
+          </plugin>
+        </plugins>
+    </pluginManagement>
+  </build>
+</project>

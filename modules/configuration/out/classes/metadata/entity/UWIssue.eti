@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" desc="A UWIssue is a raised issue of business concern.  It can be created at any point in the lifetime of a PolicyPeriod." effDatedBranchType="PolicyPeriod" entity="UWIssue" exportable="true" extendable="true" loadable="false" platform="false" subpackage="policy" table="uwissue" type="effdated">
+  <implementsInterface iface="gw.api.copier.EffDatedCopyable" impl="gw.policy.UWIssueCopier"/>
+  <implementsInterface iface="gw.api.logicalmatch.EffDatedLogicalMatcher" impl="gw.policy.UWIssueMatcher"/>
+  <implementsEntity name="UWIssueDelegate"/>
+  <column desc="The short description of this issue." name="ShortDescription" nullok="true" type="shorttext">
+    <localization nullok="true" tableName="uw_issue_sdesc"/>
+  </column>                                                
+  <column desc="The long description of this issue." name="LongDescription" nullok="true" type="mediumtext">
+    <localization nullok="true" tableName="uw_issue_ldesc"/>
+   </column>
+  <column default="true" desc="Whether or not this issue is active.  An issue will be marked inactive if it no longer applies to the policy but we want to keep approvals for the issue around in case the issue occurs again." name="Active" nullok="false" type="bit"/>
+  <!-- <array
+          name="Approvals"
+          arrayentity="UWIssueApproval"
+          cascadeDelete="true"
+          desc="The approvals associated with this issue."/> -->
+  <column default="false" desc="If true then approval this issue has an associated approval." name="HasApprovalOrRejection" nullok="false" type="bit"/>
+  <column desc="The limit value to which the issue has been approved" name="ApprovalValue" nullok="true" type="shorttext"/>
+  <column desc="The operation in progress when automatic approvals were created for auto-approvable issues. Null is used to indicate a human-generated approval." name="AutomaticApprovalCause" nullok="true" type="shorttext"/>
+  <column default="true" desc="If true then approval still valid with poilcy edits before bind" name="CanEditApprovalBeforeBind" nullok="false" type="bit"/>
+  <column desc="The date on which the approval ceases to be valid. This value is null except when DurationType is 1yr or 3yrs." name="ApprovalInvalidFrom" nullok="true" type="datetime"/>
+  <typekey desc="The point at which this approval still blocks" name="ApprovalBlockingPoint" nullok="true" typelist="UWIssueBlockingPoint"/>
+  <typekey desc="A typekey specifying how long the approval is valid; if 1yr or 3yr, then an expiration date is computed." name="ApprovalDurationType" nullok="true" typelist="UWApprovalDurationType"/>
+  <foreignkey fkentity="User" name="ApprovingUser" nullok="true"/>
+</entity>

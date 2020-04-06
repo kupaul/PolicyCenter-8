@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://api.webservices.pc.guidewire.com/" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://api.webservices.pc.guidewire.com/" xmlns:intf="http://api.webservices.pc.guidewire.com/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns1="http://fault.webservices.pc.guidewire.com/" xmlns:tns2="http://enumeration.webservices.pc.guidewire.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><wsdl:types><schema targetNamespace="http://fault.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://enumeration.webservices.pc.guidewire.com/"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="SOAPException"><xsd:annotation><xsd:documentation>A generic SOAP exception.</xsd:documentation></xsd:annotation><sequence><element name="Message" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>The message associated with this exception</xsd:documentation></xsd:annotation></element><element name="OtherMessages" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>Other messages attached to this exception.  This message may contain information
+related to other exceptions that occurred during a SOAP call, but not directly
+associated with this particular exception.</xsd:documentation></xsd:annotation></element></sequence></complexType><complexType name="SOAPSenderException"><xsd:annotation><xsd:documentation>SOAPSenderException is the base class for all exceptions that resulted from
+a sender error. This usually means that required data was not properly encoded
+or was absent. Senders should not send the message again unless some steps have
+been taken to make the encoded data valid.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="DataConversionException"><xsd:annotation><xsd:documentation>Thrown by many APIs when they encounter a problem translating a SOAP data object into
+an internal system object.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="BadIdentifierException"><xsd:annotation><xsd:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect).</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="PermissionException"><xsd:annotation><xsd:documentation>Thrown when the authenticated SOAP user does not have permission to
+perform the requested operation</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="RequiredFieldException"><xsd:annotation><xsd:documentation>Thrown when required data is missing from a bean.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="SOAPServerException"><xsd:annotation><xsd:documentation>SOAPServerException is the base class for all exceptions that resulted from
+a server error. This is something of a catch-all exception type insofar as
+some things which might in fact be considered SOAPSenderExceptions are reported
+as SOAPServerExceptions. Perhaps a rule failed or something else. Generally it
+indicates a problem in the server that is likely retryable at some future time.
+The database being down, an unavailable plugin, etc would fall into this catagory.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="ServerStateException"><xsd:annotation><xsd:documentation>ServerStateException is thrown when a request is made at a time the
+server is in a state that disallows the request. An example is if
+an attempt is made to add a claim and the server is in maintenance
+mode.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPServerException"><sequence/></extension></complexContent></complexType><complexType name="EntityStateException"><xsd:annotation><xsd:documentation>Thrown when an attempt is made to manipulate an object that is in a state
+that prevents the operation from being performed. An example is trying to
+modify a Claim that is marked as closed.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="SOAPRetryableException"><xsd:annotation><xsd:documentation>SOAPRetryableException is the class for all exceptions that are retryable
+immediately.  The primary example of this is ConcurrentDataChangeException.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="LoginException"><xsd:annotation><xsd:documentation>Class of exceptions thrown when a user tries to log in and an authentication failure occurs.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:PermissionException"><sequence/></extension></complexContent></complexType><complexType name="DuplicateKeyException"><xsd:annotation><xsd:documentation>Throws if a duplicate data exception is detected in the database.  I.e. a unique index violation.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="FieldConversionException"><xsd:annotation><xsd:documentation>Thrown when a data type cannot be converted into the native data type.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="FieldFormatException"><xsd:annotation><xsd:documentation>Thrown when the input type does not match the format specified in the metadata.  I.e. a string is too long.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="UnknownTypeKeyException"><xsd:annotation><xsd:documentation>Thrown when a typekey value isn't available on the server.  This exception can only
+happen if the SOAP WSDL that is being used on the remote side is invalid.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="BatchProcessException"><xsd:annotation><xsd:documentation>SOAP Exception specific to batch process operations</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPServerException"><sequence/></extension></complexContent></complexType><complexType name="AlreadyExecutedException"><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType></schema><schema targetNamespace="http://enumeration.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://fault.webservices.pc.guidewire.com/"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><simpleType name="WorkflowTriggerKey"><xsd:annotation><xsd:documentation>What workflow Triggers are allowed</xsd:documentation></xsd:annotation><restriction base="xsd:string"><xsd:enumeration value="TC_Cancel"><xsd:annotation><xsd:documentation>Cancel</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_EditPolicy"><xsd:annotation><xsd:documentation>EditPolicy</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FailCancellation"><xsd:annotation><xsd:documentation>FailCancellation</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FailIssueRenewal"><xsd:annotation><xsd:documentation>FailIssueRenewal</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FailNonRenewalDocs"><xsd:annotation><xsd:documentation>FailNonRenewalDocs</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FailNotTakenDocs"><xsd:annotation><xsd:documentation>FailNotTakenDocs</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FailRenewalDocs"><xsd:annotation><xsd:documentation>FailRenewalDocs</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FailRescind"><xsd:annotation><xsd:documentation>FailRescind</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FailSendNonRenewal"><xsd:annotation><xsd:documentation>FailSendNonRenewal</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FailSendNotices"><xsd:annotation><xsd:documentation>FailSendNotices</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FailSendNotTaken"><xsd:annotation><xsd:documentation>FailSendNotTaken</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FinishCancellation"><xsd:annotation><xsd:documentation>FinishCancellation</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FinishIssueRenewal"><xsd:annotation><xsd:documentation>FinishIssueRenewal</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FinishNonRenewalDocs"><xsd:annotation><xsd:documentation>FinishNonRenewalDocs</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FinishNotTakenDocs"><xsd:annotation><xsd:documentation>FinishNotTakenDocs</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FinishRenewalDocs"><xsd:annotation><xsd:documentation>FinishRenewalDocs</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FinishRescind"><xsd:annotation><xsd:documentation>FinishRescind</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FinishSendNonRenewal"><xsd:annotation><xsd:documentation>FinishSendNonRenewal</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FinishSendNotices"><xsd:annotation><xsd:documentation>FinishSendNotices</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_FinishSendNotTaken"><xsd:annotation><xsd:documentation>FinishSendNotTaken</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_OrderMVRs"><xsd:annotation><xsd:documentation>OrderMVRs</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_Rescind"><xsd:annotation><xsd:documentation>Rescind</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_WaitForMVRs"><xsd:annotation><xsd:documentation>WaitForMVRs</xsd:documentation></xsd:annotation></xsd:enumeration><xsd:enumeration value="TC_Withdraw"><xsd:annotation><xsd:documentation>Withdraw</xsd:documentation></xsd:annotation></xsd:enumeration></restriction></simpleType></schema></wsdl:types>
+  <wsdl:message name="resumeAllWorkflowsResponse">
+  </wsdl:message>
+  <wsdl:message name="isTriggerAvailableResponse">
+    <wsdl:part name="isTriggerAvailableReturn" type="xsd:boolean">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="RequiredFieldException">
+    <wsdl:part name="fault" type="tns1:RequiredFieldException">
+<wsdl:documentation>If the workflow id is null.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="resumeWorkflowResponse">
+  </wsdl:message>
+  <wsdl:message name="invokeTriggerRequest">
+    <wsdl:part name="workflowID" type="soapenc:string">
+<wsdl:documentation>The ID of the workflow</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="triggerKey" type="tns2:WorkflowTriggerKey">
+<wsdl:documentation>A workflow trigger key off the current workflow</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="completeResponse">
+  </wsdl:message>
+  <wsdl:message name="suspendResponse">
+  </wsdl:message>
+  <wsdl:message name="ServerStateException">
+    <wsdl:part name="fault" type="tns1:ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="EntityStateException">
+    <wsdl:part name="fault" type="tns1:EntityStateException">
+<wsdl:documentation>If the workflow is not currently in the error or suspended state.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SOAPException">
+    <wsdl:part name="fault" type="tns1:SOAPException">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BadIdentifierException">
+    <wsdl:part name="fault" type="tns1:BadIdentifierException">
+<wsdl:documentation>If the workflow id did not match a valid workflow.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="invokeTriggerResponse">
+  </wsdl:message>
+  <wsdl:message name="resumeAllWorkflowsRequest">
+  </wsdl:message>
+  <wsdl:message name="completeRequest">
+    <wsdl:part name="workflowID" type="soapenc:string">
+<wsdl:documentation>the public id of the workflow</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="suspendRequest">
+    <wsdl:part name="workflowID" type="soapenc:string">
+<wsdl:documentation>the public id of the workflow</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PermissionException">
+    <wsdl:part name="fault" type="tns1:PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="isTriggerAvailableRequest">
+    <wsdl:part name="workflowID" type="soapenc:string">
+<wsdl:documentation>The ID of the workflow</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="triggerKey" type="tns2:WorkflowTriggerKey">
+<wsdl:documentation>A workflow trigger key off the current workflow</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="resumeWorkflowRequest">
+    <wsdl:part name="workflowID" type="soapenc:string">
+<wsdl:documentation>the public id of the workflow</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="IWorkflowAPI">
+<wsdl:documentation>External API for performing operations on workflows.
+@deprecated Use WS-I webservice gw.wsi.pl.WorkflowAPI instead.
+</wsdl:documentation>
+    <wsdl:operation name="complete" parameterOrder="workflowID">
+<wsdl:documentation>Sets the state of the workflow with public ID &lt;code&gt;workflowID&lt;/code&gt;
+to WorkflowState#TC_COMPLETED.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:completeRequest" name="completeRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:completeResponse" name="completeResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:RequiredFieldException" name="RequiredFieldException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="invokeTrigger" parameterOrder="workflowID triggerKey">
+<wsdl:documentation>Invokes the triggerKey on the current step of the specified workflow causing
+the workflow to advance to the next step.
+If a null or invalid workflow ID is passed in, an exception will be thrown.  In
+addition, if the triggerkey is null or the trigger is not available, an
+exception will be thrown.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:invokeTriggerRequest" name="invokeTriggerRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:invokeTriggerResponse" name="invokeTriggerResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:RequiredFieldException" name="RequiredFieldException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="isTriggerAvailable" parameterOrder="workflowID triggerKey">
+<wsdl:documentation>True if the given trigger is available in the Workflow; i.e. if it is OK to pass the
+trigger ID to the invokeTrigger method.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:isTriggerAvailableRequest" name="isTriggerAvailableRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:isTriggerAvailableResponse" name="isTriggerAvailableResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:RequiredFieldException" name="RequiredFieldException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="resumeAllWorkflows">
+<wsdl:documentation>Resumes all workflows in the state
+WorkflowState#TC_ERROR or WorkflowState#TC_SUSPENDED.
+
+The workflow engine will subsequently attempt to advance these workflows
+to their next steps. For each one, if an error occurs again, the error
+will be logged and the workflow's state set to WorkflowState#TC_ERROR.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:resumeAllWorkflowsRequest" name="resumeAllWorkflowsRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:resumeAllWorkflowsResponse" name="resumeAllWorkflowsResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="resumeWorkflow" parameterOrder="workflowID">
+<wsdl:documentation>Resumes the workflow with public ID &lt;code&gt;workflowID&lt;/code&gt;.
+
+The workflow engine will subsequently attempt to advance the workflow
+to its next step. If an error occurs again, the error
+will be logged and the workflow's state set to WorkflowState#TC_ERROR.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:resumeWorkflowRequest" name="resumeWorkflowRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:resumeWorkflowResponse" name="resumeWorkflowResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:RequiredFieldException" name="RequiredFieldException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:EntityStateException" name="EntityStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="suspend" parameterOrder="workflowID">
+<wsdl:documentation>Suspends the workflow with public ID &lt;code&gt;workflowID&lt;/code&gt;.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:suspendRequest" name="suspendRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:suspendResponse" name="suspendResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:RequiredFieldException" name="RequiredFieldException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="IWorkflowAPISoapBinding" type="impl:IWorkflowAPI">
+    <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="complete">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="completeRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="completeResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequiredFieldException">
+<wsdl:documentation>If the workflow id is null.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="RequiredFieldException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>If the workflow id did not match a valid workflow.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="invokeTrigger">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="invokeTriggerRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="invokeTriggerResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequiredFieldException">
+<wsdl:documentation>If the trigger key or workflow id is null.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="RequiredFieldException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+<wsdl:documentation>If no workspace matches the given workflow id or the trigger is invalid or not available.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="isTriggerAvailable">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="isTriggerAvailableRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="isTriggerAvailableResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequiredFieldException">
+<wsdl:documentation>If the trigger key or workflow id is null.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="RequiredFieldException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+<wsdl:documentation>If no workspace matches the given workflow id.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="resumeAllWorkflows">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="resumeAllWorkflowsRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="resumeAllWorkflowsResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="resumeWorkflow">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="resumeWorkflowRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="resumeWorkflowResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequiredFieldException">
+<wsdl:documentation>If the workflow id is null.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="RequiredFieldException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="EntityStateException">
+<wsdl:documentation>If the workflow is not currently in the error or suspended state.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="EntityStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>If the workflow id did not match a valid workflow.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="suspend">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="suspendRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="suspendResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequiredFieldException">
+<wsdl:documentation>If the workflow id is null</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="RequiredFieldException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>If the workflow id did not match a valid workflow.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="IWorkflowAPIService">
+<wsdl:documentation>External API for performing operations on workflows.
+@deprecated Use WS-I webservice gw.wsi.pl.WorkflowAPI instead.
+</wsdl:documentation>
+    <wsdl:port binding="impl:IWorkflowAPISoapBinding" name="IWorkflowAPI">
+      <wsdlsoap:address location="http://dontuse.defaultvalue.com/IWorkflowAPI"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

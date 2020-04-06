@@ -1,0 +1,504 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Calling Your RPCE Web Service from Microsoft .NET WSE 2.0</title>
+    <link rel="StyleSheet" href="css/webservices-rpce-publish.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-webservices.html#3434585">Web Services</a> : <a class="WebWorks_Breadcrumb_Link" href="webservices-rpce-publish.10.01.html#3434585">Publishing Web Services (RPCE)</a> : Calling Your RPCE Web Service from Microsoft .NET WSE 2.0</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="3434585">Calling Your RPCE Web Service from Microsoft .NET WSE 2.0</a></h3>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="3647599">RPCE web services are deprecated. Convert existing RPCE code to WS-I web services.</a></div>
+      <div class="B_-_Body"><a name="3434586">You can call your web service from Microsoft .NET with older WSE 2.0 releases of .NET, rather than WSE 3.0.</a></div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="3434296">This section is about WSE 2.0. For WSE 3.0, see the previous section</a><a href="javascript:WWHClickedPopup('integration', 'webservices-rpce-publish.10.07.html#3433621', '');" title="Calling Your RPCE Web Service from Microsoft .NET WSE 3.0">“Calling Your RPCE Web Service from Microsoft .NET WSE 3.0”</a>.</div>
+      <div class="B_-_Body"><a name="3435279">The syntax of different .NET languages varies widely, so there is no single syntax this documentation can use for .NET examples. This section uses Microsoft Visual Basic examples.</a></div>
+      <div class="B_-_Body"><a name="3433435">Before writing .NET code to call SOAP APIs, set up your .NET development environment. You must import the WSDL for the PolicyCenter SOAP service into your .NET development environment. It makes a local representation of the data objects needed by each PolicyCenter API. </a></div>
+      <div class="B_-_Body"><a name="3433446">After that, most API usage is straightforward. However, the authentication system for initial connection from Java does not easily work with .NET. Guidewire provides an alternative security approach based on the WS-Security (WSS) standard, which Microsoft supports in .NET. </a></div>
+      <h6 class="HS_-_Head_Sub"><a name="3435989">Connecting to Web Services from .NET with WSE 2.0</a></h6>
+      <div class="B_-_Body"><a name="3433454">Guidewire provides Visual Basic .NET sample code within the </a><span class="cv_-_computer_voice">PolicyCenter/soap-api/examples</span> directory. The following are detailed instructions for using the included <span class="cv_-_computer_voice">DotNetAPISample</span> sample code:</div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="3433456">First, make sure that Microsoft Web Services Enhancements (WSE) 2.0 is installed. If not, install it and restart Visual Studio.NET</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3433461">Open the project in Visual Studio.NET</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3433462">Right click on the name of the </a><span class="cv_-_computer_voice">DotNetAPISample</span> project, shown in bold text, on the right side of the window to open the contextual menu for the project.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	4.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3433463">From the contextual menu, choose </a><span class="ui_-_UI_element">WSE 2.0 Settings...</span>, then check the box next to <span class="ui_-_UI_element">Enable&nbsp;this&nbsp;project&nbsp;for&nbsp;Web&nbsp;Services&nbsp;Enhancements</span> then click <span class="ui_-_UI_element">OK</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	5.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3433467">Ensure your PolicyCenter server is up and running. Test it in your web browser.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	6.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3433470">Delete </a><span class="cv_-_computer_voice">ILoginAPI</span> and <span class="cv_-_computer_voice">ISystemToolsAPI</span> under <span class="ui_-_UI_element">Web References</span> from the right side.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	7.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3433471">Right click on the </a><span class="cv_-_computer_voice">DotNetAPISample</span> project (the bold text) on the right side of the window to open the contextual menu.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	8.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3433472">From the contextual menu, choose </a><span class="ui_-_UI_element">Add Web Reference...</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	9.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3433474">Enter the URL to the Login interface WSDL, in the form:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line" style="font-style: normal; font-variant: normal; font-weight: normal; text-transform: none; vertical-align: baseline"><span class="cv_-_computer_voice"><a name="3433478">http://localhost:8080/pc/soap/ILoginAPI?wsdl</a></span></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	10.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3433480">Enter “</a><span class="cv_-_computer_voice">ILoginAPI</span>” as the web reference name and then click the <span class="ui_-_UI_element">Add Reference</span> button.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	11.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3434385">Check for the WSE Service Proxy bug that sometimes manifests at this step. Visual Studio has a known bug that sometimes manifests to prevent proper creation of the WSE service proxy. In this case, only the traditional service generates, and not the service with the </a><span class="cv_-_computer_voice">WseService</span> extension.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LS2A_-_List_Start_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS2A_-_List_Start_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">a.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS2A_-_List_Start_002c_Level_2_Alpha_inner"><a name="3434386">Double click on the web reference for the new API, in this case </a><span class="cv_-_computer_voice">ILoginAPI</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">b.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="3434387">Look in the Object Browser pane to view the list of elements of the definition of the new interface.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">c.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="3434388">Find the service, which is the API name followed by the string </a><span class="cv_-_computer_voice">Service</span>. In this case, search for <span class="cv_-_computer_voice">ILoginAPIService</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">d.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="3434389">Double-click on that service.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">e.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="3434390">In the source code that appears called </a><span class="cv_-_computer_voice">reference.cs</span>, look at the line that looks like:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><a name="3434391">&nbsp;&nbsp;&nbsp;public partial class IUserAPIService : System.Web.Services.Protocols.SoapttpClicentProtocol {</a></div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">f.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="3434392">If this line does not already contain the string </a><span class="cv_-_computer_voice">Microsoft.Web.Services2.WebServicesClientProtocol</span>, change this line to extend the service from <span class="cv_-_computer_voice">Microsoft.Web.Services2.WebServicesClientProtocol</span> instead. For example, change this line to:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><a name="3434393">&nbsp;&nbsp;&nbsp;public partial class IUserAPIService : Microsoft.Web.Services2.WebServicesClientProtocol {</a></div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">g.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="3434394">Save the file.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI2A_-_List_Item_002c_Level_2_Alpha_outer" style="margin-left: 67pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">h.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI2A_-_List_Item_002c_Level_2_Alpha_inner"><a name="3434395">If you ever update the web reference, you must repeat this workaround. For example, suppose your server name or port changes and you go back to the Solutions Explorer pane and you try to update the web reference URL for the WSDL. The .NET environment downloads the WSDL again and regenerates the service, thus removing your changes. In such cases, you must repeat this procedure.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	12.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3434453">Right-click on the </a><span class="cv_-_computer_voice">DotNetAPISample</span> project (the bold text) on the right side of the window to open the contextual menu, and choose <span class="ui_-_UI_element">Add Web Reference...</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	13.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3433482">Enter the URL to another SOAP API interface, such as the system tools interface WSDL:</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line" style="font-style: normal; font-variant: normal; font-weight: normal; text-transform: none; vertical-align: baseline"><span class="cv_-_computer_voice"><a name="3434428">http://localhost:8080/pc/soap/ISystemToolsAPI?wsdl</a></span></div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	14.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3434430">Enter “</a><span class="cv_-_computer_voice">ISystemToolsAPI</span>” as the web reference name and then click the <span class="ui_-_UI_element">Add Reference</span> button.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	15.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3434434">Check for the WSE Service Proxy bug (see </a><a href="javascript:WWHClickedPopup('integration', 'webservices-rpce-publish.10.07.html#3446221', '');" title="Calling Your RPCE Web Service from Microsoft .NET WSE 3.0">step 13</a>).</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	16.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="3433494">Write your code to connect with the .NET authentication using the </a><span class="cv_-_computer_voice">ILoginAPI</span> interface’s <span class="cv_-_computer_voice">WSSlogin</span> method.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3433495">The following example code connects to the server and authenticates your SOAP client. The first task to is login to the server. The login method </a><span class="cv_-_computer_voice">WSSLogin</span> is part of the Guidewire implementation of the <span class="cv_-_computer_voice">UsernameToken</span> profile of the Web Services Security specification. Support for this specification is provided directly by the WSE package from Microsoft:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="3433498">Dim loginAPI As New ILoginAPI.ILoginAPIServiceWse</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433499">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433500">' tell the proxy where to connect. Adjust accordingly.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433504">loginAPI.Url = "http://localhost:8080/pc/soap/ILoginAPI"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433505">loginAPI.WSSLogin("su", "gw")</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433506">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433508">' The server knows about the session now. A SOAP fault happens</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433509">' given if the username/password combination was wrong for some</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3433510">' reason</a></PRE>
+      <div class="B_-_Body"><a name="3433513">Next, this example sets up a </a><span class="cv_-_computer_voice">UsernameToken</span> to pass as an authentication credential to the server with every SOAP call. You only need to do this once. After initial connection, you can use the (typically more secure) authentication credential instead of a plaintext password. </div>
+      <PRE class="CF_-_Code_First_Line"><a name="3433515">Dim credentials As New UsernameToken("su", "gw", PasswordOption.SendHashed)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433516">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433517">' Now set up the proxy to the sysadmin api.</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433518">Dim sysadminAPI As New ISystemToolsAPI.ISystemToolsAPIServiceWse</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433522">sysadminAPI.Url = "http://localhost:8080/pc/soap/ISystemToolsAPI"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433523">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433524">' Now attach credentials to the SOAP context. The credentials</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433527">' are now inside of a WSS SOAP header</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433528">Dim context As SoapContext = sysadminAPI.RequestSoapContext</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3433529">context.Security.Tokens.Add(credentials)</a></PRE>
+      <div class="B_-_Body"><a name="3447139">Be aware that an authentication credential is not as secure as SSL-encrypted authentication or transport-level strong encryption. For additional security, make your initial connection request the username token over a secure sockets layer (SSL) connection using an </a><span class="cv_-_computer_voice">https</span> URL instead of an <span class="cv_-_computer_voice">http</span> URL. For more information about configuring secure sockets layer and its performance implications, see the <span class="bt_-_book_title">PolicyCenter Configuration Guide</span>. </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="3447145">After the initial connection, you can choose to login and connect to the web service APIs over regular (non-SSL) connections. Although the data transport is not encrypted in either direction over a non-SSL connection, your password is safe from interception. Your password is safe because the only time the password was sent to the server, the password was hashed and passed over a secure socket layer. For maximum security, connect to the PolicyCenter server over full SSL connections.</a></div>
+      <div class="B_-_Body"><a name="3433544">Now you can make any calls to the PolicyCenter APIs without worrying about details of the SOAP protocol. For example, to get the PolicyCenter server’s current run level, you would write:</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="3433553">' use other PolicyCenter API interfaces</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433554">Dim runlevel As ISystemToolsAPI.SystemRunlevel</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433555">runlevel = sysadminAPI.getRunlevel()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433556">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="3433557">' Then logout</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="3433558">loginAPI.WSSLogout("su")</a></PRE>
+      <div class="B_-_Body"><a name="3447165">Note the following things about using web service objects from .NET: </a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3447166">The package hierarchy appears such that objects appear in their interface’s namespace. For example, the Javadoc may show an entity with the package symbol as </a><span class="cv_-_computer_voice">com.guidewire.pc.webservices.entity.Note</span>. However, if an API interface called <span class="cv_-_computer_voice">IMyAPI</span> uses this object as a return result or parameter, it appears as <span class="cv_-_computer_voice">IMyAPI.Note</span> from within .NET. </div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3447171">If another API interface uses that object, it appears as a separate object within that API proxy’s scope. Be careful to use the variant of the object in the correct namespace for the API that you call.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="3447172">The API Reference Javadoc documentation was produced from tools that process the Java version of the PolicyCenter APIs. Consequently, some information is Java-centric and it appears different if using .NET. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="3433585">Refer to the included </a><span class="cv_-_computer_voice">DotNetAPISample</span> sample for a working Visual Basic .NET example. </div>
+      <h6 class="HS_-_Head_Sub"><a name="3375978">Multi-Dimensional Arrays and .NET SOAP Access</a></h6>
+      <div class="B_-_Body"><a name="3375994">Microsoft .NET does not properly import WSDLs that describe multi-dimensional arrays. As a consequence, you must perform an additional to use multi-dimensional arrays. </a></div>
+      <div class="B_-_Body"><a name="3376013">For example, suppose a SOAP API returns a two-dimensional array of </a><span class="cv_-_computer_voice">String</span> objects, an object of type <span class="cv_-_computer_voice">String[][]</span>. As Microsoft .NET imports the WSDL and generates the method signature, it incorrectly converts the return type to a single-dimensional array, a <span class="cv_-_computer_voice">String[]</span> instead of a <span class="cv_-_computer_voice">String[][]</span>.</div>
+      <div class="B_-_Body"><a name="3376043">To work around this issue, first import the WSDL into Visual Studio. Then, update the generated method signature to access the proper multi-dimensional object, such as </a><span class="cv_-_computer_voice">String[][]</span> instead of <span class="cv_-_computer_voice">String[]</span>.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

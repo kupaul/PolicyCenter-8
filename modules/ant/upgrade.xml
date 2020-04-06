@@ -1,0 +1,76 @@
+<project name="Guidewire product configuration upgrade tools"
+  xmlns:ac="antlib:net.sf.antcontrib"
+  xmlns:gw="antlib:com.guidewire.ant.task"
+  xmlns:gwm="antlib:com.guidewire.ant.macro"
+  default="upgrade-help">
+
+  <import file="build.xml"/>
+  <property file="upgrade.properties"/>
+  <property name="base.dir" value="../.."/>
+
+  <target name="clean" description="Clean so that steps can run again" depends="init">
+    <ac:if>
+      <available file="${base.dir}/tmp/cfg-upgrade"/>
+      <then>
+        <delete includeemptydirs="true">
+          <fileset dir="${base.dir}/tmp/cfg-upgrade" includes="**/*"/>
+        </delete>
+        <!-- backup modules/configuration -->
+        <tstamp>
+          <format property="configuration.backup.name" pattern="'configuration-bak-'yyyyMMdd-HHmmss" />
+        </tstamp>
+        <move file="${base.dir}/modules/configuration" tofile="${base.dir}/tmp/${configuration.backup.name}" verbose="true"/>
+        <!-- restore the configuration -->
+        <unzip src="${base.dir}/modules/base.zip" dest="${base.dir}/modules/configuration" encoding = "UTF-8">
+          <mapper>
+            <cutdirsmapper dirs="1"/>
+          </mapper>
+        </unzip>
+      </then>
+    </ac:if>
+  </target>
+
+  <target name="upgrade" description="Run configuration upgrader" depends="init">
+    <fail unless="upgrader.priorversion.dir"/>
+    <gw:gosu>
+      uses gw.ant.ConfigUpgrade
+      uses java.io.File
+      uses gw.vark.IAardvarkUtils
+      uses gw.vark.antlibs.Ant
+
+      var activeDir = IAardvarkUtils.ScriptTmpDir.getChild("cfg-upgrade")
+      var stepsResultsFile = activeDir.getChild("steps-results.txt")
+
+      if (!stepsResultsFile.exists()) {
+        if (activeDir.exists()) {
+          print("${activeDir.Path} exists, but it seems that the config upgrader step list script never ran to completion - deleting")
+          Ant.delete(:dir = activeDir)
+        }
+        ConfigUpgrade.upgrade(
+          new File(IAardvarkUtils.getRequiredProperty("upgrader.priorversion.dir")), activeDir)
+      }
+      if (stepsResultsFile.exists()) {
+        if (stepsResultsFile.read().trim().contains("WARNING")) {
+          print("The config upgrader step list script ran to completion, but there were warnings.")
+          print("Please review the file")
+          print("      ${stepsResultsFile.Path}")
+          print("to see which steps failed.")
+          print("If you're absolutely certain that these issues are acceptable to ignore, and would like to continue with")
+          print("the upgrader merge tool, remove the instances of the string \"WARNING\" and re-run this \"upgrade\" target.")
+        }
+        else {
+          ConfigUpgrade.merge(activeDir)
+        }
+      }
+    </gw:gosu>
+  </target>
+
+  <target name="upgrade-help">
+    <java classname="org.apache.tools.ant.Main">
+      <arg value="-projecthelp" />
+      <arg value="-f"/>
+      <arg value="${basedir}/upgrade.xml"/>
+    </java>
+  </target>
+
+</project>

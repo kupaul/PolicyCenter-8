@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" desc="Motor Vehicle Record Order" entity="MVROrder" exportable="true" extendable="true" final="false" loadable="false" platform="false" subpackage="motorvehiclerecord" table="mvrorder" type="retireable">
+
+<!--Used for search (driver search criteria)-->
+  <column desc="Driver's license number used to request the MVR." name="LicenseNumberSC" nullok="true" type="driverlicense"/>
+  <typekey desc="Driver's license state used to request the MVR." name="LicenseStateSC" nullok="true" typelist="State"/>
+  <column desc="Driver's first name used to request the MVR." name="FirstNameSC" nullok="true" supportsLinguisticSearch="true" type="firstname"/>
+  <column desc="Driver's last name used to request the MVR." name="LastNameSC" nullok="true" supportsLinguisticSearch="true" type="lastname"/>
+  <column desc="Driver's middle name or initial used to request the MVR." name="MiddleNameSC" nullok="true" type="firstname"/>
+  <column desc="Driver's date of birth used to request the MVR." name="DateOfBirthSC" nullok="true" type="datetime"/>
+
+<!--MVR order information-->
+  <column desc="Internal Request unique identifier." name="InternalRequestID" nullok="true" type="varchar">
+    <columnParam name="size" value="40"/>
+  </column>
+  <typekey desc="Order status" name="OrderStatus" nullok="true" typelist="MVRStatus"/>
+  <column desc="Date of the last status change." name="StatusDate" nullok="true" type="datetime"/>
+  <column desc="Date when the report was requested." name="ReportRequestedDate" nullok="true" type="datetime"/>
+  <column desc="Provider Request/order identifier." name="ProviderRequestID" nullok="true" type="varchar">
+	<columnParam name="size" value="40"/>
+  </column>
+  <typekey desc="MVR Response sent by the Provider (Clear, Hit, No Hit, Delay, etc)" name="MVRResponse" nullok="true" typelist="MVRResponse"/>
+  <array arrayentity="MVR" cascadeDelete="true" desc="MVR report received for this order." name="MVREntities" owner="true"/>
+
+  <index desc="Index for partial-match search by Driver." name="DriverSearch" unique="false">
+    <indexcol keyposition="1" name="LicenseNumberSC"/>
+    <indexcol keyposition="2" name="LicenseStateSC"/>
+    <indexcol keyposition="3" name="FirstNameSC"/>
+    <indexcol keyposition="4" name="LastNameSC"/>
+    <indexcol keyposition="5" name="MiddleNameSC"/>
+    <indexcol keyposition="6" name="DateOfBirthSC"/>
+  </index>
+  <index desc="Index for search by Internal RequestID." name="RequestIDSearch" unique="true">
+    <indexcol keyposition="1" name="InternalRequestID"/>
+  </index>
+</entity>

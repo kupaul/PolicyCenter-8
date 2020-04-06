@@ -1,0 +1,77 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    afterCancel="PolicyFileForward.go(policyPeriod.PolicyNumber)"
+    autosaveable="false"
+    canEdit="true"
+    canVisit="perm.PolicyPeriod.view(policyPeriod) and perm.PolicyChange.create"
+    countsAsWork="false"
+    id="StartPolicyChange"
+    parent="PolicyFile(policyPeriod, policyPeriod.EditEffectiveDate)"
+    startInEditMode="true"
+    title="displaykey.Web.PolicyChange.StartPolicyChange">
+    <LocationEntryPoint
+      signature="StartPolicyChange(policyPeriod : PolicyPeriod)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="gw.web.job.policychange.StartPolicyChangeUIHelper.applyEffectiveTimePluginForPolicyChange( policyPeriod, job, policyPeriod.EditEffectiveDate )"
+      name="effectiveDate"
+      type="java.util.Date"/>
+    <Variable
+      initialValue="new PolicyChange()"
+      name="job"
+      type="PolicyChange"/>
+    <Variable
+      initialValue="effectiveDate != null ? Policy.finder.findPolicyPeriodByPolicyAndAsOfDate(policyPeriod.Policy, effectiveDate) : null"
+      name="inForcePeriod"
+      recalculateOnRefresh="true"
+      type="PolicyPeriod"/>
+    <Screen
+      id="StartPolicyChangeScreen">
+      <Toolbar>
+        <ToolbarButton
+          action="if (job.startJobAndCommit(inForcePeriod.Policy, effectiveDate, CurrentLocation)) { PolicyChangeWizard.go(job, job.LatestPeriod) }"
+          available="policyPeriod.Policy.canStartPolicyChange(effectiveDate) == null"
+          confirmMessage="gw.web.job.policychange.StartPolicyChangeUIHelper.getConfirmMessage(inForcePeriod, effectiveDate)"
+          id="NewPolicyChange"
+          label="displaykey.Button.StartPolicyChange"
+          shortcut="N"/>
+        <ToolbarButton
+          action="CurrentLocation.cancel()"
+          id="Cancel"
+          label="displaykey.Button.Cancel"/>
+      </Toolbar>
+      <Verbatim
+        id="ErrorMessage"
+        label="displaykey.Web.PolicyChange.StartPolicyChange.Error(policyPeriod.Policy.canStartPolicyChange(effectiveDate))"
+        visible="policyPeriod.Policy.canStartPolicyChange(effectiveDate) != null"
+        warning="true"/>
+      <Verbatim
+        id="WarningMessage"
+        label="displaykey.Web.PolicyChange.StartPolicyChange.Warning(gw.web.job.policychange.StartPolicyChangeUIHelper.getPolicyChangeWarningMessage(inForcePeriod, effectiveDate))"
+        visible="gw.web.job.policychange.StartPolicyChangeUIHelper.getPolicyChangeWarningMessage(inForcePeriod, effectiveDate) != null"
+        warning="true"/>
+      <DetailViewPanel
+        id="StartPolicyChangeDV">
+        <InputColumn>
+          <DateTimeInput
+            editable="true"
+            id="EffectiveDate"
+            label="displaykey.Web.Job.EffectiveDate"
+            required="true"
+            timeVisible="false"
+            value="effectiveDate"/>
+          <Input
+            editable="true"
+            id="Description"
+            label="displaykey.Web.Job.Description"
+            value="job.Description"/>
+        </InputColumn>
+      </DetailViewPanel>
+    </Screen>
+  </Page>
+</PCF>

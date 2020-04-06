@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Adding Entity Instances to Bundles</title>
+    <link rel="StyleSheet" href="css/transactions.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>Gosu Reference Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="transactions.22.01.html#1611659">Bundles and Database Transactions</a> : Adding Entity Instances to Bundles</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1611659">Adding Entity Instances to Bundles</a></h3>
+      <h4 class="H2_-_Heading_2"><a name="1562051">Making an Entity Instance Writable By Adding to a Bundle</a></h4>
+      <div class="B_-_Body"><a name="1605746">It is common to query the database for specific entity instances and then make changes to the data. See </a><a href="javascript:WWHClickedPopup('gosu', 'querybuilder.10.02.html#2237064', '');" title="Overview of the Query Builder APIs">“Overview of the Query Builder APIs”</a>. However, the direct results of a database query are in a temporary read-only bundle. You must copy objects to a writable bundle to change objects or delete objects. In most programming contexts, there is a current bundle that the application has already prepared. For example, in all rule execution contexts, and typical PCF user interface code. When there is a current bundle, get the current bundle using the code:</div>
+      <div class="CS_-_Code_Single_Line"><a name="1638311">gw.transaction.Transaction.getCurrent()</a></div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="1610116">In batch processes, WS-I web service implementations, and in workflows, there is no current bundle. You need to create a new bundle for your data changes. See </a><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.11.html#1634152', '');" title="Running Code in an Entirely New Bundle">“Running Code in an Entirely New Bundle”</a>.</div>
+      <div class="B_-_Body"><a name="1605747">To add an entity instance to a bundle, pass the object reference to the </a><span class="cv_-_computer_voice">bundle.add(</span><span class="ps_-_parameter_in_code_snippets">obj</span><span class="cv_-_computer_voice">)</span> method and save the return result. It is extremely important to save the return value of this method. The return result of the <span class="cv_-_computer_voice">add</span> method is a copy of the object that exists inside the new bundle. Only use that return result, not what you passed to the <span class="cv_-_computer_voice">add</span> method. Never modify the original entity reference. Avoid keeping any references to the original entity instance. </div>
+      <div class="B_-_Body"><a name="1609881">The recommended pattern is to set a variable with the original entity reference then set its value with the result of the </a><span class="cvt_-_computer_voice_table">add</span> method. For example:</div>
+      <PRE class="CL_-_Code_Last_Line"><a name="1609479">obj = bundle.add(obj) </a></PRE>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="1609920">You must save the </a><span class="s_-_strong">return&nbsp;result</span> of the <span class="cv_-_computer_voice">add</span> method and use that for any changes. Carefully avoid keeping any references to the original entity instance. </div>
+      <div class="B_-_Body"><a name="1609921">The following example gets the current bundle and moves an entity instance to it</a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="1606537">uses gw.transaction.Transaction</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1607783">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1606540">var bundle = Transaction.getCurrent() &nbsp;&nbsp;// get the current bundle</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1610053">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1607765">obj = bundle.add(obj) &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// move the object to the new bundle and save the result!</a></PRE>
+      <div class="B_-_Body"><a name="1608389">You can choose to modify the object:</a></div>
+      <div class="CS_-_Code_Single_Line"><a name="1608538">obj.Prop1 = "NewValue"</a></div>
+      <div class="B_-_Body"><a name="1608539">You can choose to delete the object, see </a><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.09.html#1611398', '');" title="Removing Entity Instances from the Database">“Removing Entity Instances from the Database”</a>:</div>
+      <div class="CS_-_Code_Single_Line"><a name="1640321">bundle.delete(obj)</a></div>
+      <div class="B_-_Body"><a name="1640322">In most programming contexts, it is extremely critical to not explicitly commit the bundle after your changes. For example, in typical Rules and PCF contexts, it is dangerous and unsupported to explicitly commit the bundle. Let the system perform its default bundle commit behavior. For more information, see </a><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.08.html#1644096', '');" title="Committing a Bundle Explicitly in Very Rare Cases">“Committing a Bundle Explicitly in Very Rare Cases”</a>.</div>
+      <h4 class="H2_-_Heading_2"><a name="1640335">Moving a Writable Entity Instance to a New Writable Bundle </a></h4>
+      <div class="B_-_Body"><a name="1640339">As mentioned in </a><a href="javascript:WWHClickedPopup('gosu', 'transactions.22.04.html#1562051', '');" title="Adding Entity Instances to Bundles">“Making an Entity Instance Writable By Adding to a Bundle”</a>, you can add a read-only entity instance to a writable bundle. You can also add an entity instance to a writable bundle even if the original entity instance is in a writable bundle already. For this action to succeed, the original entity instance must be unmodified. The entity instance must not be newly added, changed, or deleted in its existing bundle.</div>
+      <div class="B_-_Body"><a name="1610759">If you try to add a modified entity instance to a new bundle, Gosu throws the exception </a><span class="cv_-_computer_voice">IllegalBundleTransferException</span>. To avoid this, be careful not to let the entity be modified in more than one bundle. </div>
+      <div class="B_-_Body"><a name="1610760">Be warned that even if the entity instance is unmodified at the time you copy it to the new bundle, there might be problems later. Only one bundle can try to commit a change to the same entity instance based on the same revision of the database row. If an entity instance was modified in more than one bundle and both bundles commit, the second commit fails with a </a><span class="e_-_emphasis">concurrent data change exception</span>. </div>
+      <div class="B_-_Body"><a name="1614755">The second commit attempt (the one that fails) might be in code other than your code, such as PCF user interface code that is editing the same object. </a></div>
+      <div class="B_-_Body"><a name="1611139">Gosu attempts to avoid this problem by preventing adding an already-modified entity to a new bundle. In some cases, user interface code internally </a><span class="e_-_emphasis">refreshes</span> an entity instance. For example, switching from view mode to edit mode in the user interface. Refreshing an entity is a special internal process that discards cached versions and gets latest versions from the database. In practice, this process reduces the likelihood of current data change exceptions. This is an internal process only. There is no public API to refresh entity instances from Gosu.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

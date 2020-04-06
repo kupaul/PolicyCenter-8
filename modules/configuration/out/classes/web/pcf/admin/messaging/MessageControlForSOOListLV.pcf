@@ -1,0 +1,101 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ListViewPanel
+    id="MessageControlForSOOListLV">
+    <ExposeIterator
+      flags="SkippableEventMessage,RetryableEventMessage"
+      valueType="Message"
+      widget="MessageControlForSOOListLV"/>
+    <Require
+      name="DestinationId"
+      type="int"/>
+    <Require
+      name="SOOKeyValue"
+      type="long"/>
+    <Variable
+      initialValue="gw.api.admin.MessagingUtil.getEventMessageDestinationMap()"
+      name="destMap"/>
+    <RowIterator
+      editable="false"
+      elementName="EventMessage"
+      hasCheckBoxes="true"
+      pageSize="40"
+      value="gw.api.admin.MessagingUtil.getEventMessagesForDestination(DestinationId, SOOKeyValue, 40)">
+      <ToolbarFlag
+        condition="EventMessage.isActive()"
+        name="SkippableEventMessage"/>
+      <ToolbarFlag
+        condition="EventMessage.isRetryable()"
+        name="RetryableEventMessage"/>
+      <Row>
+        <DateCell
+          align="left"
+          dateFormat="short"
+          enableSort="false"
+          id="SendTime"
+          label="displaykey.Web.Admin.MessageControlForSOOListLV.SendTime"
+          timeFormat="long"
+          value="EventMessage.SendTime"/>
+        <Cell
+          action="MessagePayloadPopup.push(EventMessage.ID.Value)"
+          align="left"
+          enableSort="false"
+          id="MessageName"
+          label="displaykey.Web.Admin.MessageControlForSOOListLV.MessageName"
+          value="EventMessage.EventName"/>
+        <Cell
+          action="MessageControlForDestinationList.go(EventMessage.DestinationID, lookup(EventMessage.DestinationID))"
+          align="left"
+          enableSort="false"
+          id="DestinationName"
+          label="displaykey.Web.Admin.MessageControlForSOOListLV.DestinationName"
+          value="lookup(EventMessage.DestinationID)"/>
+        <Cell
+          align="left"
+          enableSort="false"
+          id="Order"
+          label="displaykey.Web.Admin.MessageControlForSOOListLV.Order"
+          value="EventMessage.SendOrder"/>
+        <Cell
+          align="left"
+          enableSort="false"
+          id="SenderRef"
+          label="displaykey.Web.Admin.MessageControlForSOOListLV.SenderRef"
+          value="EventMessage.SenderRefID"/>
+        <Cell
+          align="left"
+          enableSort="false"
+          id="Status"
+          label="displaykey.Web.Admin.MessageControlForSOOListLV.Status"
+          value="displayKey(EventMessage.Status)"/>
+        <Cell
+          align="left"
+          enableSort="false"
+          id="RetryCount"
+          label="displaykey.Web.Admin.MessageControlForSOOListLV.RetryCount"
+          value="EventMessage.RetryCount"/>
+        <Cell
+          align="left"
+          enableSort="false"
+          id="Response"
+          label="displaykey.Web.Admin.MessageControlForSOOListLV.Response"
+          value="EventMessage.ErrorDescription"/>
+        <Cell
+          align="left"
+          enableSort="false"
+          id="Description"
+          label="displaykey.Web.Admin.MessageControlForSOOListLV.Description"
+          value="EventMessage.Description"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function displayKey(statusInt : java.lang.Integer) : String {
+  return gw.api.domain.DisplayKey.getDisplayKeyValue("Java.Message.Status._" + (statusInt as String))
+}
+
+function lookup(destId : java.lang.Integer) : String {
+  return destMap.get(destId)
+}]]></Code>
+  </ListViewPanel>
+</PCF>

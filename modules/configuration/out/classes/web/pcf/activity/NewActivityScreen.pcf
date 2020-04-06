@@ -1,0 +1,44 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Screen
+    id="NewActivityScreen">
+    <Require
+      name="activity"
+      type="Activity"/>
+    <Require
+      name="note"
+      type="Note"/>
+    <Require
+      name="assignmentPopup"
+      type="assignment.AssignmentPopup"/>
+    <Variable
+      initialValue="new gw.assignment.PCAssigneePicker() {:SelectedAssignee = (assignmentPopup.SuggestedAssignees.IsEmpty ? null : assignmentPopup.SuggestedAssignees[0])}"
+      name="assigneePicker"
+      type="gw.assignment.PCAssigneePicker"/>
+    <Toolbar>
+      <ToolbarButton
+        action="if(web.activity.ActivityUtil.createActivity(activity, note, assignmentPopup, assigneePicker.SelectedAssignee)) web.workspace.WorkspaceUtil.closeWorksheetIfActiveAndRefreshTop(CurrentLocation)"
+        id="NewActivityScreen_UpdateButton"
+        label="displaykey.Web.ActivityDetail.Button.Update"/>
+      <ToolbarButton
+        action="CurrentLocation.cancel()"
+        id="NewActivityScreen_CancelButton"
+        label="displaykey.Web.ActivityDetail.Button.Cancel"/>
+    </Toolbar>
+    <PanelRef>
+      <PanelRow>
+        <PanelColumn>
+          <PanelRef
+            def="NewActivityDV(activity, assignmentPopup, assigneePicker)"/>
+        </PanelColumn>
+        <PanelColumn>
+          <PanelRef
+            def="ActivityDetailNoteDV(activity, note)"
+            visible="note != null"/>
+        </PanelColumn>
+      </PanelRow>
+    </PanelRef>
+  </Screen>
+</PCF>

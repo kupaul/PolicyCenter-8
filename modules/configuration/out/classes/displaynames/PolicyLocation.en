@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<Entity
+  name="PolicyLocation">
+  <Columns>
+    <Column
+      beanPath="PolicyLocation.LocationNum"
+      name="number"
+      sortOrder="0"/>
+    <Column
+      beanPath="PolicyLocation.AddressLine1"
+      name="address1"
+      sortOrder="1"/>
+    <Column
+      beanPath="PolicyLocation.City"
+      name="city"
+      sortOrder="2"/>
+    <Column
+      beanPath="PolicyLocation.State"
+      name="state"
+      sortOrder="3"/>
+    <Column
+      beanPath="PolicyLocation.AccountLocation.LocationName"
+      name="name"
+      sortOrder="4"/>
+    <Column
+      beanPath="PolicyLocation.AddressLine1KanjiInternal"
+      name="address1Kanji"/>
+    <Column
+      beanPath="PolicyLocation.CityKanjiInternal"
+      name="cityKanji"/>
+  </Columns>
+  <DisplayName><![CDATA[if (name.HasContent) {
+  return displaykey.EntityName.PolicyLocation.ByName(number, name)
+}
+/**
+ * This is built for address internationalization.  See AddressFormatter and usages.
+ */
+var aFormat = new gw.api.address.AddressFormatter()
+aFormat.AddressLine1      = address1
+aFormat.City              = city
+aFormat.State             = state
+aFormat.AddressLine1Kanji = address1Kanji
+aFormat.CityKanji         = cityKanji
+
+return displaykey.EntityName.PolicyLocation.ByAddress(
+  number, aFormat.addressString(",", false, false))
+  ]]></DisplayName>
+  <DisplayName
+    type="Validation"><![CDATA[uses gw.api.address.AddressFormatter
+if (name.HasContent) {
+  return displaykey.EntityName.PolicyLocation.Validation.ByName(number, name)
+}
+/**
+ * This is built for address internationalization.  See AddressFormatter and usages.
+ */
+var aFormat = new AddressFormatter()
+aFormat.AddressLine1 = address1
+aFormat.City         = city
+aFormat.State        = state
+return displaykey.EntityName.PolicyLocation.Validation.ByAddress(
+  number, aFormat.addressString(",", false, false))
+  ]]></DisplayName>
+</Entity>

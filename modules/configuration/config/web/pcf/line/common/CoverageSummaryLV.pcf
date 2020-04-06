@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ListViewPanel
+    alternateEntryStyle="false"
+    id="CoverageSummaryLV">
+    <Require
+      name="clauses"
+      type="List&lt;domain.Clause&gt;"/>
+    <Require
+      name="coverable"
+      type="Coverable"/>
+    <Variable
+      initialValue="coverable != null and gw.api.util.CurrencyUtil.isMultiCurrencyMode()?displaykey.Web.Policy.CurrencySuffix(coverable.PreferredCoverageCurrency):&quot;&quot;"
+      name="valueLabel"/>
+    <Row
+      renderAsSmartHeader="true">
+      <Cell
+        align="left"
+        id="Description"
+        value="displaykey.Web.PolicyLine.Coverages.Description"/>
+      <Cell
+        align="right"
+        id="Value"
+        value="displaykey.Web.PolicyLine.Coverage.CovTermValue(valueLabel)"/>
+    </Row>
+    <RowIterator
+      editable="false"
+      elementName="clause"
+      pageSize="0"
+      value="clauses.toArray( new domain.Clause[clauses.Count] )">
+      <IteratorSort
+        sortBy="clause.Pattern.CoverageCategory.Priority"
+        sortOrder="1"/>
+      <IteratorSort
+        sortBy="clause.Pattern.CoverageCategory.PublicID"
+        sortOrder="2"/>
+      <IteratorSort
+        sortBy="clause.Pattern.Priority"
+        sortOrder="3"/>
+      <IteratorSort
+        sortBy="clause.Pattern.PublicID"
+        sortOrder="4"/>
+      <Row
+        useTitleStyle="true">
+        <Cell
+          align="left"
+          bold="true"
+          enableSort="false"
+          id="Description"
+          value="(clause typeis Coverage) ? displaykey.Web.PolicyLine.Coverage(clause.Pattern) : clause.Pattern"
+          width="500"
+          wrap="true"/>
+        <Cell
+          align="right"
+          enableSort="false"
+          id="Empty"
+          value="empty()"/>
+      </Row>
+      <RowIterator
+        editable="false"
+        elementName="covTerm"
+        pageSize="0"
+        value="clause.CovTerms">
+        <IteratorSort
+          sortBy="covTerm.Pattern.Priority"
+          sortOrder="1"/>
+        <IteratorSort
+          sortBy="covTerm.Pattern.PublicID"
+          sortOrder="2"/>
+        <Row>
+          <Cell
+            align="left"
+            enableSort="false"
+            icon=""
+            id="Description"
+            value="pad(covTerm.DisplayName)"
+            width="500"
+            wrap="true"/>
+          <Cell
+            align="right"
+            id="term"
+            value="covTerm.DisplayValue"/>
+        </Row>
+      </RowIterator>
+    </RowIterator>
+    <Code><![CDATA[function pad(s: String): String {
+        return "       " + s
+      }
+      function empty(): String {
+        return ""
+      }]]></Code>
+  </ListViewPanel>
+</PCF>

@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Screen
+    id="ActivityDetailScreen">
+    <Require
+      name="activity"
+      type="Activity"/>
+    <Require
+      name="note"
+      type="Note"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="gw.api.util.SymbolTableUtil.populateBeans(activity)"
+      name="symbolTable"/>
+    <Toolbar>
+      <ToolbarButtonSetRef
+        mode="activity.ActivityPattern.Type"
+        toolbarButtonSet="ActivityDetailToolbarButtonSet(activity, note, policyPeriod)"/>
+      <PickerToolbarButton
+        action="PickNoteTemplatePopup.push(gw.web.activity.ActivityDetailScreenUIHelper.createSearchCriteria(symbolTable))"
+        hideIfReadOnly="true"
+        id="NewNoteWorksheet_UseTemplateButton"
+        label="displaykey.Web.Note.UseTemplate"
+        onPick="note.useTemplate( PickedValue, symbolTable )"/>
+      <ToolbarButton
+        action="NewDocumentFromTemplateWorksheet.goInWorkspace( activity, gw.web.activity.ActivityDetailScreenUIHelper.getDocContainer(activity), activity.DocumentTemplate) "
+        id="ActivityDetailToolbarButtons_DocumentButton"
+        label="displaykey.Web.ActivityDetail.Button.CreateDocument"
+        visible="activity.DocumentTemplate != null and perm.System.doccreate"/>
+      <ToolbarButton
+        action="EmailWorksheet.goInWorkspace( activity, gw.web.activity.ActivityDetailScreenUIHelper.getDocContainer(activity), activity.EmailTemplate)"
+        id="ActivityDetailToolbarButtons_CreateEmail"
+        label="displaykey.Web.ActivityDetail.Button.CreateEmail"
+        visible="activity.EmailTemplate != null and perm.System.sendemail"/>
+      <ToolbarButton
+        action="gw.web.activity.ActivityDetailScreenUIHelper.viewActivityNotes(activity, policyPeriod)"
+        id="ActivityDetailToolbarButtons_ViewNotes"
+        label="displaykey.Web.ActivityDetail.Button.ViewNotes"
+        shortcut="N"
+        visible="activity.canViewNotes(policyPeriod)"/>
+    </Toolbar>
+    <Verbatim
+      label="displaykey.Web.ActivityDetail.ActivityCanceled"
+      visible="activity.Status == &quot;canceled&quot;"/>
+    <PanelRow>
+      <PanelColumn
+        editable="perm.Activity.edit(activity)">
+        <PanelRef
+          def="ActivityDetailDV(activity)"
+          mode="activity.ActivityPattern.Type"/>
+      </PanelColumn>
+      <PanelColumn>
+        <PanelRef
+          def="ActivityDetailNoteDV(activity, note)"
+          visible="activity.Status == &quot;open&quot; and note != null"/>
+      </PanelColumn>
+    </PanelRow>
+  </Screen>
+</PCF>

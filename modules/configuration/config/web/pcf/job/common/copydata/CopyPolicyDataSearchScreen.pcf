@@ -1,0 +1,165 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Screen
+    id="CopyPolicyDataSearchScreen">
+    <Require
+      name="destPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="null"
+      name="sourcePeriod"/>
+    <SearchPanel
+      criteriaName="searchCriteria"
+      maxSearchResults="1000"
+      resultsName="searchResult"
+      search="searchCriteria.search()"
+      searchCriteria="getInitialSearchCriteria()"
+      searchResultsType="PolicyPeriodSummaryQuery">
+      <DetailViewPanel
+        id="PolicySearchDV">
+        <Variable
+          initialValue="UWCompany.finder.findUWCompanies().toList()"
+          name="uwCompanies"/>
+        <Variable
+          initialValue="new gw.globalization.PolicySearchNameAdapter(searchCriteria)"
+          name="policySearchNameAdapter"
+          recalculateOnRefresh="true"/>
+        <Variable
+          initialValue="new gw.globalization.PolicySearchAddressAdapter(searchCriteria)"
+          name="policyAddrAdapter"
+          recalculateOnRefresh="true"/>
+        <InputColumn>
+          <RangeInput
+            editable="true"
+            id="SearchFor"
+            label="displaykey.Web.PolicySearch.SearchFor"
+            required="true"
+            value="searchCriteria.SearchObjectType"
+            valueRange="SearchObjectType.TF_COPYPOLICYDATASEARCH.TypeKeys">
+            <PostOnChange
+              onChange="util.SearchUtil.resetResultOnly()"/>
+          </RangeInput>
+          <InputDivider/>
+          <Label
+            label="displaykey.Web.PolicySearch.PrimaryInsured.Title"/>
+          <InputSetRef
+            def="GlobalPersonNameInputSet(new gw.search.BasicNameOwner(policySearchNameAdapter))"
+            mode="gw.api.name.NameLocaleSettings.PCFMode"/>
+          <CheckBoxInput
+            editable="true"
+            id="FirstNameExact"
+            label="displaykey.Web.AccountSearch.FirstNameExactMatch"
+            required="false"
+            value="searchCriteria.FirstNameExact"/>
+          <CheckBoxInput
+            editable="true"
+            id="LastNameExact"
+            label="displaykey.Web.AccountSearch.LastNameExactMatch"
+            required="false"
+            value="searchCriteria.LastNameExact"/>
+          <InputSetRef
+            def="GlobalContactNameInputSet(new gw.search.BasicNameOwner(policySearchNameAdapter))"
+            mode="gw.api.name.NameLocaleSettings.PCFMode"/>
+          <CheckBoxInput
+            editable="true"
+            id="CompanyNameExact"
+            label="displaykey.Web.AccountSearch.CompanyNameExactMatch"
+            required="false"
+            value="searchCriteria.CompanyNameExact"/>
+          <InputSetRef
+            def="AddressOwnerAddressInputSet(new gw.pcf.contacts.AddressCountryCityStatePostalCodeOwner (policyAddrAdapter))"/>
+          <Input
+            editable="true"
+            id="Phone"
+            label="displaykey.Web.Account.Locations.Phone"
+            value="searchCriteria.PrimaryInsuredPhone"/>
+          <Input
+            editable="true"
+            id="TaxID"
+            label="displaykey.Web.PolicySearch.OfficialID"
+            required="false"
+            value="searchCriteria.NameCriteria.OfficialId"/>
+        </InputColumn>
+        <InputColumn>
+          <Input
+            editable="true"
+            id="AccountNumber"
+            label="displaykey.Web.PolicySearch.AccountNumber"
+            required="false"
+            value="searchCriteria.AccountNumber"/>
+          <Input
+            editable="true"
+            id="PolicyNumberCriterion"
+            label="displaykey.Web.PolicySearch.PolicyNumber"
+            required="false"
+            value="searchCriteria.PolicyNumber"/>
+          <Input
+            editable="true"
+            id="WorkOrderNumber"
+            label="displaykey.Web.PolicySearch.WorkOrderNumber"
+            required="false"
+            value="searchCriteria.JobNumber"
+            visible="searchCriteria.SearchObjectType != typekey.SearchObjectType.TC_POLICY"/>
+          <InputDivider/>
+          <!-- Date criteria -->
+          <InputSet
+            visible="searchCriteria.SearchObjectType != &quot;Policy&quot;">
+            <RangeInput
+              editable="true"
+              id="DateFieldToSearchType"
+              label="displaykey.Web.PolicySearch.Date.Field"
+              value="searchCriteria.DateCriteria.DateFieldToSearch"
+              valueRange="searchCriteria.DateFieldsSearchType"/>
+            <Input
+              editable="true"
+              id="DateRangeForJobSearch"
+              label="displaykey.Web.PolicySearch.Date"
+              value="searchCriteria.DateCriteria"
+              visible="true"/>
+          </InputSet>
+          <DateInput
+            editable="true"
+            id="AsOfDate"
+            label="displaykey.Web.PolicySearch.AsOfDate"
+            value="searchCriteria.AsOfDate"
+            visible="searchCriteria.SearchObjectType == typekey.SearchObjectType.TC_POLICY"/>
+        </InputColumn>
+        <InputFooterSection>
+          <InputSetRef
+            def="SearchAndResetInputSet()"/>
+        </InputFooterSection>
+      </DetailViewPanel>
+      <PanelRef
+        def="CopyPolicyDataSearch_ResultsLV(searchResult, destPeriod)"
+        mode="searchCriteria.ResultsLVMode">
+        <TitleBar
+          appendListViewPaging="true"
+          title="displaykey.Web.PolicySearch.Results"/>
+        <Toolbar/>
+      </PanelRef>
+    </SearchPanel>
+    <Code><![CDATA[property get ProducerBasedOnCurrentUser() : Organization {
+  return User.util.CurrentUser.ExternalUser ? User.util.CurrentUser.Organization : null
+}
+
+function getInitialSearchCriteria() : PolicySearchCriteria {
+  return new PolicySearchCriteria() {
+    :AccountNumber = destPeriod.Policy.Account.AccountNumber,
+    :Secure = true,
+    :Producer = ProducerBasedOnCurrentUser,
+    :Product = destPeriod.Policy.Product,
+    :SearchObjectType = SearchObjectType.TC_POLICY,
+    :ExcludedPolicyPeriod = destPeriod,
+    :IgnoreSubmissionPolicyNumber = false,
+    :MultiVersionSearch = true,
+    :PermissiveSearch = false,
+    :FirstNameExact = true,
+    :LastNameExact = true,
+    :CompanyNameExact = true,
+    :IncludeArchived = true
+  }
+}]]></Code>
+  </Screen>
+</PCF>

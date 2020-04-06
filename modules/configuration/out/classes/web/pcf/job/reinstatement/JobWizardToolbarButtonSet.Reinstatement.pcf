@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ToolbarButtonSet
+    id="JobWizardToolbarButtonSet"
+    mode="Reinstatement">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="CurrentLocation as pcf.api.Wizard"
+      name="wizard"
+      type="pcf.api.Wizard"/>
+    <Variable
+      initialValue="job as Reinstatement"
+      name="reinstatement"
+      type="Reinstatement"/>
+    <Variable
+      initialValue="policyPeriod.ReinstatementProcess"
+      name="reinstatementProcess"/>
+    <ToolbarButton
+      action="UWActivityPopup.push(policyPeriod, ActivityPattern.finder.getActivityPatternByCode(&quot;uw_review_approved&quot;), &quot;UWApproval&quot;)"
+      id="Unlock"
+      label="displaykey.Job.Operation.ReleaseLock"
+      shortcut="K"
+      visible="reinstatementProcess.canReleaseLock()"/>
+    <ToolbarButton
+      action="jobWizardHelper.requestQuote(policyPeriod, jobWizardHelper.getQuoteStep(policyPeriod))"
+      id="QuoteOrReview"
+      label="displaykey.Job.Operation.Quote"
+      shortcut="Q"
+      visible="reinstatementProcess.canRequestQuote().Okay"/>
+    <ToolbarButton
+      action="reinstatementProcess.edit(); wizard.saveDraft(); jobWizardHelper.goToVisibleStep(policyPeriod)"
+      confirmMessage="displaykey.Job.Operation.Edit.Confirm"
+      id="EditPolicy"
+      label="displaykey.Job.Operation.EditWorkOrder"
+      shortcut="E"
+      visible="reinstatementProcess.canEdit().Okay"/>
+    <ToolbarButton
+      action="wizard.saveDraft()"
+      hideIfReadOnly="true"
+      id="Draft"
+      label="displaykey.Button.SaveDraft"
+      shortcut="S"/>
+    <ToolbarButton
+      action="HandlePreemptionPopup.push(wizard, jobWizardHelper, policyPeriod, true)"
+      id="HandlePreemptions"
+      label="displaykey.Job.Operation.HandlePreemption"
+      shortcut="H"
+      visible="reinstatementProcess.canHandlePreemptions().Okay"/>
+    <ToolbarButton
+      action="jobWizardHelper.applyChangesToFutureBoundRenewal(policyPeriod)"
+      confirmMessage="displaykey.Job.Operation.ApplyToRenewal.ConfirmBound"
+      id="ResolveWithFutureBoundPeriods"
+      label="displaykey.Job.Operation.ApplyToRenewal"
+      shortcut="L"
+      visible="policyPeriod.JobProcess.canApplyChangesToFutureBoundRenewal()"/>
+    <ToolbarButton
+      action="jobWizardHelper.applyChangesToFutureUnboundRenewal(policyPeriod)"
+      confirmMessage="displaykey.Job.Operation.ApplyToRenewal.ConfirmUnbound"
+      id="ResolveWithFutureUnboundPeriods"
+      label="displaykey.Job.Operation.ApplyToRenewal"
+      shortcut="Y"
+      visible="policyPeriod.JobProcess.canApplyChangesToFutureUnboundRenewal()"/>
+    <ToolbarButton
+      action="jobWizardHelper.requestIssueJob(policyPeriod)"
+      confirmMessage="displaykey.Job.Operation.EnterReinstating.Confirm"
+      id="Reinstate"
+      label="displaykey.Job.Operation.EnterReinstating"
+      shortcut="R"
+      visible="reinstatementProcess.canReinstate().Okay"/>
+    <ToolbarButton
+      action="jobWizardHelper.withdraw(policyPeriod); PolicyFileForward.go(policyPeriod.PolicyNumber)"
+      confirmMessage="displaykey.Job.Operation.Withdraw.Confirm"
+      id="WithdrawJob"
+      label="displaykey.Job.Operation.Withdraw"
+      shortcut="W"
+      visible="reinstatementProcess.canWithdraw().Okay"/>
+  </ToolbarButtonSet>
+</PCF>

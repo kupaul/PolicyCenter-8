@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="openForEdit"
+    id="PolicyFile_ModifiersScreen">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="modifiers"
+      type="Modifier[]"/>
+    <Variable
+      initialValue="modifiers.where(\ m -&gt; m.ScheduleRate )"
+      name="scheduleRates"/>
+    <Variable
+      initialValue="modifiers.where(\ m -&gt; not m.ScheduleRate )"
+      name="nonScheduleRates"/>
+    <PanelRef
+      def="OOSEPanelSet(policyPeriod, jobWizardHelper)"/>
+    <PanelRef>
+      <DetailViewPanel>
+        <InputColumn>
+          <InputSetRef
+            def="WCModifiersInputSet(nonScheduleRates.toList(), policyPeriod)"/>
+        </InputColumn>
+      </DetailViewPanel>
+    </PanelRef>
+    <PanelRef
+      def="ScheduleRateDV(scheduleRates)"
+      visible="scheduleRates.HasElements">
+      <TitleBar
+        title="displaykey.Web.ModifiersScreen.RatingInputs"/>
+    </PanelRef>
+  </Screen>
+</PCF>

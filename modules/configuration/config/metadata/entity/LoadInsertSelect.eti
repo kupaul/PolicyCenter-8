@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  desc="Timed loader insert/selects."
+  entity="LoadInsertSelect"
+  exportable="true"
+  extendable="false"
+  instrumentationtable="true"
+  loadable="false"
+  platform="true"
+  subpackage="staging"
+  table="loadinsertselect"
+  type="keyable">
+  <implementsEntity
+    name="TimedLoaderObject"/>
+  <implementsEntity
+    name="OrdereddLoaderObject"/>
+  <column
+    desc="insert/select."
+    name="Query"
+    nullok="true"
+    type="text">
+    <columnParam
+      name="logicalSize"
+      value="65000"/>
+  </column>
+  <column
+    desc="Number of rows affected."
+    name="AffectedRowCount"
+    nullok="true"
+    type="longint"/>
+  <foreignkey
+    columnName="LoadOperationID"
+    desc="Parent."
+    fkentity="LoadOperation"
+    name="LoadOperation"
+    nullok="false"/>
+  <foreignkey
+    columnName="LoadCommandID"
+    desc="Denorm FK for unique index."
+    fkentity="LoadCommand"
+    name="LoadCommand"
+    nullok="false"/>
+  <!-- Unique index on LoadCommandID, ExecutionOrder -->
+  <index
+    desc="(LoadCommandID, ExecutionOrder) is unique across load insert selects"
+    name="loadinsselectu1"
+    unique="true">
+    <indexcol
+      keyposition="1"
+      name="LoadCommandID"/>
+    <indexcol
+      keyposition="2"
+      name="ExecutionOrder"/>
+  </index>
+</entity>

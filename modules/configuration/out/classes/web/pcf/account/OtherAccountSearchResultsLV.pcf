@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    id="OtherAccountSearchResultsLV">
+    <Require
+      name="accountSummaries"
+      type="AccountSummaryQuery"/>
+    <Require
+      name="currentAccount"
+      type="entity.Account"/>
+    <Require
+      name="searchMode"
+      type="typekey.AccountSearchType"/>
+    <RowIterator
+      editable="false"
+      elementName="accountSummary"
+      value="accountSummaries">
+      <Row>
+        <ButtonCell
+          action="searchResultSelectAction(accountSummary.Account)"
+          id="Select"
+          value="displaykey.Web.AccountSearchResults.Select"/>
+        <Cell
+          action="AccountFileDoRetrievalForward.go(accountSummary.AccountNumber)"
+          available="perm.Account.view(accountSummary.Account)"
+          id="AccountNumber"
+          label="displaykey.Web.AccountSearchResults.AccountNumber"
+          value="accountSummary.AccountNumber"/>
+        <Cell
+          id="Name"
+          label="displaykey.Web.AccountSearchResults.Name"
+          value="accountSummary.AccountHolderName"/>
+        <Cell
+          enableSort="false"
+          id="Address"
+          label="displaykey.Web.AccountSearchResults.Address"
+          value="accountSummary.AccountHolderAddress"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function searchResultSelectAction(searchResultAccount: Account){
+  switch(searchMode){
+    case typekey.AccountSearchType.TC_MERGEACCOUNTS:
+      pcf.AccountFile_MergeAccountsSelection.go(searchResultAccount, currentAccount)
+      break
+    case typekey.AccountSearchType.TC_MOVEPOLICIES:
+      pcf.AccountFile_MovePoliciesSelection.go(searchResultAccount, currentAccount)
+      break
+    case typekey.AccountSearchType.TC_REWRITEPOLICIES:
+      pcf.AccountFile_RewritePoliciesSelection.go(searchResultAccount, currentAccount) 
+      break
+  }
+}]]></Code>
+  </ListViewPanel>
+</PCF>

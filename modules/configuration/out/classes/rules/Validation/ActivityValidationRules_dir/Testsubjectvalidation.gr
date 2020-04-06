@@ -1,0 +1,34 @@
+package rules.Validation.ActivityValidationRules_dir
+
+@gw.rules.RuleName("Test subject validation")
+internal class Testsubjectvalidation {
+  static function doCondition(activity : entity.Activity) : boolean {
+    
+/*start00rule*/
+return true
+/*end00rule*/
+
+  }
+
+  static function doAction(activity : entity.Activity, actions : gw.rules.Action) {
+
+/*start00rule*/
+var desc = activity.Subject
+if (desc != null and desc.startsWith( "Reject") ) {
+  var warnLevel : ValidationLevel = "default"
+  var errorLevel : ValidationLevel = null
+  if (desc.indexOf( "NoWarn" ) != -1 ) {
+    warnLevel = null
+  }
+  else if (desc.indexOf( "DefaultWarn" ) != -1 ) {
+    warnLevel = "default"
+  }
+  if (desc.indexOf( "DefaultError" ) != -1 ) {
+    errorLevel = "default"
+  }
+  activity.reject( errorLevel, "Testing Subject " + desc , warnLevel, "Testing subject " + desc)
+}
+/*end00rule*/
+
+  }
+}

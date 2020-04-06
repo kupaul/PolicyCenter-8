@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <PanelSet
+    id="DividePolicyPanelSet">
+    <Require
+      name="periodToDivide"
+      type="PolicyPeriod"/>
+    <Require
+      name="dividePolicySelection"
+      type="gw.product.DividePolicySelection"/>
+    <DetailViewPanel>
+      <InputColumn>
+        <Label
+          id="AccountSelection"
+          label="displaykey.Web.NewSubmission.AccountSelection"/>
+        <PickerInput
+          conversionExpression="Account.checkedFindByNumber(PickedValue.AccountNumber, \ a -&gt; perm.Account.newSubmission(a))"
+          editable="true"
+          id="Account"
+          inputConversion="Account.checkedFindByNumber(VALUE, \ a -&gt; perm.Account.newSubmission(a))"
+          label="displaykey.Web.DesktopAccounts.AccountNumber"
+          onPick="handleAccountChange()"
+          pickLocation="AccountSearchPopup.push(periodToDivide.Policy.Account)"
+          required="true"
+          value="dividePolicySelection.ProducerSelection.Account">
+          <PostOnChange
+            onChange="handleAccountChange()"/>
+        </PickerInput>
+        <TextInput
+          action="AccountFileDoRetrievalForward.go(dividePolicySelection.ProducerSelection.Account.AccountNumber)"
+          id="AccountName"
+          label="displaykey.Web.DesktopAccounts.Name"
+          value="dividePolicySelection.ProducerSelection.Account.AccountHolder.AccountContact"
+          visible="dividePolicySelection.ProducerSelection.Account != null"/>
+        <Label
+          label="displaykey.Web.SplitPolicy.SubmissionDetails"/>
+        <TypeKeyInput
+          editable="true"
+          id="QuoteType"
+          label="displaykey.Web.Submission.Products.QuoteType"
+          required="true"
+          value="dividePolicySelection.QuoteType"/>
+        <DateInput
+          editable="true"
+          id="DefaultPPEffDate"
+          label="displaykey.Web.NewSubmission.DefaultPPEffDate"
+          required="true"
+          value="dividePolicySelection.ProducerSelection.DefaultPPEffDate"/>
+        <RangeInput
+          editable="true"
+          id="PrimaryNamedInsuredCandidate"
+          label="displaykey.Web.SplitPolicy.PrimaryNamedInsured"
+          required="true"
+          sortValueRange="false"
+          value="dividePolicySelection.PrimaryNamedInsuredCandidate"
+          valueRange="pniCandidates()"
+          visible="dividePolicySelection.ProducerSelection.Account != null"/>
+      </InputColumn>
+    </DetailViewPanel>
+    <PanelDivider/>
+    <DetailViewPanel>
+      <InputColumn>
+        <Label
+          label="displaykey.Web.SplitPolicy.CopierInstructions"/>
+      </InputColumn>
+    </DetailViewPanel>
+    <CardViewPanel>
+      <CardIterator
+        elementName="line"
+        id="Lines"
+        value="periodToDivide.Lines">
+        <Card
+          id="LineCard"
+          title="line.DisplayName">
+          <PanelRef
+            def="CopyPolicyDV(dividePolicySelection.Copier)"
+            mode="line.PatternCode"/>
+          <DetailViewPanel>
+            <InputColumn>
+              <HiddenInput
+                desc="&quot;Hidden input used for testing.&quot;"
+                id="PolicyLine"
+                value="line.PatternCode"/>
+            </InputColumn>
+          </DetailViewPanel>
+        </Card>
+      </CardIterator>
+    </CardViewPanel>
+    <Code><![CDATA[function pniCandidates() : AccountContact[] {
+  var result : java.util.List<AccountContact> = new java.util.ArrayList<AccountContact>()
+  if (dividePolicySelection.ProducerSelection.Account != null and periodToDivide.Policy.Product != null){
+    result = dividePolicySelection.ProducerSelection.Account.findPolicyNamedInsuredCandidates(periodToDivide.Policy.Product).toList().orderBy(\ ac -> ac.DisplayName)
+  }
+  return result.toTypedArray()
+}
+
+function handleAccountChange() {
+  try {
+    dividePolicySelection.handleAccountChange()
+  } catch (ise : java.lang.IllegalStateException) {  // might occur because of product unavailability
+    throw new gw.api.util.DisplayableException(ise.LocalizedMessage)
+  }
+}]]></Code>
+  </PanelSet>
+</PCF>

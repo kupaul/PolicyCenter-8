@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<subtype xmlns="http://guidewire.com/datamodel" desc="Cross policy locations information in the account level" entity="AccountLocation" subpackage="account" supertype="Address">
+  <implementsEntity name="Referenceable"/>
+  <column default="true" desc="Determines whether or not the location is available to be newly added to submissions" exportable="false" name="Active" nullok="false" type="bit"/>
+  <column desc="The number of employees at this location" name="EmployeeCount" nullok="true" type="nonnegativeinteger"/>
+  <column desc="The custom location code specified by customer" name="LocationCode" nullok="true" type="shorttext"/>
+  <column desc="Shorthand name for this location" name="LocationName" nullok="true" type="shorttext"/>
+  <column desc="The location number of this location" name="LocationNum" nullok="false" setterScriptability="all" type="integer"/>
+  <typekey desc="The country associated with this phone number." name="PhoneCountry" nullok="true" typelist="PhoneCountryCode"/>
+  <column desc="Phone" name="Phone" type="phone" nullok="true">
+    <columnParam name="phonecountrycodeProperty" value="PhoneCountry"/>
+    <columnParam name="extensionProperty" value="PhoneExtension"/>
+  </column>
+  <column desc="Phone extension" name="PhoneExtension" nullok="true" type="varchar">
+    <columnParam name="size" value="60"/>
+  </column> 
+  <column default="false" desc="Is a non-specific location." exportable="true" name="NonSpecific" nullok="true" type="bit"/>
+  <foreignkey desc="The account on which this is a location" fkentity="Account" name="Account" nullok="false"/>
+  <index desc="Address PostalCode prefix look-up performance index." name="AddressPostalCode" unique="true">
+    <indexcol keyposition="1" name="PostalCode"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="Account"/>
+    <indexcol keyposition="4" name="ID"/>
+  </index>
+</subtype>

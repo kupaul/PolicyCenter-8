@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="openForEdit"
+    id="RewriteNewAccountWizard_PolicyReviewScreen">
+    <Require
+      name="rewriteNewAccount"
+      type="RewriteNewAccount"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, rewriteNewAccount, jobWizardHelper)"/>
+    </Toolbar>
+    <PanelRef
+      def="RewriteNewAccountWizard_ReviewSummaryDV(policyPeriod, rewriteNewAccount)"/>
+    <CardViewPanel
+      hideTabIfSingle="true"
+      id="ReviewSummaryCV">
+      <Variable
+        initialValue="new gw.api.tree.RowTreeRootNodeWrapper(gw.diff.tree.DiffTree.recalculateRootNodeForPolicyReview(policyPeriod))"
+        name="rootNodeWrapper"
+        type="gw.api.tree.RowTreeRootNodeWrapper"/>
+      <Card
+        id="OOSConflicts"
+        title="displaykey.Web.PolicyChangeWizard.OOSE.Conflicts"
+        visible="policyPeriod.Job.OOSJob &amp;&amp; policyPeriod.OOSConflicts.Count &gt; 0">
+        <PanelRef
+          def="OOSConflictPanelSet(policyPeriod, rootNodeWrapper, jobWizardHelper)"/>
+      </Card>
+      <Card
+        id="LineSummary"
+        title="displaykey.Web.SubmissionWizard.PolicyReview.Card.Summary">
+        <PanelIterator
+          elementName="line"
+          value="policyPeriod.Lines">
+          <PanelRef
+            def="PolicyLineSummaryPanelSet(line, jobWizardHelper)"
+            mode="line.Pattern.Code">
+            <TitleBar
+              title="line.DisplayName"
+              visible="policyPeriod.Lines.Count &gt; 1"/>
+          </PanelRef>
+        </PanelIterator>
+      </Card>
+    </CardViewPanel>
+  </Screen>
+</PCF>

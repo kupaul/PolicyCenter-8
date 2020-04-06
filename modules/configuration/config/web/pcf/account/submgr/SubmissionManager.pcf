@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    canEdit="false"
+    canVisit="perm.Account.viewSubmissionGroup(account)"
+    id="SubmissionManager"
+    title="displaykey.Web.SubmissionManager.Title">
+    <LocationEntryPoint
+      signature="SubmissionManager(account : Account)"/>
+    <Variable
+      name="account"
+      type="Account"/>
+    <Variable
+      initialValue="Job.finder.findSelectedSubmissionsByAccount(account).toTypedArray()"
+      name="submissions"
+      type="Submission[]"/>
+    <Screen
+      id="SubmissionManagerScreen">
+      <TitleBar
+        title="displaykey.Web.SubmissionManager.Title"/>
+      <Toolbar>
+        <ToolbarButton
+          action="NewSubmission.push(account)"
+          id="SubmissionManager_NewSubmission"
+          label="displaykey.Web.AccountFile.NewSubmission"
+          shortcut="B"
+          visible="perm.Account.newSubmission(account) and !account.Frozen and account.AccountStatus != AccountStatus.TC_WITHDRAWN"/>
+      </Toolbar>
+      <Verbatim
+        label="displaykey.Web.SubmissionManager.NoSubmissions"
+        visible="submissions.length == 0"/>
+      <PanelRef
+        def="SubmissionManagerLV(account, submissions)"/>
+    </Screen>
+  </Page>
+</PCF>

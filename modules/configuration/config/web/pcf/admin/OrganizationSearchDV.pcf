@@ -1,0 +1,70 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="OrganizationSearchDV">
+    <Require
+      name="searchCriteria"
+      type="OrganizationSearchCriteria"/>
+    <Require
+      name="activeProducersOnly"
+      type="boolean"/>
+    <Variable
+      initialValue="new gw.globalization.OrganizationNameSearchAdapter(searchCriteria)"
+      name="organizationNameAdapter"
+      recalculateOnRefresh="true"/>
+    <InputColumn>
+      <InputSetRef
+        def="GlobalContactNameInputSet(new gw.search.OrganizationNameOwner(organizationNameAdapter))"
+        mode="gw.api.name.NameLocaleSettings.PCFMode"/>
+      <TypeKeyInput
+        editable="true"
+        filter="(not activeProducersOnly) or VALUE.hasCategory( BusinessTypeCategory.TC_PRODUCER )"
+        id="Type"
+        label="displaykey.Web.Admin.OrganizationSearch.Type"
+        value="searchCriteria.Type">
+        <PostOnChange/>
+      </TypeKeyInput>
+      <InputSetRef
+        def="AddressOwnerAddressInputSet(new gw.pcf.contacts.AddressAutoFillableOwner(searchCriteria, false))"
+        mode="searchCriteria.Country.Code"/>
+    </InputColumn>
+    <InputColumn>
+      <Input
+        editable="not activeProducersOnly"
+        id="ProducerStatus"
+        label="displaykey.Web.Admin.OrganizationSearch.ProducerStatus"
+        value="searchCriteria.ProducerStatus"/>
+      <TypeKeyInput
+        editable="true"
+        id="Tier"
+        label="displaykey.Web.Admin.OrganizationSearch.Tier"
+        value="searchCriteria.Tier"/>
+      <Input
+        editable="true"
+        id="ProducerCode"
+        label="displaykey.Web.Admin.OrganizationSearch.ProducerCode"
+        value="searchCriteria.ProducerCode"/>
+      <Input
+        editable="true"
+        id="BranchCode"
+        label="displaykey.Web.Admin.OrganizationSearch.BranchCode"
+        value="searchCriteria.BranchCode"/>
+      <Input
+        editable="true"
+        id="PolicyNumber"
+        label="displaykey.Web.Admin.OrganizationSearch.PolicyNumber"
+        value="searchCriteria.PolicyNumber"/>
+      <Input
+        editable="true"
+        id="AccountNumber"
+        label="displaykey.Web.Admin.OrganizationSearch.AccountNumber"
+        value="searchCriteria.AccountNumber"/>
+    </InputColumn>
+    <InputFooterSection>
+      <InputSetRef
+        def="SearchAndResetInputSet()"/>
+    </InputFooterSection>
+  </DetailViewPanel>
+</PCF>

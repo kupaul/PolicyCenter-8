@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<!-- ====================================================================  Underwriter Company  ==================================================================== -->
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  entity="UWCompany"
+  type="retireable"
+  desc="An underwriting company, legal entity licensed to issue policies."
+  exportable="true"
+  extendable="true"
+  ignoreForEvents="true"
+  subpackage="policy"
+  platform="false"
+  readOnly="true"
+  loadable="false"
+  table="uwcompany">
+  <column
+    name="Name"
+    type="varchar"
+    desc="Underwriting company name."
+    nullok="false">
+    <columnParam
+      name="size"
+      value="100"/>
+  </column>
+  <typekey
+    name="Code"
+    typelist="UWCompanyCode"
+    desc="Code of the underwriting company"
+    nullok="false"/>
+  <column
+    name="ParentName"
+    type="varchar"
+    desc="Parent company name."
+    nullok="false">
+    <columnParam
+      name="size"
+      value="100"/>
+  </column>
+  <!-- NAICCode and State are now in an extension, to allow nicer l10n of Underwriters -->
+  <typekey
+    name="Status"
+    typelist="UWCompanyStatus"
+    desc="The status of the company."
+    createhistogram="true"
+    default="Active"
+    nullok="false"/>
+  <array
+    name="LicensedStates"
+    desc="The states in which this company is licensed to underwrite policies in."
+    cascadeDelete="true"
+    arrayentity="LicensedState"/>
+  <index
+    name="uwcompanyname"
+    desc="Ensures that UWCompany names are unique."
+    unique="true">
+    <indexcol
+      name="Name"
+      keyposition="1"/>
+    <indexcol
+      name="retired"
+      keyposition="2"/>
+  </index>
+  <index
+    name="uwcompanycode"
+    desc="Ensures that at most one UWCompany entity exists for any given UWCompanyCode."
+    unique="true">
+    <indexcol
+      name="Code"
+      keyposition="1"/>
+    <indexcol
+      name="retired"
+      keyposition="2"/>
+  </index>
+  <index
+    name="perfstatus"
+    desc="Perf index for looking up Active UWCompanies by their ID."
+    unique="true">
+    <indexcol
+      name="Status"
+      keyposition="1"/>
+    <indexcol
+      name="ID"
+      keyposition="2"/>
+    <indexcol
+      name="retired"
+      keyposition="3"/>
+  </index>
+</entity>

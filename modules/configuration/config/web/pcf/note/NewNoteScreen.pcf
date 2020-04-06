@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Screen
+    id="NewNoteScreen">
+    <Require
+      name="account"
+      type="Account"/>
+    <Require
+      name="policy"
+      type="Policy"/>
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="note"
+      type="Note"/>
+    <Variable
+      initialValue="gw.api.util.SymbolTableUtil.expandBeans( { &quot;account&quot; -&gt; account, &quot;policy&quot; -&gt; policy, &quot;job&quot; -&gt; job })"
+      name="symbolTable"
+      type="java.util.Map&lt;String,Object&gt;"/>
+    <Toolbar>
+      <ToolbarButton
+        action="if( web.note.NoteUtil.createNote(note) ) {web.workspace.WorkspaceUtil.closeWorksheetIfActiveAndRefreshTop(CurrentLocation) }"
+        id="NewNoteScreen_UpdateButton"
+        label="displaykey.Web.NewNote.Button.Update"
+        shortcut="U"/>
+      <ToolbarButton
+        action="web.workspace.WorkspaceUtil.closeWorksheetIfActiveAndRefreshTop(CurrentLocation)"
+        id="NewNoteScreen_CancelButton"
+        label="displaykey.Web.NewNote.Button.Cancel"
+        shortcut="L"/>
+      <ToolbarDivider/>
+      <PickerToolbarButton
+        action="PickNoteTemplatePopup.push(createSearchCriteria())"
+        id="NewNoteWorksheet_UseTemplateButton"
+        label="displaykey.Web.Note.UseTemplate"
+        onPick="note.useTemplate( PickedValue, symbolTable )"/>
+    </Toolbar>
+    <PanelRef
+      def="NewNoteDV(account, policy, job, note)"/>
+    <Code><![CDATA[function createSearchCriteria() : NoteTemplateSearchCriteria {
+  var rtn = new NoteTemplateSearchCriteria()
+  // rtn.Language = Account.AccountHolder.Language 
+  rtn.AvailableSymbols = symbolTable.Keys.join( "," )
+  if (policy.Product != null) {
+    rtn.LOB = policy.Product.Code
+  }
+  return rtn  
+}]]></Code>
+  </Screen>
+</PCF>

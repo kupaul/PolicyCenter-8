@@ -1,0 +1,50 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="RewriteNewAccountWizard_PolicyInfoDV">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="rewriteNewAccount"
+      type="RewriteNewAccount"/>
+    <Variable
+      initialValue="new gw.job.AvailableUWCompanies(policyPeriod)"
+      name="availableUWCompanies"/>
+    <InputColumn>
+      <InputSetRef
+        def="AccountInfoInputSet(policyPeriod)"/>
+      <InputSetRef
+        def="SecondaryNamedInsuredInputSet(policyPeriod)"/>
+    </InputColumn>
+    <InputColumn>
+      <InputSetRef
+        def="PolicyInfoInputSet(policyPeriod, true, true, false)"
+        widgets="UWCompanyInputSet"/>
+      <InputDivider/>
+      <InputSetRef
+        def="PolicyInfoProducerOfRecordInputSet(policyPeriod, ProducerStatusUse.TC_SUBMISSIONOKAY)"/>
+      <InputDivider/>
+      <Label
+        label="displaykey.Web.Policy.UWCompanies.Name"/>
+      <InputSet
+        id="UWCompanyInputSet">
+        <RangeInput
+          editable="perm.System.multicompquote"
+          id="UWCompany"
+          optionLabel="VALUE.DisplayName"
+          value="policyPeriod.UWCompany"
+          valueRange="availableUWCompanies.Value"/>
+        <ButtonInput
+          action="policyPeriod.autoSelectUWCompany()"
+          id="AutoSelectUWCompany"
+          value="displaykey.Web.Policy.UWCompanies.AutoSelect"
+          visible="not perm.System.multicompquote"/>
+      </InputSet>
+      <InputSetRef
+        def="PreferredCurrencyInputSet(policyPeriod)"/>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

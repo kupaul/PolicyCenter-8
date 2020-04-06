@@ -1,0 +1,88 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ListViewPanel
+    id="DividePoliciesLV">
+    <Require
+      name="period"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="filteredDividedPolicies()"
+      name="splitPolicies"
+      type="Policy[]"/>
+    <RowIterator
+      editable="false"
+      elementName="splitPolicy"
+      id="splitPolicy"
+      pageSize="0"
+      value="splitPolicies">
+      <Variable
+        initialValue="(splitPolicy.BoundPeriods.Count &gt; 0)"
+        name="isBound"
+        type="boolean"/>
+      <Variable
+        initialValue="isBound ? splitPolicy.LatestBoundPeriod : splitPolicy.LatestPeriod"
+        name="splitPeriod"
+        type="PolicyPeriod"/>
+      <Row
+        useArchivedStyle="useArchiveStyle(splitPeriod,isBound)">
+        <Cell
+          id="createTime"
+          label="displaykey.Web.PolicyFile.Summary.DividePolicies.CreatedDate"
+          value="splitPolicy.CreateTime"/>
+        <Cell
+          action="forwardToJobOrPolicy(splitPeriod, isBound)"
+          align="left"
+          id="policyNumber"
+          label="displaykey.Web.PolicyFile.Summary.DividePolicies.PolicyOrJob"
+          value="(isBound) ? splitPeriod.PolicyNumberDisplayString : splitPeriod.Job.JobNumber"/>
+        <Cell
+          id="status"
+          label="displaykey.Web.PolicyFile.Summary.DividePolicies.Status"
+          value="splitPeriod.PeriodDisplayStatus"/>
+        <Cell
+          id="account"
+          label="displaykey.Web.PolicyFile.Summary.DividePolicies.Account"
+          value="splitPeriod.Policy.Account.AccountNumber"/>
+        <Cell
+          id="acountHolder"
+          label="displaykey.Web.PolicyFile.Summary.DividePolicies.AccountHolder"
+          value="splitPeriod.Policy.Account.AccountHolderContact.DisplayName"/>
+        <Cell
+          id="underwriter"
+          label="displaykey.Web.PolicyFile.Summary.DividePolicies.Underwriter"
+          value="splitPeriod.Job.Underwriter"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function forwardToJobOrPolicy(sPeriod : PolicyPeriod, isBound : boolean) {
+  if (isBound) {
+    pcf.PolicyFileForward.go(sPeriod.PolicyNumber)
+  } else {
+    pcf.JobForward.go(sPeriod.Job)
+  }
+}
+
+function useArchiveStyle(sPeriod:PolicyPeriod, isBound:boolean) : boolean {
+  if(isBound)
+  {
+    return (Policy.retrievePeriod(sPeriod.PolicyNumber,java.util.Date.CurrentDate).PolicyTerm.Archived)
+  }
+  else{
+    return (sPeriod.Job.LatestPeriod.PolicyTerm.Archived)
+  }
+  
+}
+/**
+ * Return the list of un-withdrawn policies which are spun off from this policy. 
+ */
+function filteredDividedPolicies() : Policy[] {
+    return period.Policy.DividedPolicies.
+              where(\ p -> (p.BoundPeriods.length > 0 or 
+                           (p.BoundPeriods.length == 0 and 
+                            p.LatestPeriod.Status != PolicyPeriodStatus.TC_WITHDRAWN and 
+                            p.LatestPeriod.Status != PolicyPeriodStatus.TC_DECLINED and 
+                            p.LatestPeriod.Status != PolicyPeriodStatus.TC_NOTTAKEN)))
+}]]></Code>
+  </ListViewPanel>
+</PCF>

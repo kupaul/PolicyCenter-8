@@ -1,0 +1,65 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Popup
+    beforeCommit="gw.pcf.UWActivityPopupHelper.updatePolicyPeriodAndActivity(note, assigneePicker, approvalOption, policyPeriod, activity)"
+    canEdit="true"
+    countsAsWork="false"
+    id="UWActivityPopup"
+    startInEditMode="true"
+    title="displaykey.Web.UWRequest.Activity.Title">
+    <LocationEntryPoint
+      signature="UWActivityPopup(policyPeriod : PolicyPeriod, activityPattern : ActivityPattern, approvalOption : String)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="activityPattern"
+      type="ActivityPattern"/>
+    <Variable
+      name="approvalOption"
+      type="String"/>
+    <Variable
+      initialValue="createActivity()"
+      name="activity"
+      type="Activity"/>
+    <Variable
+      initialValue="new web.activity.ActivityAssignmentPopup(new Activity[]{activity}, gw.assignment.AssignmentUtil.DefaultUser)"
+      name="assignmentPopup"
+      type="web.activity.ActivityAssignmentPopup"/>
+    <Variable
+      initialValue="perm.Note.create ? activity.newNote() : null"
+      name="note"
+      type="Note"/>
+    <Variable
+      initialValue="gw.pcf.UWActivityPopupHelper.getDefaultAssignee(approvalOption, policyPeriod)"
+      name="assigneePicker"/>
+    <Screen>
+      <Toolbar>
+        <EditButtons
+          updateLabel="gw.pcf.UWActivityPopupHelper.getUpdateLabel(approvalOption)"/>
+      </Toolbar>
+      <PanelRow>
+        <PanelColumn>
+          <PanelRef
+            def="NewActivityDV(activity, assignmentPopup, assigneePicker)"
+            mode="approvalOption"/>
+        </PanelColumn>
+        <PanelColumn>
+          <PanelRef
+            def="ActivityDetailNoteDV(activity, note)"
+            mode="approvalOption"
+            visible="note != null"/>
+        </PanelColumn>
+      </PanelRow>
+    </Screen>
+    <Code><![CDATA[uses gw.api.web.activity.ActivityUtil
+
+function createActivity() : Activity {
+  var a = activityPattern.createJobActivity( policyPeriod.Job.Bundle, policyPeriod.Job, null, null, null, null, null, null, null )
+  ActivityUtil.setPreviousUserOnNewActivity(a, User.util.CurrentUser)
+  return a
+}]]></Code>
+  </Popup>
+</PCF>

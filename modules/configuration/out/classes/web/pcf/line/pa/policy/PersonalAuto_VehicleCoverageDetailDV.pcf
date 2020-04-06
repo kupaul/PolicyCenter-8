@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="PersonalAuto_VehicleCoverageDetailDV">
+    <Require
+      name="vehicle"
+      type="PersonalVehicle"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="vehicle != null ? vehicle.PolicyLine.Pattern.getCoverageCategory(&quot;PAPPhysDamGrp&quot;).coveragePatternsForEntity(PersonalVehicle).whereSelectedOrAvailable(vehicle, openForEdit) : null"
+      name="physDamGrpCoveragePatterns"
+      recalculateOnRefresh="true"/>
+    <InputColumn>
+      <InputIterator
+        elementName="coveragePattern"
+        forceRefreshDespiteChangedEntries="true"
+        id="PAPhysDamCategoryIterator"
+        value="physDamGrpCoveragePatterns">
+        <IteratorSort
+          sortBy="coveragePattern.Priority"
+          sortOrder="1"/>
+        <InputSetRef
+          def="CoverageInputSet(coveragePattern, vehicle, openForEdit)"
+          mode="coveragePattern.Code"/>
+      </InputIterator>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

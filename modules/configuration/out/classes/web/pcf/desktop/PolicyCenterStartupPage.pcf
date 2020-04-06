@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Forward
+    id="PolicyCenterStartupPage">
+    <LocationEntryPoint
+      signature="PolicyCenterStartupPage()"/>
+    <Variable
+      initialValue="User.util.CurrentUser"
+      name="userBase"
+      recalculateOnRefresh="true"/>
+    <!-- First try to determine the correct location based on startup page. -->
+    <ForwardCondition
+      action="DesktopActivities.go()"
+      condition="userBase.UserSettings.StartupPage == &quot;DesktopActivities&quot;"/>
+    <ForwardCondition
+      action="DesktopSubmissions.go()"
+      condition="userBase.UserSettings.StartupPage == &quot;DesktopSubmissions&quot;"/>
+    <ForwardCondition
+      action="DesktopRenewals.go()"
+      condition="userBase.UserSettings.StartupPage == &quot;DesktopRenewals&quot;"/>
+    <ForwardCondition
+      action="DesktopOtherWorkOrders.go()"
+      condition="userBase.UserSettings.StartupPage == &quot;DesktopOtherWorkOrders&quot;"/>
+    <ForwardCondition
+      action="DesktopAssignableQueues.go()"
+      condition="userBase.UserSettings.StartupPage == &quot;DesktopQueues&quot;"/>
+    <ForwardCondition
+      action="Search.go()"
+      condition="userBase.UserSettings.StartupPage == &quot;Search&quot;"/>
+    <ForwardCondition
+      action="Admin.go()"
+      condition="userBase.UserSettings.StartupPage == &quot;Admin&quot;"/>
+    <!-- Next attempt to simply go to the locations in order, checking permissions along the way. -->
+    <ForwardCondition
+      action="DesktopActivities.go()"/>
+    <ForwardCondition
+      action="DesktopSubmissions.go()"/>
+    <ForwardCondition
+      action="DesktopRenewals.go()"/>
+    <ForwardCondition
+      action="DesktopOtherWorkOrders.go()"/>
+    <ForwardCondition
+      action="DesktopAssignableQueues.go()"/>
+    <ForwardCondition
+      action="TeamForward.go()"/>
+    <ForwardCondition
+      action="Search.go()"/>
+    <ForwardCondition
+      action="Admin.go()"/>
+    <!-- Finally go to the no permissions error page. -->
+    <ForwardCondition
+      action="StartupPageError.go()"/>
+  </Forward>
+</PCF>

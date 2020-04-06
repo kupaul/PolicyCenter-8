@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<entity
+  xmlns="http://guidewire.com/datamodel"
+  entity="FormAssociation"
+  type="effdated"
+  desc="An association between a Form and some other arbitrary policy object.  Only one fk on this object should be set at any given time."
+  effDatedBranchType="PolicyPeriod"
+  exportable="true"
+  extendable="true"
+  final="false"
+  platform="false"
+  loadable="false"
+  subpackage="form"
+  table="formassociation">
+  <foreignkey
+    name="Form"
+    desc="The associated Form."
+    fkentity="Form"
+    nullok="false"/>
+  <checkconstraint
+    desc="Both effective date and expiration date should always be set to null (indicating that the entity spans the whole period)."
+    predicate="EffectiveDate IS NULL AND ExpirationDate IS NULL"/>
+  <fulldescription>
+    An entity that can be used to associate a Form to an entity in the policy graph.  The foreign keys on this entity
+      should generally only be used for matching purposes to determine if two versions of a Form that have the same
+      pattern are associated with the same object, and the fks should never be traversed due to the ambiguity of
+      when that traversal will take place in model or effective time.  This entity can either be extended or subclassed
+      in order to add in additional foreign keys; the out of the box product chooses the subclassing strategy to allow
+      subclasses and their foreign keys to be packaged in LOB-specific files that also contain the entities being
+      pointed to.
+  </fulldescription>
+</entity>

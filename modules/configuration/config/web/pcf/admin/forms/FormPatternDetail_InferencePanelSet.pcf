@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <PanelSet
+    id="FormPatternDetail_InferencePanelSet">
+    <Require
+      name="formPattern"
+      type="FormPattern"/>
+    <Variable
+      initialValue="formPattern.PolicyLinePatternRange"
+      name="policyLineRange"
+      recalculateOnRefresh="true"
+      type="List&lt;gw.admin.PatternRef&lt;gw.api.productmodel.PolicyLinePattern&gt;&gt;"/>
+    <PanelRef>
+      <DetailViewPanel>
+        <InputHeaderSection>
+          <Label
+            label="displaykey.Web.Admin.FormPatternDetail.InferenceDV.Caption"/>
+        </InputHeaderSection>
+        <InputColumn>
+          <InputSet
+            visible="formPattern.HasCustomInference">
+            <Label
+              id="CustomInferenceLabel1"
+              label="displaykey.Web.Admin.FormPatternDetail.InferenceDV.CustomInferenceClass"
+              visible="true"/>
+            <HiddenInput
+              id="CustomInferenceLabel"
+              value="&quot;For testability&quot; "
+              visible="true"/>
+          </InputSet>
+          <RangeInput
+            editable="true"
+            id="LinePattern"
+            label="displaykey.Web.Admin.FormPatternDetail.InferenceDV.LinePattern"
+            optionLabel="VALUE.DisplayName"
+            required="formPattern.GenericInferenceClassRef.PolicyLineRequired"
+            value="formPattern.PolicyLinePatternRef"
+            valueRange="policyLineRange">
+            <PostOnChange
+              onChange="formPattern.GenericInferenceClass = null; formPattern.clearCustomInferenceFields()"/>
+          </RangeInput>
+          <RangeInput
+            editable="true"
+            id="GenericInferenceClass"
+            label="displaykey.Web.Admin.FormPatternDetail.InferenceDV.GenericInferenceClass"
+            optionLabel="VALUE.DisplayName"
+            value="formPattern.GenericInferenceClassRef"
+            valueRange="formPattern.getGenericInferenceClassRange(formPattern.PolicyLinePatternRef.Pattern)"
+            visible="not formPattern.HasCustomInference">
+            <PostOnChange
+              onChange="formPattern.clearCustomInferenceFields()"/>
+          </RangeInput>
+        </InputColumn>
+      </DetailViewPanel>
+    </PanelRef>
+    <PanelRef
+      def="GenericInferenceClassPanelSet(formPattern)"
+      mode="formPattern.InferenceClassMode"/>
+  </PanelSet>
+</PCF>

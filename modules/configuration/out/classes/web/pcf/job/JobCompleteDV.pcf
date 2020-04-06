@@ -1,0 +1,67 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="JobCompleteDV">
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <InputColumn>
+      <BulletPointTextInput
+        action="gw.api.web.job.JobWizardHelper.applyChangesToFutureBoundRenewal(policyPeriod)"
+        confirmMessage="displaykey.Job.Operation.ApplyToRenewal.ConfirmBound"
+        id="ResolveWithFutureBoundPeriods"
+        value="displaykey.Web.JobComplete.ResolveWithFutureBoundPeriods(job.DisplayType)"
+        visible="gw.web.job.JobUIHelper.showResolveWithFutureBoundPeriods(policyPeriod)"/>
+      <BulletPointTextInput
+        action="gw.api.web.job.JobWizardHelper.applyChangesToFutureUnboundRenewal(policyPeriod)"
+        confirmMessage="displaykey.Job.Operation.ApplyToRenewal.ConfirmUnbound"
+        id="ResolveWithFutureUnboundPeriods"
+        value="displaykey.Web.JobComplete.ResolveWithFutureUnboundPeriods(job.DisplayType)"
+        visible="gw.web.job.JobUIHelper.showResolveWithFutureUnboundPeriods(policyPeriod)"/>
+      <InputIterator
+        elementName="preemptedJob"
+        value="policyPeriod.PreemptedJobsIfBoundNow">
+        <BulletPointTextInput
+          action="JobForward.go(preemptedJob)"
+          actionAvailable="User.util.CurrentUser.canView( preemptedJob )"
+          id="ViewPreemptedPolicy"
+          value="displaykey.Web.JobComplete.PreemptedMessage(job.DisplayType, preemptedJob.DisplayType, preemptedJob.JobNumber)"
+          visible="policyPeriod.Promoted"/>
+      </InputIterator>
+      <BulletPointTextInput
+        action="JobForward.go(job)"
+        id="ViewJob"
+        value="gw.web.job.JobUIHelper.viewJobText(job)"
+        visible="gw.web.job.JobUIHelper.showViewJob(policyPeriod)"/>
+      <BulletPointTextInput
+        action="PolicyFileForward.go(policyPeriod.PolicyNumber, policyPeriod.EditEffectiveDate)"
+        id="ViewPolicy"
+        value="displaykey.Web.SubmissionComplete.ViewPolicy(policyPeriod.PolicyNumberDisplayString)"
+        visible="gw.web.job.JobUIHelper.showViewPolicy(policyPeriod)"/>
+      <BulletPointTextInput
+        action="SubmissionManager.go(job.Policy.Account)"
+        id="SubmissionManager"
+        value="displaykey.Web.SubmissionComplete.SubmissionManager"
+        visible="gw.web.job.JobUIHelper.showGoToSubmissionManager(policyPeriod)"/>
+      <BulletPointTextInput
+        action="NewSubmission.push()"
+        id="SubmitAnother"
+        value="displaykey.Web.SubmissionComplete.SubmitAnother"
+        visible="gw.web.job.JobUIHelper.showSubmitAnother(policyPeriod)"/>
+      <BulletPointTextInput
+        action="JobForward.go(job, policyPeriod)"
+        id="ReviewChanges"
+        value="displaykey.Web.RewriteWizard.Bound.ReviewChanges"
+        visible="gw.web.job.JobUIHelper.showReviewChanges(policyPeriod)"/>
+      <BulletPointTextInput
+        action="Desktop.go()"
+        id="ReturnToDesktop"
+        value="displaykey.Web.SubmissionComplete.ReturnToDesktop"/>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

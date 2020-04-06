@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InputSet
+    id="PolicyInfoProducerInfoInputSet">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="forUseIn"
+      type="ProducerStatusUse"/>
+    <Variable
+      initialValue="policyPeriod.ProducerOfRecord"
+      name="producer"/>
+    <Label
+      label="displaykey.Web.ProducerSelection.ProducerOfRecordInfo"/>
+    <Input
+      id="POROrganization"
+      label="displaykey.Web.ProducerSelection.Producer"
+      value="policyPeriod.ProducerCodeOfRecord.Organization"/>
+    <Input
+      id="ProducerCodeOfRecord"
+      label="displaykey.Web.ProducerSelection.ProducerCode"
+      value="displaykey.Web.ProducerSelection.ProducerCode.OptionLabel(policyPeriod.ProducerCodeOfRecord.Code, policyPeriod.ProducerCodeOfRecord.Description != null ? policyPeriod.ProducerCodeOfRecord.Description : &quot;&quot;)"/>
+    <Label
+      label="displaykey.Web.ProducerSelection.ProducerOfServiceInfo"/>
+    <OrgInput
+      editable="not User.util.CurrentUser.ExternalUser"
+      id="Producer"
+      label="displaykey.Web.ProducerSelection.ProducerOrg"
+      pickLocation="OrganizationSearchPopup.push(null, true)"
+      required="true"
+      validationExpression="producer.ProducerStatus == &quot;active&quot; ? null : displaykey.Web.ProducerSelection.Error.SuspendedProducer(producer)"
+      value="producer">
+      <PostOnChange
+        onChange="policyPeriod.EffectiveDatedFields.ProducerCode = null"
+        target="PolicyInfoProducerInfoInputSet"/>
+    </OrgInput>
+    <RangeInput
+      editable="true"
+      id="ProducerCode"
+      label="displaykey.Web.ProducerSelection.ProducerCode"
+      optionLabel="displaykey.Web.ProducerSelection.ProducerCode.OptionLabel(VALUE.Code, VALUE.Description != null ? VALUE.Description : &quot;&quot;)"
+      required="true"
+      validationExpression="validateProducerCode(policyPeriod.EffectiveDatedFields.ProducerCode)"
+      value="policyPeriod.EffectiveDatedFields.ProducerCode"
+      valueRange="web.producer.ProducerUtil.getProducerCodeRange(producer, forUseIn)">
+      <MenuItem
+        action="ProducerCodeSearchPopup.push(producer, forUseIn)"
+        id="ProducerCodeSearchMenuIcon"
+        label="displaykey.Web.TabBar.Search"/>
+      <PostOnChange
+        target="PolicyInfoProducerInfoInputSet"/>
+    </RangeInput>
+    <Code><![CDATA[function validateProducerCode(pc : ProducerCode) : String {
+  if (forUseIn != null and !pc.ProducerStatus.hasCategory(forUseIn)) {
+    return displaykey.Web.ProducerSelection.Error.SuspendedProducerCode(pc)
+  }
+  return null
+}]]></Code>
+  </InputSet>
+</PCF>

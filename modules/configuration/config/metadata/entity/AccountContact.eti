@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" desc="A contact on an account." entity="AccountContact" exportable="true" final="false" loadable="false" platform="false" subpackage="account" table="accountcontact" type="retireable">
+  <implementsInterface iface="gw.api.domain.account.Mergeable" impl="gw.account.AccountContactMergeableImpl"/>
+  <implementsInterface iface="gw.api.logicalmatch.LogicalMatcher" impl="gw.account.AccountContactMatcher"/>
+  <column default="true" desc="Determines whether or not the contact is available to be added to jobs" exportable="false" name="Active" nullok="false" type="bit"/>
+  <column desc="Date and time of last update" exportable="false" name="LastUpdateTime" nullok="true" setterScriptability="hidden" type="datetime"/>
+  <column desc="Temporary date and time of last update; will eventually be copied to the LastUpdateTime during commit" exportable="false" getterScriptability="hidden" name="TemporaryLastUpdateTime" nullok="true" setterScriptability="hidden" type="datetime"/>
+  <foreignkey desc="The account on which this is a contact." fkentity="Account" name="Account" nullok="false"/>
+  <foreignkey desc="The related contact." fkentity="Contact" name="Contact" nullok="false" setterScriptability="all"/>
+  <array arrayentity="AccountContactRole" cascadeDelete="true" desc="The roles that this contact has played on the account or its policies." name="Roles"/>
+  <index desc="Ensures that a contact is only linked to an account once." name="accountcontactu" unique="true">
+    <indexcol keyposition="1" name="Contact"/>
+    <indexcol keyposition="2" name="Retired"/>
+    <indexcol keyposition="3" name="Account"/>
+  </index>
+</entity>

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="RatingOverrideButtonDV">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="policyLine"
+      type="PolicyLine"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="isEditable"
+      type="boolean"/>
+    <InputColumn>
+      <ContentInput
+        id="searchBtns"
+        labelAbove="true">
+        <Link
+          action="RatingOverridePopup.push(policyPeriod, policyLine, jobWizardHelper, isEditable)"
+          id="OverrideRating"
+          label="getOverrideRatingLabel()"
+          styleClass="bigButton"
+          visible="policyLine.SupportsRatingOverrides and (perm.System.viewratingoverrides || perm.System.editratingoverrides) and (isEditable or (policyPeriod.AllCosts.hasMatch(\ c -&gt; c.HasOverride)))"/>
+        <Link
+          action="RatingWorksheetPopup.push(policyLine)"
+          id="ViewWorksheet"
+          label="displaykey.Button.Worksheet"
+          styleClass="bigButton"
+          visible="gw.rating.worksheet.WorksheetUIHelper.canViewWorksheets(policyLine)"/>
+      </ContentInput>
+    </InputColumn>
+    <Code><![CDATA[function getOverrideRatingLabel() : String {
+  return isEditable ? displaykey.Button.OverrideRating : displaykey.Button.ViewOverrides
+}]]></Code>
+  </DetailViewPanel>
+</PCF>

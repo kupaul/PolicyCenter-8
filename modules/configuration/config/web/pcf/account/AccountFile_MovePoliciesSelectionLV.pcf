@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    id="AccountFile_MovePoliciesSelectionLV">
+    <ExposeIterator
+      valueType="entity.PolicyPeriod"
+      widget="AccountFile_MovePoliciesSelectionLV"/>
+    <Require
+      name="visiblePolicies"
+      type="List&lt;PolicyPeriod&gt;"/>
+    <RowIterator
+      canPick="false"
+      editable="true"
+      elementName="aPeriod"
+      hasCheckBoxes="true"
+      value="visiblePolicies">
+      <Row
+        useArchivedStyle="aPeriod.PolicyTerm.Archived">
+        <Cell
+          action="retrievePolicy(aPeriod)"
+          id="PolicyNumber"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.PolicyNumber"
+          required="false"
+          value="aPeriod.PolicyNumberDisplayString"/>
+        <Cell
+          enableSort="false"
+          id="Product"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.Product"
+          sortOrder="1"
+          value="aPeriod.Policy.Product"/>
+        <Cell
+          enableSort="false"
+          id="Status"
+          label="displaykey.Web.AccountFile.Summary.PolicyTermsLV.Status"
+          value="aPeriod.PeriodDisplayStatus"/>
+        <DateCell
+          id="PolicyStart"
+          label="displaykey.Web.AccountFile.MovePolicies.PoliciesSelection.PolicyStartDate"
+          required="false"
+          value="aPeriod.Policy.findEarliestPeriodStart()"/>
+        <DateCell
+          id="EffectiveDate"
+          label="displaykey.Web.AccountFile.MovePolicies.PoliciesSelection.CurrEffectiveDate"
+          required="false"
+          value="aPeriod.PeriodStart"/>
+        <DateCell
+          id="ExpirationDate"
+          label="displaykey.Web.AccountFile.MovePolicies.PoliciesSelection.CurrExpirationDate"
+          required="false"
+          value="aPeriod.PeriodEnd"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function retrievePolicy(aPeriod : PolicyPeriod){  
+  if (aPeriod.Job.NewTerm and !aPeriod.PolicyNumberAssigned) {
+    pcf.JobForward.go(aPeriod.Job)  
+  } else {
+    pcf.PolicyFileForward.go(aPeriod, aPeriod.EditEffectiveDate)
+  }
+}]]></Code>
+  </ListViewPanel>
+</PCF>

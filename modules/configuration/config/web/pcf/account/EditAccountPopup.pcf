@@ -1,0 +1,103 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    canEdit="true"
+    canVisit="account.Editable and perm.Account.edit(account)"
+    id="EditAccountPopup"
+    parent="AccountFile_Summary(account)"
+    startInEditMode="true"
+    title="displaykey.Web.EditAccount">
+    <LocationEntryPoint
+      signature="EditAccountPopup(account : Account)"/>
+    <Variable
+      name="account"
+      type="Account"/>
+    <Variable
+      initialValue="account.AccountHolderContact"
+      name="contact"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="contact.PrimaryAddress"
+      name="selectedAddress"
+      recalculateOnRefresh="true"/>
+    <Screen
+      id="EditAccountScreen">
+      <Toolbar>
+        <EditButtons/>
+      </Toolbar>
+      <DetailViewPanel>
+        <InputColumn>
+          <InputSetRef
+            def="ContactNameInputSet(contact)"
+            mode="contact.Subtype.Code"
+            visible="contact != null"/>
+          <Input
+            editable="true"
+            id="PrimaryLanguage"
+            label="displaykey.Web.EditAccount.PrimaryLanguage"
+            value="account.PrimaryLanguage"
+            visible="gw.api.util.LocaleUtil.getAllLanguages().size() &gt; 1"/>
+          <TypeKeyInput
+            editable="true"
+            id="ServiceTier"
+            label="displaykey.Web.EditAccount.ServiceTier"
+            value="account.ServiceTier"/>
+          <InputDivider/>
+          <InputSetRef
+            def="LinkedAddressInputSet(selectedAddress, contact, null, account, CurrentLocation.InEditMode)"/>
+          <InputSetRef
+            def="AddressInputSet(new gw.pcf.contacts.AddressInputSetAddressOwner(selectedAddress, false, true))"
+            editable="selectedAddress.LinkedAddress == null"
+            visible="contact != null"/>
+          <Input
+            editable="selectedAddress.LinkedAddress == null"
+            id="AddressType"
+            label="displaykey.Web.AddressDetail.AddressType"
+            required="true"
+            value="selectedAddress.AddressType"/>
+          <Input
+            editable="selectedAddress.LinkedAddress == null"
+            id="AddressDescription"
+            label="displaykey.Web.AddressDetail.Description"
+            value="selectedAddress.Description"/>
+          <InputDivider/>
+          <InputSetRef
+            def="AccountCurrencyInputSet(account, selectedAddress, false)"
+            editable="account.Editable"
+            id="AccountCurrency"
+            visible="gw.api.util.CurrencyUtil.isMultiCurrencyMode()"/>
+          <InputDivider/>
+          <Label
+            label="displaykey.Web.AccountFile.Summary.OfficialIDs"
+            visible="contact != null"/>
+          <InputSetRef
+            def="OfficialIDInputSet(contact)"
+            mode="contact.Subtype"
+            visible="contact != null"/>
+          <InputSet
+            visible="account.AccountHolderContact typeis Company">
+            <TypeKeyInput
+              editable="true"
+              id="OrgType"
+              label="displaykey.Web.EditAccount.OrgType"
+              value="account.AccountOrgType"/>
+            <IndustryCodeInput
+              domain="&quot;SIC&quot; as IndustryCodeType"
+              editable="true"
+              id="IndustryCode"
+              label="displaykey.Web.EditAccount.IndustryCode"
+              pickLocation="IndustryCodeSearchPopup.push(&quot;SIC&quot; as IndustryCodeType)"
+              value="account.IndustryCode"/>
+            <Input
+              editable="true"
+              id="DescriptionOfBusiness"
+              label="displaykey.Web.EditAccount.DescriptionOfBusiness"
+              value="account.BusOpsDesc"/>
+          </InputSet>
+        </InputColumn>
+      </DetailViewPanel>
+    </Screen>
+  </Popup>
+</PCF>

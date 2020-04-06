@@ -1,0 +1,552 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://api.webservices.pc.guidewire.com/" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://api.webservices.pc.guidewire.com/" xmlns:intf="http://api.webservices.pc.guidewire.com/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns1="http://fault.webservices.pc.guidewire.com/" xmlns:tns2="http://entity.webservices.pc.guidewire.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><wsdl:types><schema targetNamespace="http://fault.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://api.webservices.pc.guidewire.com/"/><import namespace="http://entity.webservices.pc.guidewire.com/"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="SOAPException"><xsd:annotation><xsd:documentation>A generic SOAP exception.</xsd:documentation></xsd:annotation><sequence><element name="Message" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>The message associated with this exception</xsd:documentation></xsd:annotation></element><element name="OtherMessages" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>Other messages attached to this exception.  This message may contain information
+related to other exceptions that occurred during a SOAP call, but not directly
+associated with this particular exception.</xsd:documentation></xsd:annotation></element></sequence></complexType><complexType name="SOAPSenderException"><xsd:annotation><xsd:documentation>SOAPSenderException is the base class for all exceptions that resulted from
+a sender error. This usually means that required data was not properly encoded
+or was absent. Senders should not send the message again unless some steps have
+been taken to make the encoded data valid.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="DataConversionException"><xsd:annotation><xsd:documentation>Thrown by many APIs when they encounter a problem translating a SOAP data object into
+an internal system object.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="BadIdentifierException"><xsd:annotation><xsd:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect).</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="PermissionException"><xsd:annotation><xsd:documentation>Thrown when the authenticated SOAP user does not have permission to
+perform the requested operation</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="SOAPServerException"><xsd:annotation><xsd:documentation>SOAPServerException is the base class for all exceptions that resulted from
+a server error. This is something of a catch-all exception type insofar as
+some things which might in fact be considered SOAPSenderExceptions are reported
+as SOAPServerExceptions. Perhaps a rule failed or something else. Generally it
+indicates a problem in the server that is likely retryable at some future time.
+The database being down, an unavailable plugin, etc would fall into this catagory.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="ServerStateException"><xsd:annotation><xsd:documentation>ServerStateException is thrown when a request is made at a time the
+server is in a state that disallows the request. An example is if
+an attempt is made to add a claim and the server is in maintenance
+mode.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPServerException"><sequence/></extension></complexContent></complexType><complexType name="RequiredFieldException"><xsd:annotation><xsd:documentation>Thrown when required data is missing from a bean.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="SOAPRetryableException"><xsd:annotation><xsd:documentation>SOAPRetryableException is the class for all exceptions that are retryable
+immediately.  The primary example of this is ConcurrentDataChangeException.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="LoginException"><xsd:annotation><xsd:documentation>Class of exceptions thrown when a user tries to log in and an authentication failure occurs.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:PermissionException"><sequence/></extension></complexContent></complexType><complexType name="EntityStateException"><xsd:annotation><xsd:documentation>Thrown when an attempt is made to manipulate an object that is in a state
+that prevents the operation from being performed. An example is trying to
+modify a Claim that is marked as closed.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="DuplicateKeyException"><xsd:annotation><xsd:documentation>Throws if a duplicate data exception is detected in the database.  I.e. a unique index violation.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="FieldConversionException"><xsd:annotation><xsd:documentation>Thrown when a data type cannot be converted into the native data type.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="FieldFormatException"><xsd:annotation><xsd:documentation>Thrown when the input type does not match the format specified in the metadata.  I.e. a string is too long.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="UnknownTypeKeyException"><xsd:annotation><xsd:documentation>Thrown when a typekey value isn't available on the server.  This exception can only
+happen if the SOAP WSDL that is being used on the remote side is invalid.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="BatchProcessException"><xsd:annotation><xsd:documentation>SOAP Exception specific to batch process operations</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPServerException"><sequence/></extension></complexContent></complexType><complexType name="AlreadyExecutedException"><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType></schema><schema targetNamespace="http://entity.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://fault.webservices.pc.guidewire.com/"/><import namespace="http://api.webservices.pc.guidewire.com/"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="ImportResultDetail"><xsd:annotation><xsd:documentation>Class that contains detailed information for an entity that was imported.</xsd:documentation></xsd:annotation><sequence><element name="EntityName" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>The type of entity.</xsd:documentation></xsd:annotation></element><element name="ExternalID" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>The external ID of the entity.</xsd:documentation></xsd:annotation></element><element name="ExternalSource" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>The external source for the entity.</xsd:documentation></xsd:annotation></element><element name="InternalID" type="xsd:long"><xsd:annotation><xsd:documentation>The internal ID of the entity.</xsd:documentation></xsd:annotation></element><element name="Type" type="xsd:int"><xsd:annotation><xsd:documentation>Either &lt;code&gt;ImportResults.INSERTED&lt;/code&gt; or &lt;code&gt;ImportResults.UPDATED&lt;/code&gt;,
+depending on whether the entity was inserted or updated.</xsd:documentation></xsd:annotation></element></sequence></complexType><complexType name="ArrayOfImportResultDetail"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="tns2:ImportResultDetail[]"/></restriction></complexContent></complexType><complexType name="ImportResultSummary"><xsd:annotation><xsd:documentation>Class that contains a summary information for the insertion or update of a
+particular kind of entity.</xsd:documentation></xsd:annotation><sequence><element name="Count" type="xsd:int"><xsd:annotation><xsd:documentation>The number of entities affected.</xsd:documentation></xsd:annotation></element><element name="EntityName" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>The name of the entity in question.</xsd:documentation></xsd:annotation></element><element name="Type" type="xsd:int"><xsd:annotation><xsd:documentation>Either &lt;code&gt;ImportResults.INSERTED&lt;/code&gt; or &lt;code&gt;ImportResults.UPDATED&lt;/code&gt;,
+depending on whether this summary is for updated or inserted entities.</xsd:documentation></xsd:annotation></element></sequence></complexType><complexType name="ArrayOfImportResultSummary"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="tns2:ImportResultSummary[]"/></restriction></complexContent></complexType><complexType name="ImportResults"><xsd:annotation><xsd:documentation>Class that contains information about the results of an import call.  This data structure
+contains data on which entities were inserted and/or updated, along with any errors
+that might have occurred during the import.</xsd:documentation></xsd:annotation><sequence><element name="Details" nillable="true" type="tns2:ArrayOfImportResultDetail"><xsd:annotation><xsd:documentation>The details of every item that was imported.</xsd:documentation></xsd:annotation></element><element name="ErrorLog" nillable="true" type="impl:ArrayOf_soapenc_string"><xsd:annotation><xsd:documentation>Contains any error messages that occurred during import.</xsd:documentation></xsd:annotation></element><element name="Ok" type="xsd:boolean"><xsd:annotation><xsd:documentation>&lt;code&gt;true&lt;/code&gt; if the import succeeded, &lt;code&gt;false&lt;/code&gt; if it failed (in which case the
+&lt;code&gt;errorLog&lt;/code&gt; field should indicate what the problem is.</xsd:documentation></xsd:annotation></element><element name="ParseTime" type="xsd:long"><xsd:annotation><xsd:documentation>The amount of time spent parsing the XML.</xsd:documentation></xsd:annotation></element><element name="Summaries" nillable="true" type="tns2:ArrayOfImportResultSummary"><xsd:annotation><xsd:documentation>A summary of items that were imported, by type.</xsd:documentation></xsd:annotation></element><element name="WriteTime" type="xsd:long"><xsd:annotation><xsd:documentation>The amount of time taken to write to the database.</xsd:documentation></xsd:annotation></element></sequence></complexType></schema><schema targetNamespace="http://api.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://fault.webservices.pc.guidewire.com/"/><import namespace="http://entity.webservices.pc.guidewire.com/"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="ArrayOf_soapenc_string"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="soapenc:string[]"/></restriction></complexContent></complexType></schema></wsdl:types>
+  <wsdl:message name="csvToXmlRequest">
+    <wsdl:part name="csvData" type="soapenc:string">
+<wsdl:documentation>A String containing CSV data</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="ignoreNullConstraintViolations" type="xsd:boolean">
+<wsdl:documentation>Whether to continue after detecting an empty field in the CSV that
+corresponds to a property that is not nullable.  If false, throws an exception in this situation.</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="ignoreAllErrors" type="xsd:boolean">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="importXmlDataAsByteArrayRequest">
+    <wsdl:part name="xmlData" type="soapenc:base64Binary">
+<wsdl:documentation>The data to import, passed as a byte[] for the UTF-8 bytes representing the XML string.    This may not be null or empty.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="csvToXmlResponse1">
+    <wsdl:part name="csvToXmlReturn" type="soapenc:string">
+<wsdl:documentation>a String containing equivalent import data in XML format, suitable for import by #importXmlData(String)</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="importXmlDataResponse">
+    <wsdl:part name="importXmlDataReturn" type="tns2:ImportResults">
+<wsdl:documentation>Set of results of the import (number of entities imported by type, and so on).  If the import failed,
+ImportResults will have the ok flag set to &lt;code&gt;false&lt;/code&gt;, and the errorLog element will
+contain descriptions of the errors that were encountered.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="RequiredFieldException">
+    <wsdl:part name="fault" type="tns1:RequiredFieldException">
+<wsdl:documentation>If csvData is null.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ServerStateException">
+    <wsdl:part name="fault" type="tns1:ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SOAPServerException">
+    <wsdl:part name="fault" type="tns1:SOAPServerException">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SOAPException">
+    <wsdl:part name="fault" type="tns1:SOAPException">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="importXmlDataAsByteArrayResponse">
+    <wsdl:part name="importXmlDataAsByteArrayReturn" type="tns2:ImportResults">
+<wsdl:documentation>Set of results of the import (number of entities imported by type, and so on).  If the import failed,
+ImportResults will have the ok flag set to &lt;code&gt;false&lt;/code&gt;, and the errorLog element will
+contain descriptions of the errors that were encountered.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="csvToXmlResponse">
+    <wsdl:part name="csvToXmlReturn" type="soapenc:string">
+<wsdl:documentation>a String containing equivalent import data in XML format, suitable for import by #importXmlData(String)</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="DataConversionException">
+    <wsdl:part name="fault" type="tns1:DataConversionException">
+<wsdl:documentation>If the data can't be imported because it violates duplicate key constraints, contains nulls in non-nullable fields, or otherwise can't be safely inserted into the database.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="importCsvDataResponse">
+    <wsdl:part name="importCsvDataReturn" type="tns2:ImportResults">
+<wsdl:documentation>Set of results of the import (number of entities imported by type, and so on).  If the import failed,
+ImportResults will have the ok flag set to &lt;code&gt;false&lt;/code&gt;, and the errorLog element will
+contain descriptions of the errors that were encountered.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="importCsvDataRequest">
+    <wsdl:part name="csvData" type="soapenc:string">
+<wsdl:documentation>The data to import, passed as a String.  This may not be null.</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="dataSet" type="xsd:int">
+<wsdl:documentation/>
+    </wsdl:part>
+    <wsdl:part name="ignoreNullConstraintViolations" type="xsd:boolean">
+<wsdl:documentation/>
+    </wsdl:part>
+    <wsdl:part name="ignoreAllErrors" type="xsd:boolean">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BadIdentifierException">
+    <wsdl:part name="fault" type="tns1:BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="importXmlDataRequest">
+    <wsdl:part name="xmlData" type="soapenc:string">
+<wsdl:documentation>The data to import, passed as a String.    This may not be null or empty.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="rebuildRolePrivilegesResponse">
+  </wsdl:message>
+  <wsdl:message name="xmlToCsvResponse">
+    <wsdl:part name="xmlToCsvReturn" type="soapenc:string">
+<wsdl:documentation>a String containing equivalent import data in CSV format.  The result of calling csvToXml on the result
+should be an equivalent XML document to #xmlData.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="rebuildRolePrivilegesRequest">
+  </wsdl:message>
+  <wsdl:message name="csvToXmlRequest1">
+    <wsdl:part name="csvData" type="soapenc:string">
+<wsdl:documentation>A String containing CSV data</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="dataSet" type="xsd:int">
+<wsdl:documentation>An int defining the number of the dataset to be imported.  Datasets are ordered by inclusion, and
+the smallest dataset is always numbered 0.  Thus Dataset 0 is a subset of dataset 1, and datatset 1
+is a subset of dataset 2, etc.  If this param is set to -1, all data will be imported.</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="ignoreNullConstraintViolations" type="xsd:boolean">
+<wsdl:documentation>Whether to continue after detecting an empty field in the CSV that
+corresponds to a property that is not nullable.  If false, throws an exception in this situation.</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="ignoreAllErrors" type="xsd:boolean">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PermissionException">
+    <wsdl:part name="fault" type="tns1:PermissionException">
+<wsdl:documentation>If the user does not have SOAP Admin permission.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="xmlToCsvRequest">
+    <wsdl:part name="xmlData" type="soapenc:string">
+<wsdl:documentation>String containing CSV data</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="IImportToolsAPI">
+<wsdl:documentation>IImportToolsAPI is a remote interface to a set of tools to import XML data to the
+server.
+&lt;p/&gt;
+The XML import format is defined by dynamically-generated XML Schema Definition (XSD) files. Regenerate the XSD
+files with the regen-xsd task. After XSD regeneration, you will find the XSD files in dist/xsd/import,
+including the three XSD files: xx_typelists.xsd, xx_entities.xsd, xx_import.xsd (with &quot;xx&quot; replaced by the Guidewire
+product code, e.g., &quot;cc&quot; for ClaimCenter).
+@deprecated Use WS-I webservice gw.wsi.pl.ImportToolsAPI instead.
+</wsdl:documentation>
+    <wsdl:operation name="csvToXml" parameterOrder="csvData ignoreNullConstraintViolations ignoreAllErrors">
+<wsdl:documentation>Convert CSV data to XML data suitable to be imported by {@link #importXmlData(String)}
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:csvToXmlRequest" name="csvToXmlRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:csvToXmlResponse" name="csvToXmlResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPServerException" name="SOAPServerException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="csvToXml" parameterOrder="csvData dataSet ignoreNullConstraintViolations ignoreAllErrors">
+<wsdl:documentation>Convert CSV data to XML data suitable to be imported {@link #importXmlData(String)}
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:csvToXmlRequest1" name="csvToXmlRequest1">
+    </wsdl:input>
+      <wsdl:output message="impl:csvToXmlResponse1" name="csvToXmlResponse1">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPServerException" name="SOAPServerException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="importCsvData" parameterOrder="csvData dataSet ignoreNullConstraintViolations ignoreAllErrors">
+<wsdl:documentation>Import CSV data.
+
+Note that importing data through this call does not generate events for the newly imported objects.
+&lt;p&gt;
+&lt;b&gt;WARNING&lt;/b&gt;: this is &lt;em&gt;only&lt;/em&gt; supported for administrative database tables (such as User)
+because these XML import routines do not perform complete data validation tests on imported data.
+Any other use (claims, policies, etc) is dangerous and is &lt;b&gt;NOT&lt;/b&gt; supported
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:importCsvDataRequest" name="importCsvDataRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:importCsvDataResponse" name="importCsvDataResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:RequiredFieldException" name="RequiredFieldException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:DataConversionException" name="DataConversionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="importXmlData" parameterOrder="xmlData">
+<wsdl:documentation>Import XML data.
+To improve performance, the XML data string can be wrapped with CDATA tags.
+For example:
+&lt;pre&gt;&amp;lt;![CDATA[&lt;br&gt;
+...import XML...&lt;br&gt;
+]]&gt;&lt;/pre&gt;
+
+Note that importing data through this call does not generate events for the newly imported objects.
+&lt;p&gt;
+&lt;b&gt;WARNING&lt;/b&gt;: this is &lt;em&gt;only&lt;/em&gt; supported for administrative database tables (such as User)
+because these XML import routines do not perform complete data validation tests on imported data.
+Any other use (claims, policies, etc) is dangerous and is &lt;b&gt;NOT&lt;/b&gt; supported
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:importXmlDataRequest" name="importXmlDataRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:importXmlDataResponse" name="importXmlDataResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:RequiredFieldException" name="RequiredFieldException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:DataConversionException" name="DataConversionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="importXmlDataAsByteArray" parameterOrder="xmlData">
+<wsdl:documentation>Import XML data, passing the data as an array of UTF-8 bytes representing the XML string.
+To improve performance, the XML data string can be wrapped with CDATA tags.
+For example:
+&lt;pre&gt;&amp;lt;![CDATA[&lt;br&gt;
+...import XML...&lt;br&gt;
+]]&gt;&lt;/pre&gt;
+
+Note that importing data through this call does not generate events for the newly imported objects.
+&lt;p&gt;
+&lt;b&gt;WARNING&lt;/b&gt;: this is &lt;em&gt;only&lt;/em&gt; supported for administrative database tables (such as User)
+because these XML import routines do not perform complete data validation tests on imported data.
+Any other use (claims, policies, etc) is dangerous and is &lt;b&gt;NOT&lt;/b&gt; supported
+
+@see #importXmlData(String)
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:importXmlDataAsByteArrayRequest" name="importXmlDataAsByteArrayRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:importXmlDataAsByteArrayResponse" name="importXmlDataAsByteArrayResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:RequiredFieldException" name="RequiredFieldException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:DataConversionException" name="DataConversionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="rebuildRolePrivileges">
+<wsdl:documentation>Rebuild the role privileges data by deleting the priviliges data in the database, and then
+re-importing the roleprivileges.csv file.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:rebuildRolePrivilegesRequest" name="rebuildRolePrivilegesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:rebuildRolePrivilegesResponse" name="rebuildRolePrivilegesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPServerException" name="SOAPServerException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="xmlToCsv" parameterOrder="xmlData">
+<wsdl:documentation>Export XML data into CSV data.  The reverse operation from #csvToXml(String)
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:xmlToCsvRequest" name="xmlToCsvRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:xmlToCsvResponse" name="xmlToCsvResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="IImportToolsAPISoapBinding" type="impl:IImportToolsAPI">
+    <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="csvToXml">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="csvToXmlRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="csvToXmlResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPServerException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPServerException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>If the user does not have SOAP Admin permission.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="csvToXml">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="csvToXmlRequest1">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="csvToXmlResponse1">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPServerException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPServerException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>If the user does not have SOAP Admin permission.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="importCsvData">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="importCsvDataRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="importCsvDataResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequiredFieldException">
+<wsdl:documentation>If csvData is null.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="RequiredFieldException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="DataConversionException">
+<wsdl:documentation>If the data can't be imported because it violates duplicate key constraints, contains nulls in non-nullable fields, or otherwise can't be safely inserted into the database.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="DataConversionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>If the user does not have SOAP Admin permission.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="importXmlData">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="importXmlDataRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="importXmlDataResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequiredFieldException">
+<wsdl:documentation>If xmlData is null or empty.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="RequiredFieldException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="DataConversionException">
+<wsdl:documentation>If the data can't be imported because it violates duplicate key constraints, contains nulls in non-nullable fields, or otherwise can't be safely inserted into the database.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="DataConversionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>If the user does not have SOAP Admin permission.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="importXmlDataAsByteArray">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="importXmlDataAsByteArrayRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="importXmlDataAsByteArrayResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="RequiredFieldException">
+<wsdl:documentation>If xmlData is null or empty.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="RequiredFieldException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="DataConversionException">
+<wsdl:documentation>If the data can't be imported because it violates duplicate key constraints, contains nulls in non-nullable fields, or otherwise can't be safely inserted into the database.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="DataConversionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>If the user does not have SOAP Admin permission.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="rebuildRolePrivileges">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="rebuildRolePrivilegesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="rebuildRolePrivilegesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPServerException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPServerException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>If the user does not have SOAP Admin permission.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="xmlToCsv">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="xmlToCsvRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="xmlToCsvResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>If the user does not have SOAP Admin permission.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="IImportToolsAPIService">
+<wsdl:documentation>IImportToolsAPI is a remote interface to a set of tools to import XML data to the
+server.
+&lt;p/&gt;
+The XML import format is defined by dynamically-generated XML Schema Definition (XSD) files. Regenerate the XSD
+files with the regen-xsd task. After XSD regeneration, you will find the XSD files in dist/xsd/import,
+including the three XSD files: xx_typelists.xsd, xx_entities.xsd, xx_import.xsd (with &quot;xx&quot; replaced by the Guidewire
+product code, e.g., &quot;cc&quot; for ClaimCenter).
+@deprecated Use WS-I webservice gw.wsi.pl.ImportToolsAPI instead.
+</wsdl:documentation>
+    <wsdl:port binding="impl:IImportToolsAPISoapBinding" name="IImportToolsAPI">
+      <wsdlsoap:address location="http://dontuse.defaultvalue.com/IImportToolsAPI"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

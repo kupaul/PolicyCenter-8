@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Guidelines for Modularizing Line-of-business Code</title>
+    <link rel="StyleSheet" href="css/overview-pc.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Configuration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-PolicyCenter.html#1123537">Guidewire PolicyCenter Configuration</a> : <a class="WebWorks_Breadcrumb_Link" href="overview-pc.42.1.html#1123537">PolicyCenter Configuration Guidelines</a> : Guidelines for Modularizing Line-of-business Code</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1123537">Guidelines for Modularizing Line-of-business Code</a></h3>
+      <div class="B_-_Body"><a name="1135898">Guidewire recommends that you define line-of-business code in the policy-line-methods classes. Avoid putting line-of-business code in generic locations such as the rule sets, plugins, and non-line-of-business PCF files and Gosu classes. This recommendation is intended to make upgrade easier by grouping line-of-business changes in the </a><span class="cv_-_computer_voice">gw.lob</span> package.</div>
+      <h6 class="HS_-_Head_Sub"><a name="1131258">Example</a></h6>
+      <div class="B_-_Body"><a name="1131290">The policy period plugin implementation (</a><span class="cv_-_computer_voice">gw.plugin.policyperiod.impl.PolicyPeriodPlugin</span>) implements the <span class="cv_-_computer_voice">postApplyChangesFromBranch</span> method. Rather than putting code for each line of business directly in the plugin implementation, this method calls <span class="cv_-_computer_voice">postApplyChangesFromBranch</span> for each line in the policy period:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="1131259">override function postApplyChangesFromBranch(policyPeriod : PolicyPeriod, sourcePeriod : PolicyPeriod)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1131260">{</a></PRE>
+      <PRE class="CF_-_Code_First_Line"><a name="1131261">&nbsp;&nbsp;for (line in policyPeriod.Lines) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1131262">&nbsp;&nbsp;&nbsp;&nbsp;</a><span class="s_-_strong">line.postApplyChangesFromBranch(sourcePeriod)</span></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1131263">&nbsp;&nbsp;}</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1131264">...</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1131265">}</a></PRE>
+      <div class="B_-_Body"><a name="1131266">To implement functionality for the workers’ compensation line of business, the </a><span class="cv_-_computer_voice">gw.lob.wc.WCPolicyLineMethods</span> class implements the <span class="cv_-_computer_voice">postApplyChangesFromBranch</span> method:</div>
+      <PRE class="CF_-_Code_First_Line"><a name="1131267">override function postApplyChangesFromBranch(sourcePeriod : PolicyPeriod) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1131268">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="1131512">}</a></PRE>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Screen
+    id="OtherAccountSearchScreen">
+    <Require
+      name="currentAccount"
+      type="entity.Account"/>
+    <Require
+      name="searchMode"
+      type="typekey.AccountSearchType"/>
+    <Variable
+      initialValue="currentAccount"
+      name="relatedToAccount"/>
+    <SearchPanel
+      criteriaName="searchCriteria"
+      maxSearchResults="100"
+      resultCachingEnabled="false"
+      resultsName="accountSummaries"
+      search="gw.web.account.AccountSearchUIHelper.validateAndPerformSearch(searchMode, currentAccount, searchCriteria, relatedToAccount)"
+      searchCriteria="new gw.account.AccountSearchCriteria(){ :Secure=true, :ExcludedAccount = currentAccount, :RestrictiveMinimumSearchCriteriaForPersonName =  true, :FirstNameExact = true, :LastNameExact = true, :CompanyNameExact = true }"
+      searchResultsType="AccountSummaryQuery">
+      <PanelRef
+        def="AccountSearchDV(searchCriteria, relatedToAccount)"/>
+      <PanelRef
+        def="OtherAccountSearchResultsLV(accountSummaries, currentAccount, searchMode)">
+        <TitleBar
+          appendListViewPaging="true"
+          title="displaykey.Web.Search.Results"/>
+        <Toolbar/>
+      </PanelRef>
+    </SearchPanel>
+  </Screen>
+</PCF>

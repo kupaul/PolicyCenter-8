@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    editable="policyPeriod.Status == PolicyPeriodStatus.TC_DRAFT"
+    id="AuditWizard_DetailsScreen">
+    <Require
+      name="audit"
+      type="Audit"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="typekey.Job.TC_AUDIT"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, audit, jobWizardHelper)"/>
+      <ToolbarButton
+        action="jobWizardHelper.requestQuote( policyPeriod, &quot;Premiums&quot; )"
+        id="Quote"
+        label="displaykey.Web.AuditWizard.Quote"
+        shortcut="Q"
+        visible="policyPeriod.AuditProcess.canRequestQuote().Okay"/>
+    </Toolbar>
+    <PanelRef
+      def="WarningsPanelSet(policyPeriod.getAuditWizardWarningMessages())"/>
+    <PanelRef
+      def="AuditDetailsPanelSet(policyPeriod)"
+      editable="policyPeriod.OpenForEdit"
+      mode="policyPeriod.Policy.Product.Code"/>
+  </Screen>
+</PCF>

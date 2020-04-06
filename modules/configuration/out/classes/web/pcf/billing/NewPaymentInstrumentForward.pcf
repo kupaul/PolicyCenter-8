@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Forward
+    desc="Searches by JobNumber and forwards to the payment step in the found Job"
+    id="NewPaymentInstrumentForward"
+    onBeforeForward="if(paymentMethod &lt;&gt; null) jobToFind.LatestPeriod.createPaymentInstrument(paymentMethod, token)"
+    parent="PolicyForward()">
+    <LocationEntryPoint
+      signature="NewPaymentInstrumentForward(jobNumber : String, paymentMethod : String, token : String)"/>
+    <Variable
+      name="jobNumber"
+      type="String"/>
+    <Variable
+      initialValue="Job.finder.findJobByJobNumber(jobNumber)"
+      name="jobToFind"
+      type="Job"/>
+    <Variable
+      name="paymentMethod"
+      type="String"/>
+    <Variable
+      initialValue="gw.web.billing.PaymentInstrumentUIHelper.checkForError(jobNumber, jobToFind)"
+      name="error"
+      type="String"/>
+    <Variable
+      name="token"
+      type="String"/>
+    <ForwardCondition
+      action="PolicySearch.go(error)"
+      condition="error &lt;&gt; null"/>
+    <ForwardCondition
+      action="JobForward.go(jobToFind as Submission, jobToFind.LatestPeriod, &quot;BillingInfo&quot;)"/>
+  </Forward>
+</PCF>

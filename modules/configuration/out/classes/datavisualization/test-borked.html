@@ -1,0 +1,182 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <title>Hypertree - Tree Animation</title>
+
+    <!-- CSS Files -->
+    <link type="text/css" href="../resources/javascript/adapter/ext/Jit/Examples/css/base.css" rel="stylesheet"/>
+    <link type="text/css" href="../resources/javascript/adapter/ext/Jit/Examples/css/Hypertree.css" rel="stylesheet"/>
+
+    <!--[if IE]>
+    <script language="javascript" type="text/javascript"
+            src="../resources/javascript/adapter/ext/Jit/Extras/excanvas.js"></script><![endif]-->
+
+    <!-- JIT Library File -->
+    <script language="javascript" type="text/javascript" src="../resources/javascript/adapter/ext/Jit/jit.js"></script>
+
+    <!-- Example File -->
+    <script language="javascript" type="text/javascript"
+            src="../resources/javascript/adapter/ext/Jit/testingCaseJit.js"></script>
+    <script language="javascript">
+        var json = {
+            "id": "gamma",
+            "name": "Greek"
+        };
+        var graph = '[{id:"gamma", adjacencies: ["zed"]}, {id:"zed", name:"epicWin"}]';
+
+        function writeTheTree(entityXML, eList) {
+            graph += ',{id: "' + entityXML.getAttribute("name") + '", name: "' + entityXML.getAttribute("name") + '", adjacencies: [';
+            var allLinks = entityXML.getElementsByTagName("link");
+            for (var k = 0; k < allLinks.length; k++) {
+                if (k > 0) {
+                    graph += ",";
+                }
+                graph += '"' + allLinks[k].getAttribute("pointsTo") + '"';
+            }
+            graph += "]}";/*
+            var retval=[];
+            for (var m=0; m<allLinks.length; m++){
+                var eName = allLinks[m].getAttribute("pointsTo");
+                for (var n=0; n<eList.length; n++){
+                    if (eList[n].getAttribute("name")==eName){
+                        *//*retval = retval.concat([eList[n]]);
+                        alert(eList[n]);
+                        alert(retval);
+                        alert(retval[0].getAttribute("name"));*//*
+                    }
+                }               *//*
+                alert(retval);
+                return retval;*//*
+                writeTheTree(newEnt, eList); //has an unfortunate tendency to exceed recursion limits*/
+
+
+        }
+
+        function writer(str) {
+            var ents = str.responseXML.getElementsByTagName("entity");
+            console.log(ents);
+            console.log(str.responseXML);
+            var firstEntity = ents[0];
+            var nameOfEnt = firstEntity.getAttribute("name");
+            graph = '{id:"gamma", adjacencies: ["'+ nameOfEnt+'"]}, {id:"'+nameOfEnt+'", name:"'+nameOfEnt+'"}';
+            writeTheTree(firstEntity, ents);
+            /*while (allLinkedEnts.length > 0){
+                var tmp = [];
+                for (var n = 0; n<allLinkedEnts.length; n++){
+                    tmp = tmp.concat(writeTheTree(allLinkedEnts[n], ents));
+                }
+                allLinkedEnts = tmp;
+            } */
+            alert(graph);
+        }
+
+
+        function newXMLHttpRequest() {
+            var xmlreq = false;
+            if (window.XMLHttpRequest) {
+                xmlreq = new XMLHttpRequest();
+            } else if (window.ActiveXObject) {
+                try {
+                    xmlreq = new ActiveXObject("Msxml2.XMLHTTP");
+                } catch (e1) {
+                    try {
+                        xmlreq = new ActiveXObject("Microsoft.XMLHTTP");
+                    } catch (e2) {
+                    }
+                }
+            }
+            return xmlreq;
+        }
+        function getMyInfo() {
+            var ajaxRequest;
+            var gosuServerURL = "metadataviz";
+            ajaxRequest = newXMLHttpRequest();//todo: try and do this with jQuery
+            ajaxRequest.onreadystatechange = function() {
+                if (ajaxRequest.readyState == 4)
+
+                    if (ajaxRequest.status == 200) {
+
+                        writer(ajaxRequest);
+                    } else {
+                        alert("Yeah, I don't think so. HTTP Error " + ajaxRequest.statusText);
+                    }
+
+            };//getReadyStateHandler;
+            /*ajaxRequest.onerror = function (event) {
+             console.log(event.target);
+             }*/
+            ajaxRequest.open("POST", gosuServerURL, true);
+            ajaxRequest.setRequestHeader("Content-Type",
+                    "application/x-www-form-urlencoded");
+            var buttonVals = ["fk","arr","sub","tk","col"];
+            var awkwardString = "";
+            for (var i = 0; i < buttonVals.length; i++) {
+                var item = buttonVals[i];
+                awkwardString += "&" + item + "=" + document.getElementById(item).checked;
+            }
+            /*
+             $.ajax(gosuServerURL + "?blarg=0", {
+             type : "POST",
+             data : "var=" + document.getElementById("in").value + "&lvl=" +document.getElementById("levels").value + awkwardString,
+             error : function (response, status, error) {
+             console.log("ERROR!!! ",status, error);
+             },
+             success : function (data) {
+             console.log(data);
+             }            });   */
+
+
+            ajaxRequest.send("var=" + document.getElementById("in").value + "&lvl=" + document.getElementById("levels").value + awkwardString);
+
+        }
+    </script>
+
+</head>
+
+<body onload="init();">
+<div id="container">
+
+    <div id="left-container">
+
+
+        <div id="myText" class="text">
+
+            Yeah, so this used to be informational. :)
+
+        </div>
+
+        <div id="id-list"></div>
+        <input type="text" id="in">
+        <button id="xyz">Display</button>
+        <button id="ref" onclick="window.location = window.location">Refresh</button><!--todo: make this a little more elegant-->
+        <button id="change" onclick="getMyInfo()">Load...</button>
+        <br><input type="checkbox" id="fk" value="fk">Foreign keys?
+        <input type="checkbox" id="arr" value="arr"> Arrays?
+        <input type="checkbox" id="sub" value="sub" checked>Subtypes?
+        <input type="checkbox" id="tk" value="tk">Typekeys?
+        <input type="checkbox" id="col" value="col">Columns?
+        <select id="levels">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+        </select>
+        <br>
+
+    </div>
+
+    <div id="center-container">
+        <div id="infovis"></div>
+    </div>
+
+    <div id="right-container">
+
+        <div id="inner-details"></div>
+
+    </div>
+
+    <div id="log"></div>
+</div>
+</body>
+</html>

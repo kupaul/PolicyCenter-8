@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://api.webservices.pc.guidewire.com/" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://api.webservices.pc.guidewire.com/" xmlns:intf="http://api.webservices.pc.guidewire.com/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns1="http://fault.webservices.pc.guidewire.com/" xmlns:tns2="http://entity.webservices.pc.guidewire.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><wsdl:types><schema targetNamespace="http://fault.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://api.webservices.pc.guidewire.com/"/><import namespace="http://entity.webservices.pc.guidewire.com/"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="SOAPException"><xsd:annotation><xsd:documentation>A generic SOAP exception.</xsd:documentation></xsd:annotation><sequence><element name="Message" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>The message associated with this exception</xsd:documentation></xsd:annotation></element><element name="OtherMessages" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>Other messages attached to this exception.  This message may contain information
+related to other exceptions that occurred during a SOAP call, but not directly
+associated with this particular exception.</xsd:documentation></xsd:annotation></element></sequence></complexType><complexType name="SOAPSenderException"><xsd:annotation><xsd:documentation>SOAPSenderException is the base class for all exceptions that resulted from
+a sender error. This usually means that required data was not properly encoded
+or was absent. Senders should not send the message again unless some steps have
+been taken to make the encoded data valid.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="DataConversionException"><xsd:annotation><xsd:documentation>Thrown by many APIs when they encounter a problem translating a SOAP data object into
+an internal system object.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="BadIdentifierException"><xsd:annotation><xsd:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect).</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="PermissionException"><xsd:annotation><xsd:documentation>Thrown when the authenticated SOAP user does not have permission to
+perform the requested operation</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="SOAPServerException"><xsd:annotation><xsd:documentation>SOAPServerException is the base class for all exceptions that resulted from
+a server error. This is something of a catch-all exception type insofar as
+some things which might in fact be considered SOAPSenderExceptions are reported
+as SOAPServerExceptions. Perhaps a rule failed or something else. Generally it
+indicates a problem in the server that is likely retryable at some future time.
+The database being down, an unavailable plugin, etc would fall into this catagory.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="ServerStateException"><xsd:annotation><xsd:documentation>ServerStateException is thrown when a request is made at a time the
+server is in a state that disallows the request. An example is if
+an attempt is made to add a claim and the server is in maintenance
+mode.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPServerException"><sequence/></extension></complexContent></complexType><complexType name="SOAPRetryableException"><xsd:annotation><xsd:documentation>SOAPRetryableException is the class for all exceptions that are retryable
+immediately.  The primary example of this is ConcurrentDataChangeException.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="LoginException"><xsd:annotation><xsd:documentation>Class of exceptions thrown when a user tries to log in and an authentication failure occurs.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:PermissionException"><sequence/></extension></complexContent></complexType><complexType name="EntityStateException"><xsd:annotation><xsd:documentation>Thrown when an attempt is made to manipulate an object that is in a state
+that prevents the operation from being performed. An example is trying to
+modify a Claim that is marked as closed.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="DuplicateKeyException"><xsd:annotation><xsd:documentation>Throws if a duplicate data exception is detected in the database.  I.e. a unique index violation.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="FieldConversionException"><xsd:annotation><xsd:documentation>Thrown when a data type cannot be converted into the native data type.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="FieldFormatException"><xsd:annotation><xsd:documentation>Thrown when the input type does not match the format specified in the metadata.  I.e. a string is too long.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="RequiredFieldException"><xsd:annotation><xsd:documentation>Thrown when required data is missing from a bean.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="UnknownTypeKeyException"><xsd:annotation><xsd:documentation>Thrown when a typekey value isn't available on the server.  This exception can only
+happen if the SOAP WSDL that is being used on the remote side is invalid.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="BatchProcessException"><xsd:annotation><xsd:documentation>SOAP Exception specific to batch process operations</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPServerException"><sequence/></extension></complexContent></complexType><complexType name="AlreadyExecutedException"><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType></schema><schema targetNamespace="http://api.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://fault.webservices.pc.guidewire.com/"/><import namespace="http://entity.webservices.pc.guidewire.com/"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="ArrayOf_soapenc_string"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="soapenc:string[]"/></restriction></complexContent></complexType></schema><schema targetNamespace="http://entity.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://fault.webservices.pc.guidewire.com/"/><import namespace="http://api.webservices.pc.guidewire.com/"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="TypeKeyData"><xsd:annotation><xsd:documentation>Contains raw data about a TypeKey instance.  Used instead of a typekey instance because the TypeKey class doesn't
+have a no-arg constructor.</xsd:documentation></xsd:annotation><sequence><element name="Code" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>Corresponds to the code field on TypeKey</xsd:documentation></xsd:annotation></element><element name="Description" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>Corresponds to the description field on TypeKey</xsd:documentation></xsd:annotation></element><element name="Name" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>Corresponds to the name field on TypeKey</xsd:documentation></xsd:annotation></element><element name="Retired" type="xsd:boolean"><xsd:annotation><xsd:documentation>Corresponds to the retired field on TypeKey</xsd:documentation></xsd:annotation></element></sequence></complexType><complexType name="ArrayOfTypeKeyData"><complexContent><restriction base="soapenc:Array"><attribute ref="soapenc:arrayType" wsdl:arrayType="tns2:TypeKeyData[]"/></restriction></complexContent></complexType></schema></wsdl:types>
+  <wsdl:message name="getTypelistValuesResponse">
+    <wsdl:part name="getTypelistValuesReturn" type="tns2:ArrayOfTypeKeyData">
+<wsdl:documentation>an array of codes of typekeys contained within the typelist</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getTypeKeysByAliasResponse">
+    <wsdl:part name="getTypeKeysByAliasReturn" type="tns2:ArrayOfTypeKeyData">
+<wsdl:documentation>array of TypeKeyData objects, or a zero-length, non-null string array if no typecodes match</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getAliasesByInternalCodeRequest">
+    <wsdl:part name="typelist" type="soapenc:string">
+<wsdl:documentation>the name of the given typelist (case-insensitive)</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="namespace" type="soapenc:string">
+<wsdl:documentation>the given namespace (case-insensitive)</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="code" type="soapenc:string">
+<wsdl:documentation>the given typecode (case-insensitive)</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ServerStateException">
+    <wsdl:part name="fault" type="tns1:ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getAliasesByInternalCodeResponse">
+    <wsdl:part name="getAliasesByInternalCodeReturn" type="impl:ArrayOf_soapenc_string">
+<wsdl:documentation>string array of aliases, or a zero-length, non-null string array if no aliases match</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SOAPException">
+    <wsdl:part name="fault" type="tns1:SOAPException">
+<wsdl:documentation>if more than one result is found for the given namespace/typecode</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getAliasByInternalCodeResponse">
+    <wsdl:part name="getAliasByInternalCodeReturn" type="soapenc:string">
+<wsdl:documentation>string corresponding to a typecode; null if no match found</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getAliasByInternalCodeRequest">
+    <wsdl:part name="typelist" type="soapenc:string">
+<wsdl:documentation>the name of the given typelist (case-insensitive)</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="namespace" type="soapenc:string">
+<wsdl:documentation>the given namespace (case-insensitive)</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="code" type="soapenc:string">
+<wsdl:documentation>the given typecode (case-insensitive)</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getTypeKeyByAliasRequest">
+    <wsdl:part name="typelist" type="soapenc:string">
+<wsdl:documentation>the name of the given typelist (case-insensitive)</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="namespace" type="soapenc:string">
+<wsdl:documentation>the given namespace (case-insensitive)</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="alias" type="soapenc:string">
+<wsdl:documentation>the given alias (case-insensitive)</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getTypeKeyByAliasResponse">
+    <wsdl:part name="getTypeKeyByAliasReturn" type="tns2:TypeKeyData">
+<wsdl:documentation>TypeKeyData instance corresponding to a typecode; null if no match found</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="BadIdentifierException">
+    <wsdl:part name="fault" type="tns1:BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getTypeKeysByAliasRequest">
+    <wsdl:part name="typelist" type="soapenc:string">
+<wsdl:documentation>the name of the given typelist (case-insensitive)</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="namespace" type="soapenc:string">
+<wsdl:documentation>the given namespace (case-insensitive)</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="alias" type="soapenc:string">
+<wsdl:documentation>the given alias (case-insensitive)</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="getTypelistValuesRequest">
+    <wsdl:part name="typelistName" type="soapenc:string">
+<wsdl:documentation>the case-insensitive name of the typelist to look up. for example: &quot;accidenttype&quot;</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PermissionException">
+    <wsdl:part name="fault" type="tns1:PermissionException">
+<wsdl:documentation>if the caller does not have all of the following permissions: ADMIN</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="ITypelistToolsAPI">
+<wsdl:documentation>ITypelistToolsAPI provides methods that allow for the extraction of typelist data from the
+system.
+@deprecated Use WS-I webservice gw.wsi.pl.TypelistToolsAPI instead.
+</wsdl:documentation>
+    <wsdl:operation name="getAliasByInternalCode" parameterOrder="typelist namespace code">
+<wsdl:documentation>For use during exports, returns a string corresponding to an alias to an internal typecode given a typelist, a
+namespace, and an internal code.  If no match is found, returns null.  If more than one match is found, throws a
+SOAPException.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:getAliasByInternalCodeRequest" name="getAliasByInternalCodeRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:getAliasByInternalCodeResponse" name="getAliasByInternalCodeResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getAliasesByInternalCode" parameterOrder="typelist namespace code">
+<wsdl:documentation>For use during exports, returns an array of strings representing external aliases to internal typecodes given
+a typelist, a namespace, and an internal code.  If no aliases are found, then a zero-length, non-null array is
+returned.  A namespace generally corresponds to an external integration source, but multiple namespaces per source
+are allowed. NOTE: this method allows multiple aliases to correspond to the same namespace-typecode tuple.  If you
+require a namespace-typecode to resolve to a single alias, please use getAliasByInternalCode.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:getAliasesByInternalCodeRequest" name="getAliasesByInternalCodeRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:getAliasesByInternalCodeResponse" name="getAliasesByInternalCodeResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTypeKeyByAlias" parameterOrder="typelist namespace alias">
+<wsdl:documentation>For use during imports, returns a TypeKeyData instance corresponding to a typecode in the given typelist that
+matches the given namespace/alias.  If no match is found, returns null.  If more than one match is found, throws a
+SOAPException.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:getTypeKeyByAliasRequest" name="getTypeKeyByAliasRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:getTypeKeyByAliasResponse" name="getTypeKeyByAliasResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTypeKeysByAlias" parameterOrder="typelist namespace alias">
+<wsdl:documentation>For use during imports, returns an array of TypeKeyData objects given a typelist, a namespace, and an
+alias.  If no typecodes are found, will return a zero-length, non-null array.  A namespace generally corresponds
+to an external integration source, but multiple namespaces per source are allowed.  NOTE: this method allows
+multiple typecodes to use the same namespace-alias tuple.  If you require a namespace-alias to resolve to a
+single typecode, please use getTypeKeyByAlias.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:getTypeKeysByAliasRequest" name="getTypeKeysByAliasRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:getTypeKeysByAliasResponse" name="getTypeKeysByAliasResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTypelistValues" parameterOrder="typelistName">
+<wsdl:documentation>Given the name of a typelist, returns an array of all the typekey instances contained within.  An exception is
+thrown if no typelist exists with the given name.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:getTypelistValuesRequest" name="getTypelistValuesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:getTypelistValuesResponse" name="getTypelistValuesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ITypelistToolsAPISoapBinding" type="impl:ITypelistToolsAPI">
+    <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="getAliasByInternalCode">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getAliasByInternalCodeRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="getAliasByInternalCodeResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+<wsdl:documentation>if more than one result is found for the given namespace/typecode</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>if the caller does not have all of the following permissions: ADMIN</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getAliasesByInternalCode">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getAliasesByInternalCodeRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="getAliasesByInternalCodeResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>if the caller does not have all of the following permissions: ADMIN</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTypeKeyByAlias">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getTypeKeyByAliasRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="getTypeKeyByAliasResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+<wsdl:documentation>if more than one result is found for the given namespace/alias</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>if the caller does not have all of the following permissions: ADMIN</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTypeKeysByAlias">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getTypeKeysByAliasRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="getTypeKeysByAliasResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>if the caller does not have all of the following permissions: ADMIN</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getTypelistValues">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="getTypelistValuesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="getTypelistValuesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+<wsdl:documentation>if no typelist exists with the given name</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>if the caller does not have all of the following permissions: ADMIN</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ITypelistToolsAPIService">
+<wsdl:documentation>ITypelistToolsAPI provides methods that allow for the extraction of typelist data from the
+system.
+@deprecated Use WS-I webservice gw.wsi.pl.TypelistToolsAPI instead.
+</wsdl:documentation>
+    <wsdl:port binding="impl:ITypelistToolsAPISoapBinding" name="ITypelistToolsAPI">
+      <wsdlsoap:address location="http://dontuse.defaultvalue.com/ITypelistToolsAPI"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

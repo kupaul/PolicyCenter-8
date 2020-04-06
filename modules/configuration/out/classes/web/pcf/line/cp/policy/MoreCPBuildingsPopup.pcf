@@ -1,0 +1,64 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Popup
+    canEdit="openForEdit"
+    countsAsWork="false"
+    id="MoreCPBuildingsPopup"
+    startInEditMode="true"
+    title="displaykey.Web.Policy.LocationContainer.Location.BuildingSelection">
+    <LocationEntryPoint
+      signature="MoreCPBuildingsPopup(cpLocation : CPLocation, buildings : Building[], openForEdit : boolean)"/>
+    <Variable
+      name="cpLocation"
+      type="CPLocation"/>
+    <Variable
+      name="buildings"
+      type="Building[]"/>
+    <Variable
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="{}"
+      name="addedBuildings"
+      type="Building[]"/>
+    <Screen>
+      <Toolbar>
+        <CheckedValuesToolbarButton
+          allCheckedRowsAction="addCPBuildings(CheckedValues)"
+          id="AddSelectedBuildings"
+          iterator="buildingIterator"
+          label="displaykey.Web.Policy.LocationContainer.Location.AddSelectedBuildings"/>
+        <EditButtons
+          updateVisible="false"/>
+      </Toolbar>
+      <ListViewPanel
+        id="MoreBuildingsLV">
+        <RowIterator
+          checkBoxVisible="true"
+          editable="openForEdit"
+          elementName="building"
+          hasCheckBoxes="true"
+          id="buildingIterator"
+          pageSize="30"
+          value="buildings">
+          <IteratorSort
+            sortBy="building.BuildingNum"
+            sortOrder="1"/>
+          <Row>
+            <Cell
+              id="buildingName"
+              label="displaykey.Web.Policy.LocationContainer.Location.Building.Description"
+              value="building.DisplayName"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </Screen>
+    <Code><![CDATA[function addCPBuildings(bldgs : Building[]) {
+  bldgs.each(\b -> cpLocation.addToLineSpecificBuildings(b))
+  addedBuildings = bldgs
+  CurrentLocation.commit()
+}]]></Code>
+  </Popup>
+</PCF>

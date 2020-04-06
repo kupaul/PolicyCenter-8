@@ -1,0 +1,59 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <ListDetailPanel
+    id="PolicyFile_StateInfoDV"
+    selectionName="selectedState"
+    selectionType="BAJurisdiction">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="policyPeriod.BusinessAutoLine"
+      name="baLine"/>
+    <ListViewPanel
+      id="jurisdictionLV">
+      <RowIterator
+        editable="false"
+        elementName="jurisdiction"
+        type="BAJurisdiction"
+        value="baLine.GaragingJurisdictions">
+        <Row>
+          <Cell
+            id="States"
+            label="displaykey.Web.Policy.LocationContainer.Location.State"
+            sortOrder="1"
+            value="jurisdiction.State"/>
+        </Row>
+      </RowIterator>
+    </ListViewPanel>
+    <CardViewPanel>
+      <Card
+        id="CoveragesCard"
+        title="displaykey.Web.PolicyLine.Coverages">
+        <PanelRef
+          def="BAStateCoveragesPanelSet(selectedState, baLine, false)"/>
+      </Card>
+      <Card
+        id="AdditionalCoveragesCard"
+        title="displaykey.Web.Policy.BA.AdditionalCoverages">
+        <PanelRef
+          def="AdditionalCoveragesPanelSet(selectedState, baLine.getAdditionalCoverageCategories(), true)"/>
+      </Card>
+      <Card
+        id="ExclusionsAndConditionsCard"
+        title="displaykey.Web.LineWizard.ExclusionsAndConditions">
+        <PanelRef
+          def="AdditionalExclusionsAndConditionsPanelSet(selectedState, baLine.getAdditionalCoverageCategories(), true)"/>
+      </Card>
+      <Card
+        id="ModifierCard"
+        title="displaykey.Web.Policy.BA.Modifier"
+        visible="policyPeriod.CanViewModifiers">
+        <PanelRef
+          def="BusinessAutoStateModifierPanelSet(baLine, selectedState)"/>
+      </Card>
+    </CardViewPanel>
+  </ListDetailPanel>
+</PCF>

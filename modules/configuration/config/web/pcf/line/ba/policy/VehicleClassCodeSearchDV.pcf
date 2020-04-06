@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="VehicleClassCodeSearchDV">
+    <Require
+      name="searchCriteria"
+      type="gw.api.domain.VehicleClassCodeSearchCriteria"/>
+    <Require
+      name="businessAutoLine"
+      type="BusinessAutoLine"/>
+    <InputColumn>
+      <Input
+        id="Type"
+        label="displaykey.Web.PolicyLine.Vehicle.Type"
+        value="searchCriteria.VehicleType"/>
+      <TypeKeyInput
+        id="Fleet"
+        label="displaykey.Web.Policy.BA.Fleet"
+        value="businessAutoLine.Fleet"/>
+      <TypeKeyInput
+        editable="true"
+        id="YearsExperience"
+        label="displaykey.Web.PolicyLine.Drivers.YearsExperience"
+        value="searchCriteria.Experience"
+        valueWidth="300"
+        visible="searchCriteria.VehicleType==&quot;PP&quot; and businessAutoLine.Fleet!=&quot;Fleet&quot; "/>
+      <TypeKeyInput
+        editable="true"
+        id="SizeClass"
+        label="displaykey.Web.PolicyLine.Vehicle.SizeClass"
+        value="searchCriteria.SizeClass"
+        visible="(searchCriteria.VehicleType==&quot;PublicTransport&quot; or searchCriteria.VehicleType==&quot;Commercial&quot;)"/>
+      <TypeKeyInput
+        editable="true"
+        id="PrimaryUse"
+        label="displaykey.Web.PolicyLine.Vehicle.PrimaryUse"
+        value="searchCriteria.PrimaryUse"
+        visible="searchCriteria.VehicleType!=&quot;PP&quot;"/>
+      <TypeKeyInput
+        editable="true"
+        filter="(searchCriteria.VehicleType &lt;&gt; null) ? VALUE.hasCategory(searchCriteria.VehicleType) : true"
+        id="Radius"
+        label="displaykey.Web.PolicyLine.Vehicle.Radius"
+        value="searchCriteria.Radius"
+        visible="!(searchCriteria.VehicleType==&quot;Special&quot; or (searchCriteria.VehicleType==&quot;PP&quot; and businessAutoLine.Fleet==&quot;Fleet&quot;))">
+        <PostOnChange/>
+      </TypeKeyInput>
+      <TypeKeyInput
+        editable="true"
+        id="Industry"
+        label="displaykey.Web.PolicyLine.Vehicle.Industry"
+        value="searchCriteria.Industry"
+        visible="searchCriteria.VehicleType==&quot;Commercial&quot; and searchCriteria.Radius != &quot;200PlusMiles&quot;"/>
+      <TypeKeyInput
+        editable="true"
+        id="IndustryUse"
+        label="displaykey.Web.PolicyLine.Vehicle.IndustryUse"
+        value="searchCriteria.IndustryUse"
+        visible="searchCriteria.VehicleType==&quot;Commercial&quot; and searchCriteria.Radius != &quot;200PlusMiles&quot;"/>
+    </InputColumn>
+    <InputFooterSection>
+      <InputSetRef
+        def="SearchAndResetInputSet()"/>
+    </InputFooterSection>
+  </DetailViewPanel>
+</PCF>

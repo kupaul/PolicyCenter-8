@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="AccountSearchDV">
+    <Require
+      name="searchCriteria"
+      type="gw.account.AccountSearchCriteria"/>
+    <Require
+      name="relatedToAccount"
+      type="Account"/>
+    <Variable
+      initialValue="searchCriteria.RelatedTo != null"
+      name="searchRelatedAccountsOnly"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="new gw.globalization.AccountSearchCriteriaAdapter(searchCriteria)"
+      name="accountSearchAdapter"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="new gw.globalization.AccountAddressSearchAdapter(searchCriteria)"
+      name="accountAddressSearchAdapter"
+      recalculateOnRefresh="true"/>
+    <InputColumn>
+      <CheckBoxInput
+        editable="true"
+        id="SearchRelatedAccountsOnly"
+        label="displaykey.Web.AccountSearch.RelatedTo(relatedToAccount)"
+        value="searchRelatedAccountsOnly"
+        visible="relatedToAccount != null">
+        <PostOnChange
+          onChange="searchCriteria.RelatedTo = searchRelatedAccountsOnly ? relatedToAccount : null"/>
+      </CheckBoxInput>
+      <Input
+        editable="true"
+        id="AccountNumber"
+        label="displaykey.Web.AccountSearch.AccountNumber"
+        value="searchCriteria.AccountNumber"/>
+      <InputSet>
+        <InputSetRef
+          def="GlobalPersonNameInputSet(new gw.search.BasicNameOwner(accountSearchAdapter))"
+          mode="gw.api.name.NameLocaleSettings.PCFMode"/>
+        <CheckBoxInput
+          editable="true"
+          id="FirstNameExact"
+          label="displaykey.Web.AccountSearch.FirstNameExactMatch"
+          required="false"
+          value="searchCriteria.FirstNameExact"/>
+      </InputSet>
+      <InputSet>
+        <CheckBoxInput
+          editable="true"
+          id="LastNameExact"
+          label="displaykey.Web.AccountSearch.LastNameExactMatch"
+          required="false"
+          value="searchCriteria.LastNameExact"/>
+      </InputSet>
+      <InputSetRef
+        def="GlobalContactNameInputSet(new gw.search.BasicNameOwner(accountSearchAdapter))"
+        mode="gw.api.name.NameLocaleSettings.PCFMode"/>
+      <CheckBoxInput
+        editable="true"
+        id="CompanyNameExact"
+        label="displaykey.Web.AccountSearch.CompanyNameExactMatch"
+        required="false"
+        value="searchCriteria.CompanyNameExact"/>
+      <Input
+        editable="true"
+        id="TaxID"
+        label="displaykey.Web.AccountSearch.TaxID"
+        value="searchCriteria.OfficialId"/>
+      <IndustryCodeInput
+        domain="&quot;SIC&quot; as IndustryCodeType"
+        editable="true"
+        id="IndustryCode"
+        label="displaykey.Web.AccountSearch.IndustryCode"
+        pickLocation="IndustryCodeSearchPopup.push(&quot;SIC&quot; as IndustryCodeType)"
+        value="searchCriteria.IndustryCode"/>
+      <OrgInput
+        editable="not User.util.CurrentUser.ExternalUser"
+        id="ProducerOrganization"
+        label="displaykey.Web.AccountSearch.ProducerOrganization"
+        pickLocation="OrganizationSearchPopup.push(null, true)"
+        required="false"
+        value="searchCriteria.Producer"/>
+      <ProducerCodeInput
+        editable="true"
+        id="ProducerCode"
+        label="displaykey.Web.AccountSearch.ProducerCode"
+        pickLocation="ProducerCodeSearchPopup.push()"
+        required="false"
+        value="searchCriteria.ProducerCode"/>
+    </InputColumn>
+    <InputColumn>
+      <InputSetRef
+        def="AddressOwnerAddressInputSet(new gw.pcf.contacts.AccountAddressSearchOwner(accountAddressSearchAdapter))"/>
+      <Input
+        editable="true"
+        helpText="displaykey.Java.PhoneUtil.Example.ToolTip(gw.api.util.PhoneUtil.getDefaultPhoneCountryCode(), gw.api.util.PhoneUtil.getExampleNumberWithExtension(gw.api.util.PhoneUtil.getDefaultPhoneCountryCode()))"
+        id="Phone"
+        label="displaykey.Web.AccountSearch.Phone"
+        value="searchCriteria.Phone"/>
+      <HiddenInput
+        desc="Hidden input used for testing."
+        id="Secure"
+        value="searchCriteria.Secure as String"/>
+    </InputColumn>
+    <InputColumn/>
+    <InputFooterSection>
+      <InputSetRef
+        def="SearchAndResetInputSet()"/>
+    </InputFooterSection>
+  </DetailViewPanel>
+</PCF>

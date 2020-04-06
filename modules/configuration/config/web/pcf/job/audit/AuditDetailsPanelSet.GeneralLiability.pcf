@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <PanelSet
+    id="AuditDetailsPanelSet"
+    mode="GeneralLiability">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="policyPeriod.GLLine"
+      name="glLine"/>
+    <Variable
+      initialValue="glLine.CoveredStates"
+      name="coveredStates"/>
+    <Variable
+      initialValue="partitionExposuresByState()"
+      name="exposuresByState"/>
+    <PanelIterator
+      elementName="state"
+      value="coveredStates">
+      <IteratorSort
+        sortBy="state"
+        sortOrder="1"/>
+      <PanelRef
+        editable="policyPeriod.OpenForEdit">
+        <TitleBar
+          id="StateTitle"
+          title="state.DisplayName"/>
+        <DetailViewPanel
+          id="PeriodDV">
+          <InputColumn>
+            <ListViewInput>
+              <Toolbar/>
+              <ListViewPanel>
+                <RowIterator
+                  editable="true"
+                  elementName="glExposure"
+                  pageSize="0"
+                  type="GLExposure"
+                  value="exposuresByState.get(gw.api.util.StateJurisdictionMappingUtil.getStateMappingForJurisdiction(state))">
+                  <Row>
+                    <Cell
+                      align="left"
+                      id="Location"
+                      label="displaykey.Web.AuditWizard.Details.Location"
+                      numCols="10"
+                      sortOrder="1"
+                      value="glExposure.Location.LocationNum"/>
+                    <Cell
+                      id="ClassCode"
+                      label="displaykey.Web.AuditWizard.Details.ClassCode"
+                      sortOrder="2"
+                      value="glExposure.ClassCode.Code"/>
+                    <Cell
+                      id="Description"
+                      label="displaykey.Web.AuditWizard.Details.Description"
+                      value="glExposure.ClassCode.Classification"/>
+                    <Cell
+                      id="FromDate"
+                      label="displaykey.Web.AuditWizard.Details.Basis.Start"
+                      value="glExposure.EffectiveDate"/>
+                    <Cell
+                      id="ToDate"
+                      label="displaykey.Web.AuditWizard.Details.Basis.End"
+                      value="glExposure.EndOfCoverageDate"/>
+                    <Cell
+                      id="BasisType"
+                      label="displaykey.Web.Policy.GL.ExposureUnits.BasisType"
+                      value="glExposure.ClassCode.Basis.Code"/>
+                    <Cell
+                      id="EstimatedBasis"
+                      label="displaykey.Web.AuditWizard.EstBasis"
+                      value="glExposure.BasisAmount"/>
+                    <Cell
+                      editable="true"
+                      id="AuditedBasis"
+                      label="displaykey.Web.AuditWizard.AuditedBasis"
+                      value="glExposure.AuditedBasis"/>
+                  </Row>
+                </RowIterator>
+              </ListViewPanel>
+            </ListViewInput>
+          </InputColumn>
+        </DetailViewPanel>
+      </PanelRef>
+    </PanelIterator>
+    <Code><![CDATA[// Returns a map of State to an array of GLExposures sorted by class code and then effective date
+function partitionExposuresByState() : java.util.Map<State, GLExposure[]> {
+  return glLine.VersionList.Exposures
+             .flatMap( \ g -> g.AllVersions )
+             .partition( \ g -> g.Location.State )
+             .mapValues( \ i -> i.orderBy( \ g -> g.ClassCode.Code ).thenBy(\g -> g.EffectiveDate).toTypedArray() )
+               
+}]]></Code>
+  </PanelSet>
+</PCF>

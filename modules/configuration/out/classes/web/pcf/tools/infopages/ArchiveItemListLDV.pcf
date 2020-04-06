@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ListDetailPanel
+    id="ArchiveItemListLDV"
+    selectionName="rootInfoObj"
+    selectionOnEnter="firstResult"
+    selectionType="KeyableBean">
+    <Require
+      name="archiveDetailsData"
+      type="gw.api.archiving.ArchiveDetailsData"/>
+    <Variable
+      initialValue="archiveDetailsData.QueryForRootInfos.select()"
+      name="query"/>
+    <Variable
+      initialValue="query.FirstResult"
+      name="firstResult"/>
+    <ExposeIterator
+      valueType="gw.pl.persistence.core.Bean"
+      widget="ArchiveItemListLV"/>
+    <ListViewPanel
+      id="ArchiveItemListLV">
+      <RowIterator
+        canPick="archiveDetailsData.ExcludedBecauseOfFailure"
+        checkBoxVisible="archiveDetailsData.ExcludedBecauseOfRules or archiveDetailsData.ExcludedBecauseOfFailure"
+        editable="false"
+        elementName="rootInfoElem"
+        hasCheckBoxes="true"
+        value="query">
+        <Row>
+          <Cell
+            action="gw.api.web.tools.ArchiveInfoPage.goToPage(rootInfoElem as RootInfo)"
+            enableSort="false"
+            id="Item"
+            label="displaykey.Web.ServerTools.ArchiveInfo.Item"
+            sortBy="(rootInfoElem as RootInfo).ArchivedDate"
+            sortDirection="descending"
+            sortOrder="1"
+            value="com.guidewire.pl.system.dependency.PLDependencies.getDomainGraphSupport().getInformationalString(rootInfoElem as RootInfo)"/>
+          <ButtonCell
+            action="gw.transaction.Transaction.runWithNewBundle(\ bundle -&gt; { var rootInfo = bundle.add(rootInfoElem as KeyableBean) as RootInfo; rootInfo.resetToPreArchivedState() }); if (archiveDetailsData.QueryForRootInfos.select().Count == 0) {CurrentLocation.cancel()}"
+            id="Reset"
+            label="displaykey.Web.ServerTools.ArchiveInfo.ResetItem"
+            value="displaykey.Web.ServerTools.ArchiveInfo.ResetItem"
+            visible="!archiveDetailsData.Skipped"/>
+        </Row>
+      </RowIterator>
+    </ListViewPanel>
+    <CardViewPanel>
+      <Card
+        id="FailureDetailsCV"
+        title="displaykey.Web.ServerTools.ArchiveInfo.FailureDetails(com.guidewire.pl.system.dependency.PLDependencies.getDomainGraphSupport().getInformationalString(rootInfoObj as RootInfo))"
+        visible="archiveDetailsData.ExcludedBecauseOfFailure">
+        <DetailViewPanel>
+          <InputColumn>
+            <Input
+              id="FailureDetails"
+              labelAbove="true"
+              value="(rootInfoObj as RootInfo).ArchiveFailureDetails.ArchiveFailureDetails"/>
+          </InputColumn>
+        </DetailViewPanel>
+      </Card>
+    </CardViewPanel>
+  </ListDetailPanel>
+</PCF>

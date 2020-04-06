@@ -1,0 +1,35 @@
+package rules.Assignment.GlobalJobAssignmentRules_dir.AssignUnderwriter_dir
+
+@gw.rules.RuleName("Assign preferred underwriter by producer code")
+internal class Assignpreferredunderwriterbyproducercode {
+  static function doCondition(job : entity.Job) : boolean {
+    
+/*start00rule*/
+return true
+/*end00rule*/
+
+  }
+
+  static function doAction(job : entity.Job, actions : gw.rules.Action) {
+
+/*start00rule*/
+var assignment = job.CurrentRoleAssignment
+
+// Get the latest PolicyPeriod (of possibly several branches)
+var period = job.LatestPeriod
+
+// Get the branch (underwriting group) implied by the policy period's producer code
+var prefUW = period.ProducerCodeOfRecord.PreferredUnderwriter
+
+// Assign this job to the preferred underwriter if they exist
+if (prefUW != null) {
+  var group = prefUW.getDefaultAssignmentGroup( "BranchUW")
+  if(group != null and assignment.assign(group , prefUW)) {
+    gw.assignment.AssignmentUtil.logUserRoleAssignment(assignment, actions as java.lang.String)
+    actions.exit()
+  }
+}
+/*end00rule*/
+
+  }
+}

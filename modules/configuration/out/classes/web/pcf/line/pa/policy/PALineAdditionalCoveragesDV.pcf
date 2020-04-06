@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="PALineAdditionalCoveragesDV">
+    <Require
+      name="paLine"
+      type="PersonalAutoLine"/>
+    <Require
+      name="includedCoverageCategories"
+      type="String[]"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <InputColumn>
+      <InputSet
+        visible="paLine != null">
+        <InputIterator
+          elementName="category"
+          id="categories"
+          value="includedCoverageCategories">
+          <InputSet>
+            <Variable
+              initialValue="paLine.Pattern.getCoverageCategory(category).coveragePatternsForEntity(PersonalAutoLine).whereSelectedOrAvailable(paLine, openForEdit)"
+              name="includedCategoryCoveragePatterns"
+              recalculateOnRefresh="true"/>
+            <InputIterator
+              elementName="coveragePattern"
+              forceRefreshDespiteChangedEntries="true"
+              id="LineCoveragesIterator"
+              value="includedCategoryCoveragePatterns">
+              <InputSetRef
+                def="CoverageInputSet(coveragePattern, paLine, openForEdit)"
+                mode="coveragePattern.Code"/>
+            </InputIterator>
+          </InputSet>
+        </InputIterator>
+      </InputSet>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

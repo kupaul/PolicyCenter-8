@@ -1,0 +1,100 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Screen
+    editable="openForEdit"
+    id="CPBuildingsScreen">
+    <Require
+      name="cpLine"
+      type="CommercialPropertyLine"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="cpLine.UnusedLocations"
+      name="unusedLocations"
+      recalculateOnRefresh="true"
+      type="AccountLocation[]"/>
+    <Variable
+      initialValue="10"
+      name="maxLocNum"
+      type="int"/>
+    <Variable
+      initialValue="false"
+      name="allChecked"
+      type="boolean"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="cpLine.Branch.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(cpLine.Branch, cpLine.Branch.Job, jobWizardHelper)"/>
+    </Toolbar>
+    <PanelRef
+      def="OOSEPanelSet(cpLine.Branch, jobWizardHelper)"/>
+    <PanelRef
+      def="CPBuildingsAndLocationsLV(cpLine, openForEdit, jobWizardHelper)">
+      <Toolbar>
+        <ToolbarButton
+          hideIfReadOnly="true"
+          id="addLocationsTB"
+          label="displaykey.Web.Policy.LocationContainer.AddLocation"
+          visible="openForEdit">
+          <AddMenuItem
+            id="AddNewLocation"
+            iterator="CPBuildingsAndLocationsLV.CPBuildingsAndLocationsLV"
+            label="displaykey.Web.Policy.LocationContainer.CreateNewLocation"
+            visible="openForEdit"/>
+          <MenuItem
+            id="addExistingLocations"
+            label="displaykey.Web.Policy.LocationContainer.ExistingLocation">
+            <MenuItemIterator
+              elementName="unusedLocation"
+              id="UnusedLocationIterator"
+              value="gw.web.policy.LocationDisplayUtil.getLimitedNumberOfSortedLocations(unusedLocations, cpLine, maxLocNum)">
+              <IteratorSort
+                sortBy="unusedLocation.LocationNum"
+                sortOrder="1"/>
+              <MenuItem
+                action="CPLocationPopup.push(cpLine, unusedLocation, openForEdit, true, jobWizardHelper)"
+                id="UnassignedAccountLocation"
+                label="unusedLocation.DisplayName"/>
+            </MenuItemIterator>
+            <MenuItem
+              action="MoreCPLocationsPopup.push(cpLine.Branch, unusedLocations, openForEdit)"
+              id="AddMoreLocations"
+              label="displaykey.Web.Policy.LocationContainer.MoreLocations"
+              visible="unusedLocations.Count &gt; maxLocNum"/>
+          </MenuItem>
+        </ToolbarButton>
+        <IteratorButtons
+          addVisible="false"
+          iterator="CPBuildingsAndLocationsLV.CPBuildingsAndLocationsLV"
+          removeFlags="all removeAvailable"
+          removeLabel="displaykey.Web.Policy.LocationContainer.Location.RemoveBuildings"/>
+        <ToolbarButton
+          action="jobWizardHelper.validateAndSaveDraft(); CopyBuildingCoveragesPopup.push(cpLine.Branch)"
+          id="CopyBuildingCoveragesButton"
+          label="displaykey.Web.CopyPolicyData.CommercialProperty.Buildings.CopyCoverages"
+          visible="openForEdit and cpLine.Branch.CanCopyCoverages and cpLine.CPLocations*.Buildings.Count &gt; 1"/>
+        <ToolbarButton
+          id="Spreadsheet"
+          label="displaykey.Web.Policy.LocationContainer.Spreadsheet"
+          visible="true">
+          <MenuItem
+            action="jobWizardHelper.validateAndSaveDraft(); ExcelExportPopup.push(cpLine)"
+            id="Export"
+            label="displaykey.Web.ExcelExport.ExportMenu"/>
+          <MenuItem
+            action="jobWizardHelper.validateAndSaveDraft(); ExcelImportFilePopup.push(cpLine.Branch, jobWizardHelper)"
+            id="Import"
+            label="displaykey.Web.ExcelExport.ImportMenu"
+            visible="openForEdit"/>
+        </ToolbarButton>
+      </Toolbar>
+    </PanelRef>
+  </Screen>
+</PCF>

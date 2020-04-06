@@ -1,0 +1,111 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    id="DesktopAssignableQueuesLV">
+    <ExposeIterator
+      flags="assignableActivity"
+      valueType="entity.Activity"
+      widget="DesktopAssignableQueuesLV"/>
+    <Variable
+      initialValue="getVisibleQueues()"
+      name="queues"
+      type="AssignableQueue[]"/>
+    <Variable
+      initialValue="Activity.finder.findActivitiesByQueues(queues)"
+      name="activities"
+      type="ActivityQuery"/>
+    <Variable
+      initialValue="new gw.api.filters.AssignableQueueFilters(queues)"
+      name="aQFilterSet"/>
+    <RowIterator
+      checkBoxVisible="perm.Activity.pickfromqueue"
+      editable="false"
+      elementName="activity"
+      hasCheckBoxes="true"
+      value="activities">
+      <ToolbarFilter
+        name="assignableQueueFilter">
+        <ToolbarFilterOption
+          filter="gw.api.util.CoreFilters.ALL"
+          label="displaykey.Web.DesktopAssignableQueues.Filter.All"/>
+        <ToolbarFilterOptionGroup
+          filters="aQFilterSet.Filters.toTypedArray()"/>
+      </ToolbarFilter>
+      <ToolbarFlag
+        name="assignableActivity"/>
+      <IteratorSort
+        sortBy="activity.Priority"
+        sortOrder="1"/>
+      <IteratorSort
+        sortBy="activity.TargetDate"
+        sortOrder="2"/>
+      <Row>
+        <Cell
+          enableSort="false"
+          icon="&quot;new.png&quot;"
+          id="UpdatedSinceLastViewed"
+          tooltip="displaykey.Web.DesktopActivitiesLV.NewActivityTooltip"
+          value="activity.UpdatedSinceLastViewed"/>
+        <Cell
+          enableSort="false"
+          icon="&quot;escalated.png&quot;"
+          id="Overdue"
+          tooltip="displaykey.Web.DesktopActivitiesLV.EscalatedActivityTooltip"
+          value="activity.Overdue"/>
+        <Cell
+          id="Due"
+          label="displaykey.Web.DesktopActivitiesLV.DueDate"
+          value="activity.TargetDate"/>
+        <Cell
+          id="Priority"
+          label="displaykey.Web.DesktopActivitiesLV.Priority"
+          value="activity.Priority"/>
+        <Cell
+          id="Status"
+          label="displaykey.Web.DesktopActivitiesLV.Status"
+          value="activity.Status"/>
+        <Cell
+          action="ActivityForward.go(activity)"
+          available="perm.Activity.edit(activity)"
+          id="Subject"
+          label="displaykey.Web.DesktopActivitiesLV.Subject"
+          value="activity.Subject"/>
+        <Cell
+          enableSort="false"
+          id="JobID"
+          label="displaykey.Web.DesktopActivitiesLV.ID"
+          value="activity.Job.PolicyNumberOrJobNumber"/>
+        <Cell
+          enableSort="false"
+          id="Insured"
+          label="displaykey.Web.DesktopActivitiesLV.AccountHolder"
+          value="activity.Job.Policy.Account.AccountHolderContact.Name == null ? activity.Account.AccountHolderContact.DisplayName : activity.Job.Policy.Account.AccountHolderContact.Name"/>
+        <Cell
+          id="Product"
+          label="displaykey.Web.DesktopActivitiesLV.Product"
+          sortBy="activity.Job.Policy.ProductCode"
+          value="activity.Job.Policy.Product"/>
+        <Cell
+          id="AssignedBy"
+          label="displaykey.Web.DesktopActivitiesLV.AssignedBy"
+          value="activity.AssignedByUser"/>
+        <Cell
+          enableSort="false"
+          id="State"
+          label="displaykey.Web.DesktopActivitiesLV.State"
+          value="activity.Job.Policy.Account.AccountHolderContact.PrimaryAddress.State"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[// The results are needed all at once because the array will be reused to avoid querying twice.
+      function getVisibleQueues() : AssignableQueue[] {
+        var retValue = new java.util.ArrayList<AssignableQueue>()
+        var processor = AssignableQueue.finder.findVisibleQueuesInUserAndAncestorGroups(User.util.CurrentUser) as AssignableQueueQuery
+        foreach (i in processor.iterator()) {
+          retValue.add(i)
+        }
+        return retValue as AssignableQueue[]
+      }]]></Code>
+  </ListViewPanel>
+</PCF>

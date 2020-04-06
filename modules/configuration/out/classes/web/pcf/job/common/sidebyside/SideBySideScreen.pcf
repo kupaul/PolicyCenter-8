@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Screen
+    id="SideBySideScreen">
+    <Require
+      name="jobWizHelper"
+      type="gw.api.web.job.JobWizardHelper"/>
+    <Require
+      name="basePeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="gw.lob.common.SideBySideUtil.hasOOSorPreemption(basePeriod.Job)"
+      name="hideInitialSideBySide"
+      recalculateOnRefresh="true"
+      type="boolean"/>
+    <Variable
+      initialValue="gw.lob.common.SideBySideUtil.getSideBySidePeriods(basePeriod)"
+      name="periods"
+      recalculateOnRefresh="true"
+      type="PolicyPeriod[]"/>
+    <Variable
+      initialValue="new gw.pcf.sidebyside.SideBySideScreenHelper(jobWizHelper, periods)"
+      name="sideHelper"
+      recalculateOnRefresh="true"
+      type="gw.pcf.sidebyside.SideBySideScreenHelper"/>
+    <Toolbar
+      id="SideBySideToolBar">
+      <ToolbarButtonSetRef
+        toolbarButtonSet="SideBySideToolbarButtonSet(basePeriod,jobWizHelper,sideHelper.PeriodInfos)"/>
+    </Toolbar>
+    <PanelSet
+      visible="hideInitialSideBySide">
+      <PanelRef
+        def="WarningsPanelSet(gw.lob.common.SideBySideUtil.getSideBySideBlockingMessages(periods))"
+        id="WarningMessages"/>
+      <PanelRef
+        def="SideBySideErrorPageDV(jobWizHelper, sideHelper)"/>
+    </PanelSet>
+    <PanelRef
+      def="SideBySideTableLayoutDV(jobWizHelper, sideHelper)"
+      visible="not hideInitialSideBySide"/>
+  </Screen>
+</PCF>

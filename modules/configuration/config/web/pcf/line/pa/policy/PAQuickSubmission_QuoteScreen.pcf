@@ -1,0 +1,186 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Screen
+    editable="openForEdit"
+    id="PAQuickSubmission_QuoteScreen">
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="policyPeriod.PersonalAutoLine"
+      name="paLine"/>
+    <Variable
+      initialValue="paLine.Vehicles.length &gt; 0 ? paLine.Vehicles[0] : null"
+      name="vehicle1"/>
+    <Variable
+      initialValue="paLine.Vehicles.length &gt; 1 ? paLine.Vehicles[1] : null"
+      name="vehicle2"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, policyPeriod.Job, jobWizardHelper)"/>
+      <ToolbarButton
+        action="policyPeriod.printDocument(&quot;SubmissionQuote&quot;, &quot;Submission Quote&quot;)"
+        download="true"
+        id="PrintQuote"
+        label="displaykey.Button.PrintQuote"
+        shortcut="P"
+        visible="policyPeriod.ValidQuote"/>
+    </Toolbar>
+    <PanelSet>
+      <PanelRef
+        def="OOSEPanelSet(policyPeriod, jobWizardHelper)"/>
+      <DetailViewPanel>
+        <InputColumn>
+          <Input
+            boldLabel="true"
+            id="PolicyPeriod"
+            label="displaykey.Web.Job.Policy.Period.PolicyPeriod"
+            value="util.StringUtil.formatDate(policyPeriod.PeriodStart,&quot;short&quot;) + &quot; - &quot; + util.StringUtil.formatDate(policyPeriod.PeriodEnd,&quot;short&quot;)"/>
+          <RangeInput
+            boldLabel="true"
+            editable="true"
+            filter="VALUE.isOfferingAvailable(policyPeriod)"
+            id="OfferingSelection"
+            label="displaykey.Web.Job.Offering.Selection"
+            required="policyPeriod.Policy.Product.OfferingRequired"
+            value="policyPeriod.Offering"
+            valueRange="policyPeriod.Policy.Product.Offerings">
+            <PostOnChange
+              onChange="resyncToOffering()"/>
+          </RangeInput>
+          <ButtonInput
+            action="resyncToOffering()"
+            available="openForEdit"
+            id="SyncButton"
+            value="displaykey.Web.Policy.PA.SyncButton"/>
+        </InputColumn>
+        <InputColumn>
+          <MonetaryAmountInput
+            align="right"
+            boldLabel="true"
+            formatType="currency"
+            id="TotalPremium"
+            label="displaykey.Web.Quote.TotalPremLabel.Total"
+            value="policyPeriod.TotalPremiumRPT"/>
+          <MonetaryAmountInput
+            align="right"
+            boldLabel="true"
+            formatType="currency"
+            id="Taxes"
+            label="displaykey.Web.Quote.PremiumSummary.Taxes"
+            value="(policyPeriod.TotalCostRPT == null) ? null : policyPeriod.AllCosts.TaxSurcharges.AmountSum(policyPeriod.PreferredSettlementCurrency)"/>
+          <MonetaryAmountInput
+            align="right"
+            boldLabel="true"
+            formatType="currency"
+            id="TotalCost"
+            label="displaykey.Web.Quote.TotalCostLabel.Total"
+            value="policyPeriod.TotalCostRPT"/>
+        </InputColumn>
+        <InputColumn>
+          <Input
+            id="Spacer1"
+            value="&quot;&quot;"/>
+          <Input
+            id="Spacer2"
+            value="&quot;&quot;"/>
+          <ButtonInput
+            action="jobWizardHelper.requestQuote(policyPeriod, jobWizardHelper.getQuoteStep(policyPeriod),ValidationLevel.TC_QUICKQUOTABLE,RatingStyle.TC_QUICKQUOTE)"
+            available="openForEdit"
+            id="RequoteButton"
+            value="displaykey.Job.Operation.Quote"
+            visible="not (policyPeriod.ValidQuote)"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <PanelRef
+        def="PreferredCoverageCurrencyPanelSet(paLine, openForEdit, jobWizardHelper)"/>
+      <CardViewPanel>
+        <Card
+          id="Coverages"
+          title="displaykey.Web.Policy.PA.Coverages">
+          <PanelRef
+            def="PersonalAuto_AllVehicleCoveragesDV(paLine, openForEdit)">
+            <TitleBar
+              title="displaykey.Web.Policy.PA.AllVehicleCoveragesTitleNoState"/>
+          </PanelRef>
+          <PanelRef>
+            <TitleBar
+              title="displaykey.Web.Policy.PA.PerVehicleCoveragesTitleNoState"/>
+            <PanelRow>
+              <PanelColumn>
+                <DetailViewPanel>
+                  <InputColumn>
+                    <Label
+                      label="vehicle1.DisplayName"
+                      visible="vehicle1 &lt;&gt; null"/>
+                  </InputColumn>
+                </DetailViewPanel>
+                <PanelRef
+                  def="PreferredCoverageCurrencyPanelSet(vehicle1, openForEdit, jobWizardHelper)"
+                  id="PreferredCurrency1PanelRef"/>
+                <PanelRef
+                  def="PersonalAuto_VehicleCoverageDetailDV(vehicle1, openForEdit)"
+                  id="Vehicle1Coverages"
+                  visible="vehicle1 &lt;&gt; null"/>
+                <DetailViewPanel
+                  visible="vehicle1 &lt;&gt; null">
+                  <InputColumn>
+                    <MonetaryAmountInput
+                      formatType="currency"
+                      id="Vehicle1Total"
+                      label="displaykey.Web.Policy.PA.PerVehicleTotal"
+                      value="vehicle1.TotalCost"/>
+                  </InputColumn>
+                </DetailViewPanel>
+              </PanelColumn>
+              <PanelColumn>
+                <DetailViewPanel>
+                  <InputColumn>
+                    <Label
+                      label="vehicle2.DisplayName"
+                      visible="vehicle2 &lt;&gt; null"/>
+                  </InputColumn>
+                </DetailViewPanel>
+                <PanelRef
+                  def="PreferredCoverageCurrencyPanelSet(vehicle2, openForEdit, jobWizardHelper)"
+                  id="PreferredCurrency2PanelRef"/>
+                <PanelRef
+                  def="PersonalAuto_VehicleCoverageDetailDV(vehicle2, openForEdit)"
+                  id="Vehicle2Coverages"
+                  visible="vehicle2 &lt;&gt; null"/>
+                <DetailViewPanel
+                  visible="vehicle2 &lt;&gt; null">
+                  <InputColumn>
+                    <MonetaryAmountInput
+                      formatType="currency"
+                      id="Vehicle2Total"
+                      label="displaykey.Web.Policy.PA.PerVehicleTotal"
+                      value="vehicle2.TotalCost"/>
+                  </InputColumn>
+                </DetailViewPanel>
+              </PanelColumn>
+            </PanelRow>
+          </PanelRef>
+        </Card>
+      </CardViewPanel>
+    </PanelSet>
+    <Code><![CDATA[function getVehicleDescription(vehicle : PersonalVehicle) : String {
+  return {vehicle.Year.toString(), vehicle.Make, vehicle.Model}.join(" ")
+}
+
+function resyncToOffering() {
+  policyPeriod.editIfQuoted()
+  policyPeriod.forceSyncOffering()
+}]]></Code>
+  </Screen>
+</PCF>

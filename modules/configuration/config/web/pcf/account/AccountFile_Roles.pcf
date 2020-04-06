@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    canEdit="perm.Account.edit(account) and perm.System.editaccountroles"
+    canVisit="perm.Account.view(account) and perm.System.accountroles"
+    id="AccountFile_Roles"
+    parent="AccountFile(account)"
+    title="displaykey.Web.AccountFile.Roles.Title"
+    validationParameter="account">
+    <LocationEntryPoint
+      signature="AccountFile_Roles(account : Account)"/>
+    <Variable
+      name="account"
+      type="Account"/>
+    <Screen
+      id="AccountFile_RolesScreen">
+      <Toolbar>
+        <EditButtons/>
+        <IteratorButtons
+          iterator="AccountRolesLV"/>
+      </Toolbar>
+      <ListViewPanel
+        id="AccountRolesLV">
+        <RowIterator
+          checkBoxVisible="assignment.Role != &quot;Creator&quot;"
+          editable="true"
+          elementName="assignment"
+          hasCheckBoxes="true"
+          hideCheckBoxesIfReadOnly="true"
+          toCreateAndAdd="account.createAndAddRoleAssignment()"
+          toRemove="account.removeFromRoleAssignments(assignment)"
+          value="account.RoleAssignments">
+          <Row
+            editable="assignment.Role != &quot;Creator&quot;">
+            <TypeKeyCell
+              editable="assignment.New"
+              filter="gw.assignment.AssignmentUtil.filterAssignableRoles(account, VALUE)"
+              id="AssignmentRole"
+              label="displaykey.Web.Account.Participants.Role"
+              required="true"
+              value="assignment.Role"/>
+            <Cell
+              editable="true"
+              id="AssignedUser"
+              label="displaykey.Web.Account.Participants.AssignedUser"
+              required="true"
+              validationExpression="assignment.AssignedUser.AllGroups.Empty ? displaykey.Web.Account.Participants.UserValidation : null"
+              value="assignment.AssignedUserWithUpdate"
+              width="250"
+              wrap="true">
+              <PostOnChange/>
+            </Cell>
+            <RangeCell
+              editable="true"
+              id="AssignedGroup"
+              label="displaykey.Web.Account.Participants.AssignedGroup"
+              required="true"
+              value="assignment.AssignedGroup"
+              valueRange="assignment.AssignedUser.AllGroups as Group[]"
+              width="300"
+              wrap="true"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </Screen>
+  </Page>
+</PCF>

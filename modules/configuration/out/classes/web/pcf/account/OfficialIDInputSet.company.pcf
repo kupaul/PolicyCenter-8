@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <InputSet
+    id="OfficialIDInputSet"
+    mode="company">
+    <Require
+      name="companyContact"
+      type="Contact"/>
+    <Variable
+      initialValue="(companyContact as Company)"
+      name="company"
+      recalculateOnRefresh="true"
+      type="Company"/>
+    <TextInput
+      editable="true"
+      id="OfficialIDDV_Input"
+      inputMask="&quot;##-#######&quot;"
+      label="displaykey.Web.SubmissionWizard.Account.FEIN"
+      value="company.FEINOfficialID"/>
+    <!-- validationExpression="checkValidFEIN(AccountContact.Contact, company.FEINOfficialID)" -->
+    <Code><![CDATA[function checkValidFEIN(contact : Contact, fein : String) : String {
+  var query = gw.api.database.Query.make(OfficialID)
+  query.compare(OfficialID#OfficialIDValue.PropertyInfo.Name, Equals, fein)
+  query.compare(OfficialID#OfficialIDType.PropertyInfo.Name, Equals, OfficialIDType.TC_FEIN)
+  var officialID = query.select().FirstResult
+  if(officialID != null and officialID.Contact != contact) {
+    return displaykey.Web.OfficialID.DuplicateFEIN
+  }
+  return null
+}]]></Code>
+  </InputSet>
+</PCF>

@@ -1,0 +1,112 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ListViewPanel
+    id="WorkflowsLV">
+    <ExposeIterator
+      valueType="entity.Workflow"
+      widget="WorkflowsLV"/>
+    <Require
+      name="workflows"
+      type="WorkflowQuery"/>
+    <Require
+      name="isParent"
+      type="boolean"/>
+    <RowIterator
+      checkBoxVisible="Workflow.State != &quot;completed&quot;"
+      editable="false"
+      elementName="Workflow"
+      hasCheckBoxes="true"
+      value="workflows">
+      <ToolbarFlag
+        condition="Workflow.State == &quot;Error&quot; || Workflow.State == &quot;Suspended&quot;"
+        name="CanResume"/>
+      <Row>
+        <Cell
+          action="WorkflowDetail.go(Workflow)"
+          align="left"
+          id="Type"
+          label="displaykey.Web.Admin.Workflows.Type"
+          value="Workflow.Subtype"/>
+        <Cell
+          align="left"
+          id="ProcessVersion"
+          label="displaykey.Web.Admin.Workflows.ProcessVersion"
+          value="Workflow.ProcessVersion"/>
+        <DateCell
+          align="left"
+          dateFormat="medium"
+          id="StartTime"
+          label="displaykey.Web.Admin.Workflows.StartTime"
+          sortDirection="descending"
+          sortOrder="1"
+          timeFormat="medium"
+          value="Workflow.CreateTime"/>
+        <DateCell
+          align="left"
+          dateFormat="medium"
+          id="UpdateTime"
+          label="displaykey.Web.Admin.Workflows.UpdateTime"
+          timeFormat="medium"
+          value="Workflow.UpdateTime"/>
+        <Cell
+          action="WorkflowDetail.go(Workflow.Caller)"
+          actionAvailable="Workflow.Caller != null"
+          align="left"
+          id="Parent"
+          label="displaykey.Web.Admin.Workflows.Parent"
+          sortBy="Workflow.caller.PublicID"
+          value="Workflow.Caller"
+          visible="!isParent"/>
+        <Cell
+          align="left"
+          enableSort="false"
+          id="Children"
+          label="displaykey.Web.Admin.Workflows.Children"
+          value="Workflow.SubFlows.length"/>
+        <Cell
+          align="left"
+          id="CurrentStep"
+          label="displaykey.Web.Admin.Workflows.Step"
+          sortBy="Workflow.CurrentStep"
+          value="Workflow.localizedCurrentStepName()"/>
+        <Cell
+          align="left"
+          id="Status"
+          label="displaykey.Web.Admin.Workflows.Status"
+          value="Workflow.State"/>
+        <Cell
+          align="left"
+          id="ActiveState"
+          label="displaykey.Web.Admin.Workflows.ActiveState"
+          value="Workflow.ActiveState"/>
+        <Cell
+          align="left"
+          enableSort="false"
+          id="WorkItemState"
+          label="displaykey.Web.Admin.Workflows.WorkItem"
+          value="workItemDisplayValue(Workflow)"/>
+        <DateCell
+          align="left"
+          dateFormat="short"
+          id="WorkTimeout"
+          label="displaykey.Web.Admin.Workflows.TimeoutTime"
+          timeFormat="short"
+          value="Workflow.TimeoutTime"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function workItemDisplayValue(wf : Workflow) : String {
+        if (wf.State == "Active") {
+          var wi = wf.ActiveWorkflowWorkItem
+          if (wi != null) {
+            if (wi.Status == "checkedout") {
+                return wi.CheckedOutBy
+            }
+            return wi.Status as String
+          }
+        }
+        return null
+      }]]></Code>
+  </ListViewPanel>
+</PCF>

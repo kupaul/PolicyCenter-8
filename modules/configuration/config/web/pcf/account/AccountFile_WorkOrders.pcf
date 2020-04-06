@@ -1,0 +1,115 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    canVisit="perm.Account.view(account) and perm.System.accountworkorders"
+    handlesValidationIssue="VALUE typeis entity.Job"
+    id="AccountFile_WorkOrders"
+    title="displaykey.Web.AccountFile.WorkOrders.Title"
+    validationParameter="account">
+    <LocationEntryPoint
+      signature="AccountFile_WorkOrders(account : Account)"/>
+    <Variable
+      name="account"
+      type="Account"/>
+    <Screen
+      id="AccountFile_WorkOrdersScreen">
+      <Variable
+        initialValue="gw.web.account.AccountFileWorkOrdersUIHelper.StatusFilterInitialValue"
+        name="statusFilterChoice"
+        type="gw.api.ui.DisplayedObject&lt;Boolean&gt;"/>
+      <Variable
+        initialValue="gw.web.account.AccountFileWorkOrdersUIHelper.WorkOrderInitialValue"
+        name="workOrderTypeChoice"
+        type="gw.api.ui.DisplayedObject&lt;typekey.Job&gt;"/>
+      <Variable
+        initialValue="gw.web.account.AccountFileWorkOrdersUIHelper.getProductFilterInitialValue(account)"
+        name="productFilterChoice"
+        type="gw.api.ui.DisplayedObject&lt;gw.api.productmodel.Product&gt;"/>
+      <Toolbar>
+        <ToolbarRangeInput
+          id="WorkOrdersCompletenessFilter"
+          label="displaykey.Web.AccountFile.WorkOrders.Filter.Status"
+          required="true"
+          sortValueRange="false"
+          value="statusFilterChoice"
+          valueRange="gw.job.JobFilters.StatusFilterSet">
+          <PostOnChange
+            onChange="gw.web.account.AccountFileWorkOrdersUIHelper.StatusFilterValue = statusFilterChoice.display"/>
+        </ToolbarRangeInput>
+        <ToolbarDivider/>
+        <ToolbarRangeInput
+          id="WorkOrderTypeFilter"
+          label="displaykey.Web.AccountFile.WorkOrders.Filter.JobType"
+          required="true"
+          sortValueRange="false"
+          value="workOrderTypeChoice"
+          valueRange="gw.job.JobFilters.JobTypeFilterSet">
+          <PostOnChange
+            onChange="gw.web.account.AccountFileWorkOrdersUIHelper.WorkOrderFilterValue = workOrderTypeChoice.display"/>
+        </ToolbarRangeInput>
+        <ToolbarDivider/>
+        <ToolbarRangeInput
+          id="ProductFilter"
+          label="displaykey.Web.AccountFile.WorkOrders.Filter.Product"
+          required="true"
+          sortValueRange="false"
+          value="productFilterChoice"
+          valueRange="gw.job.JobFilters.createProductFilterOptions( account )">
+          <PostOnChange
+            onChange="gw.web.account.AccountFileWorkOrdersUIHelper.ProductFilterValue = productFilterChoice.display"/>
+        </ToolbarRangeInput>
+      </Toolbar>
+      <ListViewPanel
+        id="AccountWorkOrdersLV">
+        <RowIterator
+          editable="false"
+          elementName="job"
+          value="account.getAllJobs(statusFilterChoice.value, workOrderTypeChoice.value, productFilterChoice.value, User.util.CurrentUser)">
+          <Row
+            useArchivedStyle="gw.pcf.ArchiveHelper.getArchivedStyle(job)">
+            <Cell
+              id="CreateDate"
+              label="displaykey.Web.AccountFile.WorkOrders.CreateDate"
+              value="job.CreateTime"/>
+            <Cell
+              action="PolicyFileForward.go(job.ResultingBoundPeriod.PolicyNumber)"
+              enableSort="false"
+              id="PolicyNumber"
+              label="displaykey.Web.AccountFile.WorkOrders.PolicyNumber"
+              value="job.ResultingBoundPeriod.PolicyNumberDisplayString"
+              valueVisible="job.ResultingBoundPeriod != null"/>
+            <Cell
+              id="Product"
+              label="displaykey.Web.AccountFile.WorkOrders.Product"
+              sortBy="job.Policy.ProductCode"
+              value="job.Policy.Product"
+              width="150"/>
+            <Cell
+              action="AccountJobForward.go(job)"
+              available="not (job typeis Audit and job.AuditInformation.IsReversal) and job.Viewable"
+              id="WorkOrderNumber"
+              label="displaykey.Web.AccountFile.WorkOrders.WorkOrderNumber"
+              value="job.JobNumber"/>
+            <Cell
+              enableSort="false"
+              id="WorkOrderType"
+              label="displaykey.Web.AccountFile.WorkOrders.WorkOrderType"
+              value="job.DisplayType"/>
+            <Cell
+              enableSort="false"
+              id="Status"
+              label="displaykey.Web.AccountFile.WorkOrders.Status"
+              value="job.DisplayStatus"
+              width="100"/>
+            <Cell
+              id="CompletionDate"
+              label="displaykey.Web.AccountFile.WorkOrders.CompletionDate"
+              value="job.CloseDate"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </Screen>
+  </Page>
+</PCF>

@@ -1,0 +1,189 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Screen
+    editable="true"
+    id="CreateEmailScreen">
+    <Require
+      name="symbolTable"
+      type="java.util.Map&lt;String, Object&gt;"/>
+    <Require
+      name="docContainer"
+      type="gw.api.domain.document.DocumentContainer"/>
+    <Require
+      name="emailTemplate"
+      type="String"/>
+    <Require
+      name="documentsToSend"
+      type="Document[]"/>
+    <Variable
+      initialValue="null"
+      name="documentToSave"
+      type="Document"/>
+    <Variable
+      initialValue="emailTemplate == null"
+      name="noDefaultTemplate"
+      type="Boolean"/>
+    <Variable
+      initialValue="gw.api.contact.AddressBookUtil.newAddressBookContactSource()"
+      name="externalContactSource"/>
+    <Variable
+      initialValue="docContainer != null and perm.Document.create"
+      name="saveAsDocument"/>
+    <Variable
+      initialValue="false"
+      name="showCC"/>
+    <Variable
+      initialValue="false"
+      name="showBCC"/>
+    <Variable
+      initialValue="gw.web.email.CreateEmailsScreenUIHelper.initLanguage(docContainer)"
+      name="language"
+      type="LanguageType"/>
+    <Variable
+      initialValue="gw.web.email.CreateEmailsScreenUIHelper.initNewEmail(emailTemplate, noDefaultTemplate, language,  symbolTable, documentsToSend)"
+      name="newEmail"
+      type="gw.api.email.Email"/>
+    <Variable
+      initialValue="symbolTable.get(&quot;account&quot;) as entity.Account"
+      name="account"/>
+    <Toolbar>
+      <ToolbarButton
+        action="gw.web.email.CreateEmailsScreenUIHelper.sendEmailToRecipients(newEmail, language, saveAsDocument, documentToSave, docContainer, symbolTable, emailTemplate, CurrentLocation)"
+        available="true"
+        id="SendEmailButton"
+        label="displaykey.Web.Email.SendEmail"
+        visible="true"/>
+      <ToolbarButton
+        action="CurrentLocation.cancel()"
+        available="true"
+        id="CancelEmailButton"
+        label="displaykey.Web.Email.Cancel"
+        visible="true"/>
+      <ToolbarDivider/>
+      <PickerToolbarButton
+        action="PickEmailTemplatePopup.push(new gw.api.email.EmailTemplateSearchCriteria( symbolTable.Keys as String[]))"
+        id="EmailWorksheet_UseTemplateButton"
+        label="displaykey.Web.Email.UseTemplate"
+        onPick="newEmail.useEmailTemplate( PickedValue, symbolTable ); language = gw.api.util.LocaleUtil.toLanguageType(PickedValue.Locale)"
+        shortcut="P"
+        visible="noDefaultTemplate"/>
+    </Toolbar>
+    <AlertBar
+      id="NoDefaultTemplate"
+      label="displaykey.Web.Email.Template.NotFound(emailTemplate)"
+      showConfirmMessage="false"
+      visible="emailTemplate != null and noDefaultTemplate"/>
+    <DetailViewPanel>
+      <InputColumn>
+        <Input
+          editable="true"
+          id="Language"
+          label="displaykey.Web.EmailTemplateSearch.Language"
+          required="true"
+          value="language"
+          visible="LanguageType.getTypeKeys( false ).Count &gt;  1 and emailTemplate != null">
+          <PostOnChange
+            onChange="gw.web.email.CreateEmailsScreenUIHelper.executeTemplate(newEmail, emailTemplate, noDefaultTemplate, language, symbolTable)"/>
+        </Input>
+        <InputSetRef
+          def="CreateEmailScreenRecipientInputSet(displaykey.Web.Email.ToRecipients, newEmail.ToRecipients,account)"
+          editable="true"
+          id="ToRecipientLVInput"/>
+        <ButtonInput
+          action="showCC = true"
+          id="ShowCCRecipients"
+          labelAbove="true"
+          value="displaykey.Web.Email.AddCCRecipients"
+          visible="!showCC"/>
+        <InputSetRef
+          def="CreateEmailScreenRecipientInputSet(displaykey.Web.Email.CCRecipients, newEmail.CcRecipients, account)"
+          editable="true"
+          id="ToCCRecipientLVInput"
+          visible="showCC"/>
+        <ButtonInput
+          action="showBCC = true"
+          id="ShowBCCRecipients"
+          labelAbove="true"
+          value="displaykey.Web.Email.AddBCCRecipients"
+          visible="!showBCC"/>
+        <InputSetRef
+          def="CreateEmailScreenRecipientInputSet(displaykey.Web.Email.BCCRecipients, newEmail.BccRecipients, account)"
+          editable="true"
+          id="ToBCCRecipientLVInput"
+          visible="showBCC"/>
+        <InputDivider/>
+        <CheckBoxInput
+          align="left"
+          editable="true"
+          id="SaveAsDocument"
+          labelAbove="true"
+          value="saveAsDocument"
+          valueLabel="displaykey.Web.Email.SaveAsDocument"
+          visible="docContainer != null and perm.Document.create"/>
+      </InputColumn>
+      <InputColumn>
+        <TextInput
+          editable="true"
+          id="SenderName"
+          label="displaykey.Web.Email.SenderName"
+          value="newEmail.Sender.Name"/>
+        <TextInput
+          editable="true"
+          id="SenderEmail"
+          label="displaykey.Web.Email.SenderEmail"
+          value="newEmail.Sender.EmailAddress"/>
+        <TextInput
+          editable="true"
+          id="Subject"
+          label="displaykey.Web.Email.Subject"
+          requestValidationExpression="VALUE == null ? displaykey.Web.Email.Error.SubjectRequired : null"
+          required="true"
+          value="newEmail.Subject"/>
+        <TextAreaInput
+          editable="true"
+          id="Body"
+          label="displaykey.Web.Email.Body"
+          numRows="10"
+          requestValidationExpression="VALUE == null ? displaykey.Web.Email.Error.BodyRequired : null"
+          required="true"
+          value="newEmail.Body"/>
+        <ListViewInput
+          editable="true"
+          label="displaykey.Web.Email.AttachedDocuments"
+          labelAbove="true">
+          <Toolbar>
+            <PickerToolbarButton
+              action="PickExistingDocumentPopup.push(docContainer)"
+              id="AddDocumentButton"
+              label="displaykey.Web.Email.AddDocument"
+              onPick="newEmail.addDocument(PickedValue)"
+              shortcut="A"
+              visible="true"/>
+            <IteratorButtons
+              addVisible="false"
+              iterator="AttachedDocumentsLV"/>
+          </Toolbar>
+          <ListViewPanel
+            editable="true"
+            id="AttachedDocumentsLV">
+            <RowIterator
+              editable="true"
+              elementName="attachedDocument"
+              toRemove="newEmail.removeDocument( attachedDocument )"
+              value="newEmail.Documents as DocumentBase[]">
+              <Row>
+                <Cell
+                  editable="true"
+                  id="Document"
+                  label="displaykey.Web.Email.DocumentName"
+                  value="attachedDocument.Name"/>
+              </Row>
+            </RowIterator>
+          </ListViewPanel>
+        </ListViewInput>
+      </InputColumn>
+    </DetailViewPanel>
+  </Screen>
+</PCF>

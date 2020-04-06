@@ -1,0 +1,105 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    id="AffinityGroupSearchScreen">
+    <SearchPanel
+      criteriaName="searchCriteria"
+      resultsName="affinityGroups"
+      search="searchCriteria.performSearch()"
+      searchCriteria="new gw.admin.affinitygroup.AffinityGroupSearchCriteria()"
+      searchResultsType="AffinityGroupQuery">
+      <DetailViewPanel
+        editable="true"
+        id="AffinityGroupSearchDV"
+        visible="true">
+        <Variable
+          initialValue="gw.api.system.PCDependenciesGateway.getProductModel().getAllInstances(gw.api.productmodel.Product) as gw.api.productmodel.Product[]"
+          name="products"/>
+        <Variable
+          initialValue="new gw.admin.affinitygroup.AffinityGroupSearchCriteriaAdapter(searchCriteria)"
+          name="groupSearchAdapter"
+          recalculateOnRefresh="true"/>
+        <InputColumn>
+          <InputSetRef
+            def="GlobalContactNameInputSet(new gw.search.AffinityGroupNameOwner(groupSearchAdapter))"
+            mode="gw.api.name.NameLocaleSettings.PCFMode"/>
+          <OrgInput
+            editable="not User.util.CurrentUser.ExternalUser"
+            id="Organization"
+            label="displaykey.Web.Admin.Organization"
+            pickLocation="OrganizationSearchPopup.push(null,true)"
+            value="searchCriteria.Organization"/>
+          <TypeKeyInput
+            editable="true"
+            id="GroupType"
+            label="displaykey.Web.GroupSearch.GroupType"
+            value="searchCriteria.AffinityGroupType"/>
+          <Input
+            editable="true"
+            id="ProducerCode"
+            label="displaykey.Web.Admin.AffinityGroupSearch.ProducerCode"
+            value="searchCriteria.ProducerCode"/>
+          <RangeInput
+            editable="true"
+            id="Product"
+            label="displaykey.Web.Admin.AffinityGroupSearch.Product"
+            optionLabel="VALUE.DisplayName"
+            value="searchCriteria.Product"
+            valueRange="products"/>
+          <CheckBoxInput
+            editable="true"
+            id="SearchOnlyAvailableGroups"
+            label="displaykey.Web.Admin.SearchOnlyAvailableGroups"
+            value="searchCriteria.OnlyAvailableGroups"/>
+        </InputColumn>
+        <InputFooterSection>
+          <InputSetRef
+            def="SearchAndResetInputSet()"/>
+        </InputFooterSection>
+      </DetailViewPanel>
+      <PanelRef>
+        <TitleBar
+          appendListViewPaging="true"
+          title="displaykey.Web.Search.Results"/>
+        <Toolbar/>
+        <!-- ListView that displays the results of a Group search. The group name is a hyperlink
+    that navigates to the GroupDetailPage. -->
+        <ListViewPanel
+          id="AffinityGroupSearchResultsLV">
+          <RowIterator
+            editable="false"
+            elementName="group"
+            value="affinityGroups">
+            <Row>
+              <Cell
+                action="AffinityGroupDetailPage.go(group)"
+                id="Name"
+                label="displaykey.Web.Admin.GroupSearchResults.Name"
+                sortOrder="1"
+                value="group"/>
+              <Cell
+                id="Type"
+                label="displaykey.Web.Admin.GroupSearchResults.Type"
+                value="group.AffinityGroupType"/>
+              <Cell
+                action="OrganizationDetail.go(group.Organization)"
+                id="Organization"
+                label="displaykey.Web.Admin.GroupSearchResults.Organization"
+                value="group.Organization"/>
+              <DateCell
+                id="StartDate"
+                label="displaykey.Web.Admin.AffinityGroupDetail.BasicsDV.StartDate"
+                value="group.StartDate"/>
+              <DateCell
+                id="EndDate"
+                label="displaykey.Web.Admin.AffinityGroupDetail.BasicsDV.EndDate"
+                value="group.EndDate"/>
+            </Row>
+          </RowIterator>
+        </ListViewPanel>
+      </PanelRef>
+    </SearchPanel>
+  </Screen>
+</PCF>

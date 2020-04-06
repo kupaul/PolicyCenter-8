@@ -1,0 +1,33 @@
+package rules.Assignment.DefaultGroupJobAssignmentRules_dir
+
+@gw.rules.RuleName("Producer Assignment")
+internal class ProducerAssignment {
+  static function doCondition(job : entity.Job) : boolean {
+    
+/*start00rule*/
+return job.CurrentRoleAssignment.Role == "Producer"
+/*end00rule*/
+
+  }
+
+  static function doAction(job : entity.Job, actions : gw.rules.Action) {
+
+/*start00rule*/
+var assignment = job.CurrentRoleAssignment
+var user = User.util.CurrentUser
+if (user.UserType == "Producer" or user.UserType == "Assistant") {
+  var group = user.getDefaultAssignmentGroup( "Producer" )
+  if (group != null) {
+    assignment.assign(group, user)
+    gw.assignment.AssignmentUtil.logUserRoleAssignment(assignment, actions as java.lang.String)
+    actions.exit() 
+  }
+}
+if ((assignment.assignUserByRoundRobin(true, assignment.CurrentAssignment.AssignedGroup))) {
+    gw.assignment.AssignmentUtil.logUserRoleAssignment(assignment, actions as java.lang.String)
+  actions.exit() 
+}
+/*end00rule*/
+
+  }
+}

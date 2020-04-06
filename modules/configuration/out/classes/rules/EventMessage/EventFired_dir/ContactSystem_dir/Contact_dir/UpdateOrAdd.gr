@@ -1,0 +1,39 @@
+package rules.EventMessage.EventFired_dir.ContactSystem_dir.Contact_dir
+uses gw.plugin.Plugins
+uses gw.plugin.contact.ContactSystemPlugin
+
+@gw.rules.RuleName("UpdateOrAdd")
+internal class UpdateOrAdd {
+  static function doCondition(messageContext : entity.MessageContext) : boolean {
+    
+/*start00rule*/
+return (messageContext.EventName == "ContactChanged" or 
+messageContext.EventName == "ContactAdded") 
+
+/*end00rule*/
+
+  }
+
+  static function doAction(messageContext : entity.MessageContext, actions : gw.rules.Action) {
+
+/*start00rule*/
+uses gw.contact.ContactTokenThreadLocal
+uses gw.api.database.Query
+
+var contact = messageContext.Root as Contact
+var contactInRequest = ContactTokenThreadLocal.isTokenSet("ab", contact.AddressBookUID, entity.Contact)
+if (not contactInRequest){
+  var destID = gw.plugin.messaging.ContactMessageTransport.DEST_ID
+  var contactMsgs = Query.make(Message).compare("DestinationID", Equals, destID).compare("contact", Equals, contact).select()
+  // if there is any message for the same contact in the queue, the abuids for the contact or the addresses
+  // in the contact might be changed. Therefore the late bound abuid is necessary right before the message sent.                          
+  var lateBoundABUID = (contactMsgs.Count > 0)
+  var plugin = Plugins.get(ContactSystemPlugin)
+  if (plugin != null) {
+    plugin.createAsyncMessage(messageContext, contact, lateBoundABUID)
+  }
+}
+/*end00rule*/
+
+  }
+}

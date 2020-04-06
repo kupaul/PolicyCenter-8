@@ -1,0 +1,907 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wsdl:definitions targetNamespace="http://api.webservices.pc.guidewire.com/" xmlns:apachesoap="http://xml.apache.org/xml-soap" xmlns:impl="http://api.webservices.pc.guidewire.com/" xmlns:intf="http://api.webservices.pc.guidewire.com/" xmlns:soapenc="http://schemas.xmlsoap.org/soap/encoding/" xmlns:tns1="http://fault.webservices.pc.guidewire.com/" xmlns:tns2="http://entity.webservices.pc.guidewire.com/" xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:wsdlsoap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:xsd="http://www.w3.org/2001/XMLSchema"><wsdl:types><schema targetNamespace="http://fault.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://entity.webservices.pc.guidewire.com/"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="SOAPException"><xsd:annotation><xsd:documentation>A generic SOAP exception.</xsd:documentation></xsd:annotation><sequence><element name="Message" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>The message associated with this exception</xsd:documentation></xsd:annotation></element><element name="OtherMessages" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>Other messages attached to this exception.  This message may contain information
+related to other exceptions that occurred during a SOAP call, but not directly
+associated with this particular exception.</xsd:documentation></xsd:annotation></element></sequence></complexType><complexType name="SOAPSenderException"><xsd:annotation><xsd:documentation>SOAPSenderException is the base class for all exceptions that resulted from
+a sender error. This usually means that required data was not properly encoded
+or was absent. Senders should not send the message again unless some steps have
+been taken to make the encoded data valid.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="DataConversionException"><xsd:annotation><xsd:documentation>Thrown by many APIs when they encounter a problem translating a SOAP data object into
+an internal system object.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="BadIdentifierException"><xsd:annotation><xsd:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect).</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="PermissionException"><xsd:annotation><xsd:documentation>Thrown when the authenticated SOAP user does not have permission to
+perform the requested operation</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="SOAPServerException"><xsd:annotation><xsd:documentation>SOAPServerException is the base class for all exceptions that resulted from
+a server error. This is something of a catch-all exception type insofar as
+some things which might in fact be considered SOAPSenderExceptions are reported
+as SOAPServerExceptions. Perhaps a rule failed or something else. Generally it
+indicates a problem in the server that is likely retryable at some future time.
+The database being down, an unavailable plugin, etc would fall into this catagory.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="ServerStateException"><xsd:annotation><xsd:documentation>ServerStateException is thrown when a request is made at a time the
+server is in a state that disallows the request. An example is if
+an attempt is made to add a claim and the server is in maintenance
+mode.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPServerException"><sequence/></extension></complexContent></complexType><complexType name="SOAPRetryableException"><xsd:annotation><xsd:documentation>SOAPRetryableException is the class for all exceptions that are retryable
+immediately.  The primary example of this is ConcurrentDataChangeException.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPException"><sequence/></extension></complexContent></complexType><complexType name="LoginException"><xsd:annotation><xsd:documentation>Class of exceptions thrown when a user tries to log in and an authentication failure occurs.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:PermissionException"><sequence/></extension></complexContent></complexType><complexType name="EntityStateException"><xsd:annotation><xsd:documentation>Thrown when an attempt is made to manipulate an object that is in a state
+that prevents the operation from being performed. An example is trying to
+modify a Claim that is marked as closed.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType><complexType name="DuplicateKeyException"><xsd:annotation><xsd:documentation>Throws if a duplicate data exception is detected in the database.  I.e. a unique index violation.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="FieldConversionException"><xsd:annotation><xsd:documentation>Thrown when a data type cannot be converted into the native data type.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="FieldFormatException"><xsd:annotation><xsd:documentation>Thrown when the input type does not match the format specified in the metadata.  I.e. a string is too long.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="RequiredFieldException"><xsd:annotation><xsd:documentation>Thrown when required data is missing from a bean.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="UnknownTypeKeyException"><xsd:annotation><xsd:documentation>Thrown when a typekey value isn't available on the server.  This exception can only
+happen if the SOAP WSDL that is being used on the remote side is invalid.</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:DataConversionException"><sequence/></extension></complexContent></complexType><complexType name="BatchProcessException"><xsd:annotation><xsd:documentation>SOAP Exception specific to batch process operations</xsd:documentation></xsd:annotation><complexContent><extension base="tns1:SOAPServerException"><sequence/></extension></complexContent></complexType><complexType name="AlreadyExecutedException"><complexContent><extension base="tns1:SOAPSenderException"><sequence/></extension></complexContent></complexType></schema><schema targetNamespace="http://entity.webservices.pc.guidewire.com/" xmlns="http://www.w3.org/2001/XMLSchema"><import namespace="http://fault.webservices.pc.guidewire.com/"/><import namespace="http://schemas.xmlsoap.org/soap/encoding/"/><complexType name="ProcessID"><xsd:annotation><xsd:documentation>A simple class that contains the pid of a previously started batch process.</xsd:documentation></xsd:annotation><sequence><element name="Pid" type="xsd:long"><xsd:annotation><xsd:documentation>The process id of the batch process</xsd:documentation></xsd:annotation></element></sequence></complexType><complexType name="TableImportResult"><xsd:annotation><xsd:documentation>A simple data class used to transmit the aggregated results of a staging
+table load</xsd:documentation></xsd:annotation><sequence><element name="LoadCommandID" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>Returns the public id of the row in loadcommand table for the operation.</xsd:documentation></xsd:annotation></element><element name="NumErrors" type="xsd:int"><xsd:annotation><xsd:documentation>Returns the number of load errors generated by the operation.</xsd:documentation></xsd:annotation></element><element name="StrErrorMessage" nillable="true" type="soapenc:string"><xsd:annotation><xsd:documentation>The error message string</xsd:documentation></xsd:annotation></element></sequence></complexType></schema></wsdl:types>
+  <wsdl:message name="integrityCheckStagingTableContentsAsBatchProcessRequest">
+    <wsdl:part name="clearErrorTable" type="soapenc:boolean">
+<wsdl:documentation>If true, the load error tables will be cleared
+before executing integrity checking (defaults to true if this parameter is null).</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="populateExclusionTable" type="soapenc:boolean">
+<wsdl:documentation>If true, populate exclusion table with any newly
+excluded rows before executing integrity checking (defaults to true if this parameter
+is null).</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="allowRefsToExistingNonAdminRows" type="soapenc:boolean">
+<wsdl:documentation>If true, rows in the staging tables are allowed to reference
+existing rows in any table, regardless of whether or not the tables
+are admin tables.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="populateExclusionTableResponse">
+  </wsdl:message>
+  <wsdl:message name="clearErrorTableRequest">
+  </wsdl:message>
+  <wsdl:message name="integrityCheckStagingTableContentsAndLoadSourceTablesAsBatchProcessResponse">
+    <wsdl:part name="integrityCheckStagingTableContentsAndLoadSourceTablesAsBatchProcessReturn" type="tns2:ProcessID">
+<wsdl:documentation>a ProcessID that can be used to query the status of the running load</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="encryptDataOnStagingTablesRequest">
+  </wsdl:message>
+  <wsdl:message name="populateExclusionTableAsBatchProcessRequest">
+  </wsdl:message>
+  <wsdl:message name="integrityCheckStagingTableContentsAsBatchProcessResponse">
+    <wsdl:part name="integrityCheckStagingTableContentsAsBatchProcessReturn" type="tns2:ProcessID">
+<wsdl:documentation>a ProcessID that can be used to retrieve the status of the job</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="encryptDataOnStagingTablesResponse">
+    <wsdl:part name="encryptDataOnStagingTablesReturn" type="xsd:int">
+<wsdl:documentation>The number of staging tables whose columns were encrypted</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="populateExclusionTableRequest">
+  </wsdl:message>
+  <wsdl:message name="deleteExcludedRowsFromStagingTablesResponse">
+  </wsdl:message>
+  <wsdl:message name="clearStagingTablesResponse">
+  </wsdl:message>
+  <wsdl:message name="BadIdentifierException">
+    <wsdl:part name="fault" type="tns1:BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="deleteExcludedRowsFromStagingTablesAsBatchProcessRequest">
+  </wsdl:message>
+  <wsdl:message name="integrityCheckStagingTableContentsRequest">
+    <wsdl:part name="clearErrorTable" type="soapenc:boolean">
+<wsdl:documentation>If true, the load error tables will be cleared
+before executing integrity checking (defaults to true if this parameter is null).</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="populateExclusionTable" type="soapenc:boolean">
+<wsdl:documentation>If true, populate exclusion table with any newly
+excluded rows before executing integrity checking (defaults to true if this parameter
+is null).</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="allowRefsToExistingNonAdminRows" type="soapenc:boolean">
+<wsdl:documentation>If true, rows in the staging tables are allowed to reference
+existing rows in any table, regardless of whether or not the tables
+are admin tables.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="PermissionException">
+    <wsdl:part name="fault" type="tns1:PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="clearExclusionTableResponse">
+  </wsdl:message>
+  <wsdl:message name="clearExclusionTableRequest">
+  </wsdl:message>
+  <wsdl:message name="clearStagingTablesRequest">
+  </wsdl:message>
+  <wsdl:message name="integrityCheckStagingTableContentsResponse">
+    <wsdl:part name="integrityCheckStagingTableContentsReturn" type="tns2:TableImportResult">
+<wsdl:documentation>a TableImportResult object containing load error information and
+any raised exception.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="populateExclusionTableAsBatchProcessResponse">
+    <wsdl:part name="populateExclusionTableAsBatchProcessReturn" type="tns2:ProcessID">
+<wsdl:documentation>a ProcessID that can be used to retrieve the status of the job</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="integrityCheckStagingTableContentsAndLoadSourceTablesRequest">
+    <wsdl:part name="clearErrorTable" type="soapenc:boolean">
+<wsdl:documentation>If true, the load error tables will be cleared
+before executing integrity checking (defaults to true if this parameter is null).</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="populateExclusionTable" type="soapenc:boolean">
+<wsdl:documentation>If true, populate exclusion table with any newly
+excluded rows before executing integrity checking (defaults to true if this parameter
+is null).</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="updateDBStatisticsWithEstimates" type="soapenc:boolean">
+<wsdl:documentation>If true, then update the database statistics on any table that will be loaded with
+estimated changes based on the contents of the associated staging table.  When
+loading large amounts of data which will cause a source table to grow significantly, the optimizer could choose
+a bad query plan based on the existing state of the database statistics unless the loader updates the database
+statistics to reflect the expected size of the table after the load has completed.  This
+parameter is only meaningful when running against Oracle.</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="allowRefsToExistingNonAdminRows" type="soapenc:boolean">
+<wsdl:documentation>If true, rows in the staging tables are allowed to reference
+existing rows in any table, regardless of whether or not the tables
+are admin tables.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="updateStatisticsOnStagingTablesResponse">
+  </wsdl:message>
+  <wsdl:message name="integrityCheckStagingTableContentsAndLoadSourceTablesResponse">
+    <wsdl:part name="integrityCheckStagingTableContentsAndLoadSourceTablesReturn" type="tns2:TableImportResult">
+<wsdl:documentation>a TableImportResult object containing load error information and
+any raised exception.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="updateStatisticsOnStagingTablesRequest">
+  </wsdl:message>
+  <wsdl:message name="integrityCheckZoneStagingTableContentsAndLoadZoneSourceTablesRequest">
+    <wsdl:part name="clearErrorTable" type="soapenc:boolean">
+<wsdl:documentation>If true, the load error tables will be cleared
+before executing integrity checking (defaults to true if this parameter is null).</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="populateExclusionTable" type="soapenc:boolean">
+<wsdl:documentation>If true, populate exclusion table with any newly
+excluded rows before executing integrity checking (defaults to true if this parameter
+is null).</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="updateDBStatisticsWithEstimates" type="soapenc:boolean">
+<wsdl:documentation>If true, then update the database statistics on any table that will be loaded with
+estimated changes based on the contents of the associated staging table.  When
+loading large amounts of data which will cause a source table to grow significantly, the optimizer could choose
+a bad query plan based on the existing state of the database statistics unless the loader updates the database
+statistics to reflect the expected size of the table after the load has completed.  This
+parameter is only meaningful when running against Oracle.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="ServerStateException">
+    <wsdl:part name="fault" type="tns1:ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="integrityCheckStagingTableContentsAndLoadSourceTablesAsBatchProcessRequest">
+    <wsdl:part name="clearErrorTable" type="soapenc:boolean">
+<wsdl:documentation>If true, the load error tables will be cleared
+before executing integrity checking (defaults to true if this parameter is null).</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="populateExclusionTable" type="soapenc:boolean">
+<wsdl:documentation>If true, populate exclusion table with any newly
+excluded rows before executing integrity checking (defaults to true if this parameter
+is null).</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="updateDBStatisticsWithEstimates" type="soapenc:boolean">
+<wsdl:documentation>If true, then update the database statistics on any table that will be loaded with
+estimated changes based on the contents of the associated staging table.  When
+loading large amounts of data which will cause a source table to grow significantly, the optimizer could choose
+a bad query plan based on the existing state of the database statistics unless the loader updates the database
+statistics to reflect the expected size of the table after the load has completed.  This
+parameter is only meaningful when running against Oracle.</wsdl:documentation>
+    </wsdl:part>
+    <wsdl:part name="allowRefsToExistingNonAdminRows" type="soapenc:boolean">
+<wsdl:documentation>If true, rows in the staging tables are allowed to reference
+existing rows in any table, regardless of whether or not the tables
+are admin tables.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="SOAPException">
+    <wsdl:part name="fault" type="tns1:SOAPException">
+<wsdl:documentation/>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="integrityCheckZoneStagingTableContentsAndLoadZoneSourceTablesResponse">
+    <wsdl:part name="integrityCheckZoneStagingTableContentsAndLoadZoneSourceTablesReturn" type="tns2:TableImportResult">
+<wsdl:documentation>a TableImportResult object containing load error information and
+any raised exception.</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="clearErrorTableResponse">
+  </wsdl:message>
+  <wsdl:message name="updateStatisticsOnStagingTablesAsBatchProcessRequest">
+  </wsdl:message>
+  <wsdl:message name="deleteExcludedRowsFromStagingTablesRequest">
+  </wsdl:message>
+  <wsdl:message name="deleteExcludedRowsFromStagingTablesAsBatchProcessResponse">
+    <wsdl:part name="deleteExcludedRowsFromStagingTablesAsBatchProcessReturn" type="tns2:ProcessID">
+<wsdl:documentation>a ProcessID that can be used to retrieve the status of the job</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:message name="updateStatisticsOnStagingTablesAsBatchProcessResponse">
+    <wsdl:part name="updateStatisticsOnStagingTablesAsBatchProcessReturn" type="tns2:ProcessID">
+<wsdl:documentation>a ProcessID that can be used to retrieve the status of the job</wsdl:documentation>
+    </wsdl:part>
+  </wsdl:message>
+  <wsdl:portType name="ITableImportAPI">
+<wsdl:documentation>This interface provides methods for integrity checking and loading data via
+the  staging tables.
+&lt;p/&gt;
+In particular, it allows the caller to instruct the server
+to perform the following staging table operations:
+&lt;ol&gt;
+&lt;li&gt;Clear error table.&lt;/li&gt;
+&lt;li&gt;Clear exclusion table.&lt;/li&gt;
+&lt;li&gt;Clear staging tables.&lt;/li&gt;
+&lt;li&gt;Delete rows from staging tables based on contents of exclusion table.&lt;/li&gt;
+&lt;li&gt;Populate exclusion table with rows to be excluded.&lt;/li&gt;
+&lt;li&gt;Integrity check the contents of the staging tables.&lt;/li&gt;
+&lt;li&gt;Integrity check the contents of the Zone staging tables and load Zone source tables if no errors.&lt;/li&gt;
+&lt;li&gt;Integrity check the contents of the staging tables and load source tables if no errors.&lt;/li&gt;
+&lt;/ol&gt;
+@deprecated Use WS-I webservice gw.wsi.pl.TableImportAPI instead.
+</wsdl:documentation>
+    <wsdl:operation name="clearErrorTable">
+<wsdl:documentation>Instructs the server to clear the error tables.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:clearErrorTableRequest" name="clearErrorTableRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:clearErrorTableResponse" name="clearErrorTableResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="clearExclusionTable">
+<wsdl:documentation>Instructs the  server to clear the exclusion table.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:clearExclusionTableRequest" name="clearExclusionTableRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:clearExclusionTableResponse" name="clearExclusionTableResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="clearStagingTables">
+<wsdl:documentation>Instructs the server to clear all staging tables.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:clearStagingTablesRequest" name="clearStagingTablesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:clearStagingTablesResponse" name="clearStagingTablesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="deleteExcludedRowsFromStagingTables">
+<wsdl:documentation>Instructs the server to delete rows from staging tables
+based on the contents of the exclusion table (delete all rows in all
+staging tables where the LUWID matches a LUWID in the exclusion table.)
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:deleteExcludedRowsFromStagingTablesRequest" name="deleteExcludedRowsFromStagingTablesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:deleteExcludedRowsFromStagingTablesResponse" name="deleteExcludedRowsFromStagingTablesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="deleteExcludedRowsFromStagingTablesAsBatchProcess">
+<wsdl:documentation>Instructs the server to delete rows from staging tables
+based on the contents of the exclusion table (delete all rows in all
+staging tables where the LUWID matches a LUWID in the exclusion table.)
+&lt;p/&gt;
+The same as deleteExcludedRowsFromStagingTables except that the operation
+is done asynchronously in a batch process.  Note that this batch process
+can't be terminated.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:deleteExcludedRowsFromStagingTablesAsBatchProcessRequest" name="deleteExcludedRowsFromStagingTablesAsBatchProcessRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:deleteExcludedRowsFromStagingTablesAsBatchProcessResponse" name="deleteExcludedRowsFromStagingTablesAsBatchProcessResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="encryptDataOnStagingTables">
+<wsdl:documentation>Encrypt columns configured to be encrypted in the staging tables
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:encryptDataOnStagingTablesRequest" name="encryptDataOnStagingTablesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:encryptDataOnStagingTablesResponse" name="encryptDataOnStagingTablesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="integrityCheckStagingTableContents" parameterOrder="clearErrorTable populateExclusionTable allowRefsToExistingNonAdminRows">
+<wsdl:documentation>Instructs the  server to check the integrity of the contents of the staging
+tables, inserting details about any failures into the load error tables.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:integrityCheckStagingTableContentsRequest" name="integrityCheckStagingTableContentsRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:integrityCheckStagingTableContentsResponse" name="integrityCheckStagingTableContentsResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="integrityCheckStagingTableContentsAndLoadSourceTables" parameterOrder="clearErrorTable populateExclusionTable updateDBStatisticsWithEstimates allowRefsToExistingNonAdminRows">
+<wsdl:documentation>Instructs the server to check the integrity of the contents of the staging
+tables, inserting details about any failures into the error tables. If no integrity check
+errors are detected, the server will load the source tables (the main application
+tables) with the contents of the staging tables.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:integrityCheckStagingTableContentsAndLoadSourceTablesRequest" name="integrityCheckStagingTableContentsAndLoadSourceTablesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:integrityCheckStagingTableContentsAndLoadSourceTablesResponse" name="integrityCheckStagingTableContentsAndLoadSourceTablesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="integrityCheckStagingTableContentsAndLoadSourceTablesAsBatchProcess" parameterOrder="clearErrorTable populateExclusionTable updateDBStatisticsWithEstimates allowRefsToExistingNonAdminRows">
+<wsdl:documentation>Instructs the server to check the integrity of the contents of the staging
+tables, inserting details about any failures into the load error tables. If no integrity check
+errors are detected, the server will load the source tables (the main application
+tables) with the contents of the staging tables.  This method does the load asynchronously
+via the batch process mechanism, and the process ID that is returned can be used to query
+the status of the load and find out if it succeeded or failed (or is still running).  After
+completion, the process status will indicate whether or not the load succeeded, and the
+failedOps field will contain the number of validation errors that occurred (if any).  Note that this batch process
+can't be terminated.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:integrityCheckStagingTableContentsAndLoadSourceTablesAsBatchProcessRequest" name="integrityCheckStagingTableContentsAndLoadSourceTablesAsBatchProcessRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:integrityCheckStagingTableContentsAndLoadSourceTablesAsBatchProcessResponse" name="integrityCheckStagingTableContentsAndLoadSourceTablesAsBatchProcessResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="integrityCheckStagingTableContentsAsBatchProcess" parameterOrder="clearErrorTable populateExclusionTable allowRefsToExistingNonAdminRows">
+<wsdl:documentation>Instructs the  server to check the integrity of the contents of the staging
+tables, inserting details about any failures into the load error tables.  Works like
+integrityCheckStagingTableContents, but does so in a batch process. After
+completion, the process status will indicate whether or not the load succeeded, and the
+failedOps field will contain the number of integrity check errors that occurred (if any).  Note that this batch process
+can't be terminated.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:integrityCheckStagingTableContentsAsBatchProcessRequest" name="integrityCheckStagingTableContentsAsBatchProcessRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:integrityCheckStagingTableContentsAsBatchProcessResponse" name="integrityCheckStagingTableContentsAsBatchProcessResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="integrityCheckZoneStagingTableContentsAndLoadZoneSourceTables" parameterOrder="clearErrorTable populateExclusionTable updateDBStatisticsWithEstimates">
+<wsdl:documentation>Instructs the server to check the integrity of the contents of the Zone staging
+tables, inserting details about any failures into the error tables. If no integrity check
+errors are detected, the server will load the Zone source tables (the Zone main application
+tables) with the contents of the staging tables.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:integrityCheckZoneStagingTableContentsAndLoadZoneSourceTablesRequest" name="integrityCheckZoneStagingTableContentsAndLoadZoneSourceTablesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:integrityCheckZoneStagingTableContentsAndLoadZoneSourceTablesResponse" name="integrityCheckZoneStagingTableContentsAndLoadZoneSourceTablesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="populateExclusionTable">
+<wsdl:documentation>Instructs the server to populate the exclusion table
+with rows to be excluded (add rows to the exclusion table for every
+unique LUWID in the load error tables that is not already in the exclusion table).
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:populateExclusionTableRequest" name="populateExclusionTableRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:populateExclusionTableResponse" name="populateExclusionTableResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="populateExclusionTableAsBatchProcess">
+<wsdl:documentation>Instructs the  server to populate the exclusion table
+with rows to be excluded (add rows to the exclusion table for every
+unique LUWID in the error tables that is not already in the exclusion table).
+&lt;p/&gt;
+The same as deleteExcludedRowsFromStagingTables except that the operation
+is done asynchronously in a batch process. Note that this batch process
+can't be terminated.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:populateExclusionTableAsBatchProcessRequest" name="populateExclusionTableAsBatchProcessRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:populateExclusionTableAsBatchProcessResponse" name="populateExclusionTableAsBatchProcessResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="updateStatisticsOnStagingTables">
+<wsdl:documentation>Instructs the  server to update the database statistics on the staging tables.
+(Database statistics will not be updated on the other tables.)
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:updateStatisticsOnStagingTablesRequest" name="updateStatisticsOnStagingTablesRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:updateStatisticsOnStagingTablesResponse" name="updateStatisticsOnStagingTablesResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="updateStatisticsOnStagingTablesAsBatchProcess">
+<wsdl:documentation>Instructs the  server to update the database statistics on the staging tables.
+(Database statistics will not be updated on the other tables.)  The same as updateStatisticsOnStagingTables
+except that the process will be performed asynchronously in a batch process.  After completion,
+the process status will contain the number of tables that were updated in the opsCompleted field.
+Note that this batch process can't be terminated.
+&lt;br&gt;@deprecated </wsdl:documentation>
+      <wsdl:input message="impl:updateStatisticsOnStagingTablesAsBatchProcessRequest" name="updateStatisticsOnStagingTablesAsBatchProcessRequest">
+    </wsdl:input>
+      <wsdl:output message="impl:updateStatisticsOnStagingTablesAsBatchProcessResponse" name="updateStatisticsOnStagingTablesAsBatchProcessResponse">
+    </wsdl:output>
+      <wsdl:fault message="impl:ServerStateException" name="ServerStateException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:SOAPException" name="SOAPException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:PermissionException" name="PermissionException">
+    </wsdl:fault>
+      <wsdl:fault message="impl:BadIdentifierException" name="BadIdentifierException">
+    </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:portType>
+  <wsdl:binding name="ITableImportAPISoapBinding" type="impl:ITableImportAPI">
+    <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
+    <wsdl:operation name="clearErrorTable">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="clearErrorTableRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="clearErrorTableResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="clearExclusionTable">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="clearExclusionTableRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="clearExclusionTableResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="clearStagingTables">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="clearStagingTablesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="clearStagingTablesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="deleteExcludedRowsFromStagingTables">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="deleteExcludedRowsFromStagingTablesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="deleteExcludedRowsFromStagingTablesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="deleteExcludedRowsFromStagingTablesAsBatchProcess">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="deleteExcludedRowsFromStagingTablesAsBatchProcessRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="deleteExcludedRowsFromStagingTablesAsBatchProcessResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="encryptDataOnStagingTables">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="encryptDataOnStagingTablesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="encryptDataOnStagingTablesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="integrityCheckStagingTableContents">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="integrityCheckStagingTableContentsRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="integrityCheckStagingTableContentsResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="integrityCheckStagingTableContentsAndLoadSourceTables">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="integrityCheckStagingTableContentsAndLoadSourceTablesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="integrityCheckStagingTableContentsAndLoadSourceTablesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="integrityCheckStagingTableContentsAndLoadSourceTablesAsBatchProcess">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="integrityCheckStagingTableContentsAndLoadSourceTablesAsBatchProcessRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="integrityCheckStagingTableContentsAndLoadSourceTablesAsBatchProcessResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="integrityCheckStagingTableContentsAsBatchProcess">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="integrityCheckStagingTableContentsAsBatchProcessRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="integrityCheckStagingTableContentsAsBatchProcessResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="integrityCheckZoneStagingTableContentsAndLoadZoneSourceTables">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="integrityCheckZoneStagingTableContentsAndLoadZoneSourceTablesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="integrityCheckZoneStagingTableContentsAndLoadZoneSourceTablesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="populateExclusionTable">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="populateExclusionTableRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="populateExclusionTableResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="populateExclusionTableAsBatchProcess">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="populateExclusionTableAsBatchProcessRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="populateExclusionTableAsBatchProcessResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="updateStatisticsOnStagingTables">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="updateStatisticsOnStagingTablesRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="updateStatisticsOnStagingTablesResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="updateStatisticsOnStagingTablesAsBatchProcess">
+      <wsdlsoap:operation soapAction=""/>
+      <wsdl:input name="updateStatisticsOnStagingTablesAsBatchProcessRequest">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:input>
+      <wsdl:output name="updateStatisticsOnStagingTablesAsBatchProcessResponse">
+        <wsdlsoap:body encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:output>
+      <wsdl:fault name="ServerStateException">
+<wsdl:documentation>Thrown when a request is made at a time the server is in a state that disallows the request.</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="ServerStateException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="SOAPException">
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="SOAPException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="PermissionException">
+<wsdl:documentation>Thrown when the authenticated SOAP user does not have permission to perform the requested operation</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="PermissionException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+      <wsdl:fault name="BadIdentifierException">
+<wsdl:documentation>Thrown when an internal public ID doesn't map to a real bean (problem could be that type was incorrect)</wsdl:documentation>
+        <wsdlsoap:fault encodingStyle="http://schemas.xmlsoap.org/soap/encoding/" name="BadIdentifierException" namespace="http://api.webservices.pc.guidewire.com/" use="encoded"/>
+      </wsdl:fault>
+    </wsdl:operation>
+  </wsdl:binding>
+  <wsdl:service name="ITableImportAPIService">
+<wsdl:documentation>This interface provides methods for integrity checking and loading data via
+the  staging tables.
+&lt;p/&gt;
+In particular, it allows the caller to instruct the server
+to perform the following staging table operations:
+&lt;ol&gt;
+&lt;li&gt;Clear error table.&lt;/li&gt;
+&lt;li&gt;Clear exclusion table.&lt;/li&gt;
+&lt;li&gt;Clear staging tables.&lt;/li&gt;
+&lt;li&gt;Delete rows from staging tables based on contents of exclusion table.&lt;/li&gt;
+&lt;li&gt;Populate exclusion table with rows to be excluded.&lt;/li&gt;
+&lt;li&gt;Integrity check the contents of the staging tables.&lt;/li&gt;
+&lt;li&gt;Integrity check the contents of the Zone staging tables and load Zone source tables if no errors.&lt;/li&gt;
+&lt;li&gt;Integrity check the contents of the staging tables and load source tables if no errors.&lt;/li&gt;
+&lt;/ol&gt;
+@deprecated Use WS-I webservice gw.wsi.pl.TableImportAPI instead.
+</wsdl:documentation>
+    <wsdl:port binding="impl:ITableImportAPISoapBinding" name="ITableImportAPI">
+      <wsdlsoap:address location="http://dontuse.defaultvalue.com/ITableImportAPI"/>
+    </wsdl:port>
+  </wsdl:service>
+</wsdl:definitions>

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?><entity xmlns="http://guidewire.com/datamodel" desc="Contains information about an audit" entity="AuditInformation" exportable="false" extendable="true" loadable="false" platform="false" subpackage="policy.audit" table="auditinformation" type="retireable">
+  <column default="false" desc="To indicate whether this is a series audit; primarily to distinguish between single checking and series checking." name="Series" nullok="false" type="bit"/>
+  <column desc="Start date of the audit period." name="AuditPeriodStartDate" nullok="false" setterScriptability="hidden" type="datetime"/>
+  <column desc="End date of the audit period." name="AuditPeriodEndDate" nullok="false" setterScriptability="hidden" type="datetime"/>
+  <column desc="Initialization date of the audit task." name="InitDate" nullok="false" type="datetime"/>
+  <column desc="Due date of the audit." name="DueDate" nullok="false" type="datetime"/>
+  <monetaryamount amountColumnName="AuditFee" desc="Fee for this audit" name="AuditFee" nullok="true">
+  </monetaryamount>
+  <column desc="Special instructions for the auditor" name="Instructions" nullok="true" type="longtext"/>
+  <column desc="The date the audit related information was received" name="ReceivedDate" nullok="true" type="datetime"/>
+  <column default="false" desc="Was the audit waived?" name="Waive" nullok="true" type="bit"/>
+  <column desc="The date this audit was reversed" name="ReversalDate" nullok="true" type="datetime"/>
+  <column default="false" desc="Whether or not this audit has been escalated by the overdue premium report process." name="Escalated" nullok="false" type="bit"/>
+  <typekey desc="The type of schedule that is used to schedule audits" name="AuditScheduleType" nullok="false" setterScriptability="hidden" typelist="AuditScheduleType"/>
+  <typekey desc="The type of revision (revision or reversal) that is applied to this audit" name="RevisionType" nullok="true" setterScriptability="hidden" typelist="RevisionType"/>
+  <typekey desc="The audit method to be used." name="AuditMethod" nullok="false" typelist="AuditMethod"/>
+  <typekey desc="Actual audit method used for this audit" name="ActualAuditMethod" nullok="true" typelist="AuditMethod"/>
+  <foreignkey columnName="PolicyID" desc="The policy containing this audit task." exportable="false" fkentity="Policy" getterScriptability="hidden" name="Policy" nullok="false" setterScriptability="hidden"/>
+  <foreignkey columnName="PolicyTermID" desc="Associated policy term" fkentity="PolicyTerm" name="PolicyTerm" nullok="false" setterScriptability="hidden"/>
+  <datetimeordering firstcolumnname="InitDate" operator="LE" secondcolumnname="DueDate"/>
+  <datetimeordering firstcolumnname="AuditPeriodStartDate" operator="LT" secondcolumnname="AuditPeriodEndDate"/>
+  <onetoone desc="The audit job for this audit." fkentity="Audit" name="Audit" nullok="true"/>
+</entity>

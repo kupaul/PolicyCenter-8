@@ -1,0 +1,193 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <ListViewPanel
+    alternateEntryStyle="false"
+    id="CPBuildingsAndLocationsLV">
+    <ExposeIterator
+      flags="removeAvailable"
+      valueType="entity.CPLocation"
+      widget="CPBuildingsAndLocationsLV"/>
+    <Require
+      name="cpLine"
+      type="CommercialPropertyLine"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="10"
+      name="maxUnusedBuildings"
+      type="int"/>
+    <Row
+      renderAsSmartHeader="true">
+      <Cell
+        align="center"
+        id="ActionsHeader"
+        value="displaykey.Web.Policy.LocationContainer.Location.Actions"/>
+      <Cell
+        align="center"
+        id="BuildingDescHeader"
+        value="displaykey.Web.Policy.LocationContainer.Location.Building.Description"/>
+      <Cell
+        align="center"
+        id="BuildingLimitHeader"
+        value="displaykey.Web.Policy.CP.Location.Building.BuildingLimit"/>
+      <Cell
+        align="center"
+        id="BuildingBPPHeader"
+        value="displaykey.Web.Policy.CP.Location.Building.BuildingBPPLimit"/>
+      <Cell
+        align="center"
+        id="BusIncomeHeader"
+        value="displaykey.Web.Policy.CP.Location.Building.BusinessIncomeLimit"/>
+      <Cell
+        align="center"
+        id="ExtraExpenseHeader"
+        value="displaykey.Web.Policy.CP.Location.Building.ExtraExpenseLimit"/>
+      <Cell
+        align="center"
+        id="CoverageCurrency"
+        value="displaykey.Web.Policy.CoverableCurrency"
+        visible="gw.api.util.CurrencyUtil.isMultiCurrencyMode()"/>
+    </Row>
+    <RowIterator
+      checkBoxVisible="false"
+      editable="true"
+      elementName="cpLocation"
+      hideCheckBoxesIfReadOnly="true"
+      numEntriesRequired="0"
+      pageSize="5"
+      pickLocation="CPLocationPopup.push(cpLine, true, true, jobWizardHelper)"
+      toRemove="cpLine.removeFromLineSpecificLocations(cpLocation)"
+      validationLabel="displaykey.Web.Policy.LocationContainer.Locations"
+      value="cpLine.CPLocations">
+      <Variable
+        initialValue="cpLocation.UnusedBuildings"
+        name="unusedBuildings"/>
+      <IteratorSort
+        sortBy="cpLocation.Location.LocationNum"
+        sortOrder="1"/>
+      <Row
+        useArchivedStyle="false"
+        useTitleStyle="true">
+        <Cell
+          align="center"
+          hideChildrenIfReadOnly="false"
+          id="Actions"
+          value="&quot;&quot;">
+          <MenuItem
+            id="AddBuilding"
+            label="displaykey.Web.Policy.LocationContainer.Location.AddBuilding"
+            visible="openForEdit">
+            <MenuItem
+              action="CPBuildingPopup.push(cpLine, cpLocation, openForEdit, jobWizardHelper)"
+              id="AddNewBuilding"
+              label="displaykey.Web.Policy.LocationContainer.Location.CreateNewBuilding"/>
+            <MenuItem
+              id="AddExistingBuildings"
+              label="displaykey.Web.Policy.LocationContainer.Location.ExistingBuilding">
+              <MenuItemIterator
+                elementName="unusedBuilding"
+                id="UnusedBuildingIterator"
+                value="getLimitedNumberOfSortedUnusedBuildings(unusedBuildings, maxUnusedBuildings)">
+                <IteratorSort
+                  sortBy="unusedBuilding.BuildingNum"
+                  sortOrder="1"/>
+                <MenuItem
+                  action="CPBuildingPopup.push(cpLine, cpLocation, unusedBuilding, openForEdit, jobWizardHelper)"
+                  id="UnassignedBuilding"
+                  label="unusedBuilding.DisplayName"/>
+              </MenuItemIterator>
+              <MenuItem
+                action="MoreCPBuildingsPopup.push(cpLocation, unusedBuildings, openForEdit)"
+                id="AddMoreBuildings"
+                label="displaykey.Web.Policy.LocationContainer.Location.MoreBuildings"
+                visible="unusedBuildings.Count &gt; maxUnusedBuildings"/>
+            </MenuItem>
+          </MenuItem>
+          <MenuItem
+            action="cpLine.removeFromLineSpecificLocations( cpLocation )"
+            confirmMessage="displaykey.Web.Policy.LocationContainer.RemoveLocationConfirmMsg"
+            id="RemoveLocation"
+            label="displaykey.Web.Policy.LocationContainer.RemoveLocation"
+            visible="openForEdit and not cpLocation.Location.PrimaryLoc"/>
+          <MenuItem
+            action="cpLine.Branch.PrimaryLocation = cpLocation.Location"
+            id="SetPrimaryLocation"
+            label="displaykey.Web.Policy.CP.Location.SetAsPrimary"
+            showConfirmMessage="false"
+            visible="openForEdit and not cpLocation.Location.PrimaryLoc"/>
+        </Cell>
+        <Cell
+          action="CPLocationPopup.push(cpLocation, openForEdit, true, jobWizardHelper)"
+          colspan="5"
+          id="LocationName"
+          value="cpLocation.Location.PrimaryLoc ? displaykey.Web.Policy.CP.Location.MarkPrimary(cpLocation.DisplayName) : cpLocation.DisplayName"/>
+        <Cell
+          id="spacerCellForCurrencyCell"
+          visible="gw.api.util.CurrencyUtil.isMultiCurrencyMode()"/>
+      </Row>
+      <RowIterator
+        checkBoxVisible="openForEdit"
+        editable="true"
+        elementName="building"
+        hasCheckBoxes="true"
+        id="buildingIterator"
+        pageSize="0"
+        toRemove="cpLocation.removeFromLineSpecificBuildings(building)"
+        value="cpLocation.Buildings">
+        <IteratorSort
+          sortBy="building.Building.BuildingNum"
+          sortOrder="1"/>
+        <!-- Need a toolbar flag to control the "Remove" button explicitly in a nested LV -->
+        <ToolbarFlag
+          name="removeAvailable"/>
+        <Row>
+          <Cell
+            id="spacerCellForActionsCell"/>
+          <TextCell
+            action="CPBuildingPopup.push(cpLine, building, openForEdit, jobWizardHelper)"
+            align="left"
+            id="BuildingDescription"
+            value="building"/>
+          <Cell
+            align="right"
+            id="BldgLimit"
+            value="building.CPBldgCov.CPBldgCovLimitTerm.DisplayValue"/>
+          <Cell
+            align="right"
+            id="BusPersPropLimit"
+            value="building.CPBPPCov.CPBPPCovLimitTerm.DisplayValue"/>
+          <Cell
+            align="right"
+            id="BusIncome"
+            value="building.BusIncomeLimitSumDisplay"/>
+          <Cell
+            align="right"
+            id="ExtraExpense"
+            value="building.CPBldgExtraExpenseCov.CPBldgExtraExpenseCovLimitTerm.DisplayValue"/>
+          <Cell
+            align="left"
+            id="BuildingCoverageCurrency"
+            value="building.PreferredCoverageCurrency"
+            visible="gw.api.util.CurrencyUtil.isMultiCurrencyMode()"/>
+        </Row>
+      </RowIterator>
+    </RowIterator>
+    <Code><![CDATA[function getLimitedNumberOfSortedUnusedBuildings(buildings : Building[], numBuildings : int) : Building[] {
+  if (buildings.Count <= 1) {
+    // nothing to sort!
+    return buildings
+  }
+  var sortedBuildings = buildings.toList().sortBy(\ building -> building.BuildingNum)
+  if (sortedBuildings.Count > numBuildings) {
+    sortedBuildings = sortedBuildings.subList(0, numBuildings)
+  }
+  return sortedBuildings.toTypedArray()
+}]]></Code>
+  </ListViewPanel>
+</PCF>

@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    canVisit="perm.User.viewteam and teamModel.hasOtherWorkOrdersPage()"
+    id="TeamOtherWorkOrders"
+    title="displaykey.Web.Team.WorkOrders(teamModel.Label, teamModel.getDisplayMode(true), domain.statistics.StatsWindowUtil.getOtherWorkOrdersWindow())">
+    <LocationEntryPoint
+      signature="TeamOtherWorkOrders(teamModel : web.team.PCTeamModel)"/>
+    <Variable
+      name="teamModel"
+      type="web.team.PCTeamModel"/>
+    <Variable
+      initialValue="teamModel.canViewOtherWorkOrders()"
+      name="canViewMisassignedWorkOrders"/>
+    <Screen
+      id="TeamOtherWorkOrdersScreen">
+      <TitleBar
+        appendListViewPaging="true"
+        title="displaykey.Web.Team.WorkOrders(teamModel.Label, teamModel.getDisplayMode(true), domain.statistics.StatsWindowUtil.getOtherWorkOrdersWindow())"/>
+      <Verbatim
+        label="displaykey.Web.Team.JobCountToDisplayExceedsMax(gw.api.system.PCConfigParameters.TeamScreenTabVisibilityRowCountCutoff.Value, &quot;policy changes&quot;, teamModel.Label)"
+        visible="not canViewMisassignedWorkOrders"/>
+      <PanelRef
+        def="TeamOtherWorkOrdersLV(teamModel.OtherWorkOrders)"
+        visible="canViewMisassignedWorkOrders">
+        <Toolbar>
+          <CheckedValuesToolbarButton
+            flags="all openWorkOrder"
+            id="ReassignmentButton"
+            iterator="TeamOtherWorkOrdersLV.OtherWorkOrdersIterator"
+            label="displaykey.Web.Team.Reassign"
+            visible="perm.System.userroleassignmentbulkassign">
+            <CheckedValuesMenuItemIterator
+              elementName="typekeyMenuItem"
+              value="gw.assignment.AssignmentUtil.getMultipleAssignmentRoles(UserRoleConstraint.TC_JOBEXCLUSIVE)">
+              <CheckedValuesMenuItem
+                allCheckedRowsAction="AssignUserRoleOwnerPopup.push(CheckedValues.cast(Job), typekeyMenuItem )"
+                id="AssignmentMenuItem"
+                label="typekeyMenuItem.DisplayName"/>
+            </CheckedValuesMenuItemIterator>
+          </CheckedValuesToolbarButton>
+        </Toolbar>
+      </PanelRef>
+    </Screen>
+  </Page>
+</PCF>

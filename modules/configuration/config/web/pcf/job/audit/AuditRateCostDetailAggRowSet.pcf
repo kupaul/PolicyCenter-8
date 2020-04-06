@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <RowSet
+    id="AuditRateCostDetailAggRowSet">
+    <Require
+      name="isPremiumReport"
+      type="boolean"/>
+    <Require
+      name="aggCost"
+      type="WCJurisdictionCost"/>
+    <Require
+      name="basedOnAggCost"
+      type="WCJurisdictionCost"/>
+    <Variable
+      initialValue="basedOnAggCost == null ? 0bd.ofCurrency(aggCost.Branch.PreferredSettlementCurrency) : basedOnAggCost.ActualTermAmountBilling"
+      name="basedOnTermAmt"/>
+    <Row
+      id="AggCostRow"
+      visible="not aggCost.ActualAmountBilling.IsZero">
+      <Cell
+        id="empty"/>
+      <Cell
+        id="ClassCode"
+        value="aggCost.ClassCode"/>
+      <Cell
+        id="Description"
+        value="aggCost.Description"/>
+      <Cell
+        align="right"
+        id="EstBasis"
+        value="basedOnAggCost == null ? null : (basedOnAggCost.Basis == 0 ? &quot;&quot; : basedOnAggCost.Basis.DisplayValue)"
+        visible="not isPremiumReport"/>
+      <Cell
+        align="right"
+        id="Basis"
+        value="aggCost.Basis == 0 ? &quot;&quot; : aggCost.Basis.DisplayValue"/>
+      <Cell
+        align="right"
+        id="Rate"
+        value="aggCost.ActualAdjRate == 0 ? &quot;&quot; : aggCost.ActualAdjRate.DisplayValue"/>
+      <MonetaryAmountCell
+        align="right"
+        formatType="currency"
+        id="EstPremium"
+        value="basedOnTermAmt"
+        visible="not isPremiumReport"/>
+      <MonetaryAmountCell
+        align="right"
+        formatType="currency"
+        id="TermAmount"
+        numCols="6"
+        value="aggCost.ActualTermAmountBilling"/>
+      <MonetaryAmountCell
+        align="right"
+        formatType="currency"
+        id="Difference"
+        value="aggCost.ActualTermAmountBilling - basedOnTermAmt"
+        visible="not isPremiumReport"/>
+    </Row>
+  </RowSet>
+</PCF>

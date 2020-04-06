@@ -1,0 +1,85 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <!-- The BOP Building Coverage requires its own CoverageInputSet because the valuation method impacts the
+    available choices for co-insurance. -->
+  <InputSet
+    id="CoverageInputSet"
+    mode="BOPBuildingCov">
+    <Require
+      name="coveragePattern"
+      type="gw.api.productmodel.ClausePattern"/>
+    <Require
+      name="coverable"
+      type="Coverable"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="coverable as BOPBuilding"
+      name="building"/>
+    <Variable
+      initialValue="getCoinsuranceValue(building.BOPBuildingCov.BOPBldgValuationTerm.Value)"
+      name="coinsuranceTerm"
+      recalculateOnRefresh="true"/>
+    <HiddenInput
+      id="CovPatternDisplayName"
+      value="coveragePattern.DisplayName"/>
+    <InputGroup
+      allowToggle="coveragePattern.allowToggle(coverable)"
+      childrenVisible="coverable.getCoverageConditionOrExclusion(coveragePattern) != null"
+      id="CovPatternInputGroup"
+      label="coveragePattern.DisplayName"
+      onToggle="building.setCoverageConditionOrExclusionExists(coveragePattern, VALUE)">
+      <InputSetRef
+        def="CovTermDirectInputSet(building.BOPBuildingCov.BOPBldgLimTerm)"
+        id="BOPBldgCovLimit"
+        visible="building.BOPBuildingCov.hasCovTerm(&quot;BOPBldgLim&quot;)"/>
+      <RangeInput
+        editable="true"
+        id="BOPBldgCovValuationMethod"
+        label="building.BOPBuildingCov.BOPBldgValuationTerm.DisplayName"
+        required="building.BOPBuildingCov.BOPBldgValuationTerm.Pattern.Required"
+        value="building.BOPBuildingCov.BOPBldgValuationTerm.Value"
+        valueRange="building.BOPBuildingCov.BOPBldgValuationTerm?.Pattern.OrderedAvailableValues"
+        visible="building.BOPBuildingCov.hasCovTerm(&quot;BOPBldgValuation&quot;)">
+        <PostOnChange/>
+      </RangeInput>
+      <RangeInput
+        editable="openForEdit and gw.web.productmodel.ChoiceCovTermUtil.isEditable(coinsuranceTerm)"
+        id="BOPBldgCovCoinsurance"
+        label="building.BOPBuildingCov.BOPBuildingCoinTerm.DisplayName"
+        required="building.BOPBuildingCov.BOPBuildingCoinTerm.Pattern.Required"
+        sortValueRange="false"
+        value="coinsuranceTerm.OptionValue"
+        valueRange="gw.web.productmodel.ChoiceCovTermUtil.getModelValueRange(coinsuranceTerm, openForEdit)"
+        visible="building.BOPBuildingCov.hasCovTerm(&quot;BOPBldgValuation&quot;) and building.BOPBuildingCov.BOPBldgValuationTerm.Value != ValuationMethod.TC_FUNCVALUE"/>
+      <RangeInput
+        editable="true"
+        id="BOPBldgAnnualIncreaseTerm"
+        label="building.BOPBuildingCov.BOPBldgAnnualIncreaseTerm.DisplayName"
+        required="building.BOPBuildingCov.BOPBldgAnnualIncreaseTerm.Pattern.Required"
+        sortValueRange="false"
+        value="getAnnualIncreaseValue(building.BOPBuildingCov.BOPBldgValuationTerm.Value).OptionValue"
+        valueRange="gw.web.productmodel.ChoiceCovTermUtil.getModelValueRange(getAnnualIncreaseValue(building.BOPBuildingCov.BOPBldgValuationTerm.Value), openForEdit)"
+        visible="building.BOPBuildingCov.hasCovTerm(&quot;BOPBldgValuation&quot;) and building.BOPBuildingCov.BOPBldgValuationTerm.Value != ValuationMethod.TC_FUNCVALUE"/>
+      <PostOnChange/>
+    </InputGroup>
+    <Code><![CDATA[function getCoinsuranceValue(valMethodValue : gw.entity.TypeKey) : OptionBOPBuildingCoinType {
+  if (valMethodValue == ValuationMethod.TC_FUNCVALUE) { 
+    var optionValue = building.BOPBuildingCov.BOPBuildingCoinTerm.Pattern.getCovTermOpt("0")
+    building.BOPBuildingCov.BOPBuildingCoinTerm.setOptionValue(optionValue)
+  }
+  return building.BOPBuildingCov.BOPBuildingCoinTerm
+}
+
+function getAnnualIncreaseValue(valMethodValue : gw.entity.TypeKey) : OptionBOPBldgAnnualIncreaseType {
+  if (valMethodValue == ValuationMethod.TC_FUNCVALUE) { 
+    var opt = building.BOPBuildingCov.BOPBldgAnnualIncreaseTerm.Pattern.getCovTermOpt("4")
+    building.BOPBuildingCov.BOPBldgAnnualIncreaseTerm.setOptionValue(opt)
+  }
+  return building.BOPBuildingCov.BOPBldgAnnualIncreaseTerm
+}]]></Code>
+  </InputSet>
+</PCF>

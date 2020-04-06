@@ -1,0 +1,53 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <WizardStepSet
+    id="LineWizardStepSet"
+    mode="WorkersComp">
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <JobWizardStep
+      beforeSave="gw.policy.PolicyLocationValidation.validateLocationsStep(policyPeriod.PolicyLocations)"
+      id="Locations"
+      onChange="policyPeriod.WorkersCompLine.recalculateGoverningClasscode();"
+      save="openForEdit"
+      screen="LocationsScreen(policyPeriod, openForEdit, jobWizardHelper, policyPeriod.WorkersCompLine.SupportsNonSpecificLocations)"
+      title="displaykey.Web.LineWizardMenu.Locations"/>
+    <JobWizardStep
+      beforeSave="gw.lob.wc.WCLineValidation.validateWCCoveragesStep( policyPeriod.WorkersCompLine )"
+      id="WorkersCompCoverageConfig"
+      onChange="policyPeriod.WorkersCompLine.recalculateGoverningClasscode();"
+      onEnter="if (openForEdit) { policyPeriod.syncComputedValues(); gw.web.productmodel.ProductModelSyncIssuesHandler.sync(policyPeriod.WorkersCompLine.AllCoverables, policyPeriod.WorkersCompLine.AllModifiables, null, null, jobWizardHelper) }"
+      save="openForEdit"
+      screen="WorkersCompCoverageConfigScreen(policyPeriod, openForEdit, jobWizardHelper)"
+      title="displaykey.Web.Wizard.LineWizardStepGroup.WorkersComp"/>
+    <!-- This step is shown for full (not quick) submissions and all other jobs. (This file is shared by all the
+         job wizards). Also, this step is only visible if questions are actually available for the line. -->
+    <JobWizardStep
+      beforeSave="gw.lob.wc.WCLineValidation.validateWCSupplementalStep( policyPeriod.WorkersCompLine )"
+      id="WorkersCompSupplemental"
+      onEnter="if(openForEdit) { gw.web.productmodel.ProductModelSyncIssuesHandler.syncQuestions( {policyPeriod.WorkersCompLine}, jobWizardHelper )}"
+      save="openForEdit"
+      screen="WorkersCompSupplementalScreen(policyPeriod, openForEdit, jobWizardHelper)"
+      title="displaykey.Web.LineWizardMenu.PolicyLines.Supplemental"
+      visible="policyPeriod.WorkersCompLine.hasSupplementalQuestions() and (!(job typeis Submission) or (job as Submission).FullMode)"/>
+    <JobWizardStep
+      beforeSave="gw.lob.wc.WCLineValidation.validateWorkersCompOptionsStep( policyPeriod.WorkersCompLine )"
+      id="WorkersCompOptions"
+      onChange="policyPeriod.WorkersCompLine.recalculateGoverningClasscode();"
+      save="openForEdit"
+      screen="CoverageOptionsScreen(policyPeriod, openForEdit, jobWizardHelper)"
+      title="displaykey.Web.Policy.Merge.WorkersCompLine.WCOptions"/>
+  </WizardStepSet>
+</PCF>

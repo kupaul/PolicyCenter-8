@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Page
+    canVisit="perm.User.viewteam and teamModel.hasRenewalsPage()"
+    id="TeamRenewals"
+    title="displaykey.Web.Team.Renewals(teamModel.Label, teamModel.getDisplayMode(true), domain.statistics.StatsWindowUtil.getRenewalsWindow())">
+    <LocationEntryPoint
+      signature="TeamRenewals(teamModel : web.team.PCTeamModel)"/>
+    <Variable
+      name="teamModel"
+      type="web.team.PCTeamModel"/>
+    <Variable
+      initialValue="teamModel.canViewRenewals()"
+      name="canViewRenewals"/>
+    <Screen
+      id="TeamRenewalsScreen">
+      <TitleBar
+        appendListViewPaging="true"
+        title="displaykey.Web.Team.Renewals(teamModel.Label, teamModel.getDisplayMode(true), domain.statistics.StatsWindowUtil.getRenewalsWindow())"/>
+      <Verbatim
+        label="displaykey.Web.Team.JobCountToDisplayExceedsMax(gw.api.system.PCConfigParameters.TeamScreenTabVisibilityRowCountCutoff.Value, &quot;renewals&quot;, teamModel.Label)"
+        visible="not canViewRenewals"/>
+      <PanelRef
+        def="TeamRenewalsLV(teamModel.Renewals)"
+        visible="canViewRenewals">
+        <Toolbar>
+          <CheckedValuesToolbarButton
+            flags="all openWorkOrder"
+            id="ReassignmentButton"
+            iterator="TeamRenewalsLV.RenewalsIterator"
+            label="displaykey.Web.Team.Reassign"
+            visible="perm.System.userroleassignmentbulkassign">
+            <CheckedValuesMenuItemIterator
+              elementName="typekeyMenuItem"
+              value="gw.assignment.AssignmentUtil.getMultipleAssignmentRoles(UserRoleConstraint.TC_JOBEXCLUSIVE)">
+              <CheckedValuesMenuItem
+                allCheckedRowsAction="AssignUserRoleOwnerPopup.push(CheckedValues.cast(Job), typekeyMenuItem )"
+                id="AssignmentMenuItem"
+                label="typekeyMenuItem.DisplayName"/>
+            </CheckedValuesMenuItemIterator>
+          </CheckedValuesToolbarButton>
+        </Toolbar>
+      </PanelRef>
+    </Screen>
+  </Page>
+</PCF>

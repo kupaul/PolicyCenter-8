@@ -1,0 +1,46 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="CopyNotesDV">
+    <Require
+      name="copier"
+      type="gw.policy.PolicyPeriodCopier"/>
+    <Require
+      name="sourcePeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="copier.getAllNoteCopier()"
+      name="allNoteCopier"
+      type="gw.note.AllNoteCopier"/>
+    <Variable
+      initialValue="copier.getNoteCopiers()"
+      name="noteCopiers"
+      type="List&lt;gw.note.NoteCopier&gt;"/>
+    <InputColumn>
+      <Label
+        label="displaykey.Web.CopyPolicyData.Card.Title.Notes"/>
+      <BooleanRadioInput
+        editable="true"
+        falseLabel="displaykey.Web.CopyPolicyData.Notes.SelectSpecificNotes"
+        id="allNotes"
+        stacked="true"
+        trueLabel="displaykey.Web.CopyPolicyData.Notes.AllNotes.Policy(sourcePeriod.PolicyNumberDisplayString)"
+        value="allNoteCopier.ShouldCopyAll"
+        visible="allNoteCopier.Copiers.Count &gt; 0">
+        <PostOnChange/>
+      </BooleanRadioInput>
+      <ListViewInput
+        def="CopyNotesLV(noteCopiers)"
+        visible="not allNoteCopier.ShouldCopyAll">
+        <Toolbar/>
+      </ListViewInput>
+      <PreFormattedTextInput
+        id="NoNotes"
+        label="displaykey.Web.CopyPolicyData.NoItems.Policy(sourcePeriod.PolicyNumberDisplayString)"
+        value="&quot;&quot;"
+        visible="noteCopiers.Empty"/>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

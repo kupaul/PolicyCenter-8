@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Page
+    id="DataFlowMasks"
+    title="displaykey.Admin.FlowMasks">
+    <Variable
+      initialValue="getDefaultMasksKeyMap()"
+      name="entityTypeToDefaultMaskKeyMap"/>
+    <Variable
+      initialValue="gw.api.web.security.DataFlowMasksFilters.ALL_FILTER"
+      name="selectedTypeFilter"/>
+    <Screen
+      id="DataFlowMasksScreen">
+      <Variable
+        initialValue="selectedTypeFilter.filterFlowMasks().where(\ maskElement -&gt; entityTypeToDefaultMaskKeyMap[maskElement.EntityType] == maskElement.ID).toSet()"
+        name="defaultMasks"
+        recalculateOnRefresh="true"/>
+      <Toolbar>
+        <ToolbarRangeInput
+          id="typeFilter"
+          sortValueRange="false"
+          value="selectedTypeFilter"
+          valueRange="gw.api.web.security.DataFlowMasksFilters.TYPE_FILTER_SET.FilterOptions">
+          <PostOnChange/>
+        </ToolbarRangeInput>
+        <ToolbarButton
+          action="NewDataFlowMask.go(selectedTypeFilter.EntityType)"
+          id="NewMaskButton"
+          label="displaykey.Web.Admin.NewDataFlowMask"
+          visible="perm.System.exportmasksmanage"/>
+        <CheckedValuesToolbarButton
+          allCheckedRowsAction="gw.api.admin.PCAdminUtil.deleteDataFlowMasks(CheckedValues)"
+          confirmMessage="displaykey.Web.Admin.DataFlowMasks.Delete.Confirm"
+          flags="any mask"
+          id="Masks_DeleteButton"
+          iterator="DataFlowMasksLV"
+          label="displaykey.Button.Delete"
+          shortcut="L"
+          visible="perm.System.exportmasksmanage"/>
+        <CheckedValuesToolbarButton
+          checkedRowAction="setDefaultMask(CheckedValue)"
+          flags="one mask"
+          id="Masks_MakeDefaultButton"
+          iterator="DataFlowMasksLV"
+          label="displaykey.Web.Admin.DataFlowMasks.SetDefault"
+          visible="perm.System.exportmasksmanage"/>
+      </Toolbar>
+      <ListViewPanel
+        editable="perm.System.exportmasksmanage"
+        id="DataFlowMasksLV">
+        <RowIterator
+          checkBoxVisible="perm.System.exportmasksmanage"
+          editable="false"
+          elementName="mask"
+          hasCheckBoxes="true"
+          value="selectedTypeFilter.filterFlowMasks()">
+          <ToolbarFlag
+            name="mask"/>
+          <Row>
+            <Cell
+              action="DataFlowMaskDetailPage.go(mask)"
+              align="left"
+              id="Name"
+              label="displaykey.Web.Admin.DataFlowMasksLV.Name"
+              value="mask.Name"/>
+            <Cell
+              enableSort="false"
+              id="Type"
+              label="displaykey.Web.Admin.DataFlowMasksLV.Type"
+              value="gw.exportimport.ExportLocaleUtil.lookupEntityTypeDisplayName(mask.EntityType)"/>
+            <CheckBoxCell
+              align="left"
+              enableSort="false"
+              id="Default"
+              label="displaykey.Web.Admin.DataFlowMasksLV.DefaultMask"
+              value="defaultMasks.contains(mask)"/>
+          </Row>
+        </RowIterator>
+      </ListViewPanel>
+    </Screen>
+    <Code><![CDATA[uses gw.api.database.Query
+uses gw.lang.reflect.TypeSystem
+uses java.util.Map
+
+/**
+ * Return a map of entity Type's to default EntityFlowMaskData Key's.
+ */
+function getDefaultMasksKeyMap() : Map<Type<KeyableBean>, Key> {
+  var query = Query.make(EntityFlowMaskDefault)
+  
+  return query.select(\ def -> { return new Object[] {def.EntityTypeName, def.DefaultMask.ID} })
+     .mapToKeyAndValue(\ pair -> TypeSystem.getByFullName(pair[0] as String) , \ pair -> pair[1] as Key )
+}
+
+/**
+ * Set the specified mask as the default for its entity type.
+ *
+ * This looks up the current default mask for the entity type, if any, and
+ * then uses EntityFlowMaskData to set the specified mask as the default
+ * and deassign the current mask as the default.
+ */
+function setDefaultMask(mask : EntityFlowMaskData) {
+  var currentDefaultMask : EntityFlowMaskData = null
+  var entityTypeDefaultKey = entityTypeToDefaultMaskKeyMap[mask.EntityType]
+  if ( entityTypeDefaultKey != null ) {
+    // get current default assignment...
+    var allMasks = selectedTypeFilter.filterFlowMasks()
+    currentDefaultMask = allMasks.firstWhere(\ m -> m.ID == entityTypeDefaultKey)
+  }
+
+  EntityFlowMaskData.setAsDefaultMask(mask, currentDefaultMask)
+
+  /* set the mask as the default in the map using its ID */
+  entityTypeToDefaultMaskKeyMap[mask.EntityType] = mask.ID
+}]]></Code>
+  </Page>
+</PCF>

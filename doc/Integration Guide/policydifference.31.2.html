@@ -1,0 +1,1014 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Policy Difference Overview</title>
+    <link rel="StyleSheet" href="css/policydifference.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Integration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-forms.html#2729937">Policy-related Integrations</a> : <a class="WebWorks_Breadcrumb_Link" href="policydifference.31.1.html#2729937">Policy Difference Customization</a> : Policy Difference Overview</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="2729937">Policy Difference Overview</a></h3>
+      <div class="B_-_Body"><a name="2720229">There are several places in the PolicyCenter user interface where you can view comparisons between policy periods. You can customize the appearance of these differences and customize how PolicyCenter calculates differences between policy periods.</a></div>
+      <div class="B_-_Body"><a name="2709382">The most common user interface for policy differences is the policy review screen that you can view as part of a policy change job:</a></div>
+      <div class="F_-_Figure"><a name="2709383"><img class="Default" src="images/DifferenceTree-Example.png" style="display: inline; float: none; left: 0.0; top: 0.0" alt="" /></a></div>
+      <div class="B_-_Body"><a name="2709384">From a configuration perspective, the top-level trigger for most of this code is PolicyCenter application logic calling the registered plugin for the </a><span class="cv_-_computer_voice">IPolicyPeriodDiffPlugin</span> interface. This plugin has two methods, called <span class="cv_-_computer_voice">filterDiffItems</span> and <span class="cv_-_computer_voice">compareBranches</span>, and the user interface calls one method or the other in different places in the application flow. To write Gosu code that triggers the plugin to generate and filter differences, see <a href="javascript:WWHClickedPopup('integration', 'policydifference.31.6.html#2725777', '');" title="APIs for Calculating Differences">“APIs for Calculating Differences”</a>.</div>
+      <div class="B_-_Body"><a name="2719668">Both plugin methods help generate and filter a list of differences, each of which is encapsulated in a difference item (</a><span class="cv_-_computer_voice">DiffItem</span>) entity. The difference item list represents the similarities and differences between the items that determine what entities added or removed and what properties changed.<span style="font-family: Arial; font-size: 8.0pt"> </span></div>
+      <div class="B_-_Body"><a name="2719669">PolicyCenter chooses which method to call based on the context of the request. There are two different strategies that PolicyCenter uses to generate and filter difference items:</a></div>
+      <div class="T_-_Table"><a name="2718822">&nbsp;</a></div>
+      <table class="withHeading" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2718839">Difference Item Generation Strategy</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2718841">Description</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2718843">What generates differences?</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2718845">What filters differences?</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2718847">Database generation of difference items</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2719074">If PolicyCenter compares a policy period to the revision that it was based on, it can calculate changed properties and entities directly from the database. This process is very efficient and accurate. The fundamental task of your code is to filter out irrelevant differences. This is the PolicyCenter approach for policy changes and some other application flows.</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2718851">PolicyCenter, generally speaking. Think of the primary difference generation for this strategy as a low level database-driven query. </a></div>
+            <div class="TT_-_Table_Text"><a name="2726379">However, there is a minor rare exception. For Workers’ Comp and General Liability, the low level database code does not generate exposure splits. To handle that, the </a><span class="cvt_-_computer_voice_table">filterDiffItems</span> method in the plugin generates additional differences. See the <span class="cvt_-_computer_voice_table">WCDiffHelper</span> and <span class="cvt_-_computer_voice_table">GLDiffHelper</span> classes. That code removes all exposures that split, and then adds them back again.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2719192">The original entrypoint is the </a><span class="cvt_-_computer_voice_table">IPolicyPeriodDiffPlugin</span> plugin method <span class="cvt_-_computer_voice_table">filterDiffItems</span>. Only filter out differences in that method if you are sure no PolicyCenter code ever needs those differences. Multiple points in the application might need the list of differences:</div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="2719193">Logic that merges or applies changes from one revision to another.</a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="2719199">User interface code to display differences.</a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="TT_-_Table_Text"><a name="2719133">You can filter dynamically based on the difference reason, which is a method parameter with the type </a><span class="cvt_-_computer_voice_table">DiffReason</span>. </div>
+            <div class="TT_-_Table_Text"><a name="2725455">However, to configure what differences display in the tree view and how they appear, customize a difference tree configuration XML file. For more info, see </a><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.3.html#2720299', '');" title="Difference Tree XML Configuration">“Difference Tree XML Configuration”</a>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2719044">Compare two<br />branch graphs</a></div>
+            <div class="TT_-_Table_Text"><a name="2718855">&nbsp;</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2718943">For multi-version jobs and some other contexts, Gosu code that the policy period difference plugin triggers compares two arbitrary branch graphs and generates a list of differences. The list of differences represents the similarities and differences between the items. In other words, Gosu code determine what was added, removed, or changed.</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2718859">The policy period difference plugin in the </a><span class="cvt_-_computer_voice_table">compareBranches</span> method</div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2725285">This strategy is mostly about generating difference items not filtering them. However, this approach uses a secondary filtering process. For more details about this filtering, see </a><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.2.html#2707560', '');" title="Policy Difference Overview">“Difference Helper Classes”</a> and <a href="javascript:WWHClickedPopup('integration', 'policydifference.31.2.html#2725575', '');" title="Policy Difference Overview">“Difference Utility Classes”</a>.</div>
+            <div class="TT_-_Table_Text"><a name="2725438">However, to configure what differences display in the tree view and how they appear, customize a difference tree configuration XML file. For more info, see </a><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.3.html#2720299', '');" title="Difference Tree XML Configuration">“Difference Tree XML Configuration”</a>.</div>
+          </td>
+        </tr>
+      </table>
+      <div class="B_-_Body"><a name="2704285">The following table lists various places PolicyCenter checks for differences between policy periods, how it is implemented, and which of the earlier approaches are used.</a></div>
+      <div class="B_-_Body"><a name="2719961">PolicyCenter uses policy comparisons in the following places in the product:</a></div>
+      <div class="T_-_Table"><a name="2760658">&nbsp;</a></div>
+      <table class="withHeading" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2760597">Reason to check for differences</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2760599">Strategy for generating differences</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2760601">Description</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760603">Policy change transaction</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760605">Database <br />generation</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760607">The Policy Review page lets you see what changed between the active branch and the branch upon which it was based. </a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760609">Renewal transaction</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760611">Database <br />generation</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760613">The Policy Review page lets you see what changed between the active branch and the branch upon which it was based. </a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760615">Rewrite transaction</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760617">Database <br />generation</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760619">The Policy Review page lets you see what changed between the active branch and the branch upon which it was based. </a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760621">Out-of-sequence jobs (of multiple types)</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760623">Database <br />generation</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760627">PolicyCenter must check whether a job is out of sequence (see </a><a href="javascript:WWHClickedPopup('app', 'policyrevisions.50.04.html#2708136', '');" title="Out-of-sequence Jobs">“Out-of-sequence Jobs” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('app', 'policyrevisions.50.04.html#2708136', '');" title="Out-of-sequence Jobs">Application Guide</a></span>) and generate a list of conflicts, if any. If there are conflicts, users must review the list of changes to merge forward to future-effective-dated branches.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760630">Preempted jobs</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760632">Database <br />generation</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760634">PolicyCenter uses differences in two places in the preemption flow:</a></div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="2760637">First, PolicyCenter must check whether a job was preempted (see </a><a href="javascript:WWHClickedPopup('app', 'policyrevisions.50.05.html#2695159', '');" title="Preempted Jobs">“Preempted Jobs” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('app', 'policyrevisions.50.05.html#2695159', '');" title="Preempted Jobs">Application Guide</a></span>). If so, PolicyCenter must display and apply differences between the current branch and its based-on branch. Users must review the list of changes to apply from the preempting branch to the current branch before binding the active job.</div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+            <div class="BIT_-_Bullet_Item_Table_outer" style="margin-left: 2.16pt">
+              <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+                <tr style="vertical-align: baseline">
+                  <td>
+                    <div class="BIT_-_Bullet_Item_Table_inner" style="width: 7.199999999999999pt; white-space: nowrap">
+                      <span class="but_-_bullet_in_table">•	</span>
+                    </div>
+                  </td>
+                  <td width="100%">
+                    <div class="BIT_-_Bullet_Item_Table_inner"><a name="2760639">After PolicyCenter handles the preemption, there can be changes that conflict with changes already made in the preempted branch. PolicyCenter uses the differences engine and user interface to display those differences. </a></div>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760641">Integration</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760643">Database <br />generation</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760645">Integration code might need to notify a downstream system of recent changes. For the typical case, you compare a recently-bound branch to the branch it was based on. You can generate changes, filter them for your downstream system, and then convert the results to a messaging payload.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760647">Multi-version job policy comparisons</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760649">Compare two<br />branch graphs</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760651">For a multi-version job, users can compare different versions of a policy and quotes for each one. The two or more non-bound branches share the same </a><span class="cvt_-_computer_voice_table">branchID</span> but none are based directly on each other. Some data is simplified or omitted for display. For example, for personal auto line, the interface compares vehicles, coverage amounts, and resulting costs in the quote. However, if you add a vehicle, PolicyCenter adds coverages for the new vehicle but does not display the coverages explicitly in the comparison. </div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760653">Arbitrary historical revision comparisons</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760655">Compare two<br />branch graphs</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2760657">To compare the state of the policy at different times in the policy history, users can select two versions in the same logical period. Even if two branches are in the same logical period, two arbitrary revisions a user wants to compare may not be directly based on each other. PolicyCenter cannot use the efficient database-based comparison mechanism used in the policy review and out-of-sequence cases. Instead, PolicyCenter uses the same system used in the multi-version difference generation system.</a></div>
+          </td>
+        </tr>
+      </table>
+      <h4 class="H2_-_Heading_2"><a name="2760659">Customizing How to Display Difference Items to Users</a></h4>
+      <div class="B_-_Body"><a name="2760660">The tables in the previous topic describe the primary generation and filtering of policy differences. However, the full set of differences that PolicyCenter needs in order to perform the underlying data actions might be more than you want users to view in the user interface. </a></div>
+      <div class="B_-_Body"><a name="2760167">For example, some application tasks require generating multiple difference items, which you might consolidate and show as a single difference to the user. Or, you might want to omit some differences between low level properties or window mode changes. You configure what difference items to display in the tree view within the user interface by using a difference tree configuration XML file. You must define one difference tree XML file for each product.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="2760210">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2760200">To learn how to configure what differences users can view, see </a><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.3.html#2720299', '');" title="Difference Tree XML Configuration">“Difference Tree XML Configuration”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="2760202">Difference Item Subclasses</a></h4>
+      <div class="B_-_Body"><a name="2708634">There are several types of difference items, all of which are subclasses of the </a><span class="cv_-_computer_voice">DiffItem</span> class, described in the following table. Some difference items classes are only created in the reference implementation in some types of comparisons, although you could customize it to use any if desired. The rightmost columns in the following table indicate which ones are created in the reference implementation in different contexts.</div>
+      <div class="T_-_Table"><a name="2708668">&nbsp;</a></div>
+      <table class="withHeading" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2708733">Class</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2709679">Description</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2709708">Created if comparing two branch graphs (for example, multi-version)</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2708735">Created by database generation of difference items (for example, policy change)</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2708737">DiffAdd</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2709681">An entity was added that did not exist before</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2709710">Yes</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2708739">Yes</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2708741">DiffRemove</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2709683">An entity was removed that existed before</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2709712">Yes</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2708743">Yes</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2708745">DiffProperty</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2709685">A property changed in an entity. </a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2709714">Yes</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2708747">Yes</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2708853">DiffWindow</a></span></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2709697">A change in window mode to an entity’s effective or expiration dates. Window mode means the change is made while viewing a </a><span class="cvt_-_computer_voice_table">PolicyPeriod</span> and its subobjects across all effective dates in the period. This would not be used for a typical change, which would normally done as a slice change (see the row for <span class="cvt_-_computer_voice_table">DiffSlice</span>). For more about these topics, see <a href="javascript:WWHClickedPopup('app', 'policyrevisions.50.03.html#3027242', '');" title="Structure of Revisioning Across Effective Time">“Slice Mode and Window Mode Overview” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('app', 'policyrevisions.50.03.html#3027242', '');" title="Structure of Revisioning Across Effective Time">Application Guide</a></span>.</div>
+            <div class="TT_-_Table_Text"><a name="2729604">This would not appear in a multiple revision job (such as a multiple revision quote).</a></div>
+            <div class="TT_-_Table_Text"><a name="2729637">However, PolicyCenter can add a </a><span class="cvt_-_computer_voice_table">DiffWindow</span> object during comparison of two branch graphs. Comparing two branch graphs may pertain to multi-version or comparing jobs.</div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2709723">Yes, but not in multiple revision jobs (see notes)</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2708855">Yes</a></div>
+          </td>
+        </tr>
+      </table>
+      <div class="B_-_Body"><a name="2726513">You can create these difference items directly using their constructors, with code such as: </a></div>
+      <PRE class="CF_-_Code_First_Line"><a name="2708953">DiffAdd diff = new DiffAdd(newElem);</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2708954">diff.setPath(ctx.getPath());</a></PRE>
+      <div class="B_-_Body"><a name="2708947">Alternatively, use APIs to create difference items by comparing entities in two branches. See the following subtopics:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.2.html#2707560', '');" title="Policy Difference Overview" name="2709882">“Difference Helper Classes”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.2.html#2725575', '');" title="Policy Difference Overview" name="2709887">“Difference Utility Classes”</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.5.html#2704944', '');" title="Customizing Personal Auto Line of Business" name="2709889">“Customizing Personal Auto Line of Business”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="2707560">Difference Helper Classes</a></h4>
+      <div class="B_-_Body"><a name="2707582">One of the two difference item strategies is to compare two arbitrary branches using the policy period difference plugin </a><span class="cv_-_computer_voice">compareBranches</span> method. </div>
+      <div class="B_-_Body"><a name="2720119">In the built-in implementation of this plugin, the default logic of </a><span class="cv_-_computer_voice">compareBranches</span> method compares policies using helper classes that look at details for each line of business. Each built-in line of business has one of these difference helper classes, named with the line of business in the class name. </div>
+      <div class="B_-_Body"><a name="2720138">For example, the reference implementation of the plugin uses each line of business and calls its </a><span style="font-family: &quot;Lucida Sans Typewriter&quot;; font-size: 7.0pt">createPolicyLineDiffHelper</span></div>
+      <div class="B_-_Body"><a name="2726592">method. It is responsible for returning the correct difference helper class. Next, the Gosu code calls the </a><span class="cv_-_computer_voice">addDiffItems</span> and <span class="cv_-_computer_voice">filterDiffItems</span> methods on that helper class:</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726550">// Add diffs by line of business</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726551">    for (line1 in p1.Lines){</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726552">      var line2 = p2.Lines.firstWhere( \ l -&gt; l.Subtype.Code == line1.Subtype.Code )</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726553">      if (line2 != null) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726554">        diffHelper = line1.createPolicyLineDiffHelper(reason, line2)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726555">        if (diffHelper != null) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726556">          diffItems = diffHelper.addDiffItems(diffItems) as ArrayList&lt;DiffItem&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726557">          diffItems = diffHelper.filterDiffItems(diffItems) as ArrayList&lt;DiffItem&gt;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726558">        }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726559">      }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726560">    }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726535">&nbsp;</a></PRE>
+      <div class="B_-_Body"><a name="2707646">For more information about the methods provided in the built-in personal auto </a><span class="cv_-_computer_voice">PADiffHelper</span> class, see <a href="javascript:WWHClickedPopup('integration', 'policydifference.31.5.html#2704944', '');" title="Customizing Personal Auto Line of Business">“Customizing Personal Auto Line of Business”</a>.</div>
+      <div class="B_-_Body"><a name="2707679">If you make new lines of business in PolicyCenter, create new helper classes named with the line of business as a prefix. Your helper class encapsulates your difference logic for that line of business. Your helper class must extend (subclass) the built-in </a><span class="cv_-_computer_voice">DiffHelper</span> class. Your subclass must encapsulate the line-specific logic and call other classes like <span class="cv_-_computer_voice">DiffUtils</span> as necessary. See the following section for more about <span class="cv_-_computer_voice">DiffUtils</span>.</div>
+      <h6 class="HS_-_Head_Sub"><a name="2760670">See also</a></h6>
+      <div class="B_-_Body"><a name="2760666">To learn how to configure what differences users can view, see </a><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.3.html#2720299', '');" title="Difference Tree XML Configuration">“Difference Tree XML Configuration”</a>.</div>
+      <h4 class="H2_-_Heading_2"><a name="2725575">Difference Utility Classes</a></h4>
+      <div class="B_-_Body"><a name="2725576">PolicyCenter includes a Gosu class called </a><span class="cv_-_computer_voice">DiffUtil</span> that is used by other built-in classes to compare two branches and to help with filtering a list of different items. </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2725498">This topic describes filtering difference items during the process of creating difference items. To configure what differences display in the tree view and how they appear, customize a difference tree configuration XML file. For more info, see </a><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.3.html#2720299', '');" title="Difference Tree XML Configuration">“Difference Tree XML Configuration”</a>.</div>
+      <div class="B_-_Body"><a name="2707005">One of its important tasks is to compare two branch graphs and generate difference items. To do this task as part of creating an instance of </a><span class="cv_-_computer_voice">DiffUtil</span>, you specify the following information to an instance of the <span class="cv_-_computer_voice">DiffUtil</span> class:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2707090">A bean matcher instance</a></span> – A bean matcher is an object that compares two objects and determine if they are equal by looking at property data rather than at a <span class="cv_-_computer_voice">fixedID</span> or primary key. For example, you can tell two cars are the same by checking their vehicle identification number (VIN). You can tell two contacts (<span class="cv_-_computer_voice">PolicyContact</span> objects) are the same by checking the name and address. You do not have to write one of these on your own, as discussed further in the following discussion, although you can customize the existing logic. For details, see <a href="javascript:WWHClickedPopup('integration', 'policydifference.31.2.html#2730173', '');" title="Policy Difference Overview">“Compare Individual Objects with Matchers”</a>. The built-in PolicyCenter bean matcher handles objects in the PolicyCenter reference implementation. You probably do not need a totally new bean matcher subclass. For related information, see <a href="javascript:WWHClickedPopup('integration', 'policydifference.31.2.html#2730173', '');" title="Policy Difference Overview">“Compare Individual Objects with Matchers”</a>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2707121">Set of excluded types</a></span> – Each <span class="cv_-_computer_voice">DiffUtil</span> instance includes a list of types to exclude. In the built-in implementation, PolicyCenter uses <span class="cv_-_computer_voice">Transaction</span>, <span class="cv_-_computer_voice">PACost</span>, <span class="cv_-_computer_voice">WCCost</span>, <span class="cv_-_computer_voice">BOPCost</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2707125">Set of excluded properties</a></span> – Each <span class="cv_-_computer_voice">DiffUtil</span> instance includes a list of properties to exclude.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="ri_-_run_in_header"><a name="2707191">Set of included properties</a></span> – Each <span class="cv_-_computer_voice">DiffUtil</span> instance adds a list of properties to include, even if excluded by other rules. In the built-in implementation, PolicyCenter includes the cost property <span class="cv_-_computer_voice">Amount</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2707427">The most important methods on the </a><span class="cv_-_computer_voice">DiffUtils</span> class include:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2707515">compareBeans</a></span> – Compare two entity graphs. This compares all properties and traverses all arrays and links up to a specified depth, which specifies how many jumps down in the hierarchy to examine.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2707519">compareField</a></span> – Compare two entity graphs starting at a specific property on the entities. The property can be a column, link, or array. From that property, compares all properties and traverses all arrays and links up to a specified depth, which specifies how many jumps down in the hierarchy to examine. Pass the property as a <span class="cv_-_computer_voice">IEntityPropertyInfo</span> object, which you can get from the type system using syntax such as:</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="CS_-_Code_Single_Line"><a name="2707535">PersonalAutoLine.TypeInfo.getProperty( "PALineCoverages")</a></div>
+      <div class="B_-_Body"><a name="2707931">To customize the built-in behavior, you have two options. You can either modify </a><span class="cv_-_computer_voice">DiffUtils</span> directly, which might make sense if you want to always exclude or include properties for all lines of business. Or, you can add additional logic to the class that instantiates <span class="cv_-_computer_voice">DiffUtils</span>. For example, for personal auto (PA) line of business, you can modify the <span class="cv_-_computer_voice">PADiffHelper</span> class.</div>
+      <h6 class="HS_-_Head_Sub"><a name="2707924">Difference Utilities Example</a></h6>
+      <div class="B_-_Body"><a name="2707362">The following example code instantiates the </a><span class="cv_-_computer_voice">DiffUtils</span> class and compares two business lines:</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2707368">// create a new instance of DiffUtils</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2707416">var diffUtils = new DiffUtils()</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2707420">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2707421">// include the cost properties</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2707369">diffUtils.includeFields(line1)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2707370">    </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2707371">//Calculate (add) line coverage diffs</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2707372">var paDiffs = diffUtils.compareField( line1, line2, </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2707405">&nbsp;&nbsp;&nbsp;&nbsp;PersonalAutoLine.TypeInfo.getProperty( "PALineCoverages"), 2)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2707373">    </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2707374">//Calculate (add) vehicle diffs</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2707375">paDiffs.addAll(diffUtils.compareField( line1, line2, </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2707409">&nbsp;&nbsp;&nbsp;&nbsp;PersonalAutoLine.TypeInfo.getProperty( "Vehicles"), 2))</a></PRE>
+      <h4 class="H2_-_Heading_2"><a name="2730173">Compare Individual Objects with Matchers</a></h4>
+      <div class="B_-_Body"><a name="2730063">There are a few parts of PolicyCenter that need specialized logic to answer the question, “do these two objects represent the exact same thing?”. These include:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2730064">The policy difference page. For example, in a policy change job, comparing a policy to the original. Other situations use this same interface, such as for side-by-side quoting for multiple draft revision jobs.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2730065">Out-of-sequence job handling.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2730066">Preemption job handling.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2730067">To determine whether two objects represent the same real-world thing, PolicyCenter runs code that answers the question definitively. For example, to compare two cars, you might compare the unique Vehicle Identification Numbers (VIN numbers). If the VIN numbers match, they represent the same car, independent of the number of other properties on the car that might be different.</a></div>
+      <div class="B_-_Body"><a name="2730186">There are two types of matching APIs in PolicyCenter:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2730238">Delegate-based matching classes</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><span class="cv_-_computer_voice"><a name="2730193">PCBeanMatcher</a></span>, which is an older style of matching class</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2730074">How the Delegate-based Matchers Work</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2730075">The delegate-based matchers use a delegate interface to define the required methods. The delegate interface depends on what type of object it is:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2730076">For effective-dated subobjects in a </a><span class="cv_-_computer_voice">PolicyPeriod</span> graph, the matchers use the <span class="cv_-_computer_voice">EffDatedLogicalMatcher</span> interface.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2730077">For all other entity types, the matchers use the </a><span class="cv_-_computer_voice">LogicalMatcher</span> interface.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2730078">To define a new matcher, use the right interface and define the necessary methods. You must be able to know the set of fields that uniquely identify an entity. For example, the </a><span class="cv_-_computer_voice">LogicalMatcher</span> interface has a method called <span class="cv_-_computer_voice">genKey</span> that generates a unique key that can be compared to determine if the objects match.</div>
+      <div class="B_-_Body"><a name="2730079">If the keys for two objects do not match, they are definitely not the same object.</a></div>
+      <div class="B_-_Body"><a name="2730080">If the keys for two objects match, they might or might not be the same object. To determine for sure, PolicyCenter calls the </a><span class="cv_-_computer_voice">isLogicalMatchUntyped(KeyableBean bean)</span> method, which may do additional checks.</div>
+      <div class="B_-_Body"><a name="2730081">This method might check some set of parent foreign keys that must also match. For example, a </a><span class="cv_-_computer_voice">VehicleDriver</span> would match if the foreign keys to <span class="cv_-_computer_voice">PersonalVehicle</span> and <span class="cv_-_computer_voice">PolicyDriver</span> also match.</div>
+      <div class="B_-_Body"><a name="2730082">About 100 entity types now implement one of the matcher delegates and did not have explicit code in </a><span class="cv_-_computer_voice">PCBeanMatcher</span>. In contrast, the <span class="cv_-_computer_voice">PCBeanMatcher</span> matches about 30 entity types, most notably including <span class="cv_-_computer_voice">Cost</span> objects.</div>
+      <div class="B_-_Body"><a name="2730083">The base comparison of comparing </a><span class="cv_-_computer_voice">Id</span> and <span class="cv_-_computer_voice">FixedID</span> properties for all entities remains in the <span class="cv_-_computer_voice">PCBeanMatcher</span> class.</div>
+      <div class="B_-_Body"><a name="2730084">The default implementation of the delegate-based matchers relies on defining columns on the entity, including parent foreign key links to determine whether two objects match. </a></div>
+      <div class="B_-_Body"><a name="2730085">General tips with writing new matchers:</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2730086">You can match on whatever you wish, but be warned that not using true database-backed columns generally speaking is dangerous. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="NW_-_Note_Warning">
+        <span class="w_-_warning">WARNING  </span><a name="2730087">Avoid matching on non-database-backed columns, such as dynamically-generated Gosu properties. It is dangerous. Contact Guidewire Customer Support for guidance before implementing matchers like that.</a></div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="2761935">Column values must be immutable, values that never change over the life of the object. For example, an automobile VIN (Vehicle Identification Number) does not change over time. Editing a VIN never makes sense, other than to correct a typo.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2730112">Customize Which Classes Perform Matching</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2730113">The policy difference system always initially uses the </a><span class="cv_-_computer_voice">PCBeanMatcher</span> class. Similarly, the PolicyCenter out-of-sequence handling system initially calls <span class="cv_-_computer_voice">PCBeanMatcher</span>.</div>
+      <div class="B_-_Body"><a name="2730114">However, the </a><span class="cv_-_computer_voice">PCBeanMatcher</span> always uses the <span class="cv_-_computer_voice">LogicalMatcher</span> delegate if one is available. The <span class="cv_-_computer_voice">EffDatedLogicalMatcher</span> class is a subtype of <span class="cv_-_computer_voice">LogicalMatcher</span>. </div>
+      <div class="B_-_Body"><a name="2761593">You can edit the </a><span class="cv_-_computer_voice">PCBeanMatcher</span> file, so you can change the matching behavior that you want to use when generating a list of differences.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2730117">Delegate Matchers and Copiers</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2730118">Related to the delegate matcher classes are copier classes, which know how to completely duplicate an entity. In a typical policy difference operation, the difference generation is read-only. The difference generation itself does not need to copy data from one entity to a duplicate of that entity. </a></div>
+      <div class="B_-_Body"><a name="2730119">However, in some cases, PolicyCenter also uses a copier. For example, an out-of-sequence job or a preemption job might need to do the following process, which is sometimes called </a><span class="e_-_emphasis">DuplicateAdd</span>:</div>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="2730120">Generate a policy difference between to branches to find added entity instances</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2730121">Use matchers to see if new entity instances have a match somewhere in the graph</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="2730122">If they do match, use copiers to ensure that they are fully in sync as defined by each entity type.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2730123">Because of this, if you write a new matcher class, then you must write a copier class for your data. Otherwise, DuplicateAdd does not work as expected. PolicyCenter might extend an existing entity, but lose (not copy over) the new values.</a></div>
+      <div class="NI_-_Note_Important">
+        <span class="n_-_note">IMPORTANT   </span><a name="2730128">If you write a new matching class, you must write a new copier class.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="2760745">See also</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a href="javascript:WWHClickedPopup('productmodel', 'lob-copydata.19.1.html#1123861', '');" title="Configuring Copy Data in a Line of Business" name="2760765">“Configuring Copy Data in a Line of Business” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('productmodel', 'lob-copydata.19.1.html#1123861', '');" title="Configuring Copy Data in a Line of Business">Product Model Guide</a></span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2725585">Bean Matchers</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2730161">As mentioned in </a><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.2.html#2729937', '');" title="Policy Difference Overview">“Policy Difference Overview”</a>, one of the two difference item strategies is to compare two arbitrary branches using the policy period difference plugin <span class="cv_-_computer_voice">compareBranches</span> method. During this process, the built-in implementation of the policy period difference plugin uses built-in classes called <span class="e_-_emphasis">bean matchers</span>, implemented in the class <span class="cv_-_computer_voice">PCBeanMatcher.gs</span>. This class compares two objects and determines if they are equal by looking at property data rather than by the <span class="cv_-_computer_voice">fixedID</span> property. This assists PolicyCenter in some edge cases to confirm whether two objects are the same. </div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2730292">For more information about the fixed ID, see </a><a href="javascript:WWHClickedPopup('app', 'policyrevisions.50.02.html#2682131', '');" title="What Is a Policy Revision?">“What Is a Policy Revision?” in the </a><span class="bt_-_book_title"><a href="javascript:WWHClickedPopup('app', 'policyrevisions.50.02.html#2682131', '');" title="What Is a Policy Revision?">Application Guide</a></span>. </div>
+      <div class="B_-_Body"><a name="2730293">If two entities have the same fixed ID (matching </a><span class="cv_-_computer_voice">fixedID</span> property values), then the entities represent the same item. If they do not match, then PolicyCenter generally can tell two cars are the same by comparing their vehicle identification numbers (VINs). Even if two entities match based on <span class="cv_-_computer_voice">fixedID</span> values, PolicyCenter might perform additional tests. For example, PolicyCenter determine two contacts (<span class="cv_-_computer_voice">PolicyContact</span> objects) are the same by comparing their name and address properties.</div>
+      <div class="B_-_Body"><a name="2709475">These comparisons are performed by the bean matcher. Typically, you do not have to write one of these on your own because PolicyCenter includes a subclass called </a><span class="cv_-_computer_voice">PCBeanMatcher</span> that handles common cases. However, you can customize the logic as necessary.</div>
+      <div class="N_-_Note">
+        <span class="n_-_note">Note: </span><a name="2730300">Also see the discussion about delegate-based matchers in </a><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.2.html#2730173', '');" title="Policy Difference Overview">“Compare Individual Objects with Matchers”</a></div>
+      <div class="B_-_Body"><a name="2707975">Edit the </a><span class="cv_-_computer_voice">PCBeanMatcher.gs</span> file to customize this logic. The following is a simple example that checks whether two commercial properties are actually the same by checking the account locations:</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726830">private function hasCommercialPropertyMatch(b1 : KeyableBean, b2 : KeyableBean) : boolean {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726831">    switch(true){</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726832">      case b1 typeis CPLocation:</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726833">          return (b1 as CPLocation).PolicyLocation.AccountLocation == </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726854">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(b2 as CPLocation).PolicyLocation.AccountLocation</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726834">      case b1 typeis PolicyLocation:</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726835">          return (b1 as PolicyLocation).AccountLocation == (b2 as PolicyLocation).AccountLocation</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726838">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;default:</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726839">          return false</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726840">    }</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2726773">  }</a></PRE>
+      <div class="B_-_Body"><a name="2708000">Edit the existing methods or add more as appropriate. </a></div>
+      <div class="B_-_Body"><a name="2709496">If you add new methods to compare new types of objects, be sure to edit the top-level method in the class, called </a><span class="cv_-_computer_voice">doBeansMatch.</span> Test for your object’s type before calling your new method.</div>
+      <div class="B_-_Body"><a name="2709499">Generally speaking, PolicyCenter calls the bean matcher for two entities only if the fixed IDs do&nbsp;not&nbsp;match and the application needs to compare entities during a “compare branches” action. </a></div>
+      <div class="B_-_Body"><a name="2724112">However, some lines of business might use the bean matcher object even if generating differences from a based-on revision, as is done in policy change policy reviews. Some lines of business might need to compare certain non-revisioned objects or other objects that might be removed and then readded later. The built-in policy difference plugin calls the bean matcher (indirectly) for the personal auto line of business to compare policy contacts to see if they match. Any time code directly or indirectly calls the </a><span class="cv_-_computer_voice">compareField</span> or <span class="cv_-_computer_voice">compareBean</span> method on a <span class="cv_-_computer_voice">DiffUtils</span> object, PolicyCenter uses the bean matcher.</div>
+      <div class="B_-_Body"><a name="2709591">For more information about the two basic approaches in calculating differences, refer to the first table in the section </a><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.2.html#2729937', '');" title="Policy Difference Overview">“Policy Difference Overview”</a>.</div>
+      <h4 class="H2_-_Heading_2"><a name="2708001">Important Files for Customizing Differences </a></h4>
+      <div class="B_-_Body"><a name="2705952">The most important files for you to customize policy change differences are listed in the following table:</a></div>
+      <div class="T_-_Table"><a name="2705996">&nbsp;</a></div>
+      <table class="withHeading" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2727115">File name</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2727117">Example</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2727119">Which products and LOBs use&nbsp;the file?</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="2727121">Description</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2727123">PolicyPeriodDiffPlugin.gs</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727125">n/a</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727127">All</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727129">Functions to filter the list of </a><span class="cvt_-_computer_voice_table">DiffItem</span> objects and compare entities.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="pst_-_parameter_in_code_snippets_table"><a name="2727131">LOB</a></span><span class="cvt_-_computer_voice_table">DiffHelper.gs</span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2727133">PADiffHelper.gs</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727135">All</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727137">Contains the helper functions to filter and add </a><span class="cvt_-_computer_voice_table">DiffItem</span> objects for this line of business. For details, see <a href="javascript:WWHClickedPopup('integration', 'policydifference.31.2.html#2707560', '');" title="Policy Difference Overview">“Difference Helper Classes”</a>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2730316">PCBeanMatcher.gs </a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2730318">n/a</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2730320">All</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2730322">For multi-version policy comparisons and other contexts for comparing two branch graphs, this file compares properties in entities to determine whether two entities are the same. For example, it checks if cars are the same by checking their VIN number. For information, see </a><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.2.html#2730173', '');" title="Policy Difference Overview">“Compare Individual Objects with Matchers”</a> and <a href="javascript:WWHClickedPopup('integration', 'policydifference.31.4.html#2708342', '');" title="Customizing Differences for New Lines of Business">“Customizing Differences for New Lines of Business”</a>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: Arial; font-style: italic; font-variant: normal; font-weight: normal; text-transform: none; vertical-align: baseline"><span class="e_-_emphasis"><a name="2727139">file names vary</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727141">n/a</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727143">All</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727145">Delegate-based matcher files for each type. See </a><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.2.html#2730173', '');" title="Policy Difference Overview">“Compare Individual Objects with Matchers”</a>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2727153">difftree.xsd </a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727155">n/a</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727157">All</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727159">The XSD for node generation configuration XML files. For details, see </a><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.3.html#2720299', '');" title="Difference Tree XML Configuration">“Difference Tree XML Configuration”</a>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none; vertical-align: baseline"><span class="pt_-_parameter_in_table"><a name="2727161">PRODUCT</a></span><span class="cvt_-_computer_voice_table">DiffTree.xml</span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2727163">PADiffTree.xml</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727165">All</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727167">The node generation configuration XML file for each product. You must have one node generation configuration file for each product, such as PA (personal auto) or WC (Workers’ Comp). For products that have multiple lines of business, such as commercial package, they share one XML file. For details, see </a><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.3.html#2720299', '');" title="Difference Tree XML Configuration">“Difference Tree XML Configuration”</a>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2727963">DiffTreePanelSet.pcf</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727965">n/a</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727967">All except BOP and WC. They use a legacy approach to differences display. (see later rows in this table)</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727969">Displays the differences tree based on settings in the XML file. For details, see </a><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.3.html#2720299', '');" title="Difference Tree XML Configuration">“Difference Tree XML Configuration”</a>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2727169">DifferencesPanelSet.pcf</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727171">n/a</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727173">All. However, BOP and WC call out to </a><span class="cvt_-_computer_voice_table">ComparisonCV.pcf</span> and <span class="cvt_-_computer_voice_table">DifferenceCV.pcf</span> and use a legacy approach to differences display.</div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727175">Displays the differences tree based on settings in the XML file. For details, see </a><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.3.html#2720299', '');" title="Difference Tree XML Configuration">“Difference Tree XML Configuration”</a>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2727177">ComparisonCV.pcf</a></span></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727179">n/a</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727181">BOP and WC for legacy display. If the XML file is not configured for a product, PolicyCenter uses this.</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727183">For multi-version policy comparisons and similar application logic, this PCF page displays the differences.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text" style="color: #000000; font-family: &quot;Lucida Sans Typewriter&quot;; font-style: normal; font-variant: normal; font-weight: normal; margin-top: 3.0pt; text-transform: none; vertical-align: baseline"><span class="cvt_-_computer_voice_table"><a name="2727185">DifferenceCV.pcf</a></span></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727187">n/a</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727189">BOP and WC for legacy display. If the XML file is not configured for a product, PolicyCenter uses this.</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 4pt; padding-left: 2pt; padding-right: 8pt; padding-top: 0pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="2727191">For policy change comparisons and similar application logic, this PCF file displays </a><span class="cvt_-_computer_voice_table">DiffItem</span> objects in separate list views by the status of the entity: added, removed, or changed. Additional tabs may additionally appear and show non-slice changes and window mode changes.</div>
+          </td>
+        </tr>
+      </table>
+      <h4 class="H2_-_Heading_2"><a name="2705899">Filtering Difference Items (After Database Generation)</a></h4>
+      <div class="B_-_Body"><a name="2760804">One of the two difference item strategies is to compare a branch to its based-on branch. After PolicyCenter generates the full list of differences at the database level, it calls the policy period difference plugin method </a><span class="cv_-_computer_voice">filterDiffItems</span> to remove irrelevant differences. </div>
+      <div class="B_-_Body"><a name="2708339">In your plugin, you can add or change the rules for filtering differences. You might use simple collection Gosu methods to remove items, such as the following to remove all </a><span class="cv_-_computer_voice">TerritoryCode</span> information that was added or removed from one branch to the other:</div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2708350">items.removeAll(items.findAll(\ d -&gt; (d.Bean typeis TerritoryCode) and </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2708381">&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(d.Add == true or d.Remove == true)))</a></PRE>
+      <div class="B_-_Body"><a name="2709661">Or, you can define your logic to apply only to certain conditions, such as the reason code that is a parameter to the method. It is an enumeration called </a><span class="cv_-_computer_voice">DiffReason</span> containing values such as <span class="cv_-_computer_voice">TC_POLICYREVIEW</span>, <span class="cv_-_computer_voice">TC_INTEGRATION</span>, <span class="cv_-_computer_voice">TC_MULTIVERSIONJOB</span>, <span class="cv_-_computer_voice">TC_PREEMPTION</span>, <span class="cv_-_computer_voice">TC_COMPAREJOBS</span>.</div>
+      <div class="B_-_Body"><a name="2709662">For example, the following code filters differences for out of sequence jobs:</a></div>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2727404">if (reason == DiffReason.TC_APPLYCHANGES) {</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2727405">&nbsp;&nbsp;diffHelper = new DiffHelper(reason, null, null)</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2727406">&nbsp;&nbsp;diffItems = diffHelper.filterDiffItems(diffItems)</a></PRE>
+      <PRE class="CL_-_Code_Last_Line"><a name="2708340">}</a></PRE>
+      <div class="B_-_Body"><a name="2709042">You may want to update or add to the logic for each line of business in the helper files such as </a><span class="cv_-_computer_voice">PADiffHelper</span> for personal auto. For more information, see <a href="javascript:WWHClickedPopup('integration', 'policydifference.31.4.html#2708342', '');" title="Customizing Differences for New Lines of Business">“Customizing Differences for New Lines of Business”</a> and <a href="javascript:WWHClickedPopup('integration', 'policydifference.31.5.html#2704944', '');" title="Customizing Personal Auto Line of Business">“Customizing Personal Auto Line of Business”</a>.</div>
+      <div class="B_-_Body"><a name="2760826">After filtering the generated difference list, if PolicyCenter needs to display the differences to users, PolicyCenter passes the list to the difference tree generation system for furthering processing. You configure what differences the tree view displays and how the differences appear by customizing difference tree configuration XML files. For more information, see </a><a href="javascript:WWHClickedPopup('integration', 'policydifference.31.3.html#2720299', '');" title="Difference Tree XML Configuration">“Difference Tree XML Configuration”</a>.</div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

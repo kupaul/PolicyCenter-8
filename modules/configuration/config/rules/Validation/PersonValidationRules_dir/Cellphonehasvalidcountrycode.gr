@@ -1,0 +1,29 @@
+package rules.Validation.PersonValidationRules_dir
+uses gw.rules.RuleName
+uses entity.Person
+uses gw.rules.Action
+uses typekey.PhoneCountryCode
+uses typekey.ValidationLevel
+uses displaykey
+
+@gw.rules.RuleDisabled
+@gw.rules.RuleName("Cell phone has valid country code")
+internal class Cellphonehasvalidcountrycode {
+  static function doCondition(person : entity.Person) : boolean {
+/*start00rule*/
+return person.CellPhone != null
+/*end00rule*/
+}
+
+  static function doAction(person : entity.Person, actions : gw.rules.Action) {
+/*start00rule*/
+if (person.CellPhoneCountry == PhoneCountryCode.TC_UNPARSEABLE){
+  person.rejectField("CellPhoneCountry", ValidationLevel.TC_LOADSAVE, displaykey.Validator.Phone.Cell.CountryCode.Unparseable, null, null)
+}
+
+if (person.CellPhoneCountry == null){
+  person.rejectField("CellPhoneCountry", ValidationLevel.TC_LOADSAVE, displaykey.Validator.Phone.Cell.CountryCode.Null, null, null)
+}
+/*end00rule*/
+  }
+}

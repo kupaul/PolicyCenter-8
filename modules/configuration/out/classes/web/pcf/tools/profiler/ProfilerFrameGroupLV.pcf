@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <!-- WARNING: Internal Guidewire file. DO NOT EDIT. -->
+  <ListViewPanel
+    id="ProfilerFrameGroupLV">
+    <Require
+      name="profilerDataSource"
+      type="gw.api.profiler.ProfilerDataSource"/>
+    <Require
+      name="profilerFrameGroupSource"
+      type="gw.api.profiler.ProfilerFrameGroupSource"/>
+    <RowIterator
+      editable="false"
+      elementName="group"
+      value="profilerFrameGroupSource.FrameGroups">
+      <Row>
+        <TextCell
+          footerLabel="displaykey.Web.InternalTools.InfoPages.CacheInfo.Totals"
+          id="path"
+          label="displaykey.Web.Profiler.Tag.Name"
+          value="group.ProfilerTag.Name"/>
+        <TextCell
+          id="num"
+          label="displaykey.Web.Profiler.Number"
+          value="group.FrameCount"/>
+        <TextCell
+          id="time"
+          label="displaykey.Web.Profiler.ElapsedTime"
+          sortDirection="descending"
+          sortOrder="1"
+          value="group.TotalElapsedTime"/>
+        <TextCell
+          format="&quot;####0.0&quot;"
+          id="meanElapsedTime"
+          label="displaykey.Web.Profiler.Mean"
+          sortDirection="descending"
+          value="group.MeanElapsedTime"/>
+        <TextCell
+          format="&quot;###0.0&quot;"
+          id="elapsedTimeSD"
+          label="displaykey.Web.Profiler.StandardDeviation"
+          sortDirection="descending"
+          value="group.StandardDeviationOfElapsedTime"/>
+        <TextCell
+          format="&quot;#0.00%&quot;"
+          id="timePct"
+          label="displaykey.Web.Profiler.Percent"
+          value="getPercentageTime(group.TotalElapsedTime)"/>
+        <TextCell
+          footerSumValue="group.TotalFrameTime"
+          id="frameTime"
+          label="displaykey.Web.Profiler.FrameTime"
+          sortDirection="descending"
+          sortOrder="2"
+          value="group.TotalFrameTime"/>
+        <TextCell
+          format="&quot;####0.0&quot;"
+          id="meanFrameTime"
+          label="displaykey.Web.Profiler.Mean"
+          sortDirection="descending"
+          value="group.MeanFrameTime"/>
+        <TextCell
+          format="&quot;####0.0&quot;"
+          id="frameTimeSD"
+          label="displaykey.Web.Profiler.StandardDeviation"
+          sortDirection="descending"
+          value="group.StandardDeviationOfFrameTime"/>
+        <TextCell
+          footerSumValue="getPercentageTime(group.TotalFrameTime)"
+          format="&quot;#0.00%&quot;"
+          id="frameTimePct"
+          label="displaykey.Web.Profiler.Percent"
+          value="getPercentageTime(group.TotalFrameTime)"/>
+        <TextCell
+          id="propsAndCounters"
+          label="displaykey.Web.Profiler.PropertiesAndCounters"
+          value="gw.api.profiler.ProfilerPageHelper.getPropertiesAndCountersExcludingTracesString( group )"
+          visible="profilerFrameGroupSource.shouldShowPropertiesAndCounters()"/>
+        <LinkCell
+          id="ReportsCell"
+          label="displaykey.Web.Profiler.DbmsInstrumentationReports"
+          visible="false">
+          <LinkIterator
+            elementName="report"
+            value="gw.api.profiler.ProfilerPageHelper.getDbmsReports( group, profilerDataSource ).toTypedArray()">
+            <IteratorSort
+              sortBy="report.Name"
+              sortOrder="1"/>
+            <Link
+              action="gw.api.profiler.ProfilerPageHelper.downloadReport(report)"
+              download="true"
+              id="reportLink"
+              label="report.Name"
+              styleClass="miniButton"/>
+            <Link
+              id="reportSeparator"
+              label="&quot; &quot;"/>
+          </LinkIterator>
+        </LinkCell>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[
+function getPercentageTime(t : int) : Number {
+    if (profilerFrameGroupSource.TotalElapsedTime == 0) {
+      return 0.0
+    }
+    return t/ profilerFrameGroupSource.TotalElapsedTime  
+  }
+      
+    ]]></Code>
+  </ListViewPanel>
+</PCF>

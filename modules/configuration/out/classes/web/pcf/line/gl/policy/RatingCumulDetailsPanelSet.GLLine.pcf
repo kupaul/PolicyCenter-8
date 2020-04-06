@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <PanelSet
+    id="RatingCumulDetailsPanelSet"
+    mode="GLLine">
+    <Require
+      name="period"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Require
+      name="isEditable"
+      type="boolean"/>
+    <Variable
+      initialValue="period.GLLine.Costs"
+      name="glCosts"
+      recalculateOnRefresh="true"/>
+    <!-- currently, only GLEmpBenefitsLiabCost is line level and GLCovExposureCost is location-level -->
+    <Variable
+      initialValue="glCosts.whereTypeIs(GLLineCovCost).toSet()"
+      name="lineLevelCovCosts"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="glCosts.whereTypeIs(GLCovExposureCost).toSet().byFixedLocation()"
+      name="locLevelCovCostMap"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="glCosts.whereTypeIs(GLCost).partition(\ c -&gt; c.State)"
+      name="costsByState"/>
+    <PanelRef
+      def="RatingOverrideButtonDV(period, period.GLLine, jobWizardHelper, CurrentLocation.InEditMode)"
+      id="RatingOverrideButtonDV"/>
+    <!-- Line-level additional clauses -->
+    <PanelRef
+      def="RateCumulGLLineLevelCoverageLV(lineLevelCovCosts)"
+      visible="lineLevelCovCosts.Count &gt; 0">
+      <TitleBar
+        title="displaykey.Web.Policy.BOP.Quote.Coverages.Line.Title"/>
+      <Toolbar/>
+    </PanelRef>
+    <PanelIterator
+      elementName="state"
+      value="costsByState.Keys.toList().sort().toTypedArray()">
+      <Variable
+        initialValue="costsByState.get(state)"
+        name="stateCosts"/>
+      <!-- Loc-level costs -->
+      <PanelRef>
+        <TitleBar
+          title="state.DisplayName"/>
+        <DetailViewPanel>
+          <InputColumn>
+            <Label
+              label="displaykey.Web.SubmissionWizard.Quote.GL.ExposurePremium"/>
+            <ListViewInput
+              def="GLExpCovCumulDetailLV(stateCosts.whereTypeIs(GLCovExposureCost).toSet())"
+              labelAbove="true">
+              <Toolbar/>
+            </ListViewInput>
+            <Label
+              label="displaykey.Web.SubmissionWizard.Quote.WC.OtherPremiumAndTax"/>
+            <ListViewInput
+              def="StateCostsLV(stateCosts.toSet().getOtherPremiumAndSurcharges(period.PreferredSettlementCurrency))"
+              labelAbove="true">
+              <Toolbar/>
+            </ListViewInput>
+          </InputColumn>
+        </DetailViewPanel>
+      </PanelRef>
+    </PanelIterator>
+  </PanelSet>
+</PCF>

@@ -1,0 +1,95 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <ListViewPanel
+    editable="canEdit"
+    id="UWApprovalLV">
+    <Require
+      name="asst"
+      type="gw.job.uw.UWApprovalLVAsst"/>
+    <Require
+      name="canEdit"
+      type="boolean"/>
+    <Variable
+      initialValue="asst.Issue"
+      name="issue"/>
+    <Variable
+      initialValue="issue.Approval"
+      name="approval"/>
+    <Row>
+      <Cell
+        id="ReferenceComparatorHeader"
+        value="&quot;&quot;"
+        visible="issue.IssueType.Comparator != TC_NONE"/>
+      <Cell
+        bold="true"
+        id="ReferenceValueHeader"
+        value="displaykey.Web.UWIssue.UWApprovalLV.ReferenceValue"
+        visible="issue.IssueType.Comparator != TC_NONE"/>
+      <Cell
+        bold="true"
+        id="ReferenceValueCurrencyHeader"
+        value="displaykey.Web.UWIssue.UWApprovalLV.ReferenceValueCurrency"
+        visible="approval.ReferenceValueCurrency != null"/>
+      <Cell
+        bold="true"
+        id="EditBeforeBindHeader"
+        value="displaykey.Web.UWIssue.UWApprovalLV.EditBeforeBind"/>
+      <Cell
+        bold="true"
+        id="BlockingPointHeader"
+        value="displaykey.Web.UWIssue.UWApprovalLV.Through"/>
+      <Cell
+        bold="true"
+        id="DurationHeader"
+        value="displaykey.Web.UWIssue.UWApprovalLV.InvalidFrom"/>
+    </Row>
+    <Row>
+      <Cell
+        enableSort="false"
+        id="ReferenceComparator"
+        value="issue.IssueType.Comparator"
+        visible="issue.IssueType.Comparator != TC_NONE"/>
+      <Cell
+        editable="true"
+        enableSort="false"
+        id="ReferenceValue"
+        required="true"
+        validationExpression="asst.validate(approval.ReferenceValue)"
+        value="approval.NonCurrencyReferenceValue"
+        visible="issue.IssueType.Comparator != TC_NONE"/>
+      <Cell
+        enableSort="false"
+        id="ReferenceValueCurrency"
+        required="true"
+        validationExpression="asst.validate(approval.ReferenceValue)"
+        value="approval.ReferenceValueCurrency"
+        visible="gw.api.util.CurrencyUtil.isMultiCurrencyMode() and approval.ReferenceValueCurrency != null "/>
+      <Cell
+        editable="true"
+        enableSort="false"
+        id="EditBeforeBind"
+        required="true"
+        value="approval.EditBeforeBind">
+        <PostOnChange/>
+      </Cell>
+      <RangeCell
+        editable="true"
+        enableSort="false"
+        id="BlockingPoint"
+        optionLabel="VALUE.DisplayAsThroughValue"
+        required="true"
+        sortValueRange="false"
+        value="approval.BlockingPoint"
+        valueRange="asst.BlockingPointValueRange"/>
+      <TypeKeyCell
+        editable="true"
+        enableSort="false"
+        id="Duration"
+        label="displaykey.Web.UWIssue.UWApprovalLV.InvalidFrom"
+        required="true"
+        value="approval.Duration"/>
+    </Row>
+  </ListViewPanel>
+</PCF>

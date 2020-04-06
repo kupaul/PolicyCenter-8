@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <MenuActions
+    flatten="true"
+    id="AuditWizardMenuActions">
+    <Require
+      name="job"
+      type="Job"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <MenuItem
+      id="AuditWizardMenuActions_Goto"
+      label="displaykey.Web.JobWizard.GoTo"
+      shortcut="G">
+      <MenuItem
+        action="AccountFileForward.go(policyPeriod.Policy.Account)"
+        id="AuditWizardMenuActions_ToAccountFile"
+        label="displaykey.Web.JobWizard.ToAccountFile"
+        visible="policyPeriod.Policy.Account != null and !policyPeriod.Policy.Account.New"/>
+      <MenuItem
+        action="PolicyFileForward.go(policyPeriod.PolicyNumber)"
+        id="AuditWizardMenuActions_ToPolicyFile"
+        label="displaykey.Web.JobWizard.ToPolicyFile"
+        shortcut="F"/>
+      <MenuItem
+        action="goToAudits()"
+        id="AuditWizardMenuActions_ToAudits"
+        label="displaykey.Web.JobWizard.ToAudits"/>
+    </MenuItem>
+    <MenuItemDivider/>
+    <MenuItem
+      id="AuditWizardMenuActions_Create"
+      label="displaykey.Web.JobWizard.Create"
+      shortcut="C">
+      <MenuItem
+        action="NewNoteWorksheet.goInWorkspace(policyPeriod, policyPeriod.EditEffectiveDate)"
+        id="AuditWizardMenuActions_NewNote"
+        label="displaykey.Web.JobWizard.NewNote"
+        shortcut="N"
+        visible="!policyPeriod.Locked and perm.Note.create"/>
+      <MenuItem
+        id="AuditWizardMenuActions_NewDocument"
+        label="displaykey.Web.JobWizard.NewDocument"
+        shortcut="O"
+        visible="!policyPeriod.Locked">
+        <MenuItemSetRef
+          def="NewJobDocumentMenuItemSet(policyPeriod)"/>
+      </MenuItem>
+    </MenuItem>
+    <MenuItem
+      id="AuditWizardMenuActions_NewActivity"
+      label="displaykey.Web.JobWizard.NewActivity"
+      shortcut="Y"
+      visible="!policyPeriod.Locked and perm.System.actcreate">
+      <MenuItemSetRef
+        def="NewActivityMenuItemSet(null, null, policyPeriod)"/>
+    </MenuItem>
+    <Code><![CDATA[function goToAudits() {
+  var boundPeriod = Policy.finder.findMostRecentBoundPeriodByPolicy(policyPeriod.Policy )
+  PolicyFileForward.go(boundPeriod, boundPeriod.EditEffectiveDate, "PolicyAudits")
+}]]></Code>
+  </MenuActions>
+</PCF>

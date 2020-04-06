@@ -1,0 +1,62 @@
+<DiffTree xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="schema/difftree.xsd">
+  <Section label="displaykey.Web.Differences.LOB.Common.PolicyInfo" sortorder="1">
+    <RootProperties includefromtype="PolicyPeriod" sortorder="1"/>
+    <RootEntity type="PolicyPriNamedInsured" label="displaykey.Web.Differences.LOB.Common.PolicyPriNamedInsured(ENTITY.DisplayName)" sortorder="2"/>
+    <RootEntity type="PolicyAddlNamedInsured" label="displaykey.Web.Differences.LOB.Common.PolicyAddlNamedInsured(ENTITY.DisplayName)" sortorder="3"/>
+    <RootEntity type="PolicyAddlInterest" showadds="false" showremoves="false" label="displaykey.Web.Differences.LOB.Common.PolicyAddlInterest(ENTITY.DisplayName)" sortorder="4"/>
+    <RootEntity type="PolicyBillingContact" label="displaykey.Web.Differences.LOB.Common.PolicyBillingContact(ENTITY.DisplayName)" sortorder="5"/>
+    <RootEntity type="PolicyAddress" label="displaykey.Web.Differences.LOB.Common.PolicyAddress(ENTITY.AddressType)" sortorder="6"/>
+    <RootProperties includefromtype="EffectiveDatedFields" sortorder="7"/>
+  </Section>
+  <Section label="displaykey.Web.Differences.LOB.Common.LocationsAndBuildings" sortorder="2">
+    <RootEntity type="IMLocation" sortorder="1">
+      <Properties includefromtype="PolicyLocation" parentpath="ENTITY.Branch.IMLine.IMLocations.firstWhere(\ il->il.Location==ENTITY)" sortorder="1"/>
+      <Properties includefromtype="IMLocation" parentpath="ENTITY" sortorder="1"/>
+      <Entity type="IMBuilding" parentpath="ENTITY.IMLocation" sortorder="2">
+        <Properties includefromtype="Building" parentpath="ENTITY.Branch.IMLine.IMLocations*.Buildings.firstWhere(\b->b.Building==ENTITY)" sortorder="1"/>
+        <Properties includefromtype="BuildingImprovement" parentpath="ENTITY.Branch.IMLine.IMLocations*.Buildings.firstWhere(\b->b.Building==ENTITY.Building)" sortorder="2">
+          <PropertyDisplay propertyname="YearAdded" label="displaykey.Web.Differences.LOB.Common.BuildingImprovements(ENTITY.BuildingImprType.DisplayName)"/>
+        </Properties>
+        <Properties includefromtype="BuildingSide" parentpath="ENTITY.Branch.IMLine.IMLocations*.Buildings.firstWhere(\b->b.Building==ENTITY.Building)" sortorder="3">
+          <PropertyDisplay propertyname="Description" label="displaykey.Web.Differences.LOB.Common.BuildingSides(ENTITY.BuildingSideType.DisplayName)"/>
+        </Properties>
+        <Properties includefromtype="IMBuilding" parentpath="ENTITY" sortorder="4"/>
+      </Entity>
+    </RootEntity>
+  </Section>
+  <Section label="displaykey.Web.Differences.LOB.IM.CoverageParts" sortorder="3">
+    <RootEntity type="IMAccountsRecPart" sortorder="1">
+      <SubSection label="displaykey.Web.Differences.LOB.Common.Coverages" sortorder="1">
+        <Entity type="IMAccountsRecPartCov" parentpath="ENTITY.IMAccountsRecPart"/>
+      </SubSection>
+      <SubSection label="displaykey.Web.Differences.LOB.IM.ScheduledItems" sortorder="2">
+        <Entity type="IMAccountsReceivable" parentpath="ENTITY.IMAccountsRecPart" label="displaykey.Web.Differences.LOB.IM.IMAccountsReceivable(ENTITY.ReceptacleType, ENTITY.IMBuilding.DisplayName, ENTITY.IMBuilding.IMLocation.Location.DisplayName)">
+          <Entity type="IMAccountsRecCov" parentpath="ENTITY.IMAccountsReceivable" sortorder="1"/>
+          <Properties includefromtype="IMAccountsReceivable" parentpath="ENTITY" sortorder="2">
+            <ExcludedProperty propertyname="AccountsRecNumber"/>
+          </Properties>
+        </Entity>
+      </SubSection>
+      <SubSection label="displaykey.Web.Differences.LOB.IM.ExcludedAccounts" sortorder="3">
+        <Entity type="IMExcludedAccount" parentpath="ENTITY.IMAccountsRecPart"/>
+      </SubSection>        
+    </RootEntity>
+    <RootEntity type="ContractorsEquipPart" sortorder="2">
+      <SubSection label="displaykey.Web.Differences.LOB.Common.Coverages" sortorder="1">
+        <Entity type="ContrEquipPartCov" parentpath="ENTITY.ContractorsEquipPart"/>
+      </SubSection>
+      <SubSection label="displaykey.Web.Differences.LOB.IM.ScheduledEquipments" sortorder="2">
+        <Entity type="ContractorsEquipment" parentpath="ENTITY.ContractorsEquipPart">
+          <Entity type="ContractorsEquipCov" parentpath="ENTITY.ContractorsEquipment" sortorder="1"/>
+          <Entity type="IMSchEquipAddlInterest" parentpath="ENTITY.ContractorsEquipment"
+                label="displaykey.Web.Differences.LOB.Common.PolicyAddlInterestDetail(ENTITY.DisplayName, ENTITY.AdditionalInterestType)" sortorder="2"/>
+        </Entity>
+      </SubSection>
+    </RootEntity>
+    <RootEntity type="IMSignPart" sortorder="3">
+      <Entity type="IMSign" parentpath="ENTITY.IMSignPart">
+        <Entity type="entity.IMSignCov" parentpath="ENTITY.IMSign"/>
+      </Entity>
+    </RootEntity>
+  </Section>
+</DiffTree>

@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <!-- canVisit="perm.PolicyPeriod.view(PolicyPeriod)" -->
+  <Page
+    afterEnter="gw.api.web.PebblesUtil.addWebMessages(CurrentLocation, policyPeriod.PolicyFileMessages);"
+    canVisit=""
+    id="PolicyFile_Summary"
+    title="displaykey.Web.PolicyFile.Summary">
+    <LocationEntryPoint
+      signature="PolicyFile_Summary(policyPeriod : PolicyPeriod, asOfDate : DateTime, errorMessage : String)"/>
+    <LocationEntryPoint
+      signature="PolicyFile_Summary(policyPeriod : PolicyPeriod, asOfDate : DateTime)"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      name="asOfDate"
+      type="DateTime"/>
+    <Variable
+      name="errorMessage"
+      type="String"/>
+    <Variable
+      initialValue="populateErrorMessage()"
+      name="checkedErrorMessage"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="new gw.pcf.policysummary.PolicySummaryHelper(policyPeriod, asOfDate)"
+      name="policySummaryHelper"/>
+    <ScreenRef
+      def="Policy_SummaryScreen(policyPeriod, asOfDate, policySummaryHelper)"/>
+    <Code><![CDATA[function populateErrorMessage() : String{
+        if(errorMessage != null) {
+          util.LocationUtil.addRequestScopedErrorMessage(errorMessage)
+        }
+        return errorMessage
+      }]]></Code>
+  </Page>
+</PCF>

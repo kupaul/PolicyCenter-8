@@ -1,0 +1,445 @@
+<project name="Guidewire product configuration environment"
+         xmlns:ac="antlib:net.sf.antcontrib"
+         xmlns:gw="antlib:com.guidewire.ant.task"
+         default="help">
+
+  <property file="${user.name}.build.properties"/>
+  <property file="devbuild.properties"/>
+  <import file="init.xml"/>
+
+  <target name="studio" depends="init, dev-deploy" description="Start Studio">
+    <gw:gosu>
+      var studio = new gw.ant.CustomerStudio()
+      studio.start()
+    </gw:gosu>
+  </target>
+
+  <target name="plugin-studio" depends="init, dev-deploy" description="Start Plugin Studio">
+    <gw:gosu>
+      var studio = new gw.ant.PluginStudio()
+      studio.start()
+    </gw:gosu>
+  </target>
+
+  <target name="dev-deploy" depends="init" description="Deploy resources to dev-mode webapp">
+    <gw:gosu>
+      uses gw.ant.Deploy
+      uses gw.vark.antlibs.Ant
+      uses gw.vark.IAardvarkUtils
+      var xx = IAardvarkUtils.ScriptApp
+      var jettyRoot = IAardvarkUtils.ScriptRootDir.getChild("webapps/${xx}")
+      var module = IAardvarkUtils.moduleArtifact(xx, xx)
+      Deploy.webapp(jettyRoot, module)
+    </gw:gosu>
+  </target>
+
+  <target name="dev-start" depends="init, dev-deploy" description="Start dev-mode webapp">
+    <gw:gosu>gw.ant.WebApp.make.start()</gw:gosu>
+  </target>
+
+  <target name="debug-start" depends="init, dev-deploy" description="Discontinued. Use dev-debug-shmem or -socket instead!">
+    <gw:gosu>
+      print("This target is discontinued. Use dev-debug-shmem or -socket instead!")
+    </gw:gosu>
+  </target>
+
+  <target name="dev-debug-shmem" depends="dev-deploy" description="Start dev-mode webapp using shared memory debugging">
+    <fail unless="gw.isWindows" message="Shared memory debugging is Windows-only target" />
+    <gw:gosu>gw.ant.WebApp.make.debugShmem().start()</gw:gosu>
+  </target>
+
+  <target name="dev-suspend-shmem" depends="init" description="Start dev-mode webapp using shared memory debugging, start suspended">
+    <fail unless="gw.isWindows" message="Shared memory debugging is Windows-only target" />
+    <gw:gosu>gw.ant.WebApp.make.debugShmem().suspend().start()</gw:gosu>
+  </target>
+
+  <target name="dev-debug-socket" depends="dev-deploy" description="Start dev-mode webapp using socket debugging">
+    <gw:gosu>gw.ant.WebApp.make.debugSocket().start()</gw:gosu>
+  </target>
+
+  <target name="dev-suspend-socket" depends="init" description="Start dev-mode webapp using socket debugging, start suspended">
+    <gw:gosu>gw.ant.WebApp.make.debugSocket().suspend().start()</gw:gosu>
+  </target>
+
+  <target name="dev-stop" depends="init" description="Stop dev-mode webapp">
+    <gw:gosu>gw.ant.WebApp.make.stop()</gw:gosu>
+  </target>
+
+  <target name="dev-dropdb" depends="init" description="Drop dev-mode database tables">
+    <gw:gosu>gw.ant.WebApp.dropDb()</gw:gosu>
+  </target>
+
+  <target name="build-war" depends="build-tomcat-war">
+    <echo message="WARNING: This war is only for Tomcat.  For JBoss use build-jboss-war."/>
+    <echo message="To avoid seeing this message use build-tomcat-war."/>
+  </target>
+
+  <target name="build-tomcat-war" depends="init, dev-deploy">
+    <echo message="WARNING: Use build-tomcat-war-dbcp instead."/>
+    <gw:gosu>
+      new gw.ant.CustBuildHelper().buildWar("dist/war", gw.ant.AppServerType.TOMCAT, true)
+    </gw:gosu>
+  </target>
+  <target name="build-tomcat-war-dbcp" depends="init, dev-deploy" description="Build war with JDBC drivers for use with Tomcat">
+    <gw:gosu>
+      new gw.ant.CustBuildHelper().buildWar("dist/war", gw.ant.AppServerType.TOMCAT, true)
+    </gw:gosu>
+  </target>
+  <target name="build-tomcat-war-jndi" depends="init, dev-deploy" description="Build war without JDBC drivers for use with Tomcat">
+    <gw:gosu>
+      new gw.ant.CustBuildHelper().buildWar("dist/war", gw.ant.AppServerType.TOMCAT, false)
+    </gw:gosu>
+  </target>
+
+  <target name="build-jboss-war" depends="init, dev-deploy">
+    <echo message="WARNING: Use build-jboss-war-dbcp instead."/>
+    <gw:gosu>
+      new gw.ant.CustBuildHelper().buildWar("dist/war", gw.ant.AppServerType.JBOSS, true)
+    </gw:gosu>
+  </target>
+  <target name="build-jboss-war-dbcp" depends="init, dev-deploy" description="Build war with JDBC drivers for use with JBoss">
+    <gw:gosu>
+      new gw.ant.CustBuildHelper().buildWar("dist/war", gw.ant.AppServerType.JBOSS, true)
+    </gw:gosu>
+  </target>
+  <target name="build-jboss-war-jndi" depends="init, dev-deploy" description="Build war without JDBC drivers for use with JBoss">
+    <gw:gosu>
+      new gw.ant.CustBuildHelper().buildWar("dist/war", gw.ant.AppServerType.JBOSS, false)
+    </gw:gosu>
+  </target>
+
+  <target name="build-websphere-ear" depends="init, dev-deploy">
+    <echo message="WARNING: Use build-websphere-ear-dpcp instead."/>
+    <gw:gosu>
+      new gw.ant.CustBuildHelper().buildEar("dist/ear", gw.ant.AppServerType.WEBSPHERE, true, false)
+    </gw:gosu>
+  </target>
+  <target name="build-websphere-ear-dbcp" depends="init, dev-deploy" description="Build ear with JDBC drivers for use with WebSphere">
+    <gw:gosu>
+      new gw.ant.CustBuildHelper().buildEar("dist/ear", gw.ant.AppServerType.WEBSPHERE, true)
+    </gw:gosu>
+  </target>
+  <target name="build-websphere-ear-jndi" depends="init, dev-deploy" description="Build ear without JDBC drivers for use with WebSphere">
+    <gw:gosu>
+      new gw.ant.CustBuildHelper().buildEar("dist/ear", gw.ant.AppServerType.WEBSPHERE, false)
+    </gw:gosu>
+  </target>
+
+  <target name="build-weblogic-ear" depends="init, dev-deploy">
+    <echo message="WARNING: Use build-weblogic-ear-dpcp instead."/>
+    <gw:gosu>
+      new gw.ant.CustBuildHelper().buildEar("dist/ear", gw.ant.AppServerType.WEBLOGIC, true, false)
+    </gw:gosu>
+  </target>
+  <target name="build-weblogic-ear-dbcp" depends="init, dev-deploy" description="Build ear with JDBC drivers for use with WebLogic">
+    <gw:gosu>
+      new gw.ant.CustBuildHelper().buildEar("dist/ear", gw.ant.AppServerType.WEBLOGIC, true)
+    </gw:gosu>
+  </target>
+  <target name="build-weblogic-ear-jndi" depends="init, dev-deploy" description="Build ear without JDBC drivers for use with WebLogic">
+    <gw:gosu>
+      new gw.ant.CustBuildHelper().buildEar("dist/ear", gw.ant.AppServerType.WEBLOGIC, false)
+    </gw:gosu>
+  </target>
+  <target name="cc-typelist-gen" depends="dev-deploy"
+          description="Export Policy Center product model as typelists to Claim Center, requires -Dinput_dir=&lt;input directory&gt; -Doutput_dir=&lt;output directory&gt;, optional -Dmap_coverages=true">
+    <gw:gosu>
+      uses gw.vark.IAardvarkUtils
+      var app = IAardvarkUtils.ScriptApp
+      if(not app.equalsIgnoreCase("pc")) {
+        print("This target is only avalable on PolicyCenter!")
+        java.lang.System.exit(2)
+      }
+      gw.ant.WebApp.ccTypelistGen()
+    </gw:gosu>
+  </target>
+
+  <target name="displaykey-diff" depends="dev-deploy" description="Generate missing display keys">
+    <gw:gosu>
+      uses gw.vark.IAardvarkUtils
+      var dest = IAardvarkUtils.ScriptBuildDir.getChild("missing-display-keys")
+      gw.ant.ConfigTools.displayKeyDiff(dest)
+    </gw:gosu>
+  </target>
+
+  <target name="import-l10ns" depends="dev-deploy"
+          description="Import localizations, requires -Dimport.file=&lt;translation file&gt; -Dimport.locale=&lt;destination locale&gt;">
+    <gw:gosu>
+      gw.ant.ConfigTools.importL10Ns()
+    </gw:gosu>
+  </target>
+
+  <target name="export-l10ns" depends="dev-deploy"
+          description="Export localizations, requires -Dexport.file=&lt;translation file&gt; -Dexport.locale=&lt;destination locale&gt;">
+    <gw:gosu>
+      gw.ant.ConfigTools.exportL10Ns()
+    </gw:gosu>
+  </target>
+
+  <target name="iterator-upgrade" depends="dev-deploy" description="Upgrade all iterators on toolbar buttons and filters">
+    <gw:gosu>
+      gw.ant.ConfigTools.iteratorUpgrade()
+    </gw:gosu>
+  </target>
+
+  <target name="merge-module" depends="init" description="Merge given configuration module on top of 'configuration', requires -Dmerge.module=&lt;module directory&gt;">
+    <gw:gosu>
+      uses gw.vark.IAardvarkUtils
+      var moduleDir = IAardvarkUtils.getRequiredProperty("merge.module")
+      gw.ant.ConfigFlatten.merge(IAardvarkUtils.ScriptApp, IAardvarkUtils.ScriptRootDir.getChild("modules"), IAardvarkUtils.ScriptRootDir.file(moduleDir))
+    </gw:gosu>
+  </target>
+
+  <target name="regen-datamapping-split" depends="dev-deploy" description="Build the data mapping files with files split out by table and typelist">
+    <gw:gosu>
+      uses gw.vark.IAardvarkUtils
+      gw.ant.ConfigTools.buildDataMapping(IAardvarkUtils.ScriptBuildDir.getChild("data-mapping-split"), true)
+    </gw:gosu>
+  </target>
+
+  <target name="regen-datamapping-together" depends="dev-deploy" description="Build the data mapping files with all tables and typelists concatenated">
+    <gw:gosu>
+      uses gw.vark.IAardvarkUtils
+      gw.ant.ConfigTools.buildDataMapping(IAardvarkUtils.ScriptBuildDir.getChild("data-mapping"), false)
+    </gw:gosu>
+  </target>
+
+  <target name="regen-dictionary" depends="regen-entity-model-xml" description="Build the data dictionary, optional properties: -DmaxSPVInclusions=1000; -DoutputFormat=[html,xml], default: 'html'">
+    <gw:gosu>
+      uses gw.vark.IAardvarkUtils
+      gw.ant.ConfigTools.buildDictionary(IAardvarkUtils.ScriptBuildDir.getChild("dictionary"))
+    </gw:gosu>
+  </target>
+
+  <target name="regen-entity-model-xml" depends="dev-deploy" description="Build the entity model in xml">
+    <gw:gosu>
+      uses gw.vark.IAardvarkUtils
+      gw.ant.ConfigTools.buildEntityModelInXml(IAardvarkUtils.ScriptBuildDir.getChild("dictionary"))
+    </gw:gosu>
+  </target>
+
+  <target name="regen-gosudoc" depends="init" description="Build the GosuDoc">
+    <gw:gosu>
+      uses gw.vark.IAardvarkUtils
+      gw.ant.ConfigTools.buildGosudoc(IAardvarkUtils.ScriptBuildDir.getChild("gosudoc"))
+    </gw:gosu>
+  </target>
+
+  <target name="regen-pcfmapping" depends="dev-deploy" description="Build the PCF mappings">
+    <gw:gosu>
+      uses gw.vark.IAardvarkUtils
+      gw.ant.ConfigTools.buildPcfMapping(IAardvarkUtils.ScriptBuildDir.getChild("pcf-mapping"))
+    </gw:gosu>
+  </target>
+
+  <target name="regen-java-api" depends="dev-deploy" description="Build Java API toolkit. In order to additionally generate the deprecated Java API, specify the &quot;deprecated&quot; parameter, as in -Ddeprecated=true.">
+    <gw:gosu>
+      uses gw.ant.JavaToolkit
+      uses gw.vark.IAardvarkUtils
+      uses java.lang.Boolean
+
+      JavaToolkit.regenJavaApi(Boolean.valueOf(IAardvarkUtils.getProperty("deprecated")))
+    </gw:gosu>
+  </target>
+
+  <target name="regen-soap-api" depends="dev-deploy" description="Build SOAP API toolkit">
+    <gw:gosu>
+      gw.ant.JavaToolkit.regenSoapApi()
+    </gw:gosu>
+  </target>
+
+  <target name="regen-wsi-local" depends="dev-deploy" description="Build the wsdl for wsi web services to gsrc/wsi/local">
+    <gw:gosu>
+      uses gw.vark.IAardvarkUtils
+      gw.ant.JavaToolkit.regenWsiLocal()
+    </gw:gosu>
+  </target>
+
+  <target name="regen-soap-local" depends="dev-deploy" description="Build the wsdl for soap.local web services to config/webservices/local.wsdl">
+    <gw:gosu>
+      uses gw.vark.IAardvarkUtils
+      gw.ant.JavaToolkit.regenSoapLocal()
+    </gw:gosu>
+  </target>
+
+  <target name="regen-xsd" depends="dev-deploy" description="Build the XSDs for import files">
+    <gw:gosu>
+      uses gw.vark.IAardvarkUtils
+      gw.ant.ConfigTools.buildXsd(IAardvarkUtils.ScriptBuildDir.getChild("xsd"))
+    </gw:gosu>
+  </target>
+
+  <target name="regen-project" depends="init" description="Regenerate Studio project">
+    <gw:gosu>
+      uses gw.vark.IAardvarkUtils
+      gw.ant.JavaToolkit.regenStudioProject(IAardvarkUtils.ScriptRootDir)
+    </gw:gosu>
+  </target>
+
+  <target name="regen-toolkit">
+    <fail message="Target regen-toolkit removed.  Use regen-java-api or regen-soap-api instead."/>
+  </target>
+
+  <target name="regen-rulereport" depends="dev-deploy" description="Build the rule repository report">
+    <gw:gosu>
+      uses gw.vark.IAardvarkUtils
+      var xx = IAardvarkUtils.ScriptApp
+      var dest = IAardvarkUtils.ScriptBuildDir.getChild("rules")
+      gw.ant.ConfigTools.buildRuleRepoReport(dest)
+    </gw:gosu>
+  </target>
+
+  <target name="regen-from-wsc" depends="init" description="Build WSC meta-information. Run this when new .wsc files containing web service URLs are available to generate the web service stub code. The WSC file(s) should be in the configuration module">
+    <gw:gosu>
+      uses gw.vark.IAardvarkUtils
+      gw.ant.JavaToolkit.regenWsc()
+    </gw:gosu>
+  </target>
+
+  <target name="regen-phone-metadata" depends="init" description="Regenerates phone metadata in config/phone/data. Run this target if you have modified the phone metadata XML files">
+    <gw:gosu>
+      gw.ant.ConfigTools.generatePhoneMetadata()
+    </gw:gosu>
+  </target>
+
+  <target name="install-localized-module" depends="dev-deploy" description="Installs a localized module, requires -Dmodule.file=&lt;module zip file&gt; -Dinstall.type=&lt;install, upgrade&gt;">
+    <gw:gosu>
+      gw.ant.ConfigTools.installModule()
+    </gw:gosu>
+  </target>
+
+  <target name="run-suite" depends="init">
+    <gw:gosu>gw.ant.test.Tests.runTests()</gw:gosu>
+  </target>
+
+  <target name="debug-suite" depends="init">
+    <gw:gosu>gw.ant.test.Tests.debugTests()</gw:gosu>
+  </target>
+
+  <target name="version" depends="init" description="Print the product version">
+    <gw:gosu>
+      gw.ant.ConfigTools.printProductVersion()
+    </gw:gosu>
+  </target>
+
+  <target name="zip-changed-config" depends="init" description="Create a zip archive containing the changed configuration files">
+      <gw:gosu>
+            uses gw.vark.IAardvarkUtils
+            var xx = IAardvarkUtils.ScriptApp
+            var prog = gw.ant.Program.tool("com.guidewire.tools.config.ChangedConfigZipToolMain")
+            var appRootDirectory = gw.vark.IAardvarkUtils.getProperty("appRootDirectory")
+            if (appRootDirectory != null) {
+              prog.addArg("-a")
+              prog.addArg(appRootDirectory)
+            }
+            var outputFile = gw.vark.IAardvarkUtils.getProperty("outputFile")
+            if (outputFile != null) {
+              prog.addArg("-o")
+              prog.addArg(outputFile)
+            }
+            var excludeList = gw.vark.IAardvarkUtils.getProperty("exclude")
+            if (excludeList != null) {
+              prog.addArg("-e")
+              prog.addArg(excludeList)
+            }
+            prog.withTargetModule(IAardvarkUtils.getScriptTargetModule(xx))
+                .run()
+      </gw:gosu>
+  </target>
+
+  <!-- Deprecated. Remove for 9 release. -->
+  <target name="verify-types" depends="verify-resources" description="The 'verify-types' target is deprecated. Please use 'verify-resources' instead.">
+    <echo message="The 'verify-types' target is deprecated. Please use 'verify-resources' instead."/>
+  </target>
+
+  <!-- The resource verifier goes through the "target" directory. It should probably not do this.
+     The problem can be worked around by doing a compile first (in the depends). -->
+  <target name="verify-resources" depends="init, dev-deploy" description="Check PCFs, Gosu types, etc for errors">
+  <gw:gosu>
+    uses gw.vark.IAardvarkUtils
+    var xx = IAardvarkUtils.ScriptApp
+    var prog = gw.ant.Program.tool("com.guidewire.tools.typesystem.ResourceVerifierMain")
+               .withTargetModule(IAardvarkUtils.getScriptTargetModule(xx))
+    var maxSpvInclusions = gw.vark.IAardvarkUtils.getProperty("maxSPVInclusions")
+    if (maxSpvInclusions != null and maxSpvInclusions.length > 0) {
+      prog.withArg("-maxSPVInclusions").withArg(maxSpvInclusions)
+    }
+    prog.run()
+  </gw:gosu>
+</target>
+
+<target name="init" depends="tasks, asserts, macros">
+  <ac:if>
+    <contains string="${basedir}" substring=" "/>
+    <then>
+      <ac:propertyregex property="root.dir.with.spaces" input="${basedir}" regexp="(.*)[\\/]modules[\\/]ant" select="\1"/>
+      <fail message="Spaces not supported for installation location path: '${root.dir.with.spaces}'"/>
+    </then>
+  </ac:if>
+  <echo message="Java version: ${java.version}"/>
+  <echo message=" Ant version: ${ant.version}"/>
+  <gw:gosuInit>
+    <classpath />
+  </gw:gosuInit>
+  <gw:gosu>
+    uses gw.ant.ScriptEnv
+    ScriptEnv.initCustomer()
+  </gw:gosu>
+</target>
+
+<target name="solr" depends="init" description="Rebuild the Solr zip file">
+  <gw:gosu>
+    uses gw.ant.Solr
+    uses gw.vark.IAardvarkUtils
+
+    Solr.build(IAardvarkUtils.ScriptApp, IAardvarkUtils.ScriptRootDir)
+  </gw:gosu>
+</target>
+
+<target name="update-theme" depends="rebuild-theme, copy-theme, dev-deploy-web-resources" description="Rebuild the Titanium theme files and then copy them into the configuration module and the deployed dev server.  This command requires having Sencha Command and Ruby installed and on the system PATH."/>
+
+<target name="rebuild-theme" depends="init">
+  <gw:gosu>
+    uses gw.vark.IAardvarkUtils
+    gw.ant.web.ThemeApp.rebuildTheme(IAardvarkUtils.ScriptRootDir.getChild("ThemeApp/packages/titanium"))
+  </gw:gosu>
+</target>
+
+<target name="copy-theme" depends="init">
+  <gw:gosu>
+    uses gw.vark.IAardvarkUtils
+    var themeAppRoot = IAardvarkUtils.ScriptRootDir.getChild("ThemeApp")
+    var themeFolder = IAardvarkUtils.ScriptRootDir.getChild("modules/configuration/webresources/themes")
+    gw.ant.web.ThemeApp.copyThemeCssFiles(themeAppRoot, "titanium", themeFolder, "Titanium")
+  </gw:gosu>
+</target>
+
+<target name="dev-deploy-web-resources" depends="init">
+  <gw:gosu>
+    uses gw.vark.IAardvarkUtils
+    var xx = IAardvarkUtils.ScriptApp
+    var jettyRoot = IAardvarkUtils.ScriptRootDir.getChild("webapps/${xx}")
+    gw.ant.Deploy.copyConfigurationEnvironmentWebResources(jettyRoot, false)
+  </gw:gosu>
+</target>
+
+<target name="dev-deploy-web-resources-debug" depends="init" description="Deploy debug versions of the theme.css files">
+  <gw:gosu>
+    uses gw.vark.IAardvarkUtils
+    var xx = IAardvarkUtils.ScriptApp
+    var jettyRoot = IAardvarkUtils.ScriptRootDir.getChild("webapps/${xx}")
+    gw.ant.Deploy.copyConfigurationEnvironmentWebResources(jettyRoot, true)
+  </gw:gosu>
+</target>
+
+<target name="usage" depends="help"/>
+
+<target name="help">
+  <java classname="org.apache.tools.ant.Main">
+    <arg value="-projecthelp" />
+    <arg value="-f"/>
+    <arg value="${basedir}/build.xml"/>
+  </java>
+</target>
+
+</project>

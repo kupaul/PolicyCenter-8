@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Avoid Repeated Calculations of Expensive Widget Values</title>
+    <link rel="StyleSheet" href="css/bp-user-interface.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Best Practices&nbsp;Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="bp-user-interface.4.1.html#2192460">User Interface Best Practices </a> : <a class="WebWorks_Breadcrumb_Link" href="bp-user-interface.4.4.html#2192460">User Interface Performance Best Practices</a> : Avoid Repeated Calculations of Expensive Widget Values</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h4 class="H2B_-_Heading_2_Break"><a name="2192460">Avoid Repeated Calculations of Expensive Widget Values</a></h4>
+      <div class="B_-_Body"><a name="2192461">As a performance best practice, Guidewire recommends that you avoid repeated evaluation of performance intensive expressions for widget values. Depending on the needs of your application, performance intensive expressions may be unavoidable. However, you can improve overall performance of a page by choosing carefully where to specify the expression within the page configuration. </a></div>
+      <div class="B_-_Body"><a name="2263498">For example, the following value range expression has a performance problem. Evaluation of the expression requires two foreign key traversals and one array lookup. If the </a><span class="cv_-_computer_voice">PolicyPeriod</span> instance is not cached, PolicyCenter executes three relational database queries, which makes the evaluation even more expensive.</div>
+      <PRE class="CF_-_Code_First_Line" style="font-style: normal; font-variant: normal; font-weight: bold; text-transform: none; vertical-align: baseline"><span class="s_-_strong"><a name="2263499">RangeInput</a></span></PRE>
+      <PRE class="CM_-_Code_Middle_Line" style="font-style: normal; font-variant: normal; font-weight: bold; text-transform: none; vertical-align: baseline"><span class="s_-_strong"><a name="2263500">...</a></span></PRE>
+      <PRE class="CL_-_Code_Last_Line"><span class="s_-_strong"><a name="2263501">valueRange</a></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|policyPeriod.Policy.Product.AllowedPolicyTerms</PRE>
+      <div class="B_-_Body"><a name="2199105">If a page with this range input widget has any </a><span class="cv_-_computer_voice">postOnChange</span> fields, PolicyCenter potentially evaluates the expression multiple times for each <span class="cv_-_computer_voice">postOnChange</span> edit that a user makes. </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2198912">Use Page Variables Instead for Expensive Value Expressions</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2234299">Instead of specifying an expensive expression as the value for a widget, create a page variable and specify the expensive expression as the initial value. Then, specify the page variable as the value for the widget. Page variables are evaluated only during the construction of the page, not during the remaining lifetime of the page, regardless of </a><span class="cv_-_computer_voice">postOnChange</span> edits. </div>
+      <div class="B_-_Body"><a name="2234546">The following example suffers a performance problem, because it assigns an expensive expression to the </a><span class="cv_-_computer_voice">value</span> property of a widget.</div>
+      <PRE class="CF_-_Code_First_Line" style="font-style: normal; font-variant: normal; font-weight: bold; text-transform: none; vertical-align: baseline"><span class="s_-_strong"><a name="2232982">Input: myInput</a></span></PRE>
+      <PRE class="CM_-_Code_Middle_Line" style="font-style: normal; font-variant: normal; font-weight: bold; text-transform: none; vertical-align: baseline"><span class="s_-_strong"><a name="2232983">&nbsp;&nbsp;...</a></span></PRE>
+      <PRE class="CL_-_Code_Last_Line"><span class="s_-_strong"><a name="2232984">&nbsp;&nbsp;value</a></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|<span class="s_-_strong">someExpensiveMethod()</span></PRE>
+      <div class="B_-_Body"><a name="2232985">The following modified sample code improves performance. It assigns a performance intensive expression to a page variable and assigns the variable to the widget value. </a></div>
+      <PRE class="CF_-_Code_First_Line" style="font-style: normal; font-variant: normal; font-weight: bold; text-transform: none; vertical-align: baseline"><span class="s_-_strong"><a name="2232989">Variables</a></span></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2234730">&nbsp;&nbsp;...</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><span class="s_-_strong"><a name="2240632">&nbsp;&nbsp;initialValue</a></span>&nbsp;&nbsp;|<span class="s_-_strong">someExpensiveMethod()</span></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><span class="s_-_strong"><a name="2232990">&nbsp;&nbsp;name</a></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|expensiveResult</PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2240718">&nbsp;</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="2234764">--------------------------------</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line" style="font-style: normal; font-variant: normal; font-weight: bold; text-transform: none; vertical-align: baseline"><span class="s_-_strong"><a name="2234715">Input: myInput</a></span></PRE>
+      <PRE class="CM_-_Code_Middle_Line" style="font-style: normal; font-variant: normal; font-weight: bold; text-transform: none; vertical-align: baseline"><span class="s_-_strong"><a name="2234716">&nbsp;&nbsp;...</a></span></PRE>
+      <PRE class="CL_-_Code_Last_Line"><span class="s_-_strong"><a name="2234717">&nbsp;&nbsp;value</a></span>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;|expensiveResult</PRE>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2192469">Use Recalculate on Refresh with Expensive Page Variables Cautiously</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2261908">PolicyCenter evaluates page variables only during the construction of the page, but sometimes you want PolicyCenter to evaluate a page variable in response to </a><span class="cv_-_computer_voice">postOnChange</span> edits. If so, you set the <span class="cv_-_computer_voice">recalculateOnRefresh</span> property of the page variable to <span class="cv_-_computer_voice">true</span>. If a page variable specifies an expensive expression for its <span class="cv_-_computer_voice">initialValue</span>, carefully consider whether your page really must recalculate the variable. If you set the <span class="cv_-_computer_voice">recalculateOnRefresh</span> property to <span class="cv_-_computer_voice">true</span>, PolicyCenter evaluates the expression at least once for every <span class="cv_-_computer_voice">postOnChange</span> edit to the page.</div>
+      <div class="B_-_Body"><a name="2262120">Although PolicyCenter evaluates page variable with </a><span class="cv_-_computer_voice">recalculateOnRefresh</span> set to <span class="cv_-_computer_voice">true</span> for each <span class="cv_-_computer_voice">postOnChange</span> edit, page variables can yield performance improvements compared to widget values. If several widgets use the same expression for their values, using a page variable reduces the number of evaluations by a factor equal to the number widgets that use it. For example, the <span class="cv_-_computer_voice">valueRange</span> of a range input used for drop-down lists in a list view column are evaluated at least once for each row. </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="2234099">Do Not Use Post on Change with List Views </a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="2234166">Do </a><span class="e_-_emphasis">not</span> use <span class="cv_-_computer_voice">postOnChange</span> with list views. Each row that a user inserts or removes causes a server round trip. To update list totals, use client reflection instead. </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

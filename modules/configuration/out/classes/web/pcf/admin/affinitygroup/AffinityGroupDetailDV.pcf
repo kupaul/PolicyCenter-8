@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <DetailViewPanel
+    id="AffinityGroupDetailDV">
+    <Require
+      name="affinityGroup"
+      type="AffinityGroup"/>
+    <Variable
+      initialValue="User.util.CurrentUser"
+      name="currentUser"
+      recalculateOnRefresh="true"/>
+    <Variable
+      initialValue="affinityGroup.New and not currentUser.ExternalUser"
+      name="canSetAnyOrganization"
+      type="Boolean"/>
+    <Variable
+      initialValue="new gw.globalization.AffinityGroupContactFields(affinityGroup)"
+      name="affinityGroupAdapter"/>
+    <InputColumn>
+      <InputSetRef
+        def="GlobalContactNameInputSet(new gw.admin.affinitygroup.NewAffinityGroupNameOwner(new gw.globalization.NewAffinityGroupNameFields (affinityGroup)))"
+        id="AffinityGroupNameInputSet"
+        mode="gw.api.name.NameLocaleSettings.PCFMode"/>
+      <TypeKeyInput
+        editable="true"
+        id="Type"
+        label="displaykey.Web.Admin.AffinityGroupDetail.BasicsDV.Type"
+        required="true"
+        value="affinityGroup.AffinityGroupType">
+        <PostOnChange/>
+      </TypeKeyInput>
+      <OrgInput
+        action="OrganizationDetail.go(affinityGroup.Organization)"
+        actionAvailable="affinityGroup.Organization != null and not User.util.CurrentUser.ExternalUser"
+        editable="not User.util.CurrentUser.ExternalUser"
+        id="Organization"
+        label="displaykey.Web.Admin.AffinityGroupDetail.BasicsDV.Organization"
+        pickLocation="OrganizationSearchPopup.push(null,true)"
+        required="affinityGroup.AffinityGroupType == &quot;Closed&quot;"
+        value="affinityGroup.Organization"
+        visible="true">
+        <PostOnChange/>
+      </OrgInput>
+      <InputDivider/>
+      <Label
+        label="displaykey.Web.Admin.AffinityGroupDetail.BasicsDV.PrimaryContact"/>
+      <InputSetRef
+        def="GlobalPersonNameInputSet(new gw.admin.affinitygroup.AffinityGroupContactOwner(affinityGroupAdapter))"
+        mode="gw.api.name.NameLocaleSettings.PCFMode"/>
+      <InputSetRef
+        def="GlobalPhoneInputSet(new gw.api.phone.BasicPhoneOwner(new gw.api.phone.AffinityGroupPhoneFields(affinityGroup), displaykey.Web.Admin.AffinityGroupDetail.BasicsDV.PrimaryContactPhone, CurrentLocation.InEditMode))"
+        editable="true"/>
+      <InputDivider/>
+      <Label
+        label="displaykey.Web.Admin.AffinityGroupDetail.BasicsDV.Group"/>
+      <DateInput
+        editable="true"
+        id="StartDate"
+        label="displaykey.Web.Admin.AffinityGroupDetail.BasicsDV.StartDate"
+        value="affinityGroup.StartDate"/>
+      <DateInput
+        editable="true"
+        id="EndDate"
+        label="displaykey.Web.Admin.AffinityGroupDetail.BasicsDV.EndDate"
+        value="affinityGroup.EndDate"/>
+      <TextAreaInput
+        editable="true"
+        id="Description"
+        label="displaykey.Web.Admin.AffinityGroupDetail.BasicsDV.Description"
+        numRows="2"
+        value="affinityGroup.Description"/>
+    </InputColumn>
+  </DetailViewPanel>
+</PCF>

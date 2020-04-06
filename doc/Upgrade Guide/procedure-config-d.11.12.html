@@ -1,0 +1,393 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Data Model Merging Guidelines</title>
+    <link rel="StyleSheet" href="css/procedure-config-d.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter Upgrade Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="p-upgrade-d.html#1924698">Upgrading from 7.0.x</a> : <a class="WebWorks_Breadcrumb_Link" href="procedure-config-d.11.01.html#1924698">Upgrading the PolicyCenter 7.0.x Configuration</a> : Data Model Merging Guidelines</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1924698">Data Model Merging Guidelines</a></h3>
+      <div class="B_-_Body"><a name="1924699">From a purely technical standpoint, not addressing the need to incorporate new features, the following are a few guidelines for merging the data model.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1924700">Updating Data Types for Case Sensitivity</a></h4>
+      <div class="B_-_Body"><a name="1924704">Data type definitions are case-sensitive in PolicyCenter 8.0. If you are upgrading from an early 7.0 version or a version prior to 7.0, you could have column definitions that specify a type using the wrong case. In this event, the server reports an invalid data type error during startup. If the server reports invalid data type errors, check the case of the </a><span class="cv_-_computer_voice">type</span> attribute for the <span class="cv_-_computer_voice">column</span> in the ETI or ETX extension file for the entity. Extension files are located in the extensions directory of the configuration module. An ETI file exists for custom entity definitions. An ETX file defines extensions to an entity provided with PolicyCenter.</div>
+      <h4 class="H2_-_Heading_2"><a name="1924708">Merging Typelists – Overview</a></h4>
+      <div class="B_-_Body"><a name="1924709">There is no automated process to merge typelists. This is a part of the merge process using the Configuration Upgrade Tool. In general, merge typelists before PCF files.</a></div>
+      <div class="B_-_Body"><a name="1924710">See the </a><span class="bt_-_book_title">Upgrade Diffs Report</span> for an inventory of differences in typekeys between the base release and the target release. To retrieve the <span class="bt_-_book_title">Upgrade Diffs Report</span> follow the procedure described in <a href="javascript:WWHClickedPopup('upgrade', 'procedure-config-d.11.03.html#1923661', '');" title="Obtaining Configurations and Tools">“Viewing Differences Between Base and Target Releases”</a>.</div>
+      <div class="B_-_Body"><a name="1924714">Merge in Guidewire-provided typecodes related to lines of business and retire unused typecodes that you merge in. If you do not include these typecodes, you will have errors in any enhancements, rules, or PCF files that reference the typecode. This also simplifies the process for future upgrades as there will be fewer added line of business typecodes to review. </a></div>
+      <div class="B_-_Body"><a name="1924715">Pay particular attention if any Guidewire-provided typecodes have the same typecode as a custom version. In this case, modify one of the typecodes so they are unique. Contact Guidewire Support for details.</a></div>
+      <div class="B_-_Body"><a name="1924716">The Configuration Upgrade Tool displays most typelists you have edited in the </a><span class="ui_-_UI_element">CUSTOMER_EDIT</span> filter. If your edits are simply additional typecodes, accept your version.</div>
+      <div class="B_-_Body"><a name="1924717">Use Guidewire Studio to verify PCF files, enhancements, and rules to identify any issues with the files and rules that reference typelists.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1924718">Merging Typelists – Simple Typelists</a></h4>
+      <div class="B_-_Body"><a name="1924725">Merge in new typecodes from the target version, PolicyCenter 8.0.2. If you do not merge the new typecode, you will have errors in any enhancements, rules, or PCF files that reference the typecode. If you do not want to use a new typecode, retire the typecode by setting the </a><span class="cv_-_computer_voice">retired</span> attribute to <span class="cv_-_computer_voice">true</span>.</div>
+      <div class="F_-_Figure" style="color: #000000; font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none; vertical-align: baseline"><a name="1924738">&nbsp;</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1924739">Merging Typelists – Complex Typelists</a></h4>
+      <div class="B_-_Body"><a name="1924740">A typecode can reference typecode values from another typelist using the </a><span class="cv_-_computer_voice">&lt;category&gt;</span> subelement. If a new typecode references an existing typecode, do not merge the new typecode unless the referenced typecode is retired. Otherwise, you are defining a new relationship. If the referenced typecode is also new, merge in both typecodes. If you do not want to use a new typecode, set the <span class="cv_-_computer_voice">retired</span> attribute for the typecode to <span class="cv_-_computer_voice">true</span>. The following table summarizes how to handle merging new typecodes that reference other typecodes:</div>
+      <div class="T_-_Table"><a name="1924758">&nbsp;</a></div>
+      <table class="Shading" style="text-align: left" border="0" cellpadding="10" cellspacing="0" summary="">
+        <caption></caption>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 2pt; padding-left: 2pt; padding-right: 8pt; padding-top: 2pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="1924743">Referenced typecode status</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 2pt; padding-left: 2pt; padding-right: 8pt; padding-top: 2pt; vertical-align: bottom">
+            <div class="TH_-_Table_Heading"><a name="1924745">Action</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 2pt; padding-left: 2pt; padding-right: 8pt; padding-top: 2pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1924747">new – exists only in target version</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #000000; border-top-style: solid; border-top-width: 0.5pt; padding-bottom: 2pt; padding-left: 2pt; padding-right: 8pt; padding-top: 2pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1924749">Merge in the new typecode and merge in the referenced typecode in its typelist. If you do not want to use the new typecode, retire it by setting the </a><span class="cvt_-_computer_voice_table">retired</span> attribute of the typecode to <span class="cvt_-_computer_voice_table">true</span>.</div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 2pt; padding-left: 2pt; padding-right: 8pt; padding-top: 2pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1924751">active – exists in base or custom version and is not retired</a></div>
+          </td>
+          <td style="border-bottom-color: #c0d1d1; border-bottom-style: solid; border-bottom-width: 0.15pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 2pt; padding-left: 2pt; padding-right: 8pt; padding-top: 2pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1924753">Do not merge the new typecode.</a></div>
+          </td>
+        </tr>
+        <tr>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 2pt; padding-left: 2pt; padding-right: 8pt; padding-top: 2pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1924755">retired – exists in base or custom version and is retired</a></div>
+          </td>
+          <td style="border-bottom-color: #000000; border-bottom-style: solid; border-bottom-width: 0.5pt; border-top-color: #c0d1d1; border-top-style: solid; border-top-width: 0.15pt; padding-bottom: 2pt; padding-left: 2pt; padding-right: 8pt; padding-top: 2pt; vertical-align: top">
+            <div class="TT_-_Table_Text"><a name="1924757">Merge in the new typecode. If you do not want to use the new typecode, retire it by setting the </a><span class="cvt_-_computer_voice_table">retired</span> attribute of the typecode to <span class="cvt_-_computer_voice_table">true</span>.</div>
+          </td>
+        </tr>
+      </table>
+      <div class="F_-_Figure" style="color: #000000; font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none; vertical-align: baseline"><a name="1924763">&nbsp;</a></div>
+      <div class="F_-_Figure" style="color: #000000; font-family: &quot;Times New Roman&quot;; font-style: normal; font-variant: normal; font-weight: normal; text-transform: none; vertical-align: baseline"><a name="1924768">&nbsp;</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1924770">Adding State Typelist Extensions to Jurisdiction</a></h4>
+      <div class="B_-_Body"><a name="1924774">PolicyCenter versions 7.0 and newer use a Jurisdiction typelist instead of a State typelist. If your environment includes custom extensions to the State typelist, move those extensions to the Jurisdiction typelist. </a></div>
+      <h6 class="HS_-_Head_Sub"><a name="1924775">To move State typelist extensions to the Jurisdiction typelist</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="1924776">Open the </a><span class="cv_-_computer_voice">modules/configuration/config/extensions/State.ttx</span> file in your pre-upgrade starting version in a merge tool.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1924777">Open </a><span class="cv_-_computer_voice">modules/configuration/config/extensions/typelist/Jurisdiction.ttx</span> file in another panel of the merge tool.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1924778">Merge typecode elements from </a><span class="cv_-_computer_voice">State.ttx</span> to <span class="cv_-_computer_voice">Jurisdiction.ttx</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <h4 class="H2_-_Heading_2"><a name="1924783">Merging Entity Extensions</a></h4>
+      <div class="B_-_Body"><a name="1924790">PolicyCenter 8.0.2 stores extensions in ETI and ETX files. An </a><span class="ps_-_parameter_in_code_snippets">Entity</span><span class="cv_-_computer_voice">.eti</span> file defines a new entity. An <span class="ps_-_parameter_in_code_snippets">Entity</span><span class="cv_-_computer_voice">.etx</span> file defines extensions to an existing entity.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1924791">Correcting File Naming Issues</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1924798">In PolicyCenter 8.0.2, typelist and entity extension files must be named for the typelist or entity. In versions before 8.0, you could have an extension file name such as </a><span class="ps_-_parameter_in_code_snippets">Entity</span><span class="cv_-_computer_voice">_ABC.etx or </span><span class="ps_-_parameter_in_code_snippets">Typelist</span><span class="cv_-_computer_voice">_ABC.ttx</span>. As of PolicyCenter 8.0, the file root name must be the entity or typelist name or the entity or typelist name followed by a dot. You can use characters after the root name to include custom name components. For example, <span class="ps_-_parameter_in_code_snippets">Entity</span><span class="cv_-_computer_voice">.ABC.etx</span> is a valid entity extension file name. <span class="ps_-_parameter_in_code_snippets">Typelist</span><span class="cv_-_computer_voice">.ABC.ttx</span> is a valid typelist extension file name. If you have extension files that have names that include characters other than the entity name, rename the files to put the extra characters after a dot.</div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1924802">Correcting Data Type References</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1924806">PolicyCenter entity files must use case-sensitive references to data types. For example, setting a </a><span class="cv_-_computer_voice">&lt;column-override&gt;</span> to have <span class="cv_-_computer_voice">type="shorttext"</span> is not the same as setting <span class="cv_-_computer_voice">type="ShortText"</span>. In this case, the former is valid while the latter is not. </div>
+      <div class="B_-_Body"><a name="1924807">Review each entity extension you have added to make sure data type references are set with the correct case.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="1924808">To review and correct extension data type references</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="1924818">In Studio, expand </a><span class="ui_-_UI_element">configuration</span> → <span class="ui_-_UI_element">config</span> → <span class="ui_-_UI_element">Extensions</span> → <span class="ui_-_UI_element">Entity</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1924819">Double-click each ETX file. If the file has an invalid data type reference, Studio reports that the extension field overrides validator detected a column override that refers to a non-existent data type.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	3.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1924820">For any such errors, select the column. Then select the correct case-sensitive </a><span class="ui_-_UI_element">Value</span> for the <span class="ui_-_UI_element">type</span> from the drop-down list.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1924821">Reviewing Optional Indexes</a></h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1924822">Guidewire often adds indexes to entities in the target configuration to improve the performance of database queries in PolicyCenter 8.0.2. PolicyCenter requires some of these indexes. Guidewire adds required indexes to entity definitions in the data model. Other indexes are recommended for most installations but can be disabled if they negatively impact performance. Guidewire adds optional indexes to entity extensions so you can disable any of these indexes if necessary. </a></div>
+      <div class="B_-_Body"><a name="1924832">Use the Configuration Upgrade Tool to resolve extension files. When you merge your custom extensions with Guidewire changes, review each new index added by Guidewire. In most cases, include the new index in the merged extension file. You can modify or remove index definitions based on usage in your deployment.</a></div>
+      <div class="H3_-_Heading_3_outer" style="margin-left: 36pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <h5 class="H3_-_Heading_3_inner" style="width: 18pt; white-space: nowrap"></h5>
+            </td>
+            <td width="100%">
+              <h5 class="H3_-_Heading_3_inner"><a name="1924833">Updating </a><span class="cvh_-_computer_voice_in_heading">setterScriptability</span> Attributes</h5>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1924837">The </a><span class="cv_-_computer_voice">setterScriptability</span> attribute can no longer be set to <span class="cv_-_computer_voice">external</span> as of PolicyCenter 8.0. For any instances you have of the attribute <span class="cv_-_computer_voice">setterScriptability</span> set to <span class="cv_-_computer_voice">external</span>, change the value to <span class="cv_-_computer_voice">all</span>.</div>
+      <h4 class="H2_-_Heading_2"><a name="1924841">Reviewing Custom Extensions</a></h4>
+      <div class="B_-_Body"><a name="1924842">Generate and review the data dictionary for the target version to identify any custom extensions that are now obsolete due to Guidewire adding a similar field to the base PolicyCenter. </a></div>
+      <h6 class="HS_-_Head_Sub"><a name="1924846">To generate the data dictionary</a></h6>
+      <div class="LS_-_List_Start_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LS_-_List_Start_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	1.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LS_-_List_Start_inner"><a name="1924847">From the command line, navigate to the </a><span class="cv_-_computer_voice">bin</span> directory of the target version.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="LI_-_List_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="LI_-_List_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="ri_-_run_in_header">	2.	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="LI_-_List_Item_inner"><a name="1924851">Run the command </a><span class="cv_-_computer_voice">gwpc regen-dictionary</span>.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1924852">This command generates the data and security dictionaries in the </a><span class="cv_-_computer_voice">build/dictionary</span> directory of the target version. To view the data dictionary, open <span class="cv_-_computer_voice">build/dictionary/data/index.html</span> in a web browser.</div>
+      <div class="B_-_Body"><a name="1924853">Compare the target version data dictionary with the version in your current environment. If you have extensions that are now available as base fields, consider migrating the data in those fields to the base version. Consider whether an extension is still on the appropriate entity. A new entity could be a more appropriate location for the extension. Review key data model changes that might impact your custom extensions.</a></div>
+      <div class="B_-_Body"><a name="1924854">If you change an extension location or migrate to a new base field, update any PCF, rule or library that references the extension to reference the new location.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1924856">Reconciling the Database with Custom Extensions</a></h4>
+      <div class="B_-_Body"><a name="1924857">Extensions defined in ETI and ETX files must match the physical database. Delete all physical columns in the database that are not part of the base installation or defined as extensions before starting the server.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1924858">Removing Obsolete Attributes</a></h4>
+      <div class="B_-_Body"><a name="1924859">Guidewire has removed the </a><span class="cv_-_computer_voice">deletefk</span> and <span class="cv_-_computer_voice">ondelete</span> attributes of the <span class="cv_-_computer_voice">&lt;foreignKey&gt;</span> and <span class="cv_-_computer_voice">&lt;edgeForeignKey&gt;</span> elements. These attributes were deprecated in an earlier major version. Now that the attributes are removed from the schema for entity definition files, if the attributes are listed, the server reports an error and does not start. Remove any occurrences of <span class="cv_-_computer_voice">deletefk</span> and <span class="cv_-_computer_voice">ondelete</span> attributes from <span class="cv_-_computer_voice">&lt;foreignKey&gt;</span> and <span class="cv_-_computer_voice">&lt;edgeForeignKey&gt;</span> elements in custom entities.</div>
+      <h4 class="H2_-_Heading_2"><a name="1924860">Updating Extractable Edge Foreign Keys</a></h4>
+      <div class="B_-_Body"><a name="1924861">Guidewire has removed the </a><span class="cv_-_computer_voice">&lt;implementsEntity&gt;</span> element from <span class="cv_-_computer_voice">&lt;edgeForeignKey&gt;</span> and <span class="cv_-_computer_voice">&lt;edgeForeignKey-override&gt;</span>. In PolicyCenter 8.0, to make an edge foreign key extractable, set the Boolean <span class="cv_-_computer_voice">extractable</span> attribute on the element to <span class="cv_-_computer_voice">true</span>.</div>
+      <div class="B_-_Body"><a name="1924865">For any extractable edge foreign keys and edge foreign key overrides, delete the </a><span class="cv_-_computer_voice">&lt;implementsEntity&gt;</span> element from the key definition. Then add the attribute <span class="cv_-_computer_voice">extractable="true"</span> to the <span class="cv_-_computer_voice">&lt;edgeForeignKey&gt;</span> or <span class="cv_-_computer_voice">&lt;edgeForeignKey-override&gt;</span> element.</div>
+      <h4 class="H2_-_Heading_2"><a name="1924866">Converting Money to MonetaryAmount</a></h4>
+      <div class="B_-_Body"><a name="1924870">PolicyCenter upgrade cannot automatically convert the </a><span class="cv_-_computer_voice">Money</span> data type to the <span class="cv_-_computer_voice">MonetaryAmount</span> data type. If you created entity extensions, the upgrade process will not upgrade your extensions that include properties that use the <span class="cv_-_computer_voice">Money</span> data type.</div>
+      <div class="B_-_Body"><a name="1924871">Before you upgrade, you can manually update any extension properties that use the </a><span class="cv_-_computer_voice">Money</span> data type. </div>
+      <div class="B_-_Body"><a name="1924872">If you change the definition of your extension properties to use the </a><span class="cv_-_computer_voice">MonetaryAmount</span> datatype rather than the <span class="cv_-_computer_voice">Money</span> data type, upgrade will correctly convert your entity extension data. Define the <span class="cv_-_computer_voice">MonetaryAmount</span> property as follows:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1924873">The name of the new </a><span class="cv_-_computer_voice">MonetaryAmount </span>property is the same as the name of the <span class="cv_-_computer_voice">Money</span> property</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1924874">If the old </a><span class="cv_-_computer_voice">Money</span> property had a <span class="cv_-_computer_voice">columnName</span> attribute defined as something other than the <span class="cv_-_computer_voice">Money</span> property name, use that old <span class="cv_-_computer_voice">Money.columnName</span> as the name of the new <span class="cv_-_computer_voice">MonetaryAmount.amountColumnName</span> attribute.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1924879">Set </a><span class="cv_-_computer_voice">scaleToCurrency</span> to <span class="cv_-_computer_voice">true</span> unless you have a requirement to do otherwise.</div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1924880">Set the </a><span class="cv_-_computer_voice">soapNullOk</span> attribute to <span class="cv_-_computer_voice">true</span></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1924881">The following examples show how you must redefine </a><span class="cv_-_computer_voice">Money</span> properties in your extensions to <span class="cv_-_computer_voice">MonetaryAmount</span> properties before you proceed with upgrade:</div>
+      <h6 class="HS_-_Head_Sub"><a name="1924882">Old Total:</a></h6>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1924883">&lt;column</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1924884">&nbsp;&nbsp;&nbsp;&nbsp;name="Total"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1924885">&nbsp;&nbsp;&nbsp;&nbsp;type="money"/&gt;</a></PRE>
+      <h6 class="HS_-_Head_Sub"><a name="1924886">New Total:</a></h6>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1924887">&lt;monetaryamount </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1924888">&nbsp;&nbsp;&nbsp;&nbsp;name=”Total”</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1924889">&nbsp;&nbsp;&nbsp;&nbsp;amountColumnName="Total"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1924890">&nbsp;&nbsp;&nbsp;&nbsp;soapNullOk="true" /&gt;</a></PRE>
+      <h6 class="HS_-_Head_Sub"><a name="1924903">Old Total where </a><span class="cvh_-_computer_voice_in_heading">name</span> and <span class="cvh_-_computer_voice_in_heading">columnName</span> differ:</h6>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1924904">&lt;column</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1924905">&nbsp;&nbsp;&nbsp;&nbsp;name=" Total"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1924906">&nbsp;&nbsp;&nbsp;&nbsp;columnName="totalColumn"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1924907">&nbsp;&nbsp;&nbsp;&nbsp;type="money"/&gt;</a></PRE>
+      <h6 class="HS_-_Head_Sub"><a name="1924908">New Total:</a></h6>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1924909">&lt;monetaryamount </a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1924910">&nbsp;&nbsp;&nbsp;&nbsp;name=”Total”</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1924911">&nbsp;&nbsp;&nbsp;&nbsp;amountColumnName="totalColumn"</a></PRE>
+      <PRE class="CM_-_Code_Middle_Line"><a name="1924912">&nbsp;&nbsp;&nbsp;&nbsp;soapNullOk="true" /&gt;</a></PRE>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

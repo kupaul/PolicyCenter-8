@@ -1,0 +1,63 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <CardViewPanel
+    id="LocationDetailCV">
+    <Require
+      name="polLocation"
+      type="PolicyLocation"/>
+    <Require
+      name="openForEdit"
+      type="boolean"/>
+    <Require
+      name="supportsNonSpecificLocation"
+      type="boolean"/>
+    <Card
+      id="GeneralInfoCard"
+      title="displaykey.Web.Policy.LocationContainer.Location.Panel.GeneralInfo.Title">
+      <DetailViewPanel
+        id="LocationDetailDV">
+        <InputColumn>
+          <InputSetRef
+            def="LocationDetailInputSet(polLocation, supportsNonSpecificLocation, openForEdit)"/>
+        </InputColumn>
+        <InputColumn>
+          <InputSetRef
+            def="LineLocationDetailInputSet(polLocation, openForEdit)"
+            mode="polLocation.Branch.Policy.Product.Code"/>
+        </InputColumn>
+      </DetailViewPanel>
+      <DetailViewPanel
+        id="AccountLocationUpToDateDV"
+        visible="polLocation.Branch.Promoted and !polLocation.isUpToDate()">
+        <InputColumn>
+          <ContentInput
+            boldLabel="true"
+            id="SynchronizedMessage"
+            label="displaykey.Web.Account.Locations.IsSynchronized.Policy.Message">
+            <Link
+              action="AccountLocationPopup.push(polLocation.AccountLocation, polLocation.Branch.Policy.Account, false)"
+              id="SynchronizedLink"
+              label="displaykey.Web.Account.Locations.IsSynchronized.Policy.Link"/>
+          </ContentInput>
+        </InputColumn>
+      </DetailViewPanel>
+    </Card>
+    <Card
+      id="AdditionalCoveragesCard"
+      title="displaykey.Web.Policy.LocationContainer.Location.Panel.AdditionalCoverages.Location.Title"
+      visible="polLocation.Branch.Policy.Product == &quot;BusinessOwners&quot;">
+      <PanelRef
+        def="AdditionalCoveragesCardPanelSet(polLocation, openForEdit)"
+        mode="polLocation.Branch.Policy.Product.Code"/>
+    </Card>
+    <Card
+      id="LocationQuestionsCard"
+      title="displaykey.Web.Policy.LocationContainer.Location.Panel.Questions.Title"
+      visible="polLocation.LocationAnswers.Count &gt; 0">
+      <PanelRef
+        def="QuestionSetsDV(polLocation.Branch.Policy.Product.getQuestionSetsByType(QuestionSetType.TC_LOCATION), polLocation, null)"/>
+    </Card>
+  </CardViewPanel>
+</PCF>

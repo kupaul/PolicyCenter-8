@@ -1,0 +1,69 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Forward
+    id="PolicyAsLossDateForward"
+    parent="PolicyForward()">
+    <LocationEntryPoint
+      signature="PolicyAsLossDateForward(policyNumber : String, retrieveAsOfDate : DateTime)"/>
+    <!-- Parameters -->
+    <Variable
+      name="policyNumber"
+      type="String"/>
+    <Variable
+      initialValue="java.util.Date.CurrentDate"
+      name="retrieveAsOfDate"
+      type="DateTime"/>
+    <!-- Use Local variables, otherwise the policy could be retrieved multiple times! -->
+    <Variable
+      initialValue="retrievePeriod()"
+      name="retrievedPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="getErrorMessage(retrievedPeriod)"
+      name="errorMessage"
+      type="String"/>
+    <ForwardCondition
+      action="PolicySearch.go(errorMessage)"
+      condition="retrievedPeriod == null"/>
+    <ForwardCondition
+      action="PolicyFileForward.go(retrievedPeriod, retrievedPeriod.SliceDate, &quot;PolicySummary with Error&quot;, {errorMessage})"
+      condition="retrievedPeriod.Promoted"/>
+    <ForwardCondition
+      action="JobForward.go(retrievedPeriod.Job)"
+      condition="not retrievedPeriod.Promoted"/>
+    <Code><![CDATA[function retrievePeriod() : PolicyPeriod {
+        var period = entity.Policy.finder.findPolicyPeriodByPolicyNumberAndAsOfDate( policyNumber, retrieveAsOfDate )
+        if ( period == null ) {
+          period = entity.Policy.finder.findMostRecentBoundPeriodByPolicyNumber( policyNumber )
+        }
+        if ( period == null ) {
+          return null
+        } else {
+          var sliceDate = getAsOfDate( period, retrieveAsOfDate )
+          return period.getSlice( sliceDate )
+        }
+      }
+
+      function getAsOfDate( period: PolicyPeriod, asOfDate: java.util.Date ): java.util.Date {
+        if ( asOfDate.before( period.PeriodStart ) ) {
+          return period.PeriodStart
+        } else if ( not asOfDate.before( period.PeriodEnd ) ) {
+          return period.PeriodEnd.addSeconds( -1 )
+        } else {
+          return asOfDate
+        }
+      }
+
+      function getErrorMessage( period: PolicyPeriod) : String {
+        if (period == null) {
+          return displaykey.Web.Errors.NoPolicyFound(policyNumber)
+        }
+        else if (!period.isWithinValidPeriod(retrieveAsOfDate)) {
+            return displaykey.Web.Errors.NoPolicyInForce(retrieveAsOfDate)
+         }
+        return null
+      }]]></Code>
+  </Forward>
+</PCF>

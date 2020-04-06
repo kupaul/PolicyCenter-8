@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <Screen
+    id="AuditWizard_PremiumsScreen">
+    <Require
+      name="audit"
+      type="Audit"/>
+    <Require
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Require
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      initialValue="audit.AuditInformation.IsPremiumReport"
+      name="isPremiumReport"
+      type="boolean"/>
+    <Variable
+      initialValue="policyPeriod.Lines.first()"
+      name="policyLine"
+      type="PolicyLine"/>
+    <Toolbar>
+      <WizardButtons/>
+      <ToolbarButtonSetRef
+        mode="policyPeriod.Job.Subtype"
+        toolbarButtonSet="JobWizardToolbarButtonSet(policyPeriod, audit, jobWizardHelper)"/>
+    </Toolbar>
+    <PanelRef
+      def="CostOverridesWarningPanelSet(policyPeriod)"/>
+    <CardViewPanel>
+      <Card
+        id="PremiumsSummaryCard"
+        title="displaykey.Web.AuditWizard.Premiums.Summary">
+        <PanelRef
+          def="WarningsPanelSet(policyPeriod.getWizardWarningMessages())"
+          editable="policyPeriod.OpenForEdit"/>
+        <PanelRef
+          def="PremiumsScreenDV(policyPeriod, audit)"
+          mode="isPremiumReport ? &quot;PremiumReport&quot; : null"
+          visible="!policyPeriod.Archived"/>
+      </Card>
+      <Card
+        id="PremiumsDetailsCard"
+        title="displaykey.Web.AuditWizard.Premiums.Details">
+        <PanelRef
+          def="WarningsPanelSet(policyPeriod.getWizardWarningMessages())"
+          editable="policyPeriod.OpenForEdit"
+          id="WarningDetailsPanel"/>
+        <PanelRef
+          def="RatingOverrideButtonDV(policyPeriod, policyLine, jobWizardHelper, CurrentLocation.InEditMode)"
+          id="RatingOverrideButtonDV"
+          visible="jobWizardHelper != null"/>
+        <PanelRef
+          def="AuditPremiumDetailsPanelSet(audit.AuditInformation, policyPeriod, false)"
+          editable="policyPeriod.OpenForEdit"
+          id="RatingDetailPanel"
+          mode="policyLine.PatternCode"/>
+      </Card>
+    </CardViewPanel>
+    <Code><![CDATA[function totalPremiumLabel() : String {
+  return isPremiumReport
+         ? displaykey.Web.AuditWizard.Premiums.Summary.TotalPremium
+         : displaykey.Web.AuditWizard.Premiums.Summary.TotalAuditedPremium
+}
+
+function totalCostLabel() : String {
+  return isPremiumReport
+         ? displaykey.Web.AuditWizard.Premiums.Summary.TotalCost
+         : displaykey.Web.AuditWizard.Premiums.Summary.TotalAuditedCost
+}
+
+function resultsLabel() : String {
+  return displaykey.Web.AuditWizard.Premiums.Summary.Results(audit.AuditInformation.AuditScheduleType)
+}]]></Code>
+  </Screen>
+</PCF>

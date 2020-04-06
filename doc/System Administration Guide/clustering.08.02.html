@@ -1,0 +1,172 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Overview of Clustering</title>
+    <link rel="StyleSheet" href="css/clustering.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>PolicyCenter System Administration Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="clustering.08.01.html#1380535">Clustering Application Servers</a> : Overview of Clustering</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1380535">Overview of Clustering</a></h3>
+      <div class="B_-_Body"><a name="1223901">The typical clustered environment consists of multiple PolicyCenter servers, a single batch server, and a load balancer. The following diagram illustrates a clustered environment:</a></div>
+      <div class="F_-_Figure"><a name="1223856"><img class="Default" src="images/clustering-pc.png" style="display: inline; float: none; left: 0.0; top: 0.0" alt="" /></a></div>
+      <div class="B_-_Body"><a name="1066841">Plan the cluster so that if any one server fails, the other servers in the cluster can handle its traffic without being overwhelmed. PolicyCenter servers in the cluster can run on separate computers, or you can run multiple servers on the same computer. Guidewire recommends you maintain at least three PolicyCenter servers in the cluster, whether on the same or different physical computers. With multiple servers running on the same computer, in the event of a failure, then all servers are unusable. Of course, the exact configuration depends on specific usage needs. </a></div>
+      <div class="B_-_Body"><a name="1066684">To establish a cluster, you must also install your own load balancing solution. The load balancer acts as the bridge between client connections and the private network. Clients send a connection request to the load balancer and it routes the request to PolicyCenter server. The load balancer must implement </a><span class="e_-_emphasis">session affinity</span>, meaning that it must route connections from the same user session to the same PolicyCenter server. If the load balancer directed a user to a different server, the session is reset. This can result in loss of unsaved data.</div>
+      <div class="B_-_Body"><a name="1066702">Within any cluster, there can be only one PolicyCenter batch server. The batch server acts as a typical PolicyCenter server, and also performs system operations that would fail if multiple servers attempted to perform them. These operations include processes such as activity escalation and database upgrades. To ensure the batch server has adequate resources to run system processes, limit the traffic that the load balancer distributes to the batch server. Guidewire suggests that the batch server run on its own host computer. You can define multiple batch servers, so you can start another one if your primary batch server fails. However, do not start more than one batch server at the same time.</a></div>
+      <div class="B_-_Body"><a name="1362617">If you change script parameters, then shut down all non-batch servers before starting the batch server. Only the batch server writes script parameters from </a><span class="cv_-_computer_voice">ScriptParameters.xml</span> to the database. As the batch server starts, it retires script parameters and writes new values. If a non-batch server is using script parameters that the batch server changes during startup, non-batch servers can throw null pointer exceptions while trying to access the script parameters. </div>
+      <div class="B_-_Body"><a name="1362618">In general, start the batch server first. If it fails, either restart the batch server, start another batch server or use the Management Beans section of Server Tools to designate another node as the batch server. See </a><a href="javascript:WWHClickedPopup('admin', 'maintenance.13.05.html#1473290', '');" title="Management Beans">“Management Beans”</a>. If another server goes down that is not the batch server, you can restart that server without restarting each computer in the cluster.</div>
+      <h4 class="H2_-_Heading_2"><a name="1339232">Special Considerations Regarding PolicyCenter Batch Servers</a></h4>
+      <div class="B_-_Body"><a name="1339243">PolicyCenter uses an application-side internal cache mechanism that limits database read attempts. This mechanism is critical in optimizing performance. During batch jobs, however, the batch server likely processes many objects, load-managing objects into the cache.</a></div>
+      <div class="B_-_Body"><a name="1339245">If this batch server is also being used to provide service to end users of Guidewire applications, both processes use the same caching mechanism. These two functions are likely to compete for caching resources, leading to a large number of cache evictions. Application users would then experience slower performance, as the server requires additional reads from the database.</a></div>
+      <div class="B_-_Body"><a name="1339247">Therefore, for installations with heavy or frequent batch processes, Guidewire recommends that no application users be served from the batch server. This is a not a strict requirement, and does not apply to all installations. Additionally, batch servers and application servers have different resource requirements, so it is unlikely that a full server would be dedicated to perform the role of batch server.</a></div>
+      <div class="B_-_Body"><a name="1339282">Finally, if the server has the processing resources necessary, this batch server can have other application instances alongside, provided that these different instances run within separate JVMs.</a></div>
+      <h6 class="HS_-_Head_Sub"><a name="1158050">Notes:</a></h6>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1158043">For security, Guidewire strongly recommends that the PolicyCenter servers and database reside within a protected private network, not directly accessible from outside sources.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1390173">Enable necessary security measures to protect server side components such as application servers and databases.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1390174">In a clustered system, it is theoretically possible to analyze inter-node communication and then generate unnecessary traffic with potential negative side effects amounting to denial of service attacks. Therefore, use network protection, such as enabling a DMZ with strict security rules. </a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1066715">The administration tools and Guidewire Studio must connect directly to the PolicyCenter server. These tools cannot connect through a load balancing virtual host.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1158060">Guidewire applications are application server independent. For this reason, if you implement a PolicyCenter cluster, Guidewire recommends that you not use proprietary application server features for failover, sharing sessions between nodes, and so forth. Instead, disable these features.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1392957">You can designate multiple servers as capable of being the batch server. However, you can run only one batch server at a time.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

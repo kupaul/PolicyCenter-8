@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xml:lang="en" lang="en" xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+    <meta http-equiv="Content-Style-Type" content="text/css" />
+    <!-- MOTW-DISABLED saved from url=(0014)about:internet -->
+    <title>Entity Cache Versioning, Locking, and Entity Refreshing</title>
+    <link rel="StyleSheet" href="css/transactions.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/webworks.css" type="text/css" media="all" />
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/context.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/towwhdir.js"></script>
+    <script type="text/javascript" language="JavaScript1.2" src="wwhdata/common/wwhpagef.js"></script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        var  WebWorksRootPath = "";
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        // Set reference to top level help frame
+        //
+        var  WWHFrame = WWHGetWWHFrame("", true);
+      // -->
+    </script>
+    <script type="text/javascript" language="JavaScript1.2" src="scripts/expand.js"></script>
+    <!-- THE FOLLOWING IS A GUIDEWIRE STYLE DEFINITION FOR THE LINK TO THIS FEATURE -->
+    <link rel="StyleSheet" href="css/css-guidewire-extra.css" type="text/css" media="all" />
+    <!-- THE FOLLOWING IS A GUIDEWIRE GSCRIPT FUNCTION FOR THE LINK TO THIS FEATURE -->
+    <script type="text/javascript">
+function guidewire_selectall()
+{
+var text_val=eval("document.linktothisurlform.urlfield");
+text_val.focus();
+text_val.select();
+}
+</script>
+  </head>
+  <body onLoad="WWHUpdate();" onUnload="WWHUnload();" onKeyDown="WWHHandleKeyDown((document.all||document.getElementById||document.layers)?event:null);" onKeyPress="WWHHandleKeyPress((document.all||document.getElementById||document.layers)?event:null);" onKeyUp="WWHHandleKeyUp((document.all||document.getElementById||document.layers)?event:null);">
+    <!-- THE FOLLOWING IS A GUIDEWIRE DIV FOR THE 'LINK TO THIS' FEATURE -->
+    <div id="linkToThisPage" class="popup" style="display: none;">
+      <div class="popupTitle">Link Directly to This Page 
+           <a href="#" onclick="var thePopup = getElementById('linkToThisPage');thePopup.style.display='none';return false;"><img class="popupClosebox" src="wwhelp/wwhimpl/common/images/close.gif" /></a></div>
+      <div style="padding:6px;">
+        <div class="popupText" id="linkToThisPageBookmark">An error has occurred if you see this messsage.</div>
+        <form name="linktothisurlform" method="post" action="" style="width:275px;margin:0px">
+          <input type="text" class="popupURLText" id="linkToThisPageURL" name="urlfield" rows="1" cols="55" onClick="guidewire_selectall();" onFocus="guidewire_selectall();"></input>
+        </form>
+      </div>
+    </div>
+    <br />
+    <div class="WebWorks_Breadcrumbs" style="text-align: left;">
+      <span>Gosu Reference Guide</span> : 
+    <span class="WebWorks_Breadcrumbs" style="text-align: left;"><a class="WebWorks_Breadcrumb_Link" href="transactions.22.01.html#1648890">Bundles and Database Transactions</a> : Entity Cache Versioning, Locking, and Entity Refreshing</span></div>
+    <hr align="left" />
+    <blockquote>
+      <h3 class="H1_-_Heading_1"><a name="1648890">Entity Cache Versioning, Locking, and Entity Refreshing</a></h3>
+      <div class="B_-_Body"><a name="1648891">The application caches entity data for faster access. All APIs discussed in this topic that refer to </a><span class="e_-_emphasis">original</span> entity instances only check against the database as of the time the bundle loaded that entity. The time of loading might not have been immediately before your code checks the original entity data. In many cases, the application may have loaded the database row from the database long before the recent application change.</div>
+      <div class="B_-_Body"><a name="1571235">Although it is possible that the database data has changed since then, some safeguards prevent concurrent data access in most cases. For typical entity access, the server prevents entity commits if it changed in the database between the time the entity loaded in the bundle and the time the bundle commits. </a></div>
+      <h4 class="H2_-_Heading_2"><a name="1571322">Entity Instance Versioning and the Entity Touch API </a></h4>
+      <div class="B_-_Body"><a name="1637071">PolicyCenter protects entity instances from concurrent access through a version property that exists on all </a><span class="e_-_emphasis">versionable entities</span>. Almost all entity types in the system are versionable. If you load a versionable entity instance into a bundle, the application loads the version number and stores it with the data. </div>
+      <div class="B_-_Body"><a name="1637388">If a bundle commits, PolicyCenter checks this version number property in each entity instance with the latest version in the database. PolicyCenter confirms that the cached entity instance is up to date. If the version numbers match, the commit can proceed.</a></div>
+      <div class="B_-_Body"><a name="1655502">If the version numbers do not match, the entire commit attempt fails for the entire bundle. In other words, if the recent change for an object relies on an out-of-date database row, it is unsafe to commit this recent change. Gosu throws an exception during the database commit.</a></div>
+      <div class="B_-_Body"><a name="1652556">During the final commit, the version number is increased by one from its previous value. In typical code, you need to add entity instances to a bundle and then modify them. PolicyCenter automatically increments the version number.</a></div>
+      <div class="B_-_Body"><a name="1652943">In rare cases, it may be desirable to force the version number of an entity to increment even if there is no known change to the entity yet. </a></div>
+      <div class="B_-_Body"><a name="1654252">For example, suppose your code reads values from four entity instances (A, B, C, and D) that have a tight conceptual relationship. Perhaps your code reads the values and changes most or all of the objects in one database transaction. In some case, perhaps the algorithm makes change to only B, C, and D. There remains one object (A) for which you did not explicitly change properties. Therefore, A is not in the same </a><span class="e_-_emphasis">bundle</span> as B, C and D. The database row for A does not update nor does the version number increment. For some circumstances, they may not be a problem.</div>
+      <div class="B_-_Body"><a name="1654273">However, suppose the three objects you change are related to the </a><span class="e_-_emphasis">current</span> properties on A. The default behavior may be undesirable compared to updating A, B, C, and D together:</div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1654750">You might want to protect against other threads on the current server (including the user interface) from making concurrent changes on A that make the other changes make no sense.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1654762">You might want to protect against other servers in the PolicyCenter cluster from making concurrent changes on A that make the other changes make no sense.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1653178">You might want the last modified time of A to match the last modified time of B, C, and D.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="BI_-_Bullet_Item_outer" style="margin-left: 57pt">
+        <table border="0" cellspacing="0" cellpadding="0" summary="" role="presentation">
+          <tr style="vertical-align: baseline">
+            <td>
+              <div class="BI_-_Bullet_Item_inner" style="width: 15pt; white-space: nowrap">
+                <span class="bu_-_bullet">•	</span>
+              </div>
+            </td>
+            <td width="100%">
+              <div class="BI_-_Bullet_Item_inner"><a name="1653197">You might want to force pre-update rules to run for object A.</a></div>
+            </td>
+          </tr>
+        </table>
+      </div>
+      <div class="B_-_Body"><a name="1654971">To force PolicyCenter to increment the entity version number (</a><span class="cv_-_computer_voice">obj.BeanVersion</span>), update the modified time, and force pre-update rules to run, call the <span class="cv_-_computer_voice">touch</span> method on the entity instance. The method takes no arguments:</div>
+      <div class="CS_-_Code_Single_Line"><a name="1655239">obj.touch()</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1568961">Record Locking for Concurrent Data Access</a></h4>
+      <div class="B_-_Body"><a name="1568689">In addition to version protections, the system locks the database briefly during the commit. The server throws concurrent data exceptions if two different threads or two different servers in a cluster simultaneously modify the same entity at the exact same time.</a></div>
+      <h4 class="H2_-_Heading_2"><a name="1568698">User Interface Bundle Refreshes</a></h4>
+      <div class="B_-_Body"><a name="1568982">In some cases, the application user interface internally refreshes bundle entity data with the latest version from the database in cases that seem appropriate. </a></div>
+      <div class="B_-_Body"><a name="1637553">For example, changing from view-only to edit mode on data. </a></div>
+      <div class="B_-_Body"><a name="1637556">There is no supported public API for you to programmatically refresh a bundle’s entity data.</a></div>
+      <script type="text/javascript" language="JavaScript1.2">
+        <!--
+          // Clear related topics
+          //
+          WWHClearRelatedTopics();
+
+          document.writeln(WWHRelatedTopicsInlineHTML());
+        // -->
+      </script>
+    </blockquote>
+    <script type="text/javascript" language="JavaScript1.2">
+      <!--
+        document.write(WWHRelatedTopicsDivTag() + WWHPopupDivTag() + WWHALinksDivTag());
+      // -->
+    </script>
+  </body>
+</html>

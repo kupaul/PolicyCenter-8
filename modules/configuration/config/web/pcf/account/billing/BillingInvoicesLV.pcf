@@ -1,0 +1,79 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ListViewPanel
+    id="BillingInvoicesLV">
+    <Require
+      name="account"
+      type="Account"/>
+    <RowIterator
+      editable="false"
+      elementName="invoice"
+      value="retrieveAccountInvoices()">
+      <ToolbarFilter
+        name="invoiceFilter">
+        <ToolbarFilterOption
+          filter="new filters.StandardBeanFilter(&quot;last3months&quot;, \ i -&gt; (i as gw.plugin.billing.BillingInvoiceInfo).InvoiceDate.addMonths( 3 ).afterNow())"
+          label="displaykey.Web.Billing.Invoice.Last3Months"/>
+        <ToolbarFilterOption
+          filter="new filters.StandardBeanFilter(&quot;last6months&quot;, \ i -&gt; (i as gw.plugin.billing.BillingInvoiceInfo).InvoiceDate.addMonths( 6 ).afterNow())"
+          label="displaykey.Web.Billing.Invoice.Last6Months"/>
+        <ToolbarFilterOption
+          filter="new filters.StandardBeanFilter(&quot;last12months&quot;, \ i -&gt; (i as gw.plugin.billing.BillingInvoiceInfo).InvoiceDate.addMonths( 12 ).afterNow())"
+          label="displaykey.Web.Billing.Invoice.Last12Months"/>
+      </ToolbarFilter>
+      <IteratorSort
+        sortBy="invoice.InvoiceDate"
+        sortOrder="1"/>
+      <Row>
+        <DateCell
+          id="InvoiceDate"
+          label="displaykey.Web.Billing.StatementDate"
+          value="invoice.InvoiceDate"/>
+        <DateCell
+          id="DueDate"
+          label="displaykey.Web.Billing.DueDate"
+          value="invoice.InvoiceDueDate"/>
+        <Cell
+          id="InvoiceNumber"
+          label="displaykey.Web.Billing.InvoiceNumber"
+          value="invoice.InvoiceNumber"/>
+        <Cell
+          id="InvoiceStream"
+          label="displaykey.Web.Billing.InvoiceStream"
+          value="invoice.InvoiceStream"/>
+        <Cell
+          id="Status"
+          label="displaykey.Web.Billing.Invoice.Status"
+          value="invoice.Status"
+          width="125"/>
+        <Cell
+          id="PaidStatus"
+          label="displaykey.Web.Billing.Invoice.PaidStatus"
+          value="invoice.PaidStatus"
+          width="150"/>
+        <MonetaryAmountCell
+          formatType="currency"
+          id="Amount"
+          label="displaykey.Web.Billing.Amount"
+          value="invoice.Amount"/>
+        <MonetaryAmountCell
+          formatType="currency"
+          id="Unpaid"
+          label="displaykey.Web.Billing.Unpaid"
+          value="invoice.Unpaid"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function retrieveAccountInvoices() : gw.plugin.billing.BillingInvoiceInfo[]{
+  try {
+    var plugin = gw.plugin.Plugins.get(gw.plugin.billing.IBillingSummaryPlugin)
+    var result = plugin.retrieveAccountInvoices( account.AccountNumber )
+    return result
+  } catch (e : gw.api.util.DisplayableException) {
+    gw.api.util.LocationUtil.addRequestScopedErrorMessage(e.LocalizedMessage)
+    return new gw.plugin.billing.BillingInvoiceInfo[0]
+  }
+}]]></Code>
+  </ListViewPanel>
+</PCF>

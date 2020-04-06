@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+
+  <parent>
+    <groupId>com.guidewire.pl</groupId>
+    <artifactId>pl-documentassistant-root</artifactId>
+    <version>8.2.0</version>
+  </parent>
+
+  <artifactId>pl-documentassistant</artifactId>
+  <packaging>jar</packaging>
+  <version>8.2.0</version>
+
+  <properties>
+    <resources-dir>${project.build.outputDirectory}/resources</resources-dir>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <configuration>
+              <outputDirectory>${resources-dir}</outputDirectory>
+              <includeArtifactIds>pl-documentassistant-applet,pl-documentassistant-resources</includeArtifactIds>
+              <includeTypes>jar,jar.pack.gz</includeTypes>
+            </configuration>
+            <goals>
+              <goal>copy-dependencies</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-jar-plugin</artifactId>
+        <configuration>
+          <archive>
+            <manifest>
+              <addClasspath>true</addClasspath>
+            </manifest>
+            <manifestEntries>
+              <Specification-Title>Guidewire Document Assistant JNLP Applet and Resources</Specification-Title>
+            </manifestEntries>
+          </archive>
+        </configuration>
+      </plugin>
+    </plugins>
+
+    <resources>
+      <resource>
+        <targetPath>${resources-dir}</targetPath>
+        <directory>src/main/resources</directory>
+        <excludes>
+          <exclude>*.jnlp</exclude>
+        </excludes>
+        <filtering>false</filtering>
+      </resource>
+      <!-- Use Maven resource filtering because we always want the JNLP files to have
+           the latest timestamp of the build to force the server to return it on the initial request. -->
+      <resource>
+        <targetPath>${resources-dir}</targetPath>
+        <directory>src/main/resources</directory>
+        <includes>
+          <include>*.jnlp</include>
+        </includes>
+        <filtering>true</filtering>
+      </resource>
+    </resources>
+  </build>
+
+  <dependencies>
+    <dependency>
+      <groupId>com.guidewire.pl</groupId>
+      <artifactId>pl-documentassistant-applet</artifactId>
+      <version>8.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.guidewire.pl</groupId>
+      <artifactId>pl-documentassistant-applet</artifactId>
+      <version>8.2.0</version>
+      <type>jar.pack.gz</type>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.guidewire.pl</groupId>
+      <artifactId>pl-documentassistant-resources</artifactId>
+      <version>8.2.0</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>com.oracle.samples.jnlp</groupId>
+      <artifactId>jnlp-servlet</artifactId>
+      <version>1.7.0_17</version>
+      <scope>compile</scope>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <scope>compile</scope>
+    </dependency>
+  </dependencies>
+
+</project>

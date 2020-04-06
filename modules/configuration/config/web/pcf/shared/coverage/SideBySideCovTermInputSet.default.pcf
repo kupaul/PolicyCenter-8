@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <InputSet
+    id="SideBySideCovTermInputSet"
+    mode="default">
+    <Require
+      name="covTermInfo"
+      type="gw.job.sxs.SideBySideCovTermInfo"/>
+    <Require
+      name="colWidth"
+      type="int"/>
+    <Require
+      name="selectable"
+      type="boolean"/>
+    <CheckBoxInput
+      align="left"
+      editable="covTermInfo.CovInfo.PeriodInfo.SxSEditable and covTermInfo.CovInfo.AllowToggle"
+      id="covTermEnabledId"
+      labelAbove="true"
+      value="covTermInfo.CovInfo.Selected"
+      visible="selectable">
+      <LayoutConfig
+        tdClass="&quot;pc-sxs-col-&quot; + (covTermInfo.CovInfo.PeriodInfo.ColumnIndex % 2)"/>
+      <PostOnChange
+        onChange="covTermInfo.CovInfo.coverageSelectionRefresh()"
+        target="SideBySideDefaultCovTermValue"/>
+    </CheckBoxInput>
+    <TextInput
+      align="left"
+      id="defaultSpacer"
+      labelAbove="true"
+      value="&quot;&quot;"
+      visible="!selectable">
+      <LayoutConfig
+        tdClass="&quot;pc-sxs-col-&quot; + (covTermInfo.CovInfo.PeriodInfo.ColumnIndex % 2)"/>
+    </TextInput>
+    <TextInput
+      align="left"
+      editable="covTermInfo.CovInfo.PeriodInfo.SxSEditable and covTermInfo.Editable"
+      id="SideBySideDefaultCovTermValue"
+      labelAbove="true"
+      validationExpression="(covTermInfo.CovTermPattern.Required and covTermInfo.DefaultValue == null) ? displaykey.Web.Job.SideBySide.Errors.RequiredCovTerm(covTermInfo.CovTermPattern.Name) : null"
+      value="covTermInfo?.DefaultValue">
+      <LayoutConfig
+        colspan="colWidth"
+        tdClass="&quot;pc-sxs-col-&quot; + (covTermInfo.CovInfo.PeriodInfo.ColumnIndex % 2)"/>
+      <PostOnChange
+        disablePostOnEnter="not (covTermInfo.AssociatedPeriodQuoted or covTermInfo.AlwaysPostOnChange)"
+        onChange="covTermInfo.CovInfo.coverageSelectionRefresh()"/>
+    </TextInput>
+  </InputSet>
+</PCF>

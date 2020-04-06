@@ -1,0 +1,76 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../pcf.xsd">
+  <Popup
+    afterEnter="policyPeriod.AllAccountSyncables.each(\ a -&gt; a.prepareForDiff())"
+    countsAsWork="false"
+    id="HandlePreemptionPopup"
+    title="displaykey.Web.HandlePreemption.Title">
+    <LocationEntryPoint
+      signature="HandlePreemptionPopup(wizard : pcf.api.Wizard, jobWizardHelper : web.job.JobWizardHelper, policyPeriod : PolicyPeriod, allowWithdraw : boolean)"/>
+    <Variable
+      name="wizard"
+      type="pcf.api.Wizard"/>
+    <Variable
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Variable
+      name="policyPeriod"
+      type="PolicyPeriod"/>
+    <Variable
+      initialValue="policyPeriod.PreemptionsOfThisPeriod"
+      name="preemptingBranches"
+      type="PolicyPeriod[]"/>
+    <Variable
+      name="allowWithdraw"
+      type="boolean"/>
+    <Screen
+      editable="true"
+      id="HandlePreemption_DifferencesScreen">
+      <Variable
+        initialValue="gw.web.job.HandlePreemptionPopupUIHelper.makeRootNodes(preemptingBranches)"
+        name="rootNodeMap"/>
+      <Variable
+        initialValue="preemptingBranches[0].Policy.Product.DiffTreeConfig"
+        name="diffTreeConfig"/>
+      <Toolbar>
+        <ToolbarButton
+          action="gw.web.job.HandlePreemptionPopupUIHelper.applyChanges(wizard, jobWizardHelper, policyPeriod, CurrentLocation)"
+          id="ApplyChanges"
+          label="displaykey.Web.HandlePreemption.ApplyChanges"
+          visible="true"/>
+        <ToolbarButton
+          action="gw.web.job.HandlePreemptionPopupUIHelper.withdraw(wizard, policyPeriod)"
+          confirmMessage="displaykey.Job.Operation.Withdraw.Confirm"
+          id="Withdraw"
+          label="displaykey.Web.HandlePreemption.Withdraw"
+          visible="allowWithdraw &amp;&amp; policyPeriod.JobProcess.canWithdraw().Okay"/>
+        <ToolbarButton
+          action="CurrentLocation.cancel()"
+          id="DecideLater"
+          label="displaykey.Web.HandlePreemption.DecideLater"
+          visible="allowWithdraw"/>
+      </Toolbar>
+      <Verbatim
+        label="allowWithdraw ? displaykey.Web.HandlePreemption.Message(policyPeriod.Job.DisplayType) : displaykey.Web.HandlePreemption.MessageNoWithdraw(policyPeriod.Job.DisplayType)"/>
+      <CardViewPanel
+        id="HandlePreemptionCV">
+        <CardIterator
+          elementName="preemptingBranch"
+          id="HandlePreemptionCardIter"
+          value="preemptingBranches">
+          <Variable
+            initialValue="rootNodeMap[preemptingBranch]"
+            name="rootNode"/>
+          <Card
+            id="HandlePreemptionCard"
+            title="preemptingBranch.Job.DisplayType + &quot; &quot; + preemptingBranch.Job.JobNumber">
+            <PanelRef
+              def="DifferencesPanelSet(&quot;PolicyReview&quot;, preemptingBranch.BasedOn, preemptingBranch, rootNode, diffTreeConfig)"/>
+          </Card>
+        </CardIterator>
+      </CardViewPanel>
+    </Screen>
+  </Popup>
+</PCF>

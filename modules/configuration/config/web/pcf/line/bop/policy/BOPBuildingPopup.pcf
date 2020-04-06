@@ -1,0 +1,80 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <Popup
+    beforeCommit="gw.lob.bop.BOPBuildingValidation.validateBuilding(building)"
+    canEdit="openForEdit"
+    countsAsWork="false"
+    id="BOPBuildingPopup"
+    returnType="BOPBuilding"
+    startEditing="if (building == null and startInEdit == true and openForEdit) {building = bopLocation.addNewLineSpecificBuilding() as BOPBuilding}"
+    startInEditMode="startInEdit"
+    title="displaykey.Web.Policy.LocationContainer.Location.Building.Details">
+    <LocationEntryPoint
+      signature="BOPBuildingPopup(bopLine : BOPLine, bopLocation : BOPLocation, building : BOPBuilding, openForEdit : boolean, startInEdit : boolean, jobWizardHelper : web.job.JobWizardHelper)"/>
+    <Variable
+      name="bopLine"
+      type="BOPLine"/>
+    <Variable
+      name="bopLocation"
+      type="BOPLocation"/>
+    <Variable
+      name="building"
+      type="BOPBuilding"/>
+    <Variable
+      name="openForEdit"
+      type="boolean"/>
+    <Variable
+      name="startInEdit"
+      type="boolean"/>
+    <Variable
+      name="jobWizardHelper"
+      type="web.job.JobWizardHelper"/>
+    <Screen
+      id="BOPSingleBuildingDetailScreen">
+      <Toolbar>
+        <EditButtons
+          pickValue="building"
+          updateLabel="displaykey.Web.Policy.BOP.Buildings.Update"/>
+      </Toolbar>
+      <PanelRef
+        def="PreferredCoverageCurrencyPanelSet(building, openForEdit, jobWizardHelper)"
+        id="PreferredCoverageCurrencySelectorRef"/>
+      <CardViewPanel>
+        <Card
+          id="BOPBuilding_DetailsCard"
+          title="displaykey.Web.Policy.BOP.Buildings.Details">
+          <PanelRow>
+            <PanelColumn>
+              <PanelRef
+                def="BOPBuilding_DetailsDV(building, CurrentLocation.InEditMode)"/>
+            </PanelColumn>
+          </PanelRow>
+          <PanelRef
+            def="AdditionalInterestDetailsDV(building, openForEdit)"/>
+        </Card>
+        <Card
+          id="BOPBuilding_AdditionalCoveragesCard"
+          title="displaykey.Web.Policy.BOP.Buildings.AdditionalCoverage">
+          <DetailViewPanel>
+            <InputColumn>
+              <Input
+                boldLabel="true"
+                boldValue="true"
+                id="LocationInfo"
+                label="displaykey.Web.Policy.BOP.Location"
+                value="building.Building.PolicyLocation.DisplayName"/>
+              <Input
+                id="Number"
+                label="displaykey.Web.Policy.LocationContainer.Location.Building.Number"
+                value="building.Building.BuildingNum"/>
+            </InputColumn>
+          </DetailViewPanel>
+          <PanelRef
+            def="AdditionalCoveragesPanelSet(building, new String[]{&quot;BOPBuildingOtherCat&quot;,&quot;BOPIncomeExpenseCat&quot;,&quot;BOPBuildingUtilitiesCat&quot;,&quot;BOPBuildingSpecialPerilCat&quot;,&quot;BOPStateCat&quot;}, true)"/>
+        </Card>
+      </CardViewPanel>
+    </Screen>
+  </Popup>
+</PCF>

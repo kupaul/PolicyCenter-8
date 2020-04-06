@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <!-- WARNING: Internal Guidewire file. DO NOT EDIT. -->
+  <ListViewPanel
+    id="PickProfilerSourceLV"
+    mode="MessageDestination">
+    <ExposeIterator
+      flags="CanDelete,CannotDelete"
+      name="PickProfilerSourceLV"
+      valueType="gw.api.profiler.ProfilerDataSource"
+      widget="PickProfilerSourceLV"/>
+    <RowIterator
+      editable="false"
+      elementName="instrumentedMessage"
+      toRemove="deleteProfilerData(instrumentedMessage)"
+      value="find(instrumentedMessage in InstrumentedMessage where instrumentedMessage.ProfilerData != null)">
+      <ToolbarFilter
+        label="displaykey.Web.Profiler.MessageDestination"
+        name="messageDestinationChooser">
+        <ToolbarFilterOptionGroup
+          filters="new gw.api.filters.MessageDestinationFilterSet().getFilterOptions()"/>
+      </ToolbarFilter>
+      <ToolbarFlag
+        condition="instrumentedMessage.EndTime != null"
+        name="CanDelete"/>
+      <ToolbarFlag
+        condition="instrumentedMessage.EndTime == null"
+        name="CannotDelete"/>
+      <Row>
+        <Cell
+          id="MessageDestinationID"
+          label="displaykey.Web.Profiler.DestinationID"
+          sortOrder="1"
+          value="instrumentedMessage.DestinationID"/>
+        <Cell
+          enableSort="false"
+          id="MessageDestinationName"
+          label="displaykey.Web.Profiler.DestinationName"
+          value="instrumentedMessage.Name"/>
+        <DateCell
+          dateFormat="short"
+          id="StartTime"
+          label="displaykey.Web.WorkQueueWorkersLv.Started"
+          sortDirection="descending"
+          sortOrder="4"
+          timeFormat="short"
+          value="instrumentedMessage.StartTime"/>
+        <DateCell
+          dateFormat="short"
+          id="EndTime"
+          label="displaykey.Web.WorkQueueWorkersLv.Ended"
+          timeFormat="short"
+          value="instrumentedMessage.EndTime"/>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function deleteProfilerData(instrumentedMessage : InstrumentedMessage) {
+  gw.transaction.Transaction.runWithNewBundle( \ bundle -> {
+      var localSource = bundle.add( instrumentedMessage )
+      localSource.ProfilerData = null
+    }
+  )
+}]]></Code>
+  </ListViewPanel>
+</PCF>

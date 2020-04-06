@@ -1,0 +1,107 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../../pcf.xsd">
+  <ListViewPanel
+    id="GLExpCovCumulDetailLV">
+    <Require
+      name="locCosts"
+      type="java.util.Set&lt;GLCovExposureCost&gt;"/>
+    <Variable
+      initialValue="locCosts.AnyProrated"
+      name="prorated"/>
+    <RowIterator
+      editable="false"
+      elementName="cost"
+      pageSize="0"
+      value="locCosts as GLCovExposureCost[]">
+      <IteratorSort
+        sortBy="cost.Location.LocationNum"
+        sortOrder="1"/>
+      <IteratorSort
+        sortBy="cost.GLExposure.ClassCode"
+        sortOrder="2"/>
+      <IteratorSort
+        sortBy="cost.Subline"
+        sortOrder="3"/>
+      <IteratorSort
+        sortBy="cost.SplitType"
+        sortOrder="4"/>
+      <Row
+        id="ExpCovRow">
+        <Cell
+          enableSort="false"
+          id="LocIndex"
+          label="displaykey.Web.Policy.GL.Loc"
+          value="cost.GLExposure.Location.LocationNum"/>
+        <Cell
+          enableSort="false"
+          id="ClassCode"
+          label="displaykey.Web.Quote.CumulDetail.Default.ClassCode"
+          value="cost.GLExposure.ClassCode.Code"/>
+        <Cell
+          enableSort="false"
+          footerLabel="displaykey.Web.Quote.CumulDetail.Default.Subtotal"
+          id="Description"
+          label="displaykey.Web.Quote.CumulDetail.Default.Desc.EUDesc"
+          value="cost.GLExposure.ClassCode.Classification"
+          width="200"
+          wrap="true"/>
+        <Cell
+          enableSort="false"
+          id="Subline"
+          label="displaykey.Web.Policy.GL.Subline"
+          value="cost.Subline"
+          wrap="true"/>
+        <Cell
+          enableSort="false"
+          id="Split"
+          label="displaykey.Web.Policy.GL.Split"
+          value="cost.SplitType"/>
+        <Cell
+          enableSort="false"
+          id="Basis"
+          label="displaykey.Web.Quote.CumulDetail.Default.Basis"
+          value="cost.Basis == null or cost.Basis == 0? &quot;&quot; : cost.Basis.DisplayValue"/>
+        <Cell
+          enableSort="false"
+          id="Rate"
+          label="displaykey.Web.Quote.CumulDetail.Default.Rate"
+          value="cost.ActualAdjRate"/>
+        <MonetaryAmountCell
+          enableSort="false"
+          formatType="currency"
+          id="TermAmount"
+          label="displaykey.Web.Quote.CumulDetail.Default.TermPremium"
+          value="cost.ActualTermAmountBilling"
+          visible="true //prorated"/>
+        <Cell
+          enableSort="false"
+          id="EffDate"
+          label="displaykey.Web.Quote.CumulDetail.Default.PeriodStart"
+          value="cost.EffDate"
+          visible="true //prorated"/>
+        <Cell
+          enableSort="false"
+          id="ExpDate"
+          label="displaykey.Web.Quote.CumulDetail.Default.PeriodEnd"
+          value="cost.ExpDate"
+          visible="true //prorated"/>
+        <Cell
+          align="right"
+          enableSort="false"
+          id="Proration"
+          label="displaykey.Web.Quote.CumulDetail.Default.Prorata"
+          value="gw.api.util.StringUtil.formatNumber(cost.Proration, &quot;#0.0000&quot;)"
+          visible="true //prorated"/>
+        <MonetaryAmountCell
+          enableSort="false"
+          footerSumValue="cost.ActualAmountBilling"
+          formatType="currency"
+          id="Amount"
+          label="displaykey.Web.Quote.CumulDetail.Default.Amount"
+          value="cost.ActualAmountBilling"/>
+      </Row>
+    </RowIterator>
+  </ListViewPanel>
+</PCF>

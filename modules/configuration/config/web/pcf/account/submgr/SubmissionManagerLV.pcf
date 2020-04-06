@@ -1,0 +1,179 @@
+<?xml version="1.0"?>
+<PCF
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:noNamespaceSchemaLocation="../../../../../../pcf.xsd">
+  <ListViewPanel
+    id="SubmissionManagerLV">
+    <Require
+      name="account"
+      type="Account"/>
+    <Require
+      name="submissions"
+      type="Submission[]"/>
+    <Variable
+      initialValue="gw.job.SubmissionLetterHelper.getDocumentsByPolicyPeriodAndDocType(submissions)"
+      name="docMap"
+      type="java.util.Map"/>
+    <Variable
+      initialValue="gw.job.SubmissionLetterHelper.getSubmissionLettertypes(submissions)"
+      name="submissionLettertypes"
+      type="java.util.Set&lt;String&gt;"/>
+    <RowIterator
+      editable="false"
+      elementName="submission"
+      pageSize="0"
+      value="submissions">
+      <Variable
+        initialValue="submission.LatestPeriod"
+        name="policyPeriod"
+        type="entity.PolicyPeriod"/>
+      <Variable
+        initialValue="getConfirmLetter(policyPeriod) "
+        name="confirmLetter"/>
+      <Variable
+        initialValue="getDeclinedLetter(policyPeriod)"
+        name="declineLetter"/>
+      <Variable
+        initialValue="getNotTakenLetter(policyPeriod)"
+        name="notTakenLetter"/>
+      <Variable
+        initialValue="perm.PolicyPeriod.view(policyPeriod)"
+        name="hasViewPermission"/>
+      <ToolbarFilter
+        name="submissionFilter">
+        <ToolbarFilterOption
+          filter="new filters.StandardBeanFilter( displaykey.Web.SubmissionManager.Filter.All, \ x -&gt; true )"/>
+        <ToolbarFilterOption
+          filter="new filters.StandardBeanFilter( displaykey.Web.SubmissionManager.Filter.Open, \ x -&gt; not (x as Submission).Complete )"/>
+        <ToolbarFilterOption
+          filter="new filters.StandardBeanFilter( displaykey.Web.SubmissionManager.Filter.Complete, \ x -&gt; (x as Submission).Complete )"/>
+      </ToolbarFilter>
+      <Row
+        useArchivedStyle="submission.LatestPeriod.Archived"
+        visible="hasViewPermission">
+        <Cell
+          align="center"
+          enableSort="false"
+          hideChildrenIfReadOnly="false"
+          id="SubmissionActions"
+          label="displaykey.Web.SubmissionManager.SelectionLV.Actions"
+          value="&quot; &quot;"
+          width="75">
+          <MenuItemSetRef
+            def="SubmissionActionsMenuItemSet(submission, policyPeriod)"/>
+        </Cell>
+        <LinkCell
+          id="SubmissionDisplayProduct"
+          label="displaykey.Web.SubmissionManager.SelectionLV.Product"
+          sortBy="submission.Policy.Product.DisplayName"
+          width="250"
+          wrap="true">
+          <Link
+            icon="displaykey.Web.Wizard.InfoBar.LOBIcon(policyPeriod.Policy.Product.Abbreviation)"
+            id="Icon"/>
+          <Link
+            id="Spacer"
+            label="&quot; &quot;"/>
+          <Link
+            id="SubmissionProduct"
+            label="submission.Policy.Product.DisplayName"/>
+        </LinkCell>
+        <Cell
+          action="SubmissionView(submission, policyPeriod)"
+          available="submission.Viewable"
+          id="SubmissionNumber"
+          label="displaykey.Web.SubmissionManager.SelectionLV.SubmissionNumber"
+          sortOrder="1"
+          value="submission.JobNumber"
+          width="125"/>
+        <Cell
+          id="QuoteType"
+          label="displaykey.Web.SubmissionManager.SelectionLV.QuoteType"
+          value="submission.getQuoteType()"/>
+        <Cell
+          id="EffectiveDate"
+          label="displaykey.Web.SubmissionManager.SelectionLV.EffectiveDate"
+          value="submission.LatestPeriod.EditEffectiveDate"/>
+        <Cell
+          id="Status"
+          label="displaykey.Web.SubmissionManager.SelectionLV.Status"
+          value="submission.DisplayStatus"
+          width="100"
+          wrap="true"/>
+        <MonetaryAmountCell
+          footerSumValue="submission.TotalCost == null ? null : submission.TotalCost?.convertAmount(account.PreferredSettlementCurrency)"
+          formatType="currency"
+          id="TotalPremium"
+          label="displaykey.Web.SubmissionManager.SelectionLV.TotalCost"
+          value="submission.TotalCost"/>
+        <LinkCell
+          align="center"
+          id="Actions"
+          label="displaykey.Web.SubmissionManager.SelectionLV.Letters"
+          width="200">
+          <Link
+            action="SubmissionConfirmLetter.go(account)"
+            id="ConfirmLetter"
+            label="displaykey.Web.SubmissionManager.SelectionLV.Actions.ConfirmLetter"
+            styleClass="miniButton"
+            visible="gw.job.SubmissionLetterHelper.submissionCanSendLetterType(submissionLettertypes, LetterType.TC_CONFIRMATION, submission, policyPeriod)"/>
+          <Link
+            action="SubmissionRejectLetter.go(&quot;declination&quot;, account)"
+            id="DeclineLetter"
+            label="displaykey.Web.SubmissionManager.SelectionLV.Actions.DeclineLetter"
+            styleClass="miniButton"
+            visible="gw.job.SubmissionLetterHelper.submissionCanSendLetterType(submissionLettertypes, LetterType.TC_DECLINATION, submission, policyPeriod)"/>
+          <Link
+            action="SubmissionRejectLetter.go(&quot;nottakenack&quot;, account)"
+            id="NotTakenLetter"
+            label="displaykey.Web.SubmissionManager.SelectionLV.Actions.NotTakenLetter"
+            styleClass="miniButton"
+            visible="gw.job.SubmissionLetterHelper.submissionCanSendLetterType(submissionLettertypes, LetterType.TC_NOTTAKENACK, submission, policyPeriod)"/>
+          <DocumentLink
+            document="confirmLetter"
+            documentAction="viewRepositoryVersion"
+            icon="&quot;document_confirm.png&quot;"
+            id="InternalSubmissionsLV_ConfirmLink"
+            visible="perm.Document.view(confirmLetter)"/>
+          <DocumentLink
+            document="declineLetter"
+            documentAction="viewRepositoryVersion"
+            icon="&quot;document_decline.png&quot;"
+            id="InternalSubmissionsLV_DeclineLink"
+            visible="perm.Document.view(declineLetter)"/>
+          <DocumentLink
+            document="notTakenLetter"
+            documentAction="viewRepositoryVersion"
+            icon="&quot;document_not_taken.png&quot;"
+            id="InternalSubmissionsLV_NotTakenLink"
+            visible="perm.Document.view(notTakenLetter)"/>
+        </LinkCell>
+      </Row>
+    </RowIterator>
+    <Code><![CDATA[function SubmissionView(sub : Submission, policyPeriod : PolicyPeriod) {
+  if (policyPeriod.Status == "New") {
+    gw.transaction.Transaction.runWithNewBundle(\ bun -> {
+      policyPeriod = bun.add(policyPeriod)
+      policyPeriod.SubmissionProcess.beginEditing()
+    })
+  }
+  JobForward.go(sub, policyPeriod)
+}
+
+function getConfirmLetter(policyPeriod : PolicyPeriod) : Document {
+  return docMap.get(policyPeriod.ID.toString() + ",confirm_letter") as Document
+}
+
+function getDeclinedLetter(policyPeriod : PolicyPeriod) : Document {
+  return (policyPeriod.Status == PolicyPeriodStatus.TC_DECLINED)
+    ? docMap.get(policyPeriod.ID.toString() + ",decline_letter") as Document
+    : null
+}
+
+function getNotTakenLetter(policyPeriod : PolicyPeriod) : Document {
+  return (policyPeriod.Status == PolicyPeriodStatus.TC_NOTTAKEN)
+    ? docMap.get(policyPeriod.ID.toString() + ",not_taken_letter") as Document
+    : null
+}]]></Code>
+  </ListViewPanel>
+</PCF>
