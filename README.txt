@@ -27,4 +27,4 @@ This instance of PolicyCenter is identical to a base application instance, excep
         (This simplifies the task of reloading the sample data and training data after a dbdrop.)
 	- Solr has been enabled and sample data is indexed.
 	- TinySampleCommunityData.gs has been modified to create data that supports multicurrency lab. 
-
+This is Test Run.
