@@ -1,15 +1,10 @@
 package search
 uses gw.xml.ws.annotation.WsiExportable
-
 uses java.util.ArrayList
-
-
 @WsiExportable
 final class AccountInfo {
-
   construct()
   {}
-
   var _accountNumber : String as AccountNumber
   var _accountName : String as AccountName
   var _status : String as Status
@@ -19,13 +14,4 @@ final class AccountInfo {
   var _address : String as Address
   var _policies : ArrayList<String>   as Policies
   var _accountContact : ArrayList<String> as AccountContact
-
-
-
-
-
-
-
-
-
 }
