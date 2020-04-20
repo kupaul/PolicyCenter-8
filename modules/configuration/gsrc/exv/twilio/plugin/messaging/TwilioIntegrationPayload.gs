@@ -1,12 +1,11 @@
 package exv.twilio.plugin.messaging
 /**
- * Created with IntelliJ IDEA.
- * User: 91990
- * Date: 17/4/20
- * Time: 1:01 PM
- * To change this template use File | Settings | File Templates.
+ *  TwilioIntegrationPayload class mainly used for to create message , voice call etc payload.
  */
 class TwilioIntegrationPayload {
+  /**
+     *  In this class a method i.e. MessagePayloadCreation is used for creating the message payload using three variables i.e. to, form and body and  return type of this method is String.
+  */
     function  MessagePayloadCreation() : String {
         var message=new TwilioSMS();
         var to=message.ToNumber;
