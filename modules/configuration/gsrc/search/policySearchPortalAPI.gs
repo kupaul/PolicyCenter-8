@@ -27,7 +27,9 @@ private  function getPolicies(account : Account) : ArrayList<String>
     var policies = new ArrayList<String>()
     for(policy in account.Policies)
     {
-      policies.add(policy.LatestBoundPeriod.PolicyNumber)
+      if(policy.LatestBoundPeriod != null){
+         policies.add(policy.LatestBoundPeriod.PolicyNumber)
+      }
     }
     return policies
   }
