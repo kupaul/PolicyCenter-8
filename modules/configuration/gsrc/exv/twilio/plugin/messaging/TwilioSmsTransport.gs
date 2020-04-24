@@ -28,7 +28,7 @@ class TwilioSmsTransport implements  MessageTransport
 
       var command = {"curl" , "-X" ,"POST" ,
           "https://api.twilio.com/2010-04-01/Accounts/ACd04949e93a39aac9da62638fda2c81ba/Messages.json"  , "-d", transformedPayload,
-          "-u" ,  "ACd04949e93a39aac9da62638fda2c81ba : e97aa27d2052a51bab5f56eaa135a8a3"  }
+          "-u" ,  "ACd04949e93a39aac9da62638fda2c81ba : b80057c0a11598c0e4b02c646eddcfbc"  }
 
       var builder = new ProcessBuilder(command)
       var process=builder.start()
