@@ -43,4 +43,23 @@ private  function getPolicies(account : Account) : ArrayList<String>
     }
     return acContact
   }
+
+    /*TO GET THE POLICY INFORMATION*/
+    function getPolicyInfo(policyNumber : String) : PolicyInfo
+    {
+      var queryObj = gw.api.database.Query.make(PolicyPeriod)
+      queryObj.compare("PolicyNumber",Equals ,policyNumber )
+      var targetPolicy = queryObj.select().AtMostOneRow
+      var aPolicyInfo = new PolicyInfo()
+      aPolicyInfo.PolicyNumber = targetPolicy.PolicyNumber
+      aPolicyInfo.Product =   targetPolicy.Policy.Product
+      //aPolicyInfo.Offering = targetPolicy.Offering
+      aPolicyInfo.SSN = targetPolicy.PNIContactDenorm.TaxID
+      aPolicyInfo.Issued = targetPolicy.Policy.Issued
+      aPolicyInfo.IssueDate =  targetPolicy.Policy.IssueDate
+      aPolicyInfo.Underwriter =  targetPolicy.Policy.getUserRoleAssignmentByRole(typekey.UserRole.TC_UNDERWRITER).AssignedUser
+      aPolicyInfo.PrimaryNamedInsured = targetPolicy.PrimaryInsuredName
+      return aPolicyInfo
+    }
+
 }
