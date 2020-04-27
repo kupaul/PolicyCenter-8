@@ -59,6 +59,12 @@ private  function getPolicies(account : Account) : ArrayList<String>
       aPolicyInfo.IssueDate =  targetPolicy.Policy.IssueDate
       aPolicyInfo.Underwriter =  targetPolicy.Policy.getUserRoleAssignmentByRole(typekey.UserRole.TC_UNDERWRITER).AssignedUser
       aPolicyInfo.PrimaryNamedInsured = targetPolicy.PrimaryInsuredName
+
+      aPolicyInfo.AccountNumber = targetPolicy.Policy.Account.AccountNumber
+      aPolicyInfo.AccountName = targetPolicy.Policy.Account.AccountHolderContact.DisplayName
+      aPolicyInfo.Address =    targetPolicy.Policy.Account.AccountHolderContact.PrimaryAddress.DisplayName
+      aPolicyInfo.AddressType =  targetPolicy.Policy.Account.AccountHolderContact.PrimaryAddress.AddressType
+
       return aPolicyInfo
     }
 

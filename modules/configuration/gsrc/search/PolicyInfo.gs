@@ -23,5 +23,11 @@ final class PolicyInfo {
   var _firstIssueDate : String as IssueDate
   var _underwriter : String as Underwriter
   var  _policyHolderName : String as  PrimaryNamedInsured
+  var _accNumber : String as AccountNumber
+  var _accName : String as AccountName
+  var _accAddress : String as Address
+  var _accAddType : String as AddressType
+
+
 
 }
