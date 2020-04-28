@@ -23,6 +23,21 @@
       <xs:element name="WsiAuthenticationException">
         <xs:complexType/>
       </xs:element>
+      <!-- getPolicyInfo(String) : PolicyInfo -->
+      <xs:element name="getPolicyInfo">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="policyNumber" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getPolicyInfoResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="return" minOccurs="0" type="pogo:PolicyInfo"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
     </xs:schema>
     <xs:schema targetNamespace="http://example.com/search" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
       <xs:complexType name="AccountInfo">
@@ -50,12 +65,33 @@
           <xs:element name="Status" type="xs:string" minOccurs="0"/>
         </xs:sequence>
       </xs:complexType>
+      <xs:complexType name="PolicyInfo">
+        <xs:sequence>
+          <xs:element name="AccountName" type="xs:string" minOccurs="0"/>
+          <xs:element name="AccountNumber" type="xs:string" minOccurs="0"/>
+          <xs:element name="Address" type="xs:string" minOccurs="0"/>
+          <xs:element name="AddressType" type="xs:string" minOccurs="0"/>
+          <xs:element name="IssueDate" type="xs:string" minOccurs="0"/>
+          <xs:element name="Issued" type="xs:string" minOccurs="0"/>
+          <xs:element name="Offering" type="xs:string" minOccurs="0"/>
+          <xs:element name="PolicyNumber" type="xs:string" minOccurs="0"/>
+          <xs:element name="PrimaryNamedInsured" type="xs:string" minOccurs="0"/>
+          <xs:element name="Product" type="xs:string" minOccurs="0"/>
+          <xs:element name="SSN" type="xs:string" minOccurs="0"/>
+          <xs:element name="Underwriter" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
     </xs:schema>
   </wsdl:types>
   <wsdl:portType name="policySearchPortalAPIPortType">
     <wsdl:operation name="getAccountInfo">
       <wsdl:input name="getAccountInfo" message="tns:getAccountInfo"/>
       <wsdl:output name="getAccountInfoResponse" message="tns:getAccountInfoResponse"/>
+      <wsdl:fault name="WsiAuthenticationException" message="tns:WsiAuthenticationException"/>
+    </wsdl:operation>
+    <wsdl:operation name="getPolicyInfo">
+      <wsdl:input name="getPolicyInfo" message="tns:getPolicyInfo"/>
+      <wsdl:output name="getPolicyInfoResponse" message="tns:getPolicyInfoResponse"/>
       <wsdl:fault name="WsiAuthenticationException" message="tns:WsiAuthenticationException"/>
     </wsdl:operation>
   </wsdl:portType>
@@ -69,6 +105,20 @@
         <soap12:header message="tns:gw-locale" part="gw-locale" use="literal"/>
       </wsdl:input>
       <wsdl:output name="getAccountInfoResponse">
+        <soap12:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="WsiAuthenticationException">
+        <soap12:fault name="WsiAuthenticationException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getPolicyInfo">
+      <soap12:operation soapActionRequired="false" style="document"/>
+      <wsdl:input name="getPolicyInfo">
+        <soap12:body use="literal"/>
+        <soap12:header message="tns:gw-authentication" part="gw-authentication" use="literal"/>
+        <soap12:header message="tns:gw-locale" part="gw-locale" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getPolicyInfoResponse">
         <soap12:body use="literal"/>
       </wsdl:output>
       <wsdl:fault name="WsiAuthenticationException">
@@ -92,6 +142,20 @@
         <soap11:fault name="WsiAuthenticationException" use="literal"/>
       </wsdl:fault>
     </wsdl:operation>
+    <wsdl:operation name="getPolicyInfo">
+      <soap11:operation style="document"/>
+      <wsdl:input name="getPolicyInfo">
+        <soap11:body use="literal"/>
+        <soap11:header message="tns:gw-authentication" part="gw-authentication" use="literal"/>
+        <soap11:header message="tns:gw-locale" part="gw-locale" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getPolicyInfoResponse">
+        <soap11:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="WsiAuthenticationException">
+        <soap11:fault name="WsiAuthenticationException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="policySearchPortalAPI">
     <wsdl:port name="policySearchPortalAPISoap12Port" binding="tns:policySearchPortalAPISoap12Binding">
@@ -109,6 +173,12 @@
   </wsdl:message>
   <wsdl:message name="WsiAuthenticationException">
     <wsdl:part name="WsiAuthenticationException" element="tns:WsiAuthenticationException"/>
+  </wsdl:message>
+  <wsdl:message name="getPolicyInfo">
+    <wsdl:part name="parameters" element="tns:getPolicyInfo"/>
+  </wsdl:message>
+  <wsdl:message name="getPolicyInfoResponse">
+    <wsdl:part name="parameters" element="tns:getPolicyInfoResponse"/>
   </wsdl:message>
   <wsdl:message name="gw-authentication">
     <wsdl:part name="gw-authentication" element="gwsoap:authentication"/>
