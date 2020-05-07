@@ -38,6 +38,21 @@
           </xs:sequence>
         </xs:complexType>
       </xs:element>
+      <!-- getContactInfo(String) : ContactInfo -->
+      <xs:element name="getContactInfo">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="publicId" type="xs:string" minOccurs="0"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
+      <xs:element name="getContactInfoResponse">
+        <xs:complexType>
+          <xs:sequence>
+            <xs:element name="return" minOccurs="0" type="pogo:ContactInfo"/>
+          </xs:sequence>
+        </xs:complexType>
+      </xs:element>
     </xs:schema>
     <xs:schema targetNamespace="http://example.com/search" elementFormDefault="qualified" xmlns:xs="http://www.w3.org/2001/XMLSchema">
       <xs:complexType name="AccountInfo">
@@ -45,7 +60,7 @@
           <xs:element name="AccountContact" minOccurs="0" gw:viewas="list" xmlns:gw="http://guidewire.com/xsd">
             <xs:complexType>
               <xs:sequence>
-                <xs:element minOccurs="0" maxOccurs="unbounded" name="Entry" type="xs:string" nillable="true"/>
+                <xs:element minOccurs="0" maxOccurs="unbounded" name="Entry" nillable="true" type="pogo:AccountContactInfo"/>
               </xs:sequence>
             </xs:complexType>
           </xs:element>
@@ -65,6 +80,12 @@
           <xs:element name="Status" type="xs:string" minOccurs="0"/>
         </xs:sequence>
       </xs:complexType>
+      <xs:complexType name="AccountContactInfo">
+        <xs:sequence>
+          <xs:element name="AccountContactName" type="xs:string" minOccurs="0"/>
+          <xs:element name="AccountContactPublicId" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
       <xs:complexType name="PolicyInfo">
         <xs:sequence>
           <xs:element name="AccountName" type="xs:string" minOccurs="0"/>
@@ -81,6 +102,25 @@
           <xs:element name="Underwriter" type="xs:string" minOccurs="0"/>
         </xs:sequence>
       </xs:complexType>
+      <xs:complexType name="ContactInfo">
+        <xs:sequence>
+          <xs:element name="Address" type="xs:string" minOccurs="0"/>
+          <xs:element name="AddressType" type="xs:string" minOccurs="0"/>
+          <xs:element name="ContactFirstName" type="xs:string" minOccurs="0"/>
+          <xs:element name="ContactLastName" type="xs:string" minOccurs="0"/>
+          <xs:element name="DateOfBirth" type="xs:string" minOccurs="0"/>
+          <xs:element name="HomePhone" type="xs:string" minOccurs="0"/>
+          <xs:element name="License" type="xs:string" minOccurs="0"/>
+          <xs:element name="LicenseState" type="xs:string" minOccurs="0"/>
+          <xs:element name="MaritalStatus" type="xs:string" minOccurs="0"/>
+          <xs:element name="MobilePhone" type="xs:string" minOccurs="0"/>
+          <xs:element name="PreferredCurrency" type="xs:string" minOccurs="0"/>
+          <xs:element name="PrimaryEmail" type="xs:string" minOccurs="0"/>
+          <xs:element name="PrimaryPhone" type="xs:string" minOccurs="0"/>
+          <xs:element name="SSNOfficialID" type="xs:string" minOccurs="0"/>
+          <xs:element name="WorkPhone" type="xs:string" minOccurs="0"/>
+        </xs:sequence>
+      </xs:complexType>
     </xs:schema>
   </wsdl:types>
   <wsdl:portType name="policySearchPortalAPIPortType">
@@ -92,6 +132,11 @@
     <wsdl:operation name="getPolicyInfo">
       <wsdl:input name="getPolicyInfo" message="tns:getPolicyInfo"/>
       <wsdl:output name="getPolicyInfoResponse" message="tns:getPolicyInfoResponse"/>
+      <wsdl:fault name="WsiAuthenticationException" message="tns:WsiAuthenticationException"/>
+    </wsdl:operation>
+    <wsdl:operation name="getContactInfo">
+      <wsdl:input name="getContactInfo" message="tns:getContactInfo"/>
+      <wsdl:output name="getContactInfoResponse" message="tns:getContactInfoResponse"/>
       <wsdl:fault name="WsiAuthenticationException" message="tns:WsiAuthenticationException"/>
     </wsdl:operation>
   </wsdl:portType>
@@ -119,6 +164,20 @@
         <soap12:header message="tns:gw-locale" part="gw-locale" use="literal"/>
       </wsdl:input>
       <wsdl:output name="getPolicyInfoResponse">
+        <soap12:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="WsiAuthenticationException">
+        <soap12:fault name="WsiAuthenticationException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
+    <wsdl:operation name="getContactInfo">
+      <soap12:operation soapActionRequired="false" style="document"/>
+      <wsdl:input name="getContactInfo">
+        <soap12:body use="literal"/>
+        <soap12:header message="tns:gw-authentication" part="gw-authentication" use="literal"/>
+        <soap12:header message="tns:gw-locale" part="gw-locale" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getContactInfoResponse">
         <soap12:body use="literal"/>
       </wsdl:output>
       <wsdl:fault name="WsiAuthenticationException">
@@ -156,13 +215,27 @@
         <soap11:fault name="WsiAuthenticationException" use="literal"/>
       </wsdl:fault>
     </wsdl:operation>
+    <wsdl:operation name="getContactInfo">
+      <soap11:operation style="document"/>
+      <wsdl:input name="getContactInfo">
+        <soap11:body use="literal"/>
+        <soap11:header message="tns:gw-authentication" part="gw-authentication" use="literal"/>
+        <soap11:header message="tns:gw-locale" part="gw-locale" use="literal"/>
+      </wsdl:input>
+      <wsdl:output name="getContactInfoResponse">
+        <soap11:body use="literal"/>
+      </wsdl:output>
+      <wsdl:fault name="WsiAuthenticationException">
+        <soap11:fault name="WsiAuthenticationException" use="literal"/>
+      </wsdl:fault>
+    </wsdl:operation>
   </wsdl:binding>
   <wsdl:service name="policySearchPortalAPI">
     <wsdl:port name="policySearchPortalAPISoap12Port" binding="tns:policySearchPortalAPISoap12Binding">
-      <soap12:address location="http://localhost:8180/pc/ws/search/policySearchPortalAPI"/>
+      <soap12:address location="local:///search/policySearchPortalAPI"/>
     </wsdl:port>
     <wsdl:port name="policySearchPortalAPISoap11Port" binding="tns:policySearchPortalAPISoap11Binding">
-      <soap11:address location="http://localhost:8180/pc/ws/search/policySearchPortalAPI/soap11"/>
+      <soap11:address location="local:///search/policySearchPortalAPI/soap11"/>
     </wsdl:port>
   </wsdl:service>
   <wsdl:message name="getAccountInfo">
@@ -179,6 +252,12 @@
   </wsdl:message>
   <wsdl:message name="getPolicyInfoResponse">
     <wsdl:part name="parameters" element="tns:getPolicyInfoResponse"/>
+  </wsdl:message>
+  <wsdl:message name="getContactInfo">
+    <wsdl:part name="parameters" element="tns:getContactInfo"/>
+  </wsdl:message>
+  <wsdl:message name="getContactInfoResponse">
+    <wsdl:part name="parameters" element="tns:getContactInfoResponse"/>
   </wsdl:message>
   <wsdl:message name="gw-authentication">
     <wsdl:part name="gw-authentication" element="gwsoap:authentication"/>
