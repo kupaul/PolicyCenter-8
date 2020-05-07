@@ -18,7 +18,7 @@ function getAccountInfo(accountNumber : String) : AccountInfo
       aAccountInfo.Email = targetAccount.AccountHolderContact.EmailAddress1
       aAccountInfo.Address = targetAccount.AccountHolderContact.PrimaryAddress.DisplayName
       aAccountInfo.Policies = getPolicies(targetAccount)
-      aAccountInfo.AccountContact = getAccountContact(targetAccount)
+      aAccountInfo.AccountContact = getAccountContacts(targetAccount)
        return aAccountInfo
     }
   /*TO GET THE EXISTING POLICIES OF THE GIVEN ACCOUNT NUMBER*/
@@ -34,14 +34,18 @@ private  function getPolicies(account : Account) : ArrayList<String>
     return policies
   }
   /*TO GET ACCOUNT CONTACT OF GIVEN POLICY NUMBER*/
-  private function getAccountContact(account : Account) : ArrayList<String>
+  private function getAccountContacts(account : Account) : ArrayList<AccountContactInfo>
   {
-    var acContact = new ArrayList<String> ()
+    var acContacts = new ArrayList<AccountContactInfo> ()
+
     for(acCont in account.AccountContacts)
     {
-      acContact.add(acCont.Contact.DisplayName)
+      var acontactInfo = new AccountContactInfo()
+      acontactInfo.AccountContactName = acCont.Contact.DisplayName
+      acontactInfo.AccountContactPublicId = acCont.Contact.PublicID
+      acContacts.add(acontactInfo)
     }
-    return acContact
+    return acContacts
   }
 
     /*TO GET THE POLICY INFORMATION*/
@@ -68,4 +72,29 @@ private  function getPolicies(account : Account) : ArrayList<String>
       return aPolicyInfo
     }
 
+  /*TO GET THE ACCOUNT Contacts INFORMATION*/
+  function getContactInfo(publicId : String) : ContactInfo
+  {
+      var queryObj = gw.api.database.Query.make(Contact)
+      queryObj.compare("PublicId",Equals ,publicId)
+      var targetContact = queryObj.select().AtMostOneRow
+      var cContactInfo = new ContactInfo()
+      cContactInfo.ContactFirstName = (targetContact as Person).FirstName
+      cContactInfo.ContactLastName = (targetContact as Person).LastName
+      cContactInfo.DateOfBirth = (targetContact as Person).DateOfBirth
+      cContactInfo.MaritalStatus = (targetContact as Person).MaritalStatus
+      cContactInfo.PrimaryPhone = (targetContact as Person).PrimaryPhone
+      cContactInfo.HomePhone = targetContact.HomePhone
+      cContactInfo.WorkPhone = targetContact.WorkPhone
+      cContactInfo.MobilePhone = (targetContact as Person).CellPhone
+      cContactInfo.PrimaryEmail = (targetContact as Person).EmailAddress1
+      cContactInfo.AddressType = targetContact.PrimaryAddress.AddressType
+      cContactInfo.Address = targetContact.PrimaryAddress.DisplayName
+      cContactInfo.License = (targetContact as Person).LicenseNumber
+      cContactInfo.LicenseState = (targetContact as Person).LicenseState
+      cContactInfo.SSNOfficialID = (targetContact as Person).SSNOfficialID
+      return cContactInfo
+
+
+  }
 }

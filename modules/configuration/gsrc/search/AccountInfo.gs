@@ -13,5 +13,5 @@ final class AccountInfo {
   var _email : String as Email
   var _address : String as Address
   var _policies : ArrayList<String>   as Policies
-  var _accountContact : ArrayList<String> as AccountContact
+  var _accountContact : ArrayList<AccountContactInfo> as AccountContact
 }
