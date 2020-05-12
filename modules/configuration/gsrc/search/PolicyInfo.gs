@@ -27,7 +27,7 @@ final class PolicyInfo {
   var _accName : String as AccountName
   var _accAddress : String as Address
   var _accAddType : String as AddressType
-
+  var _pNIPublicId : String as PNIPublicID
 
 
 }
