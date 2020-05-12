@@ -2,7 +2,7 @@ package search
 uses gw.xml.ws.annotation.WsiWebService
 uses java.util.ArrayList
 @WsiWebService
-class policySearchPortalAPI {
+class PolicySearchPortalAPI {
         /*TO GET THE ACCOUNT INFORMATION*/
 function getAccountInfo(accountNumber : String) : AccountInfo
     {
@@ -48,6 +48,7 @@ private  function getPolicies(account : Account) : ArrayList<String>
     return acContacts
   }
 
+
     /*TO GET THE POLICY INFORMATION*/
     function getPolicyInfo(policyNumber : String) : PolicyInfo
     {
@@ -63,7 +64,7 @@ private  function getPolicies(account : Account) : ArrayList<String>
       aPolicyInfo.IssueDate =  targetPolicy.Policy.IssueDate
       aPolicyInfo.Underwriter =  targetPolicy.Policy.getUserRoleAssignmentByRole(typekey.UserRole.TC_UNDERWRITER).AssignedUser
       aPolicyInfo.PrimaryNamedInsured = targetPolicy.PrimaryInsuredName
-
+      aPolicyInfo.PNIPublicID = targetPolicy.PNIContactDenorm.PublicID
       aPolicyInfo.AccountNumber = targetPolicy.Policy.Account.AccountNumber
       aPolicyInfo.AccountName = targetPolicy.Policy.Account.AccountHolderContact.DisplayName
       aPolicyInfo.Address =    targetPolicy.Policy.Account.AccountHolderContact.PrimaryAddress.DisplayName
