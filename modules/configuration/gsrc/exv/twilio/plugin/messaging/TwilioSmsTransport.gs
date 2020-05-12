@@ -22,11 +22,9 @@ class TwilioSmsTransport implements  MessageTransport
 
   override function send(aMessage: Message, transformedPayload : String)
   {
-//      var ACCOUNT_SID = PropertiesFileAccess.getProperty("exv/twilio/plugin/Twilio/Twilio", "ACCOUNT_SID")
 
-      print("\nMessage ID: " + aMessage.ID)
-      var accountSid= aMessage.User.accountSID
-      var authToken= aMessage.User.auothTOKEN
+      var accountSid= aMessage.User.AccountSID
+      var authToken= aMessage.User.AuthTOKEN
     /***
      *   cURL is basically used to transfer data using Internet Protocols(Here HTTP requests) for the given URL.
      *   Curl is a Client side program. In the name cURL, c stands for Client.
