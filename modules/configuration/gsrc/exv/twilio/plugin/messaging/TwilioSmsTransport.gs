@@ -25,10 +25,17 @@ class TwilioSmsTransport implements  MessageTransport
 //      var ACCOUNT_SID = PropertiesFileAccess.getProperty("exv/twilio/plugin/Twilio/Twilio", "ACCOUNT_SID")
 
       print("\nMessage ID: " + aMessage.ID)
-
+      var accountSid= aMessage.User.accountSID
+      var authToken= aMessage.User.auothTOKEN
+    /***
+     *   cURL is basically used to transfer data using Internet Protocols(Here HTTP requests) for the given URL.
+     *   Curl is a Client side program. In the name cURL, c stands for Client.
+     *   "-d" is used to send the post body content,
+     *   "-u" is used for authorization purpose for Twilio
+     */
       var command = {"curl" , "-X" ,"POST" ,
-          "https://api.twilio.com/2010-04-01/Accounts/ACd04949e93a39aac9da62638fda2c81ba/Messages.json"  , "-d", transformedPayload,
-          "-u" ,  "ACd04949e93a39aac9da62638fda2c81ba : e97aa27d2052a51bab5f56eaa135a8a3"  }
+          "https://api.twilio.com/2010-04-01/Accounts/"+accountSid+"/Messages.json"  , "-d", transformedPayload,
+          "-u" ,  accountSid+":"+authToken  }
 
       var builder = new ProcessBuilder(command)
       var process=builder.start()
