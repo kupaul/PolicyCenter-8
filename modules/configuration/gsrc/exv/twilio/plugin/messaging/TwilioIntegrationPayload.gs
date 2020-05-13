@@ -8,13 +8,11 @@ class TwilioIntegrationPayload {
   */
     function  messagePayloadCreation(message:TwilioSMS) : String
     {
-        var to=message.SendTo.PrimaryPhoneValue;
-        var from=message.SendFrom.Contact.PrimaryPhoneValue;
+        var to=message.SendToContact.PrimaryPhoneValue;
+        var from=message.SendFromUser.TwilioPhoneNumber;
         var body=message.MessageBody
-//
-
-      var payload= "Body=" + body + "&To= " + to + "&From= "+  from;
-      return payload;
+        var payload= "Body=" + body + "&To= " + to + "&From= "+  from;
+        return payload;
 
     }
 
