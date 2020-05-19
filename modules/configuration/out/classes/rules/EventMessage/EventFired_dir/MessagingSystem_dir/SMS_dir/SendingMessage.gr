@@ -1,0 +1,21 @@
+package rules.EventMessage.EventFired_dir.MessagingSystem_dir.SMS_dir
+uses exv.twilio.plugin.messaging.TwilioIntegrationPayload
+
+@gw.rules.RuleName("SendingMessage")
+internal class SendingMessage {
+  static function doCondition(messageContext : entity.MessageContext) : boolean {
+/*start00rule*/
+return messageContext.EventName=="SendSMS"
+/*end00rule*/
+}
+
+  static function doAction(messageContext : entity.MessageContext, actions : gw.rules.Action) {
+/*start00rule*/
+    var sms=messageContext.Root as TwilioSMS
+    var obj=new TwilioIntegrationPayload()
+    var payload=obj.messagePayloadCreation(sms)
+    messageContext.createMessage(payload)
+    sms.MessageStatus=MessageStatus.TC_QUEUED // This will work when the Message is in Queue until the message will send.
+/*end00rule*/
+  }
+}
