@@ -44,7 +44,7 @@ class TwilioSmsTransport implements  MessageTransport
     var authToken= message.User.AuthTOKEN
 
     // This needs to change as per your local ngrok url
-    var statusCallBackUrl = "http://e3ea5524.ngrok.io/pc/service/sms/statuscallback"
+    var statusCallBackUrl = "http://e3162f3b.ngrok.io/pc/service/sms/statuscallback"
 
     /***
      *   cURL is basically used to transfer data using Internet Protocols(Here HTTP requests) for the given URL.
@@ -68,18 +68,18 @@ class TwilioSmsTransport implements  MessageTransport
 
     if(responseJsonObject != null){
        message.reportAck()
-       print(responseJsonObject)
-    }
-    var messageSid=responseJsonObject?.get("sid") as String
+      var messageSid=responseJsonObject?.get("sid") as String
 
-    if(messageSid!=null)
-    {
-      sms.MessageSid = messageSid
+      if(messageSid!=null)
+      {
+        sms.MessageSid = messageSid
+      }
+      else {
+        var errorMessage = responseJsonObject?.get("message") as String
+        sms.ErrorMessage = errorMessage
+      }
     }
-    else {
-      var errorMessage = responseJsonObject?.get("message") as String
-      sms.ErrorMessage = errorMessage
-    }
+
   }
 
   override function shutdown(){}
